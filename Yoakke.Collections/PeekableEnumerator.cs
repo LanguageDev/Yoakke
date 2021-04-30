@@ -90,5 +90,11 @@ namespace Yoakke.Collections
             item = buffer[amount];
             return true;
         }
+
+        public T Peek(int amount)
+        {
+            if (!TryPeek(amount, out var item)) throw new ArgumentOutOfRangeException(nameof(item));
+            return item;
+        }
     }
 }

@@ -26,10 +26,6 @@ namespace Yoakke.Collections
         /// </summary>
         /// <param name="amount">The number of elements to peek forward from the current.</param>
         /// <returns>The number of elements to peek in front of the current.</returns>
-        public T Peek(int amount)
-        {
-            if (!TryPeek(amount, out var item)) throw new ArgumentOutOfRangeException(nameof(item));
-            return item;
-        }
+        public T Peek(int amount);
     }
 }
