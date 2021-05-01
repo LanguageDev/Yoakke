@@ -9,29 +9,8 @@ using Yoakke.Collections.Intervals;
 namespace Yoakke.Collections.Tests
 {
     [TestClass]
-    public class IntervalTests
+    public class IntervalTests : IntervalTestBase
     {
-        private static Interval<int> Iv(string s)
-        {
-            if (s == "..") return Interval<int>.Full();
-            if (s.StartsWith("..=")) return new Interval<int>(LowerBound<int>.Unbounded(), UpperBound<int>.Inclusive(int.Parse(s.Substring(3))));
-            if (s.StartsWith("..")) return new Interval<int>(LowerBound<int>.Unbounded(), UpperBound<int>.Exclusive(int.Parse(s.Substring(3))));
-            if (s.EndsWith("..")) return new Interval<int>(LowerBound<int>.Inclusive(int.Parse(s.Substring(0, s.Length - 2))), UpperBound<int>.Unbounded());
-            if (s.Contains("..="))
-            {
-                var parts = s.Split("..=");
-                return new Interval<int>(LowerBound<int>.Inclusive(int.Parse(parts[0])), UpperBound<int>.Inclusive(int.Parse(parts[1])));
-            }
-            if (s.Contains(".."))
-            {
-                var parts = s.Split("..");
-                return new Interval<int>(LowerBound<int>.Inclusive(int.Parse(parts[0])), UpperBound<int>.Exclusive(int.Parse(parts[1])));
-            }
-            throw new NotImplementedException();
-        }
-
-        private static IntervalRelation<int> Rel(string i1, string i2) => Iv(i1).RelationTo(Iv(i2), Comparer<int>.Default);
-
         [TestMethod]
         public void FirstBeforeSecondRelation()
         {

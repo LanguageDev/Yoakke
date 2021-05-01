@@ -62,6 +62,13 @@ namespace Yoakke.Collections.Intervals
         /// Checks if a value is inside this interval.
         /// </summary>
         /// <param name="value">The value to check.</param>
+        /// <returns>True, if the value is inside this interval, false otherwise.</returns>
+        public bool Contains(T value) => Contains(value, Comparer<T>.Default);
+
+        /// <summary>
+        /// Checks if a value is inside this interval.
+        /// </summary>
+        /// <param name="value">The value to check.</param>
         /// <param name="comparer">The comparer to use.</param>
         /// <returns>True, if the value is inside this interval, false otherwise.</returns>
         public bool Contains(T value, IComparer<T> comparer) => (Lower.Type, Upper.Type) switch
@@ -85,6 +92,12 @@ namespace Yoakke.Collections.Intervals
         /// <summary>
         /// Checks if this interval is empty, meaning that it cannot possibly contain any value.
         /// </summary>
+        /// <returns>True, if the interval is empty, false otherwise.</returns>
+        public bool IsEmpty() => IsEmpty(Comparer<T>.Default);
+
+        /// <summary>
+        /// Checks if this interval is empty, meaning that it cannot possibly contain any value.
+        /// </summary>
         /// <param name="comparer">The comparer to use.</param>
         /// <returns>True, if the interval is empty, false otherwise.</returns>
         public bool IsEmpty(IComparer<T> comparer) => (Lower.Type, Upper.Type) switch
@@ -100,6 +113,13 @@ namespace Yoakke.Collections.Intervals
         /// Checks if this interval is before another one (no overlap).
         /// </summary>
         /// <param name="other">The other interval.</param>
+        /// <returns>True, if this interval is before the other one, false otherwise.</returns>
+        public bool IsBefore(Interval<T> other) => IsBefore(other, Comparer<T>.Default);
+
+        /// <summary>
+        /// Checks if this interval is before another one (no overlap).
+        /// </summary>
+        /// <param name="other">The other interval.</param>
         /// <param name="comparer">The comparer to use.</param>
         /// <returns>True, if this interval is before the other one, false otherwise.</returns>
         public bool IsBefore(Interval<T> other, IComparer<T> comparer) => Upper.CompareTo(other.Lower, comparer) < 0;
@@ -108,9 +128,23 @@ namespace Yoakke.Collections.Intervals
         /// Checks if this interval is disjunct with another one.
         /// </summary>
         /// <param name="other">The other interval.</param>
+        /// <returns>True, if this interval is disjunct with the other one, false otherwise.</returns>
+        public bool IsDisjunct(Interval<T> other) => IsDisjunct(other, Comparer<T>.Default);
+
+        /// <summary>
+        /// Checks if this interval is disjunct with another one.
+        /// </summary>
+        /// <param name="other">The other interval.</param>
         /// <param name="comparer">The comparer to use.</param>
         /// <returns>True, if this interval is disjunct with the other one, false otherwise.</returns>
         public bool IsDisjunct(Interval<T> other, IComparer<T> comparer) => IsBefore(other, comparer) || other.IsBefore(this, comparer);
+
+        /// <summary>
+        /// Calculates the relation between this and another interval.
+        /// </summary>
+        /// <param name="other">The other interval.</param>
+        /// <returns>The object that describes the relation of the intervals.</returns>
+        public IntervalRelation<T> RelationTo(Interval<T> other) => RelationTo(other, Comparer<T>.Default);
 
         /// <summary>
         /// Calculates the relation between this and another interval.
