@@ -49,6 +49,7 @@ namespace Yoakke.Collections.FiniteAutomata
             : this(Comparer<TSymbol>.Default)
         {
             transitions = new Dictionary<State, IntervalMap<TSymbol, ISet<State>>>();
+            epsilon = new Dictionary<State, HashSet<State>>();
         }
 
         /// <summary>
@@ -65,8 +66,8 @@ namespace Yoakke.Collections.FiniteAutomata
         public IEnumerable<State> GetTransitions(State from, TSymbol on)
         {
             var fromClosure = EpsilonClosure(from);
-            return fromClosure.SelectMany(f => 
-            { 
+            return fromClosure.SelectMany(f =>
+            {
                 if (transitions.TryGetValue(f, out var map))
                 {
                     if (map.TryGetValue(on, out var to)) return to.SelectMany(EpsilonClosure);
@@ -107,7 +108,7 @@ namespace Yoakke.Collections.FiniteAutomata
             // Deal with the initial state
             {
                 var initialStates = EpsilonClosure(InitalState);
-                dfa.InitalState = dfa.NewState();
+                dfa.InitalState = new State(initialStates);
                 var nfaStates = new SortedSet<State>(initialStates);
                 stateMap.Add(nfaStates, dfa.InitalState);
                 stk.Push((nfaStates, dfa.InitalState));
@@ -139,7 +140,7 @@ namespace Yoakke.Collections.FiniteAutomata
                     if (!stateMap.TryGetValue(to, out var dfaTo))
                     {
                         // New state, process
-                        dfaTo = dfa.NewState();
+                        dfaTo = new State(to);
                         stateMap.Add(to, dfaTo);
                         stk.Push((to, dfaTo));
                         // If it's accepting, register it as so
@@ -149,6 +150,35 @@ namespace Yoakke.Collections.FiniteAutomata
                 }
             }
             return dfa;
+        }
+
+        public string ToDebugDOT()
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("digraph DenseNfa {");
+            // Initial
+            sb.AppendLine("    blank_node [label=\"\", shape=none, width=0, height=0];");
+            sb.AppendLine($"    blank_node -> {InitalState};");
+            // Accepting
+            foreach (var state in AcceptingStates)
+            {
+                sb.AppendLine($"    {state} [peripheries=2];");
+            }
+            // Transitions
+            foreach (var (from, onMap) in transitions)
+            {
+                foreach (var (iv, tos) in onMap)
+                {
+                    foreach (var to in tos) sb.AppendLine($"    {from} -> {to} [label=\"{iv}\"];");
+                }
+            }
+            // Epsilon-transitions
+            foreach (var (from, tos) in epsilon)
+            {
+                foreach (var to in tos) sb.AppendLine($"    {from} -> {to} [label=\"\u03B5\"];");
+            }
+            sb.AppendLine("}");
+            return sb.ToString();
         }
 
         /// <summary>

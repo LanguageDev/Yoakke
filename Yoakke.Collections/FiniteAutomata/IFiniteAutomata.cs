@@ -39,5 +39,11 @@ namespace Yoakke.Collections.FiniteAutomata
         /// <param name="on">The symbol to transition on.</param>
         /// <returns>The possible resulting states.</returns>
         public IEnumerable<State> GetTransitions(State from, TSymbol on);
+
+        /// <summary>
+        /// Converts this finite automata into a DOT graph that can be visualized for debugging.
+        /// </summary>
+        /// <returns>The DOT description of the automata.</returns>
+        public string ToDebugDOT();
     }
 }

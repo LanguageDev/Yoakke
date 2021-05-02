@@ -9,24 +9,48 @@ namespace Yoakke.Collections.FiniteAutomata
     /// <summary>
     /// Represents a single state of a finite automata.
     /// </summary>
-    public struct State : IEquatable<State>
+    public class State : IEquatable<State>, IComparable<State>
     {
-        public static State Invalid = new State(-1);
+        public static State Invalid = new State(Enumerable.Empty<State>());
 
-        private int index;
+        private int[] indices;
 
-        public State(int index)
+        public State(params int[] index)
         {
-            this.index = index;
+            indices = index;
+        }
+
+        public State(IEnumerable<State> parentStates)
+        {
+            indices = parentStates.SelectMany(s => s.indices).Distinct().OrderBy(i => i).ToArray();
         }
 
         public override bool Equals(object obj) => obj is State s && Equals(s);
-        public bool Equals(State other) => index == other.index;
-        public override int GetHashCode() => index.GetHashCode();
+        public bool Equals(State other) => indices.SequenceEqual(other.indices);
+        public override int GetHashCode()
+        {
+            var hash = new HashCode();
+            foreach (var e in indices) hash.Add(e);
+            return hash.ToHashCode();
+        }
 
-        public override string ToString() => index == -1 ? "INVALID STATE" : $"q{index}";
+        public int CompareTo(State other)
+        {
+            for (int i = 0; i < Math.Min(indices.Length, other.indices.Length); ++i)
+            {
+                var diff = indices[i] - other.indices[i];
+                if (diff != 0) return diff;
+            }
+            var lenDiff = indices.Length - other.indices.Length;
+            if (lenDiff != 0) return lenDiff;
+            return 0;
+        }
+
+        public override string ToString() => indices.Length == 0 ? "INVALID STATE" : $"q{string.Join('_', indices)}";
 
         public static bool operator ==(State s1, State s2) => s1.Equals(s2);
         public static bool operator !=(State s1, State s2) => !s1.Equals(s2);
+
+        public bool IsSubstateOf(State other) => indices.All(i => other.indices.Contains(i));
     }
 }

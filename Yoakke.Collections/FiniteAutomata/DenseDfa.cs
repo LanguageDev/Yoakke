@@ -46,7 +46,7 @@ namespace Yoakke.Collections.FiniteAutomata
         public IEnumerable<State> GetTransitions(State from, TSymbol on)
         {
             var to = GetTransition(from, on);
-            if (to != null) yield return to.Value;
+            if (to != null) yield return to;
         }
 
         public State? GetTransition(State from, TSymbol on)
@@ -62,6 +62,30 @@ namespace Yoakke.Collections.FiniteAutomata
         {
             // TODO
             throw new NotImplementedException();
+        }
+
+        public string ToDebugDOT()
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("digraph DenseDfa {");
+            // Initial
+            sb.AppendLine("    blank_node [label=\"\", shape=none, width=0, height=0];");
+            sb.AppendLine($"    blank_node -> {InitalState};");
+            // Accepting
+            foreach (var state in AcceptingStates)
+            {
+                sb.AppendLine($"    {state} [peripheries=2];");
+            }
+            // Transitions
+            foreach (var (from, onMap) in transitions)
+            {
+                foreach (var (iv, to) in onMap)
+                {
+                    sb.AppendLine($"    {from} -> {to} [label=\"{iv}\"];");
+                }
+            }
+            sb.AppendLine("}");
+            return sb.ToString();
         }
 
         /// <summary>
