@@ -111,6 +111,8 @@ namespace Yoakke.Collections.FiniteAutomata
                 var nfaStates = new SortedSet<State>(initialStates);
                 stateMap.Add(nfaStates, dfa.InitalState);
                 stk.Push((nfaStates, dfa.InitalState));
+                // If is an accepting, register it as so
+                if (nfaStates.Any(IsAccepting)) dfa.AcceptingStates.Add(dfa.InitalState);
             }
             while (stk.TryPop(out var top))
             {
@@ -140,6 +142,8 @@ namespace Yoakke.Collections.FiniteAutomata
                         dfaTo = dfa.NewState();
                         stateMap.Add(to, dfaTo);
                         stk.Push((to, dfaTo));
+                        // If it's accepting, register it as so
+                        if (to.Any(IsAccepting)) dfa.AcceptingStates.Add(dfaTo);
                     }
                     dfa.AddTransition(dfaState, on, dfaTo);
                 }
