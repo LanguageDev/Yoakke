@@ -20,6 +20,15 @@ namespace Yoakke.Collections.Intervals
         public IEnumerable<Interval<TKey>> Intervals => values.Select(p => p.Key);
         public IEnumerable<TValue> Values => values.Select(p => p.Value);
 
+        /// <summary>
+        /// The comparer used for sorting interval keys.
+        /// </summary>
+        public IComparer<TKey> Comparer { get; }
+        /// <summary>
+        /// The equality comparer used for merging values.
+        /// </summary>
+        public IEqualityComparer<TValue> ValueComparer { get; }
+
         public TValue this[TKey key]
         {
             get
@@ -30,23 +39,33 @@ namespace Yoakke.Collections.Intervals
         }
 
         private List<KeyValuePair<Interval<TKey>, TValue>> values = new List<KeyValuePair<Interval<TKey>, TValue>>();
-        private IComparer<TKey> comparer;
 
         /// <summary>
-        /// Initializes an empty <see cref="IntervalMap{TKey, TValue}"/> with the default comparer.
+        /// Initializes an empty <see cref="IntervalMap{TKey, TValue}"/> with the default comparers.
         /// </summary>
         public IntervalMap()
-            : this(Comparer<TKey>.Default)
+            : this(Comparer<TKey>.Default, EqualityComparer<TValue>.Default)
         {
         }
 
         /// <summary>
-        /// Initializes an empty <see cref="IntervalMap{TKey, TValue}"/> with a given comparer.
+        /// Initializes an empty <see cref="IntervalMap{TKey, TValue}"/> with a given key comparer.
         /// </summary>
-        /// <param name="comparer">The comparer to use.</param>
+        /// <param name="comparer">The key comparer to use.</param>
         public IntervalMap(IComparer<TKey> comparer)
+            : this(comparer, EqualityComparer<TValue>.Default)
         {
-            this.comparer = comparer;
+        }
+
+        /// <summary>
+        /// Initializes an empty <see cref="IntervalMap{TKey, TValue}"/> with a given comparers.
+        /// </summary>
+        /// <param name="comparer">The key comparer to use.</param>
+        /// <param name="valueComparer">The value equality comparer to use.</param>
+        public IntervalMap(IComparer<TKey> comparer, IEqualityComparer<TValue> valueComparer)
+        {
+            Comparer = comparer;
+            ValueComparer = valueComparer;
         }
 
         public void Clear() => values.Clear();
@@ -102,7 +121,7 @@ namespace Yoakke.Collections.Intervals
                     var upper = values[idx].Key.Lower.GetTouching().Value;
                     var between = new Interval<TKey>(lower, upper);
                     lower = values[idx].Key.Upper.GetTouching().Value;
-                    if (!between.IsEmpty(comparer))
+                    if (!between.IsEmpty(Comparer))
                     {
                         values.Insert(idx, new KeyValuePair<Interval<TKey>, TValue>(between, value));
                         idx += 2;
@@ -113,7 +132,28 @@ namespace Yoakke.Collections.Intervals
                     }
                 }
                 var lastBetween = new Interval<TKey>(lower, lastUpper);
-                if (!lastBetween.IsEmpty(comparer)) values.Insert(idx, new KeyValuePair<Interval<TKey>, TValue>(lastBetween, value));
+                if (!lastBetween.IsEmpty(Comparer)) values.Insert(idx, new KeyValuePair<Interval<TKey>, TValue>(lastBetween, value));
+            }
+        }
+
+        public void MergeTouching()
+        {
+            for (int i = 0; i < values.Count - 1; )
+            {
+                var v1 = values[i];
+                var v2 = values[i + 1];
+                if (v1.Key.Upper.IsTouching(v2.Key.Lower, Comparer) && ValueComparer.Equals(v1.Value, v2.Value))
+                {
+                    // They are touching and have the same values, merge them
+                    values[i] = new KeyValuePair<Interval<TKey>, TValue>(
+                        new Interval<TKey>(v1.Key.Lower, v2.Key.Upper),
+                        v1.Value);
+                    values.RemoveAt(i + 1);
+                }
+                else
+                {
+                    ++i;
+                }
             }
         }
 
@@ -128,7 +168,7 @@ namespace Yoakke.Collections.Intervals
                 (Interval<TKey>, TValue)? after) => AddAndUpdateSingleImpl(idx, before, middle, after);
 
             var existing = values[idx];
-            var rel = existing.Key.RelationTo(interval, comparer);
+            var rel = existing.Key.RelationTo(interval, Comparer);
             switch (rel)
             {
             case IntervalRelation<TKey>.Equal:
@@ -136,7 +176,7 @@ namespace Yoakke.Collections.Intervals
                 break;
 
             case IntervalRelation<TKey>.Containing containment:
-                if (existing.Key.Lower.CompareTo(containment.Contained.Lower, comparer) == 0)
+                if (existing.Key.Lower.CompareTo(containment.Contained.Lower, Comparer) == 0)
                 {
                     // The new interval completely covers the existing one
                     Update(
@@ -155,7 +195,7 @@ namespace Yoakke.Collections.Intervals
                 break;
 
             case IntervalRelation<TKey>.Overlapping overlap:
-                if (existing.Key.Lower.CompareTo(overlap.FirstDisjunct.Lower, comparer) == 0)
+                if (existing.Key.Lower.CompareTo(overlap.FirstDisjunct.Lower, Comparer) == 0)
                 {
                     // Existing is before the new one
                     Update(
@@ -174,7 +214,7 @@ namespace Yoakke.Collections.Intervals
                 break;
 
             case IntervalRelation<TKey>.Starting starting:
-                if (existing.Key.Upper.CompareTo(starting.Overlap.Upper, comparer) == 0)
+                if (existing.Key.Upper.CompareTo(starting.Overlap.Upper, Comparer) == 0)
                 {
                     // New interval overextends existing
                     Update(
@@ -193,7 +233,7 @@ namespace Yoakke.Collections.Intervals
                 break;
 
             case IntervalRelation<TKey>.Finishing finishing:
-                if (existing.Key.Lower.CompareTo(finishing.Disjunct.Lower, comparer) == 0)
+                if (existing.Key.Lower.CompareTo(finishing.Disjunct.Lower, Comparer) == 0)
                 {
                     // Existing overextends new
                     Update(
@@ -222,7 +262,7 @@ namespace Yoakke.Collections.Intervals
                 (Interval<TKey>, TValue) middle) => AddAndUpdateSingleImpl(idx, before, middle, null);
 
             var existing = values[idx];
-            var rel = existing.Key.RelationTo(interval, comparer);
+            var rel = existing.Key.RelationTo(interval, Comparer);
             switch (rel)
             {
             case IntervalRelation<TKey>.Containing containment:
@@ -250,7 +290,7 @@ namespace Yoakke.Collections.Intervals
                 (Interval<TKey>, TValue)? after) => AddAndUpdateSingleImpl(idx, before, middle, after);
 
             var existing = values[idx];
-            var rel = existing.Key.RelationTo(interval, comparer);
+            var rel = existing.Key.RelationTo(interval, Comparer);
             switch (rel)
             {
             case IntervalRelation<TKey>.Containing containment:
@@ -293,8 +333,8 @@ namespace Yoakke.Collections.Intervals
         private (int, int) IntersectingIndexRange(Interval<TKey> interval)
         {
             ReadOnlySpan<KeyValuePair<Interval<TKey>, TValue>> span = CollectionsMarshal.AsSpan(values);
-            var (from, _) = span.BinarySearch(interval.Lower, iv => iv.Key.Upper, (k1, k2) => k1.CompareTo(k2, comparer));
-            var (to, _) = span.Slice(from).BinarySearch(interval.Upper, iv => iv.Key.Lower, (k1, k2) => k1.CompareTo(k2, comparer));
+            var (from, _) = span.BinarySearch(interval.Lower, iv => iv.Key.Upper, (k1, k2) => k1.CompareTo(k2, Comparer));
+            var (to, _) = span.Slice(from).BinarySearch(interval.Upper, iv => iv.Key.Lower, (k1, k2) => k1.CompareTo(k2, Comparer));
             to += from;
             return (from, to);
         }

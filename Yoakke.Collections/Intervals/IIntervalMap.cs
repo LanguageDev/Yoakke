@@ -56,5 +56,9 @@ namespace Yoakke.Collections.Intervals
         /// <param name="updateFunc">The update function that receives the existing value and the newly inserted value and
         /// returns the new value to keep.</param>
         public void AddAndUpdate(Interval<TKey> interval, TValue value, Func<TValue, TValue, TValue> updateFunc);
+        /// <summary>
+        /// Merges the touching intervals with the same associated value.
+        /// </summary>
+        public void MergeTouching();
     }
 }
