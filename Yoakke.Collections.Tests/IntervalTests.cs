@@ -15,10 +15,10 @@ namespace Yoakke.Collections.Tests
         public void FirstBeforeSecondRelation()
         {
             Assert.AreEqual(
-                new IntervalRelation<int>.Disjunct { First = Iv("1..4"), Second = Iv("5..7") }, 
+                new IntervalRelation<int>.Disjunct(Iv("1..4"), Iv("5..7")), 
                 Rel("1..4", "5..7"));
             Assert.AreEqual(
-                new IntervalRelation<int>.Disjunct { First = Iv("1..4"), Second = Iv("5..7") },
+                new IntervalRelation<int>.Disjunct(Iv("1..4"), Iv("5..7")),
                 Rel("5..7", "1..4"));
         }
 
@@ -26,10 +26,10 @@ namespace Yoakke.Collections.Tests
         public void FirstTouchesSecondRelation()
         {
             Assert.AreEqual(
-                new IntervalRelation<int>.Touching { First = Iv("1..4"), Second = Iv("4..7") },
+                new IntervalRelation<int>.Touching(Iv("1..4"), Iv("4..7")),
                 Rel("1..4", "4..7"));
             Assert.AreEqual(
-                new IntervalRelation<int>.Touching { First = Iv("1..4"), Second = Iv("4..7") },
+                new IntervalRelation<int>.Touching(Iv("1..4"), Iv("4..7")),
                 Rel("4..7", "1..4"));
         }
 
@@ -37,10 +37,10 @@ namespace Yoakke.Collections.Tests
         public void FirstStartsSecondRelation()
         {
             Assert.AreEqual(
-                new IntervalRelation<int>.Starting { Overlap = Iv("4..6"), Disjunct = Iv("6..8") },
+                new IntervalRelation<int>.Starting(Iv("4..6"), Iv("6..8")),
                 Rel("4..8", "4..6"));
             Assert.AreEqual(
-                new IntervalRelation<int>.Starting { Overlap = Iv("4..6"), Disjunct = Iv("6..8") },
+                new IntervalRelation<int>.Starting(Iv("4..6"), Iv("6..8")),
                 Rel("4..6", "4..8"));
         }
 
@@ -48,10 +48,10 @@ namespace Yoakke.Collections.Tests
         public void FirstFinishesSecondRelation()
         {
             Assert.AreEqual(
-                new IntervalRelation<int>.Finishing { Disjunct = Iv("4..6"), Overlap = Iv("6..8") },
+                new IntervalRelation<int>.Finishing(Iv("4..6"), Iv("6..8")),
                 Rel("6..8", "4..8"));
             Assert.AreEqual(
-                new IntervalRelation<int>.Finishing { Disjunct = Iv("4..6"), Overlap = Iv("6..8") },
+                new IntervalRelation<int>.Finishing(Iv("4..6"), Iv("6..8")),
                 Rel("4..8", "6..8"));
         }
 
@@ -59,19 +59,17 @@ namespace Yoakke.Collections.Tests
         public void SingletonIntersectionRelation()
         {
             Assert.AreEqual(
-                new IntervalRelation<int>.Overlapping 
-                { 
-                    FirstDisjunct = Iv("4..6"), 
-                    Overlap = Iv("6..=6"), 
-                    SecondDisjunct = new Interval<int>(LowerBound<int>.Exclusive(6), UpperBound<int>.Exclusive(8)) },
+                new IntervalRelation<int>.Overlapping(
+                    Iv("4..6"), 
+                    Iv("6..=6"), 
+                    new Interval<int>(LowerBound<int>.Exclusive(6), UpperBound<int>.Exclusive(8))),
                 Rel("4..=6", "6..8"));
             Assert.AreEqual(
-                new IntervalRelation<int>.Overlapping
-                {
-                    FirstDisjunct = Iv("4..6"),
-                    Overlap = Iv("6..=6"),
-                    SecondDisjunct = new Interval<int>(LowerBound<int>.Exclusive(6), UpperBound<int>.Exclusive(8))
-                },
+                new IntervalRelation<int>.Overlapping(
+                    Iv("4..6"),
+                    Iv("6..=6"),
+                    new Interval<int>(LowerBound<int>.Exclusive(6), UpperBound<int>.Exclusive(8))
+                ),
                 Rel("6..8", "4..=6"));
         }
 
@@ -79,10 +77,10 @@ namespace Yoakke.Collections.Tests
         public void FirstContainsSecondRelation()
         {
             Assert.AreEqual(
-                new IntervalRelation<int>.Containing { FirstDisjunct = Iv("2..4"), Contained = Iv("4..7"), SecondDisjunct = Iv("7..10") },
+                new IntervalRelation<int>.Containing(Iv("2..4"), Iv("4..7"), Iv("7..10")),
                 Rel("2..10", "4..7"));
             Assert.AreEqual(
-                new IntervalRelation<int>.Containing { FirstDisjunct = Iv("2..4"), Contained = Iv("4..7"), SecondDisjunct = Iv("7..10") },
+                new IntervalRelation<int>.Containing(Iv("2..4"), Iv("4..7"), Iv("7..10")),
                 Rel("4..7", "2..10"));
         }
 
@@ -90,10 +88,10 @@ namespace Yoakke.Collections.Tests
         public void FirstIntersectsSecondRelation()
         {
             Assert.AreEqual(
-                new IntervalRelation<int>.Overlapping { FirstDisjunct = Iv("2..4"), Overlap = Iv("4..7"), SecondDisjunct = Iv("7..9") },
+                new IntervalRelation<int>.Overlapping(Iv("2..4"), Iv("4..7"), Iv("7..9")),
                 Rel("2..7", "4..9"));
             Assert.AreEqual(
-                new IntervalRelation<int>.Overlapping { FirstDisjunct = Iv("2..4"), Overlap = Iv("4..7"), SecondDisjunct = Iv("7..9") },
+                new IntervalRelation<int>.Overlapping(Iv("2..4"), Iv("4..7"), Iv("7..9")),
                 Rel("4..9", "2..7"));
         }
     }

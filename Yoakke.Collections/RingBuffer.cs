@@ -136,17 +136,11 @@ namespace Yoakke.Collections
             // We need to copy elements over to a new array
             // We also use this opportunity to "reorient" the ring buffer and set the head to 0
             var newStorage = new T[capacity];
-            var (head, tail) = AsMemory();
-            head.CopyTo(newStorage);
-            tail.CopyTo(newStorage.AsMemory(head.Length));
+            var (head, tail) = GetSlices();
+            Array.Copy(storage, head.Start, newStorage, 0, head.Length);
+            Array.Copy(storage, tail.Start, newStorage, head.Length, tail.Length);
             Head = 0;
             storage = newStorage;
-        }
-
-        private (Memory<T> Head, Memory<T> Tail) AsMemory()
-        {
-            var ((hstart, hlen), (tstart, tlen)) = GetSlices();
-            return (storage.AsMemory(hstart, hlen), storage.AsMemory(tstart, tlen));
         }
 
         private ((int Start, int Length) Head, (int Start, int Length) Tail) GetSlices()

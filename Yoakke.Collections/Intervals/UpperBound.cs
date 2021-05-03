@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Yoakke.Collections.Compatibility;
 
 namespace Yoakke.Collections.Intervals
 {

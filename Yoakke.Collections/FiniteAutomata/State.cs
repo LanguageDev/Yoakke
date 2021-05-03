@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Yoakke.Collections.Compatibility;
 
 namespace Yoakke.Collections.FiniteAutomata
 {
@@ -46,7 +47,7 @@ namespace Yoakke.Collections.FiniteAutomata
             return 0;
         }
 
-        public override string ToString() => indices.Length == 0 ? "INVALID STATE" : $"q{string.Join('_', indices)}";
+        public override string ToString() => indices.Length == 0 ? "INVALID STATE" : $"q{string.Join("_", indices)}";
 
         public static bool operator ==(State s1, State s2) => s1.Equals(s2);
         public static bool operator !=(State s1, State s2) => !s1.Equals(s2);

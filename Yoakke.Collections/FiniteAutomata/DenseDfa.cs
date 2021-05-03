@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Yoakke.Collections.Intervals;
+using Yoakke.Collections.Compatibility;
 
 namespace Yoakke.Collections.FiniteAutomata
 {

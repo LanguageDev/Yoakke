@@ -197,10 +197,8 @@ namespace Yoakke.Collections.Intervals
 
         private (int, int) IntersectingIndexRange(Interval<T> interval)
         {
-            ReadOnlySpan<Interval<T>> span = CollectionsMarshal.AsSpan(intervals);
-            var (from, _) = span.BinarySearch(interval.Lower, iv => iv.Upper, (k1, k2) => k1.CompareTo(k2, comparer));
-            var (to, _) = span.Slice(from).BinarySearch(interval.Upper, iv => iv.Lower, (k1, k2) => k1.CompareTo(k2, comparer));
-            to += from;
+            var (from, _) = intervals.BinarySearch(interval.Lower, iv => iv.Upper, (k1, k2) => k1.CompareTo(k2, comparer));
+            var (to, _) = intervals.BinarySearch(from, interval.Upper, iv => iv.Lower, (k1, k2) => k1.CompareTo(k2, comparer));
             return (from, to);
         }
 

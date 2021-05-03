@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Yoakke.Collections.Compatibility;
 using Yoakke.Collections.FiniteAutomata;
 using Yoakke.Collections.Intervals;
 

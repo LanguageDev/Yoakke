@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Yoakke.Collections.Compatibility;
 
 namespace Yoakke.Collections.Intervals
 {
@@ -29,13 +30,11 @@ namespace Yoakke.Collections.Intervals
             /// <summary>
             /// The first interval of the disjunct pair.
             /// </summary>
-            public Interval<T> First { get; init; }
+            public readonly Interval<T> First;
             /// <summary>
             /// The second interval of the disjunct pair.
             /// </summary>
-            public Interval<T> Second { get; init; }
-
-            public Disjunct() { }
+            public readonly Interval<T> Second;
 
             public Disjunct(Interval<T> first, Interval<T> second)
             {
@@ -56,13 +55,11 @@ namespace Yoakke.Collections.Intervals
             /// <summary>
             /// The first interval of the touching pair.
             /// </summary>
-            public Interval<T> First { get; init; }
+            public readonly Interval<T> First;
             /// <summary>
             /// The second interval of the touching pair.
             /// </summary>
-            public Interval<T> Second { get; init; }
-
-            public Touching() { }
+            public readonly Interval<T> Second;
 
             public Touching(Interval<T> first, Interval<T> second)
             {
@@ -83,17 +80,15 @@ namespace Yoakke.Collections.Intervals
             /// <summary>
             /// The first disjunct part of the intervals (before the overlap).
             /// </summary>
-            public Interval<T> FirstDisjunct { get; init; }
+            public readonly Interval<T> FirstDisjunct;
             /// <summary>
             /// The overlapping portion of the intervals.
             /// </summary>
-            public Interval<T> Overlap { get; init; }
+            public readonly Interval<T> Overlap;
             /// <summary>
             /// The second disjunct part of the intervals (after the overlap).
             /// </summary>
-            public Interval<T> SecondDisjunct { get; init; }
-
-            public Overlapping() { }
+            public readonly Interval<T> SecondDisjunct;
 
             public Overlapping(Interval<T> firstDisjunct, Interval<T> overlap, Interval<T> secondDisjunct)
             {
@@ -118,17 +113,15 @@ namespace Yoakke.Collections.Intervals
             /// <summary>
             /// The first disjunct part of the intervals (before the containment).
             /// </summary>
-            public Interval<T> FirstDisjunct { get; init; }
+            public readonly Interval<T> FirstDisjunct;
             /// <summary>
             /// The contained portion of the intervals.
             /// </summary>
-            public Interval<T> Contained { get; init; }
+            public readonly Interval<T> Contained;
             /// <summary>
             /// The second disjunct part of the intervals (after the containment).
             /// </summary>
-            public Interval<T> SecondDisjunct { get; init; }
-
-            public Containing() { }
+            public readonly Interval<T> SecondDisjunct;
 
             public Containing(Interval<T> firstDisjunct, Interval<T> contained, Interval<T> secondDisjunct)
             {
@@ -153,13 +146,11 @@ namespace Yoakke.Collections.Intervals
             /// <summary>
             /// The overlapping portion of the intervals (start).
             /// </summary>
-            public Interval<T> Overlap { get; init; }
+            public readonly Interval<T> Overlap;
             /// <summary>
             /// The disjunct part of the intervals (after the overlap).
             /// </summary>
-            new public Interval<T> Disjunct { get; init; }
-
-            public Starting() { }
+            new public readonly Interval<T> Disjunct;
 
             public Starting(Interval<T> overlap, Interval<T> disjunct)
             {
@@ -180,13 +171,11 @@ namespace Yoakke.Collections.Intervals
             /// <summary>
             /// The disjunct part of the intervals (after the before).
             /// </summary>
-            new public Interval<T> Disjunct { get; init; }
+            new public readonly Interval<T> Disjunct;
             /// <summary>
             /// The overlapping portion of the intervals (end).
             /// </summary>
-            public Interval<T> Overlap { get; init; }
-
-            public Finishing() { }
+            public readonly Interval<T> Overlap;
 
             public Finishing(Interval<T> disjunct, Interval<T> overlap)
             {
