@@ -161,8 +161,20 @@ namespace Yoakke.Collections.RegEx
             if (!Match(ch)) throw new FormatException($"{ch} expected (position {index})");
         }
 
-        private static bool IsSpecial(char ch) => "()[]{}?*+|".Contains(ch);
-        // private static bool IsQuantifier(char ch) => "{}?*+".Contains(ch);
+        /// <summary>
+        /// Checks if a given character is a special character that needs to be escaped for literal use.
+        /// </summary>
+        /// <param name="ch">The character to check.</param>
+        /// <returns>True, if the given character is special, false otherwise.</returns>
+        public static bool IsSpecial(char ch) => "()[]{}?*+|".Contains(ch);
+
+        /// <summary>
+        /// Escapes the given string to be used as a literal in a regular expression.
+        /// </summary>
+        /// <param name="str">The string to escape.</param>
+        /// <returns>The escaped string.</returns>
+        public static string Escape(string str) =>
+            string.Join("", str.Select(ch => IsSpecial(ch) ? $"\\{ch}" : ch.ToString()));
 
         private static char? Escape(char ch) => ch switch
         {
