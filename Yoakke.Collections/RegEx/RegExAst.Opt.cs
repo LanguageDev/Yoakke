@@ -24,6 +24,9 @@ namespace Yoakke.Collections.RegEx
                 Subexpr = subexpr;
             }
 
+            public override bool Equals(RegExAst other) => other is Opt opt && Subexpr.Equals(opt.Subexpr);
+            public override int GetHashCode() => Subexpr.GetHashCode();
+
             public override RegExAst Desugar() => new Opt(Subexpr.Desugar());
 
             public override (State Start, State End) ThompsonConstruct(DenseNfa<char> denseNfa)

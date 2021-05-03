@@ -29,6 +29,11 @@ namespace Yoakke.Collections.RegEx
                 Second = second;
             }
 
+            public override bool Equals(RegExAst other) => other is Alt alt
+                && First.Equals(alt.First)
+                && Second.Equals(alt.Second);
+            public override int GetHashCode() => HashCode.Combine(First, Second);
+
             public override RegExAst Desugar() => new Alt(First.Desugar(), Second.Desugar());
 
             public override (State Start, State End) ThompsonConstruct(DenseNfa<char> denseNfa)

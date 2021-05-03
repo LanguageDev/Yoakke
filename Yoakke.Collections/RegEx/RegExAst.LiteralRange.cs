@@ -30,6 +30,17 @@ namespace Yoakke.Collections.RegEx
                 Ranges = ranges;
             }
 
+            public override bool Equals(RegExAst other) => other is LiteralRange r
+                && Negate == r.Negate
+                && Ranges.SequenceEqual(r.Ranges);
+            public override int GetHashCode()
+            {
+                var hash = new HashCode();
+                hash.Add(Negate);
+                foreach (var r in Ranges) hash.Add(r);
+                return hash.ToHashCode();
+            }
+
             public override RegExAst Desugar() => this;
 
             public override (State Start, State End) ThompsonConstruct(DenseNfa<char> denseNfa)

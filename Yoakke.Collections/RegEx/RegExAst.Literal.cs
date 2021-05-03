@@ -24,6 +24,9 @@ namespace Yoakke.Collections.RegEx
                 Char = @char;
             }
 
+            public override bool Equals(RegExAst other) => other is Literal lit && Char == lit.Char;
+            public override int GetHashCode() => Char.GetHashCode();
+
             public override RegExAst Desugar() => this;
 
             public override (State Start, State End) ThompsonConstruct(DenseNfa<char> denseNfa)

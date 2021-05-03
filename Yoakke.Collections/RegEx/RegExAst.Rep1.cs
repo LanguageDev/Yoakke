@@ -24,6 +24,9 @@ namespace Yoakke.Collections.RegEx
                 Subexpr = subexpr;
             }
 
+            public override bool Equals(RegExAst other) => other is Rep1 r && Subexpr.Equals(r.Subexpr);
+            public override int GetHashCode() => Subexpr.GetHashCode();
+
             public override RegExAst Desugar()
             {
                 var sub = Subexpr.Desugar();

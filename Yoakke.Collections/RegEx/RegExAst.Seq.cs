@@ -29,6 +29,11 @@ namespace Yoakke.Collections.RegEx
                 Second = second;
             }
 
+            public override bool Equals(RegExAst other) => other is Seq seq
+                && First.Equals(seq.First)
+                && Second.Equals(seq.Second);
+            public override int GetHashCode() => HashCode.Combine(First, Second);
+
             public override RegExAst Desugar() => new Seq(First.Desugar(), Second.Desugar());
 
             public override (State Start, State End) ThompsonConstruct(DenseNfa<char> denseNfa)

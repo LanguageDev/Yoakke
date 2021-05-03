@@ -31,14 +31,14 @@ namespace Yoakke.Collections.RegEx
         private RegExAst ParseAlt()
         {
             var seq = ParseSeq();
-            if (Peek() == '|') return new RegExAst.Alt(seq, ParseAlt());
+            if (Match('|')) return new RegExAst.Alt(seq, ParseAlt());
             return seq;
         }
 
         private RegExAst ParseSeq()
         {
             var postfx = ParsePostfix();
-            if (!IsEnd) return new RegExAst.Seq(postfx, ParseSeq());
+            if (!IsEnd && Peek() != '|' && Peek() != ')') return new RegExAst.Seq(postfx, ParseSeq());
             return postfx;
         }
 
@@ -162,6 +162,7 @@ namespace Yoakke.Collections.RegEx
         }
 
         private static bool IsSpecial(char ch) => "()[]{}?*+|".Contains(ch);
+        // private static bool IsQuantifier(char ch) => "{}?*+".Contains(ch);
 
         private static char? Escape(char ch) => ch switch
         {
