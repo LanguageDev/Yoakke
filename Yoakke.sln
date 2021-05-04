@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yoakke.Collections", "Yoakke.Collections\Yoakke.Collections.csproj", "{4896B9FB-A0F2-4886-850C-4943BC374EAF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Collections", "Yoakke.Collections\Yoakke.Collections.csproj", "{4896B9FB-A0F2-4886-850C-4943BC374EAF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yoakke.Collections.Tests", "Yoakke.Collections.Tests\Yoakke.Collections.Tests.csproj", "{8251D600-353B-4CDA-853E-51ABCAF94735}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Collections.Tests", "Yoakke.Collections.Tests\Yoakke.Collections.Tests.csproj", "{8251D600-353B-4CDA-853E-51ABCAF94735}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

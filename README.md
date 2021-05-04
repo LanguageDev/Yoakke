@@ -1,8 +1,5 @@
-# Yoakke Collections Library
+# Yoakke Library
 
-This library contains some useful data structures and collections. 
-They are mainly used as a utility in other language libraries and compilers.
+This library provides utilities for language development in .NET.
 
-## Data structures implemented
-
-TODO
+# TODO: Detail modules
