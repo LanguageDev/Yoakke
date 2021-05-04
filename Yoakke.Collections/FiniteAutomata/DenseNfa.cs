@@ -17,11 +17,11 @@ namespace Yoakke.Collections.FiniteAutomata
     {
         private class StateSetEqualityComparer : IEqualityComparer<SortedSet<State>>
         {
-            public static readonly StateSetEqualityComparer Default = new StateSetEqualityComparer();
+            public static readonly StateSetEqualityComparer Default = new();
 
             public bool Equals(SortedSet<State> x, SortedSet<State> y) => x.SequenceEqual(y);
 
-            public int GetHashCode([DisallowNull] SortedSet<State> obj)
+            public int GetHashCode(SortedSet<State> obj)
             {
                 var hash = new HashCode();
                 foreach (var s in obj) hash.Add(s);
@@ -36,11 +36,12 @@ namespace Yoakke.Collections.FiniteAutomata
             .Concat(transitions.Values.SelectMany(t => t.Values.SelectMany(v => v)))
             .Concat(epsilon.Keys)
             .Concat(epsilon.Values.SelectMany(v => v))
+            .Append(InitalState)
             .Distinct();
 
-        private Dictionary<State, IntervalMap<TSymbol, ISet<State>>> transitions;
-        private Dictionary<State, HashSet<State>> epsilon;
-        private IComparer<TSymbol> comparer;
+        private readonly Dictionary<State, IntervalMap<TSymbol, ISet<State>>> transitions;
+        private readonly Dictionary<State, HashSet<State>> epsilon;
+        private readonly IComparer<TSymbol> comparer;
         private int stateCounter;
 
         /// <summary>
@@ -186,7 +187,7 @@ namespace Yoakke.Collections.FiniteAutomata
         /// Creates a new, unique state.
         /// </summary>
         /// <returns>The created state.</returns>
-        public State NewState() => new State(stateCounter++);
+        public State NewState() => new(stateCounter++);
 
         /// <summary>
         /// Adds a transition to this nondeterministic finite automaton.

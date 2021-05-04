@@ -18,10 +18,10 @@ namespace Yoakke.Collections.FiniteAutomata
         IEnumerable<State> IFiniteAutomata<TSymbol>.AcceptingStates => AcceptingStates;
         public ISet<State> AcceptingStates { get; } = new HashSet<State>();
         public IEnumerable<State> States =>
-            transitions.Keys.Concat(transitions.Values.SelectMany(t => t.Values)).Distinct();
+            transitions.Keys.Concat(transitions.Values.SelectMany(t => t.Values)).Append(InitalState).Distinct();
 
-        private Dictionary<State, IntervalMap<TSymbol, State>> transitions;
-        private IComparer<TSymbol> comparer;
+        private readonly Dictionary<State, IntervalMap<TSymbol, State>> transitions;
+        private readonly IComparer<TSymbol> comparer;
         private int stateCounter;
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace Yoakke.Collections.FiniteAutomata
             if (to != null) yield return to;
         }
 
-        public State? GetTransition(State from, TSymbol on)
+        public State GetTransition(State from, TSymbol on)
         {
             if (transitions.TryGetValue(from, out var map))
             {
@@ -93,7 +93,7 @@ namespace Yoakke.Collections.FiniteAutomata
         /// Creates a new, unique state.
         /// </summary>
         /// <returns>The created state.</returns>
-        public State NewState() => new State(stateCounter++);
+        public State NewState() => new(stateCounter++);
 
         /// <summary>
         /// Adds a transition to this deterministic finite automaton.
@@ -123,10 +123,16 @@ namespace Yoakke.Collections.FiniteAutomata
         }
 
         /// <summary>
-        /// Retrieves the transition map for a given state.
+        /// Checks, if there are transitions from a given state.
         /// </summary>
-        /// <param name="from">The state to get the transitions from.</param>
-        /// <returns>The interval map of transitions.</returns>
-        public IIntervalMap<TSymbol, State> TransitionsFrom(State from) => transitions[from];
+        /// <param name="from">The state to get transitions from.</param>
+        /// <param name="value">The transitions, if they are present at a state, null otherwise.</param>
+        /// <returns>True, if there are transitions from the given state, false otherwise.</returns>
+        public bool TryGetTransitionsFrom(State from, out IIntervalMap<TSymbol, State> value)
+        {
+            var result = transitions.TryGetValue(from, out var value1);
+            value = value1;
+            return result;
+        }
     }
 }

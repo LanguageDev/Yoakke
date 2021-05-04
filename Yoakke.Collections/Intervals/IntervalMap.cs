@@ -38,7 +38,7 @@ namespace Yoakke.Collections.Intervals
             }
         }
 
-        private List<KeyValuePair<Interval<TKey>, TValue>> values = new List<KeyValuePair<Interval<TKey>, TValue>>();
+        private readonly List<KeyValuePair<Interval<TKey>, TValue>> values = new();
 
         /// <summary>
         /// Initializes an empty <see cref="IntervalMap{TKey, TValue}"/> with the default comparers.
@@ -71,7 +71,7 @@ namespace Yoakke.Collections.Intervals
         public void Clear() => values.Clear();
         public bool ContainsKey(TKey key) => TryGetValue(key, out var _);
 
-        public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue? value)
+        public bool TryGetValue(TKey key, out TValue value)
         {
             var interval = Interval<TKey>.Singleton(key);
             var (from, to) = IntersectingIndexRange(interval);

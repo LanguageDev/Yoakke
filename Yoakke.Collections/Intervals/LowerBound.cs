@@ -19,19 +19,19 @@ namespace Yoakke.Collections.Intervals
         /// Instantiates a new unbounded lower bound.
         /// </summary>
         /// <returns>The instantiated bound.</returns>
-        public static LowerBound<T> Unbounded() => new LowerBound<T>(BoundType.Unbounded, default);
+        public static LowerBound<T> Unbounded() => new(BoundType.Unbounded, default);
         /// <summary>
         /// Instantiates a new inclusive lower bound.
         /// </summary>
         /// <param name="value">The value that is included.</param>
         /// <returns>The instantiated bound.</returns>
-        public static LowerBound<T> Inclusive(T value) => new LowerBound<T>(BoundType.Inclusive, value);
+        public static LowerBound<T> Inclusive(T value) => new(BoundType.Inclusive, value);
         /// <summary>
         /// Instantiates a new exclusive lower bound.
         /// </summary>
         /// <param name="value">The value that is excluded.</param>
         /// <returns>The instantiated bound.</returns>
-        public static LowerBound<T> Exclusive(T value) => new LowerBound<T>(BoundType.Exclusive, value);
+        public static LowerBound<T> Exclusive(T value) => new(BoundType.Exclusive, value);
 
         /// <summary>
         /// The type of this bound.
@@ -44,7 +44,7 @@ namespace Yoakke.Collections.Intervals
 
         private readonly Bound<T> bound;
 
-        private LowerBound(BoundType type, T? value)
+        private LowerBound(BoundType type, T value)
         {
             bound = new Bound<T>(type, value);
         }
@@ -59,13 +59,13 @@ namespace Yoakke.Collections.Intervals
         /// </summary>
         /// <param name="value">The intervals associated value is written here, if this is an inclusive bound.</param>
         /// <returns>True, if this is an inclusive bound.</returns>
-        public bool IsInclusive([MaybeNullWhen(false)] out T? value) => bound.IsInclusive(out value);
+        public bool IsInclusive(out T value) => bound.IsInclusive(out value);
         /// <summary>
         /// Checks, if this is an interval bound that excludes it's associated value.
         /// </summary>
         /// <param name="value">The intervals associated value is written here, if this is an exclusive bound.</param>
         /// <returns>True, if this is an exclusive bound.</returns>
-        public bool IsExclusive([MaybeNullWhen(false)] out T? value) => bound.IsExclusive(out value);
+        public bool IsExclusive(out T value) => bound.IsExclusive(out value);
 
         /// <summary>
         /// Checks if this lower bound is touching an <see cref="UpperBound{T}"/>.

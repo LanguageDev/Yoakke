@@ -46,7 +46,7 @@ namespace Yoakke.Collections.Intervals
         /// <param name="value">When the method returns true, it gets filled with the value associated with the keys containing interval.
         /// Otherwise it gets filled with default.</param>
         /// <returns>True, if the key is covered by an interval.</returns>
-        public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue? value);
+        public bool TryGetValue(TKey key, out TValue value);
         /// <summary>
         /// Inserts an interval with a given associated value.
         /// The intersecting intervals get sliced up and the intersections associated values get unified with the specified update function.

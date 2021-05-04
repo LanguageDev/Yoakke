@@ -19,7 +19,7 @@ namespace Yoakke.Collections
         /// <param name="amount">The number of elements to peek forward from the current.</param>
         /// <param name="item">If there are enough elements to peek ahead, then the element at that position, otherwise the default value.</param>
         /// <returns>True, if there is an element a given amount ahead in this enumerator, false otherwise.</returns>
-        public bool TryPeek(int amount, [MaybeNullWhen(false)] out T? item);
+        public bool TryPeek(int amount, out T item);
 
         /// <summary>
         /// Peeks a given amount of elements forward.

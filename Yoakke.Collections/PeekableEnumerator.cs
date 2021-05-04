@@ -24,7 +24,7 @@ namespace Yoakke.Collections
         }
         object IEnumerator.Current => Current;
 
-        private IEnumerator<T> underlying;
+        private readonly IEnumerator<T> underlying;
         private RingBuffer<T> buffer;
         private bool readCurrent;
 
@@ -66,7 +66,7 @@ namespace Yoakke.Collections
             return TryPeek(0, out var _);
         }
 
-        public bool TryPeek(int amount, [MaybeNullWhen(false)] out T? item)
+        public bool TryPeek(int amount, out T item)
         {
             while (buffer.Count <= amount)
             {
