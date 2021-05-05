@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.CodeAnalysis;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -17,9 +18,9 @@ namespace Yoakke.Parser.Generator
         /// <summary>
         /// The method to call upon a successful match.
         /// </summary>
-        public readonly string Method;
+        public readonly IMethodSymbol Method;
 
-        public Rule(string name, BnfAst ast, string method)
+        public Rule(string name, BnfAst ast, IMethodSymbol method)
         {
             Name = name;
             Ast = ast;

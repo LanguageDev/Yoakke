@@ -49,7 +49,7 @@ namespace Yoakke.Lexer.Generator
             if (!compilation.ReferencedAssemblyNames.Any(ai => ai.Name.Equals("Yoakke.Lexer", StringComparison.OrdinalIgnoreCase)))
             {
                 context.ReportDiagnostic(Diagnostic.Create(
-                    Diagnostics.FailedToParseRegularExpression,
+                    Diagnostics.RequiredDependencyNotReferenced,
                     null,
                     "Yoakke.Lexer"));
             }
@@ -67,7 +67,7 @@ namespace Yoakke.Lexer.Generator
             {
                 var model = compilation.GetSemanticModel(syntax.SyntaxTree);
                 var symbol = model.GetDeclaredSymbol(syntax) as INamedTypeSymbol;
-                // Filter interfaces without the query group attributes
+                // Filter enums without the lexer attributes
                 if (!HasAttribute(symbol, lexerAttributeSymbol)) continue;
                 // Generate code for it
                 var generated = GenerateImplementation(context, syntax, symbol);
