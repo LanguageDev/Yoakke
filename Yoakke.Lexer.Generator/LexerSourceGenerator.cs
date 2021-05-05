@@ -84,6 +84,7 @@ namespace Yoakke.Lexer.Generator
             var lexerClassName = GetAttributeParam(symbol, lexerAttributeSymbol);
             var namespaceName = symbol.ContainingNamespace.ToDisplayString();
             var enumName = GetFullPath(symbol);
+            var tokenName = $"{TypeNames.Token}<{enumName}>";
 
             if (   symbol.DeclaredAccessibility == Accessibility.Private
                 || symbol.DeclaredAccessibility == Accessibility.Protected
@@ -185,16 +186,16 @@ namespace Yoakke.Lexer.Generator
                     {
                         // The destination is an accepting state, save it
                         // +1 because the offset was not incremented yet
-                        transitionTable.AppendLine("lastAcceptingOffset = offset + 1;");
+                        transitionTable.AppendLine("lastLexerState = currentLexerState;");
                         if (token.Ignore)
                         {
                             // Ignore means clear out the token type
-                            transitionTable.AppendLine("lastAcceptingTokenType = null;");
+                            transitionTable.AppendLine("lastTokenType = null;");
                         }
                         else
                         {
                             // Save token type
-                            transitionTable.AppendLine($"lastAcceptingTokenType = {enumName}.{token.Symbol.Name};");
+                            transitionTable.AppendLine($"lastTokenType = {enumName}.{token.Symbol.Name};");
                         }
                     }
                     transitionTable.AppendLine("break;");
@@ -213,41 +214,74 @@ namespace {namespaceName}
 {{
     {accessibility} class {lexerClassName}
     {{
+        private struct State {{
+            public int index;
+            public {TypeNames.Position} position;
+            public char? lastChar;
+        }}
+
         private string source;
-        private int index;
+        private State state;
 
         public {lexerClassName}(string source)
         {{
             this.source = source;
         }}
 
-        public {enumName} Next()
+        private {TypeNames.Position} NextPosition({TypeNames.Position} pos, char? last, char current)
+        {{
+            // Windows-style, already advanced at \r
+            if (last == '\r' && current == '\n') return pos;
+            if (current == '\r' || current == '\n') return pos.Newline();
+            if (char.IsControl(current)) return pos;
+            return pos.Advance(1);
+        }}
+
+        public {tokenName} Next()
         {{
 begin:
-            if (index >= source.Length) return {enumName}.{description.EndName};
+            if (state.index >= source.Length) return new {tokenName}(
+                                                        new {TypeNames.Range}(state.position, 0), 
+                                                        string.Empty, 
+                                                        {enumName}.{description.EndName});
 
             var currentState = {dfaStateIdents[dfa.InitalState]};
-            var offset = 0;
-            var lastAcceptingOffset = 0;
-            {enumName}? lastAcceptingTokenType = null;
+            var currentLexerState = state;
 
-            while (index + offset < source.Length)
+            State lastLexerState = state;
+            {enumName}? lastTokenType = null;
+
+            while (currentLexerState.index < source.Length)
             {{
-                var currentChar = source[index + offset];
+                var currentChar = source[currentLexerState.index];
+                currentLexerState.position = NextPosition(currentLexerState.position, currentLexerState.lastChar, currentChar);
+                currentLexerState.lastChar = currentChar;
+                currentLexerState.index += 1;
                 {transitionTable}
-                offset += 1;
             }}
 end_loop:
-            if (lastAcceptingOffset > 0)
+            if (lastLexerState.index > state.index)
             {{
-                index += lastAcceptingOffset;
-                if (lastAcceptingTokenType == null) goto begin;
-                return lastAcceptingTokenType.Value;
+                if (lastTokenType == null) {{
+                    state = lastLexerState;
+                    goto begin;
+                }}
+                var result = new {tokenName}(
+                    new {TypeNames.Range}(state.position, lastLexerState.position), 
+                    source.Substring(state.index, lastLexerState.index - state.index), 
+                    lastTokenType.Value);
+                state = lastLexerState;
+                return result;
             }}
             else
             {{
-                index += 1;
-                return {enumName}.{description.ErrorName};
+                var result = new {tokenName}(
+                    new {TypeNames.Range}(state.position, 1), 
+                    source.Substring(state.index, 1), 
+                    {enumName}.{description.ErrorName});
+                state.position = NextPosition(state.position, state.lastChar, source[state.index]);
+                state.index += 1;
+                return result;
             }}
         }}
     }}

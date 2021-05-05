@@ -31,7 +31,7 @@ namespace Yoakke.Lexer.Tests
             while (true)
             {
                 var t = lexer.Next();
-                if (t == TokenType.EndOfFile) break;
+                if (t.Kind == TokenType.EndOfFile) break;
             }
         }
     }

@@ -7,11 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Collections", "Yoakk
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Collections.Tests", "Yoakke.Collections.Tests\Yoakke.Collections.Tests.csproj", "{8251D600-353B-4CDA-853E-51ABCAF94735}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yoakke.Lexer", "Yoakke.Lexer\Yoakke.Lexer.csproj", "{36D85E41-4CB1-4198-8248-05A30082F0F2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lexer", "Yoakke.Lexer\Yoakke.Lexer.csproj", "{36D85E41-4CB1-4198-8248-05A30082F0F2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yoakke.Lexer.Generator", "Yoakke.Lexer.Generator\Yoakke.Lexer.Generator.csproj", "{CB252735-C1B6-4F6E-8299-A552069FDBE6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lexer.Generator", "Yoakke.Lexer.Generator\Yoakke.Lexer.Generator.csproj", "{CB252735-C1B6-4F6E-8299-A552069FDBE6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yoakke.Lexer.Tests", "Yoakke.Lexer.Tests\Yoakke.Lexer.Tests.csproj", "{A76E877C-B326-4B66-A9CF-53515538773A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lexer.Tests", "Yoakke.Lexer.Tests\Yoakke.Lexer.Tests.csproj", "{A76E877C-B326-4B66-A9CF-53515538773A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yoakke.Text", "Yoakke.Text\Yoakke.Text.csproj", "{1B5BA09D-B866-4C63-A1B2-54FE7F409CCE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{A76E877C-B326-4B66-A9CF-53515538773A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A76E877C-B326-4B66-A9CF-53515538773A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A76E877C-B326-4B66-A9CF-53515538773A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B5BA09D-B866-4C63-A1B2-54FE7F409CCE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B5BA09D-B866-4C63-A1B2-54FE7F409CCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B5BA09D-B866-4C63-A1B2-54FE7F409CCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B5BA09D-B866-4C63-A1B2-54FE7F409CCE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
