@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Yoakke.Lexer\Yoakke.Lexer.csproj" />
     <ProjectReference Include="..\Yoakke.Parser\Yoakke.Parser.csproj" />
     <ProjectReference Include="..\Yoakke.Parser.Generator\Yoakke.Parser.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="False" />
   </ItemGroup>

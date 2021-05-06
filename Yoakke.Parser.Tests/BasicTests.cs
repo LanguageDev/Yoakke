@@ -1,4 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
+using Yoakke.Lexer;
+using Yoakke.Text;
 
 namespace Yoakke.Parser.Tests
 {
@@ -6,10 +9,23 @@ namespace Yoakke.Parser.Tests
     partial class MyParser
     {
         [Rule("statement : expression '+' expression")]
-        public static void Foo() { }
+        public static int Foo() => 1;
 
         [Rule("expression : expression '+' expression")]
-        public static void Addition() { }
+        public static int Addition() => 2;
+    }
+
+    class Tok : IToken
+    {
+        public Range Range => new Range();
+        public string Text { get; }
+
+        public Tok(string text)
+        {
+            Text = text;
+        }
+
+        public bool Equals(IToken other) => other is Tok t && Text == t.Text;
     }
 
     [TestClass]
@@ -18,7 +34,14 @@ namespace Yoakke.Parser.Tests
         [TestMethod]
         public void TestMethod1()
         {
-            var p = new MyParser();
+            var tokens = new List<IToken> 
+            { 
+                new Tok("1"),
+                new Tok("+"),
+                new Tok("1"),
+            };
+
+            var p = new MyParser(tokens);
             p.ParseStatement();
             p.ParseExpression();
         }

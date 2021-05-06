@@ -63,7 +63,7 @@ namespace Yoakke.Parser.Generator
                 return sub;
             }
             if (TryMatch(BnfTokenType.Identifier, out var ident)) return new BnfAst.Call(ident.Value);
-            if (TryMatch(BnfTokenType.StringLiteral, out var str)) return new BnfAst.LiteralKind(StrToString(str));
+            if (TryMatch(BnfTokenType.StringLiteral, out var str)) return new BnfAst.Literal(StrToString(str));
 
             throw new FormatException($"Unexpected token {Peek().Type} (index {Peek().Index})");
         }

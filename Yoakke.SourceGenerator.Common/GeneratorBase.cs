@@ -38,7 +38,7 @@ namespace Yoakke.SourceGenerator.Common
         protected void Report(DiagnosticDescriptor descriptor, params object[] args) =>
             Context.ReportDiagnostic(Diagnostic.Create(descriptor, null, args));
 
-        protected void Report(DiagnosticDescriptor descriptor, Location? location, params object[] args) =>
+        protected void Report(DiagnosticDescriptor descriptor, Location location, params object[] args) =>
             Context.ReportDiagnostic(Diagnostic.Create(descriptor, location, args));
 
         protected INamedTypeSymbol LoadSymbol(string name)
