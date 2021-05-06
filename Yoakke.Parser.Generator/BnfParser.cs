@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Yoakke.Parser.Generator.Ast;
 
 namespace Yoakke.Parser.Generator
 {
@@ -61,14 +62,12 @@ namespace Yoakke.Parser.Generator
                 Expect(BnfTokenType.CloseParen);
                 return sub;
             }
-            if (TryMatch(BnfTokenType.Identifier, out var ident)) return new BnfAst.RuleCall(ident.Value);
-            if (TryMatch(BnfTokenType.KindLiteral, out var kind)) return new BnfAst.LiteralKind(KindToString(kind));
+            if (TryMatch(BnfTokenType.Identifier, out var ident)) return new BnfAst.Call(ident.Value);
             if (TryMatch(BnfTokenType.StringLiteral, out var str)) return new BnfAst.LiteralKind(StrToString(str));
 
             throw new FormatException($"Unexpected token {Peek().Type} (index {Peek().Index})");
         }
 
-        private string KindToString(BnfToken token) => token.Value.Substring(1, token.Value.Length - 2);
         private string StrToString(BnfToken token) => token.Value.Substring(1, token.Value.Length - 2);
 
         private BnfToken Expect(BnfTokenType type)

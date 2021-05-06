@@ -61,17 +61,6 @@ namespace Yoakke.Parser.Generator
                 return Make(length, BnfTokenType.StringLiteral);
             }
 
-            // Kind literal
-            if (ch == '`')
-            {
-                int length = 1;
-                for (; Peek(length, '`') != '`'; ++length) ;
-                if (index + length >= source.Length) throw new FormatException($"Unclosed kind literal starting at index {index}");
-                // We consume the last ` too
-                ++length;
-                return Make(length, BnfTokenType.KindLiteral);
-            }
-
             // Identifier
             if (char.IsLetter(ch))
             {

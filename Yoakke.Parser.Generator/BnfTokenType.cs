@@ -13,7 +13,6 @@ namespace Yoakke.Parser.Generator
         OpenParen,
         CloseParen,
         StringLiteral,
-        KindLiteral,
         Plus,
         Star,
         QuestionMark,
