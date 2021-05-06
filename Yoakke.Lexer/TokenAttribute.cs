@@ -15,7 +15,7 @@ namespace Yoakke.Lexer
         /// <summary>
         /// The text to match the token.
         /// </summary>
-        public readonly string Text;
+        public string Text { get; set; }
 
         /// <summary>
         /// Initializes a new <see cref="TokenAttribute"/>.

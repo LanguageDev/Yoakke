@@ -15,7 +15,7 @@ namespace Yoakke.Lexer
         /// <summary>
         /// The lexer classes name to generate.
         /// </summary>
-        public readonly string ClassName;
+        public string ClassName { get; set; }
 
         /// <summary>
         /// Initializes a new <see cref="LexerAttribute"/>.

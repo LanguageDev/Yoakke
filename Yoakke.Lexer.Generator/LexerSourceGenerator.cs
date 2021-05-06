@@ -8,11 +8,12 @@ using System.Text;
 using Yoakke.Collections.FiniteAutomata;
 using Yoakke.Collections.Intervals;
 using Yoakke.Collections.RegEx;
+using Yoakke.SourceGenerator.Common;
 
 namespace Yoakke.Lexer.Generator
 {
     [Generator]
-    public class LexerSourceGenerator : ISourceGenerator
+    public class LexerSourceGenerator : GeneratorBase
     {
         private class SyntaxReceiver : ISyntaxReceiver
         {
@@ -28,75 +29,42 @@ namespace Yoakke.Lexer.Generator
             }
         }
 
-        private INamedTypeSymbol lexerAttributeSymbol;
-        private INamedTypeSymbol endAttributeSymbol;
-        private INamedTypeSymbol errorAttributeSymbol;
-        private INamedTypeSymbol identAttributeSymbol;
-        private INamedTypeSymbol ignoreAttributeSymbol;
-        private INamedTypeSymbol regexAttributeSymbol;
-        private INamedTypeSymbol tokenAttributeSymbol;
+        public LexerSourceGenerator()
+            : base("Yoakke.Lexer.Generator") { }
 
-        public void Initialize(GeneratorInitializationContext context) =>
-            context.RegisterForSyntaxNotifications(() => new SyntaxReceiver());
+        protected override ISyntaxReceiver CreateSyntaxReceiver(GeneratorInitializationContext context) => new SyntaxReceiver();
+        protected override bool IsOwnSyntaxReceiver(ISyntaxReceiver syntaxReceiver) => syntaxReceiver is SyntaxReceiver;
 
-        public void Execute(GeneratorExecutionContext context)
+        protected override void GenerateCode(ISyntaxReceiver syntaxReceiver)
         {
-            if (context.SyntaxReceiver is not SyntaxReceiver receiver) return;
+            //Debugger.Launch();
 
-            var compilation = context.Compilation;
+            var receiver = (SyntaxReceiver)syntaxReceiver;
 
-            // check that the users compilation references the expected library 
-            if (!compilation.ReferencedAssemblyNames.Any(ai => ai.Name.Equals("Yoakke.Lexer", StringComparison.OrdinalIgnoreCase)))
-            {
-                context.ReportDiagnostic(Diagnostic.Create(
-                    Diagnostics.RequiredDependencyNotReferenced,
-                    null,
-                    "Yoakke.Lexer"));
-            }
-
-            // Load relevant symbols
-            lexerAttributeSymbol = compilation.GetTypeByMetadataName(TypeNames.LexerAttribute);
-            endAttributeSymbol = compilation.GetTypeByMetadataName(TypeNames.EndAttribute);
-            errorAttributeSymbol = compilation.GetTypeByMetadataName(TypeNames.ErrorAttribute);
-            identAttributeSymbol = compilation.GetTypeByMetadataName(TypeNames.IdentAttribute);
-            ignoreAttributeSymbol = compilation.GetTypeByMetadataName(TypeNames.IgnoreAttribute);
-            regexAttributeSymbol = compilation.GetTypeByMetadataName(TypeNames.RegexAttribute);
-            tokenAttributeSymbol = compilation.GetTypeByMetadataName(TypeNames.TokenAttribute);
+            RequireLibrary("Yoakke.Lexer");
 
             foreach (var syntax in receiver.CandidateEnums)
             {
-                var model = compilation.GetSemanticModel(syntax.SyntaxTree);
+                var model = Context.Compilation.GetSemanticModel(syntax.SyntaxTree);
                 var symbol = model.GetDeclaredSymbol(syntax) as INamedTypeSymbol;
                 // Filter enums without the lexer attributes
-                if (!HasAttribute(symbol, lexerAttributeSymbol)) continue;
+                if (!HasAttribute(symbol, TypeNames.LexerAttribute)) continue;
                 // Generate code for it
-                var generated = GenerateImplementation(context, syntax, symbol);
-                context.AddSource($"{symbol.Name}.Generated.cs", generated);
+                var generated = GenerateImplementation(syntax, symbol);
+                if (generated == null) continue;
+                Context.AddSource($"{symbol.Name}.Generated.cs", generated);
             }
         }
 
-        private string GenerateImplementation(
-            GeneratorExecutionContext context,
-            EnumDeclarationSyntax syntax,
-            INamedTypeSymbol symbol)
+        private string GenerateImplementation(EnumDeclarationSyntax syntax, INamedTypeSymbol symbol)
         {
-            var accessibility = AccessibilityToString(symbol.DeclaredAccessibility);
-            var lexerClassName = GetAttributeParam(symbol, lexerAttributeSymbol);
+            var accessibility = symbol.DeclaredAccessibility.ToString().ToLowerInvariant();
+            var lexerClassName = GetAttribute(symbol, TypeNames.LexerAttribute).GetCtorValue().ToString();
             var namespaceName = symbol.ContainingNamespace.ToDisplayString();
-            var enumName = GetFullPath(symbol);
+            var enumName = symbol.ToDisplayString();
             var tokenName = $"{TypeNames.Token}<{enumName}>";
 
-            if (   symbol.DeclaredAccessibility == Accessibility.Private
-                || symbol.DeclaredAccessibility == Accessibility.Protected
-                || symbol.DeclaredAccessibility == Accessibility.ProtectedAndInternal)
-            {
-                context.ReportDiagnostic(Diagnostic.Create(
-                    Diagnostics.IllegalVisibility,
-                    symbol.Locations.First(),
-                    accessibility));
-            }
-
-            var description = ExtractLexerDescription(context, symbol);
+            var description = ExtractLexerDescription(symbol);
 
             // Store which token corresponds to which end state
             var tokenToNfaState = new Dictionary<TokenDescription, State>();
@@ -121,10 +89,7 @@ namespace Yoakke.Lexer.Generator
                 }
                 catch (Exception ex)
                 {
-                    context.ReportDiagnostic(Diagnostic.Create(
-                        Diagnostics.FailedToParseRegularExpression,
-                        token.Symbol.Locations.First(),
-                        ex.Message));
+                    Report(Diagnostics.FailedToParseRegularExpression, token.Symbol.Locations.First(), ex.Message);
                 }
             }
 
@@ -289,13 +254,13 @@ end_loop:
 ";
         }
 
-        private LexerDescription ExtractLexerDescription(GeneratorExecutionContext context, INamedTypeSymbol symbol)
+        private LexerDescription ExtractLexerDescription(INamedTypeSymbol symbol)
         {
             var result = new LexerDescription();
             foreach (var member in symbol.GetMembers())
             {
                 // End token
-                if (HasAttribute(member, endAttributeSymbol))
+                if (HasAttribute(member, TypeNames.EndAttribute))
                 { 
                     if (result.EndName == null)
                     {
@@ -303,16 +268,12 @@ end_loop:
                     }
                     else
                     {
-                        context.ReportDiagnostic(Diagnostic.Create(
-                           Diagnostics.FundamentalTokenTypeAlreadyDefined,
-                           member.Locations.First(),
-                           result.EndName,
-                           "end"));
+                        Report(Diagnostics.FundamentalTokenTypeAlreadyDefined, member.Locations.First(), result.EndName, "end");
                     }
                     continue;
                 }
                 // End
-                if (HasAttribute(member, errorAttributeSymbol))
+                if (HasAttribute(member, TypeNames.ErrorAttribute))
                 {
                     if (result.ErrorName == null)
                     {
@@ -320,18 +281,14 @@ end_loop:
                     }
                     else
                     {
-                        context.ReportDiagnostic(Diagnostic.Create(
-                           Diagnostics.FundamentalTokenTypeAlreadyDefined,
-                           member.Locations.First(),
-                           result.EndName,
-                           "error"));
+                        Report(Diagnostics.FundamentalTokenTypeAlreadyDefined, member.Locations.First(), result.EndName, "error");
                     }
                     continue;
                 }
                 // Regular token
-                var ignore = HasAttribute(member, ignoreAttributeSymbol);
+                var ignore = HasAttribute(member, TypeNames.IgnoreAttribute);
                 // C identifier
-                if (HasAttribute(member, identAttributeSymbol))
+                if (HasAttribute(member, TypeNames.IdentAttribute))
                 {
                     result.Tokens.Add(new TokenDescription
                     {
@@ -342,57 +299,41 @@ end_loop:
                     continue;
                 }
                 // Regex
-                if (HasAttribute(member, regexAttributeSymbol))
+                if (TryGetAttribute(member, TypeNames.RegexAttribute, out var attr))
                 {
                     result.Tokens.Add(new TokenDescription
                     {
                         Symbol = (IFieldSymbol)member,
-                        Regex = GetAttributeParam(member, regexAttributeSymbol),
+                        Regex = attr.GetCtorValue().ToString(),
                         Ignore = ignore,
                     });
                     continue;
                 }
                 // Token
-                if (HasAttribute(member, tokenAttributeSymbol))
+                if (TryGetAttribute(member, TypeNames.TokenAttribute, out attr))
                 {
                     result.Tokens.Add(new TokenDescription
                     {
                         Symbol = (IFieldSymbol)member,
-                        Regex = RegExParser.Escape(GetAttributeParam(member, tokenAttributeSymbol)),
+                        Regex = RegExParser.Escape(attr.GetCtorValue().ToString()),
                         Ignore = ignore,
                     });
                     continue;
                 }
                 // No attribute, warn
-                context.ReportDiagnostic(Diagnostic.Create(
-                    Diagnostics.NoAttributeForTokenType,
-                    member.Locations.First(),
-                    member.Name));
+                Report(Diagnostics.NoAttributeForTokenType, member.Locations.First(), member.Name);
             }
             // Check if everything has been filled out
             if (result.EndName == null || result.ErrorName == null)
             {
-                context.ReportDiagnostic(Diagnostic.Create(
-                    Diagnostics.NoAttributeForTokenType,
+                Report(
+                    Diagnostics.FundamentalTokenTypeNotDefined,
                     symbol.Locations.First(),
                     result.EndName == null ? "end" : "error",
-                    result.EndName == null ? "EndAttribute" : "ErrorAttribute"));
+                    result.EndName == null ? "EndAttribute" : "ErrorAttribute");
             }
             return result;
         }
-
-        private static bool HasAttribute(ISymbol symbol, INamedTypeSymbol searchedAttr) => symbol
-            .GetAttributes()
-            .Any(attr => SymbolEqualityComparer.Default.Equals(attr.AttributeClass, searchedAttr));
-
-        private static string GetAttributeParam(ISymbol symbol, INamedTypeSymbol searchedAttr) => symbol
-            .GetAttributes()
-            .Where(attr => SymbolEqualityComparer.Default.Equals(attr.AttributeClass, searchedAttr))
-            .Select(attr => attr.ConstructorArguments.First().Value.ToString())
-            .First();
-
-        private static string AccessibilityToString(Accessibility accessibility) =>
-            accessibility.ToString().ToLowerInvariant();
 
         private static (char? Lower, char? Upper) ToInclusive(Interval<char> interval)
         {
@@ -411,19 +352,6 @@ end_loop:
                 _ => throw new InvalidOperationException(),
             };
             return (lower, upper);
-        }
-
-        private static string GetFullPath(ISymbol symbol)
-        {
-            var prefix = symbol.ContainingNamespace.ToDisplayString();
-            var result = symbol.Name;
-            while (symbol.ContainingType != null)
-            {
-                symbol = symbol.ContainingType;
-                result = $"{symbol.Name}.{result}";
-            }
-            if (prefix.Length > 0) return $"{prefix}.{result}";
-            return result;
         }
 
         private static string Escape(char ch) => ch switch

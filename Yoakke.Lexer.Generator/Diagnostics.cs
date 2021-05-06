@@ -38,21 +38,5 @@ namespace Yoakke.Lexer.Generator
             category: "Yoakke.Lexer.Generator",
             DiagnosticSeverity.Error,
             isEnabledByDefault: true);
-
-        public static readonly DiagnosticDescriptor RequiredDependencyNotReferenced = new(
-            id: "YKLEXERGEN005",
-            title: "Required dependency not referenced",
-            messageFormat: "Required library {0} is not referenced in the project",
-            category: "Yoakke.Lexer.Generator",
-            DiagnosticSeverity.Error,
-            isEnabledByDefault: true);
-
-        public static readonly DiagnosticDescriptor IllegalVisibility = new(
-            id: "YKLEXERGEN006",
-            title: "This visibility is illegal",
-            messageFormat: "Visibility {0} is illegal for token types",
-            category: "Yoakke.Lexer.Generator",
-            DiagnosticSeverity.Error,
-            isEnabledByDefault: true);
     }
 }
