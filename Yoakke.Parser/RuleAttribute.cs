@@ -15,7 +15,7 @@ namespace Yoakke.Parser
         /// <summary>
         /// The rule in grammar notation.
         /// </summary>
-        public readonly string Rule;
+        public string Rule { get; set; }
 
         /// <summary>
         /// Initializes a new <see cref="RuleAttribute"/>.

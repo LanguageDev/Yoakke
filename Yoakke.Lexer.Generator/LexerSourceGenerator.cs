@@ -52,7 +52,7 @@ namespace Yoakke.Lexer.Generator
                 // Generate code for it
                 var generated = GenerateImplementation(syntax, symbol);
                 if (generated == null) continue;
-                Context.AddSource($"{symbol.Name}.Generated.cs", generated);
+                AddSource($"{symbol.Name}.Generated.cs", generated);
             }
         }
 
