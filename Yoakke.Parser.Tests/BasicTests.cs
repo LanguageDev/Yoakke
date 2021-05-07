@@ -8,11 +8,20 @@ namespace Yoakke.Parser.Tests
     [Parser]
     partial class MyParser
     {
-        [Rule("statement : expression '+' expression")]
-        public static int Foo() => 1;
+        [Rule("addition : number '+' addition")]
+        private static int Add(int left, IToken _, int right) => left + right;
 
-        [Rule("expression : expression '+' expression")]
-        public static int Addition() => 2;
+        [Rule("addition : number")]
+        private static int JustNumber(int n) => n;
+
+        [Rule("number : one | two")]
+        private static int Number(int n) => n;
+
+        [Rule("one : '1'")]
+        private static int One(IToken _) => 1;
+
+        [Rule("two : '2'")]
+        private static int Two(IToken _) => 2;
     }
 
     class Tok : IToken
@@ -38,12 +47,16 @@ namespace Yoakke.Parser.Tests
             { 
                 new Tok("1"),
                 new Tok("+"),
+                new Tok("2"),
+                new Tok("+"),
+                new Tok("2"),
+                new Tok("+"),
                 new Tok("1"),
+                new Tok("end"),
             };
 
             var p = new MyParser(tokens);
-            p.ParseStatement();
-            p.ParseExpression();
+            var res = p.ParseAddition();
         }
     }
 }

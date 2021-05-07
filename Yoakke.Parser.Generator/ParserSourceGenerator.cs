@@ -125,10 +125,14 @@ namespace {namespaceName}
                 // Generate code for parsing a single alternative
                 var resultVar = GenerateBnf(code, alt.Ast, "index");
                 code.AppendLine($"if ({resultVar} != null) {{");
-                // TODO: We need to generate a pattern to flatten hierarchy
-                // var ((a, b), (c, (d, e))) = resultVar;
+                // Generate a pattern to flatten hierarchy
+                var binder = GetTopLevelPattern(alt.Ast);
+                code.AppendLine($"    var {binder} = {resultVar}.Value.Result;");
+                var flattenedValues = binder.Replace("(", "").Replace(")", "");
                 // var transformedResultVar = MethodCall(a, b, c, d, e);
-                code.AppendLine($"    var {transformedResultVar} = TODO");
+                code.AppendLine($"    var {transformedResultVar} = {alt.Method.Name}({flattenedValues});");
+                // Now unify with furthest
+                code.AppendLine($"    if ({furthestVar} == null || {furthestVar}.Value.Index < {resultVar}.Value.Index) {furthestVar} = ({resultVar}.Value.Index, {transformedResultVar});");
                 code.AppendLine("}");
             }
             code.AppendLine($"return {furthestVar};");
@@ -285,6 +289,19 @@ namespace {namespaceName}
             default: throw new InvalidOperationException();
             }
         }
+
+        // Returns the nested binder expression like ((a, b), (c, (d, e)))
+        private string GetTopLevelPattern(BnfAst ast) => ast switch 
+        {
+            BnfAst.Alt alt => $"{GetTopLevelPattern(alt.First)}",
+            BnfAst.Seq seq => $"({GetTopLevelPattern(seq.First)}, {GetTopLevelPattern(seq.Second)})",
+               BnfAst.Call 
+            or BnfAst.Opt
+            or BnfAst.Rep0
+            or BnfAst.Rep1
+            or BnfAst.Literal => AllocateVarName(),
+            _ => throw new InvalidOperationException(),
+        };
 
         private string AllocateVarName() => $"a{varIndex++}";
 
