@@ -22,6 +22,14 @@ namespace Yoakke.Parser.Generator.Ast
                 && First.Equals(alt.First) 
                 && Second.Equals(alt.Second);
             public override int GetHashCode() => HashCode.Combine(First, Second);
+
+            public override string GetParsedType(RuleSet ruleSet)
+            {
+                var leftType = First.GetParsedType(ruleSet);
+                var rightType = Second.GetParsedType(ruleSet);
+                if (leftType != rightType) throw new InvalidOperationException("Incompatible alternative types");
+                return leftType;
+            }
         }
     }
 }

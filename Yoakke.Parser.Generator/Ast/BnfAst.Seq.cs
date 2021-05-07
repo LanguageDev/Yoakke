@@ -22,6 +22,9 @@ namespace Yoakke.Parser.Generator.Ast
                 && First.Equals(seq.First)
                 && Second.Equals(seq.Second);
             public override int GetHashCode() => HashCode.Combine(First, Second);
+
+            public override string GetParsedType(RuleSet ruleSet) =>
+                $"({First.GetParsedType(ruleSet)}, {Second.GetParsedType(ruleSet)})";
         }
     }
 }

@@ -18,6 +18,8 @@ namespace Yoakke.Parser.Generator.Ast
             public override bool Equals(BnfAst other) => other is Opt opt
                 && Subexpr.Equals(opt.Subexpr);
             public override int GetHashCode() => Subexpr.GetHashCode();
+
+            public override string GetParsedType(RuleSet ruleSet) => $"{Subexpr.GetParsedType(ruleSet)}?";
         }
     }
 }

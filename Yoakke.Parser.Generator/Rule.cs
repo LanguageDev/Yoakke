@@ -15,17 +15,12 @@ namespace Yoakke.Parser.Generator
         /// <summary>
         /// The AST of the grammar to match.
         /// </summary>
-        public readonly BnfAst Ast;
-        /// <summary>
-        /// The method to call upon a successful match.
-        /// </summary>
-        public readonly IMethodSymbol Method;
+        public BnfAst Ast { get; set; }
 
-        public Rule(string name, BnfAst ast, IMethodSymbol method)
+        public Rule(string name, BnfAst ast)
         {
             Name = name;
             Ast = ast;
-            Method = method;
         }
     }
 }

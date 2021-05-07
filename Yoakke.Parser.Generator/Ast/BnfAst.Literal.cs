@@ -18,6 +18,8 @@ namespace Yoakke.Parser.Generator.Ast
             public override bool Equals(BnfAst other) => other is Literal lit
                 && Value.Equals(lit.Value);
             public override int GetHashCode() => Value.GetHashCode();
+
+            public override string GetParsedType(RuleSet ruleSet) => TypeNames.IToken;
         }
     }
 }

@@ -18,6 +18,12 @@ namespace Yoakke.Parser.Generator.Ast
             public override bool Equals(BnfAst other) => other is Call call
                 && Name.Equals(call.Name);
             public override int GetHashCode() => Name.GetHashCode();
+
+            public override string GetParsedType(RuleSet ruleSet)
+            {
+                var called = ruleSet.GetRule(Name);
+                return called.Ast.GetParsedType(ruleSet);
+            }
         }
     }
 }

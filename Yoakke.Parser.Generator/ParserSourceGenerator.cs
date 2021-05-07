@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Yoakke.Parser.Generator.Ast;
@@ -61,7 +62,6 @@ namespace Yoakke.Parser.Generator
 
             // Extract rules from the method annotations
             ruleSet = ExtractRuleSet(symbol);
-            ruleSet.Normalize();
             var namespaceName = symbol.ContainingNamespace.ToDisplayString();
             var className = symbol.Name;
 
@@ -71,11 +71,11 @@ namespace Yoakke.Parser.Generator
                 var key = Capitalize(rule.Key);
 
                 // TODO: Check if the return types are all compatible
-                var transformedReturnType = rule.Value.First().Method.ReturnType.ToDisplayString();
-                var monadicReturnType = GetReturnType(transformedReturnType);
+                var parsedType = rule.Value.Ast.GetParsedType(ruleSet);
+                var returnType = GetReturnType(parsedType);
 
                 // Implement a public method
-                parserMethods.AppendLine($"public {transformedReturnType} Parse{key}() {{");
+                parserMethods.AppendLine($"public {parsedType} Parse{key}() {{");
                 parserMethods.AppendLine($"    var result = impl_Parse{key}(this.index);");
                 // TODO: Error handling
                 parserMethods.AppendLine("    if (result == null) throw new System.InvalidOperationException();");
@@ -86,7 +86,7 @@ namespace Yoakke.Parser.Generator
                 parserMethods.AppendLine("}");
 
                 // Implement a private method
-                parserMethods.AppendLine($"private {monadicReturnType} impl_Parse{key}(int index) {{");
+                parserMethods.AppendLine($"private {returnType} impl_Parse{key}(int index) {{");
                 parserMethods.AppendLine(GenerateRuleParser(rule.Value));
                 parserMethods.AppendLine("}");
             }
@@ -110,53 +110,46 @@ namespace {namespaceName}
 ";
         }
 
-        private string GenerateRuleParser(IList<Rule> alternatives)
+        private string GenerateRuleParser(Rule rule)
         {
-            var transformedReturnType = alternatives.First().Method.ReturnType.ToDisplayString();
-            var monadicReturnType = GetReturnType(transformedReturnType);
-            // NOTE: This is highly ineffective for now, but it's fine
-            // let's just start matching all alternatives and the furthest matched one should be accepted
             var code = new StringBuilder();
-            var furthestVar = AllocateVarName();
-            code.AppendLine($"{monadicReturnType} {furthestVar} = null;");
-            foreach (var alt in alternatives)
-            {
-                var transformedResultVar = AllocateVarName();
-                // Generate code for parsing a single alternative
-                var resultVar = GenerateBnf(code, alt.Ast, "index");
-                code.AppendLine($"if ({resultVar} != null) {{");
-                // Generate a pattern to flatten hierarchy
-                var binder = GetTopLevelPattern(alt.Ast);
-                code.AppendLine($"    var {binder} = {resultVar}.Value.Result;");
-                var flattenedValues = binder.Replace("(", "").Replace(")", "");
-                // var transformedResultVar = MethodCall(a, b, c, d, e);
-                code.AppendLine($"    var {transformedResultVar} = {alt.Method.Name}({flattenedValues});");
-                // Now unify with furthest
-                code.AppendLine($"    if ({furthestVar} == null || {furthestVar}.Value.Index < {resultVar}.Value.Index) {furthestVar} = ({resultVar}.Value.Index, {transformedResultVar});");
-                code.AppendLine("}");
-            }
-            code.AppendLine($"return {furthestVar};");
+            // "index" is the parameter, that's our default
+            var resultVar = GenerateBnf(code, rule.Ast, "index");
+            code.AppendLine($"return {resultVar};");
             return code.ToString();
         }
 
         private string GenerateBnf(StringBuilder code, BnfAst node, string lastIndex)
         {
-            var parsedType = GetParsedType(node);
+            var parsedType = node.GetParsedType(ruleSet);
             var resultType = GetReturnType(parsedType);
             var resultVar = AllocateVarName();
             code.AppendLine($"{resultType} {resultVar} = null;");
 
             switch (node)
             {
+            case BnfAst.Transform transform:
+            {
+                var subVar = GenerateBnf(code, transform.Subexpr, lastIndex);
+                var transformedResultVar = AllocateVarName();
+                var binder = GetTopLevelPattern(transform.Subexpr);
+                var flattenedValues = binder.Replace("(", "").Replace(")", "");
+                code.AppendLine($"if ({subVar} !=  null) {{");
+                code.AppendLine($"    var {binder} = {subVar}.Value.Result;");
+                code.AppendLine($"    var {transformedResultVar} = {transform.Method.Name}({flattenedValues});");
+                code.AppendLine($"    {resultVar} = ({subVar}.Value.Index, {transformedResultVar});");
+                code.AppendLine("}");
+                break;
+            }
+
             case BnfAst.Alt alt:
             {
                 var alt1Var = GenerateBnf(code, alt.First, lastIndex);
-                var alt2Var = GenerateBnf(code, alt.First, lastIndex);
+                var alt2Var = GenerateBnf(code, alt.Second, lastIndex);
                 // Now we need to choose which one got further or the one that even succeeded
                 code.AppendLine($"if ({alt1Var} != null && {alt2Var} != null) {{");
                 code.AppendLine($"    if ({alt1Var}.Value.Index > {alt2Var}.Value.Index) {resultVar} = {alt1Var};");
                 code.AppendLine($"    else {resultVar} = {alt2Var};");
-                code.AppendLine("    }");
                 code.AppendLine("}");
                 code.AppendLine($"else if ({alt1Var} != null) {resultVar} = {alt1Var};");
                 code.AppendLine($"else {resultVar} = {alt2Var};");
@@ -183,35 +176,28 @@ namespace {namespaceName}
                 break;
             }
 
-            case BnfAst.Rep0 rep0:
+            case BnfAst.Rep0:
+            case BnfAst.Rep1:
             {
+                var subexpr = node is BnfAst.Rep0 r0 ? r0.Subexpr : ((BnfAst.Rep1)node).Subexpr;
                 var listVar = AllocateVarName();
                 var indexVar = AllocateVarName();
-                code.AppendLine($"var {listVar} = new {TypeNames.List}<{GetParsedType(rep0.Subexpr)}>();");
+                code.AppendLine($"var {listVar} = new {TypeNames.List}<{subexpr.GetParsedType(ruleSet)}>();");
                 code.AppendLine($"var {indexVar} = {lastIndex};");
                 code.AppendLine("while (true) {");
-                var subVar = GenerateBnf(code, rep0.Subexpr, indexVar);
+                var subVar = GenerateBnf(code, subexpr, indexVar);
                 code.AppendLine($"    if ({subVar} == null) break;");
                 code.AppendLine($"    {indexVar} = {subVar}.Value.Index;");
                 code.AppendLine($"    {listVar}.Add({subVar}.Value.Result);");
                 code.AppendLine("}");
-                code.AppendLine($"{resultVar} = ({indexVar}, {listVar});");
-                break;
-            }
-
-            case BnfAst.Rep1 rep1:
-            {
-                var listVar = AllocateVarName();
-                var indexVar = AllocateVarName();
-                code.AppendLine($"var {listVar} = new {TypeNames.List}<{GetParsedType(rep1.Subexpr)}>();");
-                code.AppendLine($"var {indexVar} = {lastIndex};");
-                code.AppendLine("while (true) {");
-                var subVar = GenerateBnf(code, rep1.Subexpr, indexVar);
-                code.AppendLine($"    if ({subVar} == null) break;");
-                code.AppendLine($"    {indexVar} = {subVar}.Value.Index;");
-                code.AppendLine($"    {listVar}.Add({subVar}.Value.Result);");
-                code.AppendLine("}");
-                code.AppendLine($"if ({listVar}.Count > 0) {resultVar} = ({indexVar}, {listVar});");
+                if (node is BnfAst.Rep0)
+                {
+                    code.AppendLine($"{resultVar} = ({indexVar}, {listVar});");
+                }
+                else
+                {
+                    code.AppendLine($"if ({listVar}.Count > 0) {resultVar} = ({indexVar}, {listVar});");
+                }
                 break;
             }
 
@@ -245,49 +231,11 @@ namespace {namespaceName}
                     var bnfString = attr.GetCtorValue().ToString();
                     var (name, ast) = BnfParser.Parse(bnfString);
 
-                    var rule = new Rule(name, ast, method);
+                    var rule = new Rule(name, new BnfAst.Transform(ast, method));
                     result.Add(rule);
                 }
             }
             return result;
-        }
-
-        private string GetParsedType(BnfAst ast)
-        {
-            switch (ast)
-            {
-            case BnfAst.Alt alt:
-            {
-                var left = GetParsedType(alt.First);
-                var right = GetParsedType(alt.Second);
-                if (left != right) throw new InvalidOperationException("Incompatible alternative types!");
-                return left;
-            }
-            case BnfAst.Seq seq:
-            {
-                var first = GetParsedType(seq.First);
-                var second = GetParsedType(seq.Second);
-                return $"({first}, {second})";
-            }
-            case BnfAst.Call call:
-            {
-                if (!ruleSet.Rules.TryGetValue(call.Name, out var rules))
-                {
-                    throw new InvalidOperationException($"Referencing non-existing rule {call.Name}");
-                }
-                return rules.First().Method.ReturnType.ToDisplayString();
-            }
-            case BnfAst.Opt opt:
-                return $"{GetParsedType(opt.Subexpr)}?";
-            case BnfAst.Rep0 rep0:
-                return $"{TypeNames.IList}<{GetParsedType(rep0.Subexpr)}>";
-            case BnfAst.Rep1 rep1:
-                return $"{TypeNames.IList}<{GetParsedType(rep1.Subexpr)}>";
-            case BnfAst.Literal:
-                return TypeNames.IToken;
-
-            default: throw new InvalidOperationException();
-            }
         }
 
         // Returns the nested binder expression like ((a, b), (c, (d, e)))
@@ -295,7 +243,8 @@ namespace {namespaceName}
         {
             BnfAst.Alt alt => $"{GetTopLevelPattern(alt.First)}",
             BnfAst.Seq seq => $"({GetTopLevelPattern(seq.First)}, {GetTopLevelPattern(seq.Second)})",
-               BnfAst.Call 
+               BnfAst.Transform
+            or BnfAst.Call 
             or BnfAst.Opt
             or BnfAst.Rep0
             or BnfAst.Rep1
