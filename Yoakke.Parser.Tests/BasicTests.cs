@@ -1,4 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
 using Yoakke.Lexer;
 using Yoakke.Text;
@@ -8,10 +9,32 @@ namespace Yoakke.Parser.Tests
     [Parser]
     partial class MyParser
     {
-        [Rule("addition : addition '+' number")]
-        private static int Add(int left, IToken _, int right) => left + right;
+        [Right("^")]
+        [Left("*", "/")]
+        [Left("+", "-")]
+        /*
+         Equivalent form should be:
+        [Rule("expression : expression ('+' | '-' | '*' | '/') expression")]
+         */
+        [Rule("expression : expression '^' expression")]
+        [Rule("expression : expression '+' expression")]
+        [Rule("expression : expression '-' expression")]
+        [Rule("expression : expression '*' expression")]
+        [Rule("expression : expression '/' expression")]
+        private static int Op(int left, IToken op, int right) => op.Text switch
+        { 
+            "+" => left + right,
+            "-" => left - right,
+            "*" => left * right,
+            "/" => left / right,
+            "^" => (int)Math.Pow(left, right),
+            _ => throw new InvalidOperationException(),
+        };
 
-        [Rule("addition : number")]
+        [Rule("expression : '(' expression ')'")]
+        private static int Grouping(IToken _, int n, IToken _) => n;
+
+        [Rule("expression : number")]
         private static int JustNumber(int n) => n;
 
         [Rule("number : one | two")]
