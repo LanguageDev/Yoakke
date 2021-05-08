@@ -25,6 +25,20 @@ namespace Yoakke.Parser.Generator.Ast
 
             public override string GetParsedType(RuleSet ruleSet) =>
                 $"({First.GetParsedType(ruleSet)}, {Second.GetParsedType(ruleSet)})";
+
+            public IEnumerable<BnfAst> GetSequence()
+            {
+                if (First is Seq seq1)
+                {
+                    foreach (var e in seq1.GetSequence()) yield return e;
+                }
+                else yield return First;
+                if (Second is Seq seq2)
+                {
+                    foreach (var e in seq2.GetSequence()) yield return e;
+                }
+                else yield return Second;
+            }
         }
     }
 }

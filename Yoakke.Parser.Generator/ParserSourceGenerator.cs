@@ -131,13 +131,28 @@ namespace {namespaceName}
             case BnfAst.Transform transform:
             {
                 var subVar = GenerateBnf(code, transform.Subexpr, lastIndex);
-                var transformedResultVar = AllocateVarName();
                 var binder = GetTopLevelPattern(transform.Subexpr);
-                var flattenedValues = binder.Replace("(", "").Replace(")", "");
+                var flattenedValues = FlattenBind(binder);
                 code.AppendLine($"if ({subVar} !=  null) {{");
                 code.AppendLine($"    var {binder} = {subVar}.Value.Result;");
-                code.AppendLine($"    var {transformedResultVar} = {transform.Method.Name}({flattenedValues});");
-                code.AppendLine($"    {resultVar} = ({subVar}.Value.Index, {transformedResultVar});");
+                code.AppendLine($"    {resultVar} = ({subVar}.Value.Index, {transform.Method.Name}({flattenedValues}));");
+                code.AppendLine("}");
+                break;
+            }
+
+            case BnfAst.FoldLeft fold:
+            {
+                var binder = GetTopLevelPattern(fold.Second);
+                var flattenedValues = FlattenBind(binder);
+                var firstVar = GenerateBnf(code, fold.First, lastIndex);
+                code.AppendLine($"if ({firstVar} != null) {{");
+                code.AppendLine($"    {resultVar} = {firstVar};");
+                code.AppendLine($"    while (true) {{");
+                var secondVar = GenerateBnf(code, fold.Second, $"{resultVar}.Value.Index");
+                code.AppendLine($"        if ({secondVar} == null) break;");
+                code.AppendLine($"        var {binder} = {secondVar}.Value.Result;");
+                code.AppendLine($"        {resultVar} = ({secondVar}.Value.Index, {fold.Method.Name}({resultVar}.Value.Result, {flattenedValues}));");
+                code.AppendLine("    }");
                 code.AppendLine("}");
                 break;
             }
@@ -235,6 +250,7 @@ namespace {namespaceName}
                     result.Add(rule);
                 }
             }
+            result.Desugar();
             return result;
         }
 
@@ -255,7 +271,7 @@ namespace {namespaceName}
         private string AllocateVarName() => $"a{varIndex++}";
 
         private static string GetReturnType(string okType) => $"(int Index, {okType} Result)?";
-
         private static string Capitalize(string str) => char.ToUpper(str[0]) + str.Substring(1).ToLowerInvariant();
+        private static string FlattenBind(string bind) => bind.Replace("(", string.Empty).Replace(")", string.Empty);
     }
 }

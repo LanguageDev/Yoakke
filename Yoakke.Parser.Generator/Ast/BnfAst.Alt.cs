@@ -30,6 +30,20 @@ namespace Yoakke.Parser.Generator.Ast
                 if (leftType != rightType) throw new InvalidOperationException("Incompatible alternative types");
                 return leftType;
             }
+
+            public IEnumerable<BnfAst> GetAlternatives()
+            {
+                if (First is Alt alt1)
+                {
+                    foreach (var e in alt1.GetAlternatives()) yield return e;
+                }
+                else yield return First;
+                if (Second is Alt alt2)
+                {
+                    foreach (var e in alt2.GetAlternatives()) yield return e;
+                }
+                else yield return Second;
+            }
         }
     }
 }

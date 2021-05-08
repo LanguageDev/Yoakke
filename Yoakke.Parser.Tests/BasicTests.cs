@@ -8,7 +8,7 @@ namespace Yoakke.Parser.Tests
     [Parser]
     partial class MyParser
     {
-        [Rule("addition : number '+' addition")]
+        [Rule("addition : addition '+' number")]
         private static int Add(int left, IToken _, int right) => left + right;
 
         [Rule("addition : number")]
