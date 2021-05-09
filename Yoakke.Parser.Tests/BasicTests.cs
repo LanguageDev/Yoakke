@@ -19,7 +19,7 @@ namespace Yoakke.Parser.Tests
         [Rule("expression : expression '*' expression")]
         [Rule("expression : expression '/' expression")]*/
 
-        [Rule("expression : expression '+' number")]
+        [Rule("expression : expression ('+' | '-') number")]
         private static int Op(int left, IToken op, int right) => op.Text switch
         { 
             "+" => left + right,

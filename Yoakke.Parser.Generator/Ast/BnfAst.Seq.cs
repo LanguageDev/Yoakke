@@ -33,18 +33,35 @@ namespace Yoakke.Parser.Generator.Ast
 
             public override BnfAst Desugar()
             {
-                var newElements = new List<BnfAst>();
+                if (Elements.Count == 1) return Elements[0].Desugar();
 
+                var newElements = new List<BnfAst>();
                 void Add(Seq seq)
                 {
-                    foreach (var e in seq.Elements)
+                    foreach (var e in seq.Elements.Select(a => a.Desugar()))
                     {
                         if (e is Seq subSeq) Add(subSeq);
-                        else newElements.Add(e.Desugar());
+                        else newElements.Add(e);
                     }
                 }
-
                 Add(this);
+
+                for (int i = 0; i < newElements.Count; ++i)
+                {
+                    if (newElements[i] is Alt alt)
+                    {
+                        // We substitute the sequence with alternations, where each in each alternative
+                        // the ith sequence element is replaced by a given alternation
+                        var alternatives = new List<BnfAst>();
+                        foreach (var altElement in alt.Elements)
+                        {
+                            var newSequence = newElements.ToArray();
+                            newSequence[i] = altElement;
+                            alternatives.Add(new Seq(newSequence));
+                        }
+                        return new Alt(alternatives).Desugar();
+                    }
+                }
                 return new Seq(newElements);
             }
 

@@ -33,17 +33,17 @@ namespace Yoakke.Parser.Generator.Ast
 
             public override BnfAst Desugar()
             {
-                var newElements = new List<BnfAst>();
+                if (Elements.Count == 1) return Elements[0].Desugar();
 
+                var newElements = new List<BnfAst>();
                 void Add(Alt alt)
                 {
-                    foreach (var e in alt.Elements)
+                    foreach (var e in alt.Elements.Select(a => a.Desugar()))
                     {
                         if (e is Alt subAlt) Add(subAlt);
-                        else newElements.Add(e.Desugar());
+                        else newElements.Add(e);
                     }
                 }
-
                 Add(this);
                 return new Alt(newElements);
             }
