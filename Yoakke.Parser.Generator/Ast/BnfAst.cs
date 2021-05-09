@@ -11,6 +11,7 @@ namespace Yoakke.Parser.Generator.Ast
         public abstract bool Equals(BnfAst other);
         public abstract override int GetHashCode();
 
+        public abstract BnfAst Desugar();
         public abstract string GetParsedType(RuleSet ruleSet);
     }
 }

@@ -27,6 +27,8 @@ namespace Yoakke.Parser.Generator.Ast
                 && SymbolEqualityComparer.Default.Equals(Method, fl.Method);
             public override int GetHashCode() => HashCode.Combine(First, Second, Method);
 
+            public override BnfAst Desugar() => new FoldLeft(First.Desugar(), Second.Desugar(), Method);
+
             public override string GetParsedType(RuleSet ruleSet)
             {
                 var firstType = First.GetParsedType(ruleSet);

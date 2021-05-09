@@ -19,6 +19,8 @@ namespace Yoakke.Parser.Generator.Ast
                 && Value.Equals(lit.Value);
             public override int GetHashCode() => Value.GetHashCode();
 
+            public override BnfAst Desugar() => this;
+
             public override string GetParsedType(RuleSet ruleSet) => TypeNames.IToken;
         }
     }

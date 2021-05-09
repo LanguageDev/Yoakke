@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Yoakke.Collections.Compatibility;
 
@@ -9,41 +10,45 @@ namespace Yoakke.Parser.Generator.Ast
     {
         public class Alt : BnfAst
         {
-            public readonly BnfAst First;
-            public readonly BnfAst Second;
+            public readonly IReadOnlyList<BnfAst> Elements;
 
             public Alt(BnfAst first, BnfAst second)
             {
-                First = first;
-                Second = second;
+                Elements = new BnfAst[] { first, second };
+            }
+
+            public Alt(IEnumerable<BnfAst> elements)
+            {
+                Elements = elements.ToArray();
             }
 
             public override bool Equals(BnfAst other) => other is Alt alt 
-                && First.Equals(alt.First) 
-                && Second.Equals(alt.Second);
-            public override int GetHashCode() => HashCode.Combine(First, Second);
-
-            public override string GetParsedType(RuleSet ruleSet)
+                && Elements.SequenceEqual(alt.Elements);
+            public override int GetHashCode()
             {
-                var leftType = First.GetParsedType(ruleSet);
-                var rightType = Second.GetParsedType(ruleSet);
-                if (leftType != rightType) throw new InvalidOperationException("Incompatible alternative types");
-                return leftType;
+                var hash = new HashCode();
+                foreach (var e in Elements) hash.Add(e);
+                return hash.ToHashCode();
             }
 
-            public IEnumerable<BnfAst> GetAlternatives()
+            public override BnfAst Desugar()
             {
-                if (First is Alt alt1)
+                var newElements = new List<BnfAst>();
+
+                void Add(Alt alt)
                 {
-                    foreach (var e in alt1.GetAlternatives()) yield return e;
+                    foreach (var e in alt.Elements)
+                    {
+                        if (e is Alt subAlt) Add(subAlt);
+                        else newElements.Add(e);
+                    }
                 }
-                else yield return First;
-                if (Second is Alt alt2)
-                {
-                    foreach (var e in alt2.GetAlternatives()) yield return e;
-                }
-                else yield return Second;
+
+                Add(this);
+                return new Alt(newElements);
             }
+
+            public override string GetParsedType(RuleSet ruleSet) => Elements[0].GetParsedType(ruleSet);
         }
     }
 }

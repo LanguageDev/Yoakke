@@ -19,6 +19,8 @@ namespace Yoakke.Parser.Generator.Ast
                 && Name.Equals(call.Name);
             public override int GetHashCode() => Name.GetHashCode();
 
+            public override BnfAst Desugar() => this;
+
             public override string GetParsedType(RuleSet ruleSet)
             {
                 var called = ruleSet.GetRule(Name);

@@ -3,24 +3,23 @@ using System;
 using System.Collections.Generic;
 using Yoakke.Lexer;
 using Yoakke.Text;
+using Range = Yoakke.Text.Range;
 
 namespace Yoakke.Parser.Tests
 {
     [Parser]
     partial class MyParser
     {
-        [Right("^")]
+        /*[Right("^")]
         [Left("*", "/")]
         [Left("+", "-")]
-        /*
-         Equivalent form should be:
-        [Rule("expression : expression ('+' | '-' | '*' | '/') expression")]
-         */
         [Rule("expression : expression '^' expression")]
         [Rule("expression : expression '+' expression")]
         [Rule("expression : expression '-' expression")]
         [Rule("expression : expression '*' expression")]
-        [Rule("expression : expression '/' expression")]
+        [Rule("expression : expression '/' expression")]*/
+
+        [Rule("expression : expression '+' number")]
         private static int Op(int left, IToken op, int right) => op.Text switch
         { 
             "+" => left + right,
@@ -32,7 +31,7 @@ namespace Yoakke.Parser.Tests
         };
 
         [Rule("expression : '(' expression ')'")]
-        private static int Grouping(IToken _, int n, IToken _) => n;
+        private static int Grouping(IToken _1, int n, IToken _2) => n;
 
         [Rule("expression : number")]
         private static int JustNumber(int n) => n;
@@ -79,7 +78,7 @@ namespace Yoakke.Parser.Tests
             };
 
             var p = new MyParser(tokens);
-            var res = p.ParseAddition();
+            var res = p.ParseExpression();
         }
     }
 }

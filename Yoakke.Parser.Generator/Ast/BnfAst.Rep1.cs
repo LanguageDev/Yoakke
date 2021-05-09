@@ -19,6 +19,8 @@ namespace Yoakke.Parser.Generator.Ast
                 && Subexpr.Equals(rep.Subexpr);
             public override int GetHashCode() => Subexpr.GetHashCode();
 
+            public override BnfAst Desugar() => new Rep1(Subexpr.Desugar());
+
             public override string GetParsedType(RuleSet ruleSet) =>
                 $"{TypeNames.IList}<{Subexpr.GetParsedType(ruleSet)}>";
         }

@@ -24,6 +24,8 @@ namespace Yoakke.Parser.Generator.Ast
                 && SymbolEqualityComparer.Default.Equals(Method, tr.Method);
             public override int GetHashCode() => HashCode.Combine(Subexpr, Method);
 
+            public override BnfAst Desugar() => new Transform(Subexpr.Desugar(), Method);
+
             public override string GetParsedType(RuleSet ruleSet) => Method.ReturnType.ToDisplayString();
         }
     }

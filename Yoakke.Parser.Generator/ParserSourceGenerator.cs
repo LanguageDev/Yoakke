@@ -74,16 +74,19 @@ namespace Yoakke.Parser.Generator
                 var parsedType = rule.Value.Ast.GetParsedType(ruleSet);
                 var returnType = GetReturnType(parsedType);
 
-                // Implement a public method
-                parserMethods.AppendLine($"public {parsedType} Parse{key}() {{");
-                parserMethods.AppendLine($"    var result = impl_Parse{key}(this.index);");
-                // TODO: Error handling
-                parserMethods.AppendLine("    if (result == null) throw new System.InvalidOperationException();");
-                // We update the index and return the result
-                parserMethods.AppendLine("    var (index, node) = result.Value;");
-                parserMethods.AppendLine("    this.index = index;");
-                parserMethods.AppendLine("    return node;");
-                parserMethods.AppendLine("}");
+                if (rule.Value.PublicApi)
+                {
+                    // Implement a public method
+                    parserMethods.AppendLine($"public {parsedType} Parse{key}() {{");
+                    parserMethods.AppendLine($"    var result = impl_Parse{key}(this.index);");
+                    // TODO: Error handling
+                    parserMethods.AppendLine("    if (result == null) throw new System.InvalidOperationException();");
+                    // We update the index and return the result
+                    parserMethods.AppendLine("    var (index, node) = result.Value;");
+                    parserMethods.AppendLine("    this.index = index;");
+                    parserMethods.AppendLine("    return node;");
+                    parserMethods.AppendLine("}");
+                }
 
                 // Implement a private method
                 parserMethods.AppendLine($"private {returnType} impl_Parse{key}(int index) {{");
@@ -159,26 +162,31 @@ namespace {namespaceName}
 
             case BnfAst.Alt alt:
             {
-                var alt1Var = GenerateBnf(code, alt.First, lastIndex);
-                var alt2Var = GenerateBnf(code, alt.Second, lastIndex);
-                // Now we need to choose which one got further or the one that even succeeded
-                code.AppendLine($"if ({alt1Var} != null && {alt2Var} != null) {{");
-                code.AppendLine($"    if ({alt1Var}.Value.Index > {alt2Var}.Value.Index) {resultVar} = {alt1Var};");
-                code.AppendLine($"    else {resultVar} = {alt2Var};");
-                code.AppendLine("}");
-                code.AppendLine($"else if ({alt1Var} != null) {resultVar} = {alt1Var};");
-                code.AppendLine($"else {resultVar} = {alt2Var};");
+                foreach (var element in alt.Elements)
+                {
+                    var altVar = GenerateBnf(code, element, lastIndex);
+                    // Pick the one that got the furthest
+                    code.AppendLine($"if ({altVar} != null && ({resultVar} == null || {resultVar}.Value.Index < {altVar}.Value.Index)) {resultVar} = {altVar};");
+                }
                 break;
             }
 
             case BnfAst.Seq seq:
             {
-                var firstVar = GenerateBnf(code, seq.First, lastIndex);
-                // Only execute the second half, if the first one succeeded
-                code.AppendLine($"if ({firstVar} != null) {{");
-                var secondVar = GenerateBnf(code, seq.Second, $"{firstVar}.Value.Index");
-                code.AppendLine($"    if ({secondVar} != null) {resultVar} = ({secondVar}.Value.Index, ({firstVar}.Value.Result, {secondVar}.Value.Result));");
-                code.AppendLine("}");
+                var prevVar = GenerateBnf(code, seq.Elements[0], lastIndex);
+                var resultSeq = $"{prevVar}.Value.Result";
+                for (int i = 1; i < seq.Elements.Count; ++i)
+                {
+                    code.AppendLine($"if ({prevVar} != null) {{");
+                    var nextVar = GenerateBnf(code, seq.Elements[i], $"{prevVar}.Value.Index");
+                    prevVar = nextVar;
+                    resultSeq += $", {prevVar}.Value.Result";
+                }
+                // Unify last
+                code.AppendLine($"if ({prevVar} != null) {{");
+                code.AppendLine($"{resultVar} = ({prevVar}.Value.Index, ({resultSeq}));");
+                // Close nesting
+                for (int i = 0; i < seq.Elements.Count; ++i) code.AppendLine("}");
                 break;
             }
 
@@ -257,8 +265,8 @@ namespace {namespaceName}
         // Returns the nested binder expression like ((a, b), (c, (d, e)))
         private string GetTopLevelPattern(BnfAst ast) => ast switch 
         {
-            BnfAst.Alt alt => $"{GetTopLevelPattern(alt.First)}",
-            BnfAst.Seq seq => $"({GetTopLevelPattern(seq.First)}, {GetTopLevelPattern(seq.Second)})",
+            BnfAst.Alt alt => $"{GetTopLevelPattern(alt.Elements[0])}",
+            BnfAst.Seq seq => $"({string.Join(", ", seq.Elements.Select(GetTopLevelPattern))})",
                BnfAst.Transform
             or BnfAst.Call 
             or BnfAst.Opt

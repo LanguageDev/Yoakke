@@ -31,6 +31,9 @@ namespace Yoakke.Parser.Generator
 
         public void Desugar()
         {
+            // Desugar AST nodes
+            foreach (var r in Rules.Values) r.Ast = r.Ast.Desugar();
+            // Eliminate left-recursion
             Rules = Rules.Values
                 .Select(BnfDesugar.EliminateLeftRecursion)
                 .ToDictionary(r => r.Name);

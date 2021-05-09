@@ -11,6 +11,8 @@ namespace Yoakke.Parser.Generator
 
         public static readonly string ParserAttribute = $"{ParserNamespace}.ParserAttribute";
         public static readonly string RuleAttribute = $"{ParserNamespace}.RuleAttribute";
+        public static readonly string LeftAttribute = $"{ParserNamespace}.LeftAttribute";
+        public static readonly string RightAttribute = $"{ParserNamespace}.RightAttribute";
 
         public static readonly string IToken = $"{LexerNamespace}.IToken";
 

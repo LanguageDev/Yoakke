@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Yoakke.Collections.Compatibility;
 
@@ -9,35 +10,48 @@ namespace Yoakke.Parser.Generator.Ast
     {
         public class Seq : BnfAst
         {
-            public readonly BnfAst First;
-            public readonly BnfAst Second;
+            public readonly IReadOnlyList<BnfAst> Elements;
 
             public Seq(BnfAst first, BnfAst second)
             {
-                First = first;
-                Second = second;
+                Elements = new BnfAst[] { first, second };
+            }
+
+            public Seq(IEnumerable<BnfAst> elements)
+            {
+                Elements = elements.ToArray();
             }
 
             public override bool Equals(BnfAst other) => other is Seq seq
-                && First.Equals(seq.First)
-                && Second.Equals(seq.Second);
-            public override int GetHashCode() => HashCode.Combine(First, Second);
-
-            public override string GetParsedType(RuleSet ruleSet) =>
-                $"({First.GetParsedType(ruleSet)}, {Second.GetParsedType(ruleSet)})";
-
-            public IEnumerable<BnfAst> GetSequence()
+                && Elements.SequenceEqual(seq.Elements);
+            public override int GetHashCode()
             {
-                if (First is Seq seq1)
+                var hash = new HashCode();
+                foreach (var e in Elements) hash.Add(e);
+                return hash.ToHashCode();
+            }
+
+            public override BnfAst Desugar()
+            {
+                var newElements = new List<BnfAst>();
+
+                void Add(Seq seq)
                 {
-                    foreach (var e in seq1.GetSequence()) yield return e;
+                    foreach (var e in seq.Elements)
+                    {
+                        if (e is Seq subSeq) Add(subSeq);
+                        else newElements.Add(e);
+                    }
                 }
-                else yield return First;
-                if (Second is Seq seq2)
-                {
-                    foreach (var e in seq2.GetSequence()) yield return e;
-                }
-                else yield return Second;
+
+                Add(this);
+                return new Seq(newElements);
+            }
+
+            public override string GetParsedType(RuleSet ruleSet)
+            {
+                if (Elements.Count == 1) return Elements[0].GetParsedType(ruleSet);
+                return $"({string.Join(", ", Elements.Select(e => e.GetParsedType(ruleSet)))})";
             }
         }
     }

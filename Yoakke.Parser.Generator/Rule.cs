@@ -16,11 +16,16 @@ namespace Yoakke.Parser.Generator
         /// The AST of the grammar to match.
         /// </summary>
         public BnfAst Ast { get; set; }
+        /// <summary>
+        /// True, if this rule should be part of the public API
+        /// </summary>
+        public readonly bool PublicApi;
 
-        public Rule(string name, BnfAst ast)
+        public Rule(string name, BnfAst ast, bool publicApi = true)
         {
             Name = name;
             Ast = ast;
+            PublicApi = publicApi;
         }
     }
 }

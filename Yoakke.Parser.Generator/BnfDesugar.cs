@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Yoakke.Parser.Generator.Ast;
@@ -34,12 +35,10 @@ namespace Yoakke.Parser.Generator
 
         private static BnfAst EliminateLeftRecursionInAlternation(Rule rule, BnfAst.Alt alt)
         {
-            var children = alt.GetAlternatives().ToList();
-
             var alphas = new List<BnfAst>();
             var betas = new List<BnfAst>();
             IMethodSymbol fold = null;
-            foreach (var child in children)
+            foreach (var child in alt.Elements)
             {
                 // If the inside has no transformation, we don't care
                 if (child is not BnfAst.Transform transform)
@@ -64,20 +63,16 @@ namespace Yoakke.Parser.Generator
             }
             if (alphas.Count == 0) return alt;
             // We have left-recursion
-            return new BnfAst.FoldLeft(
-                betas.Aggregate((b1, b2) => new BnfAst.Alt(b1, b2)),
-                alphas.Aggregate((a1, a2) => new BnfAst.Alt(a1, a2)),
-                fold);
+            return new BnfAst.FoldLeft(new BnfAst.Alt(betas), new BnfAst.Alt(alphas), fold);
         }
 
         private static bool TrySplit(Rule rule, BnfAst.Seq seq, out BnfAst alpha)
         {
-            var children = seq.GetSequence().ToList();
-            if (children[0] is BnfAst.Call call && call.Name == rule.Name)
+            if (seq.Elements[0] is BnfAst.Call call && call.Name == rule.Name)
             {
                 // Is left recursive, split out the left-recursive part, make the rest be in alphy
-                alpha = children[1];
-                for (int i = 2; i < children.Count; ++i) alpha = new BnfAst.Seq(alpha, children[i]);
+                alpha = seq.Elements[1];
+                for (int i = 2; i < seq.Elements.Count; ++i) alpha = new BnfAst.Seq(alpha, seq.Elements[i]);
                 return true;
             }
             else
