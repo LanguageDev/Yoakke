@@ -40,7 +40,7 @@ namespace Yoakke.Parser.Generator.Ast
                     foreach (var e in seq.Elements)
                     {
                         if (e is Seq subSeq) Add(subSeq);
-                        else newElements.Add(e);
+                        else newElements.Add(e.Desugar());
                     }
                 }
 

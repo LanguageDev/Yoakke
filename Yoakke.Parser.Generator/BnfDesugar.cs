@@ -61,18 +61,20 @@ namespace Yoakke.Parser.Generator
                 }
                 else betas.Add(child);
             }
-            if (alphas.Count == 0) return alt;
+            if (alphas.Count == 0 || betas.Count == 0) return alt;
             // We have left-recursion
-            return new BnfAst.FoldLeft(new BnfAst.Alt(betas), new BnfAst.Alt(alphas), fold);
+            var betaNode = betas.Count == 1 ? betas[0] : new BnfAst.Alt(betas);
+            var alphaNode = alphas.Count == 1 ? alphas[0] : new BnfAst.Alt(alphas);
+            return new BnfAst.FoldLeft(betaNode, alphaNode, fold);
         }
 
         private static bool TrySplit(Rule rule, BnfAst.Seq seq, out BnfAst alpha)
         {
             if (seq.Elements[0] is BnfAst.Call call && call.Name == rule.Name)
             {
-                // Is left recursive, split out the left-recursive part, make the rest be in alphy
-                alpha = seq.Elements[1];
-                for (int i = 2; i < seq.Elements.Count; ++i) alpha = new BnfAst.Seq(alpha, seq.Elements[i]);
+                // Is left recursive, split out the left-recursive part, make the rest be in alpha
+                if (seq.Elements.Count == 2) alpha = seq.Elements[1];
+                else alpha = new BnfAst.Seq(seq.Elements.Skip(1));
                 return true;
             }
             else

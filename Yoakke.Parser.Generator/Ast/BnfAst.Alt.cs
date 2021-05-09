@@ -40,7 +40,7 @@ namespace Yoakke.Parser.Generator.Ast
                     foreach (var e in alt.Elements)
                     {
                         if (e is Alt subAlt) Add(subAlt);
-                        else newElements.Add(e);
+                        else newElements.Add(e.Desugar());
                     }
                 }
 

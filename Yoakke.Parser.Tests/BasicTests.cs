@@ -69,9 +69,11 @@ namespace Yoakke.Parser.Tests
             { 
                 new Tok("1"),
                 new Tok("+"),
+                new Tok("("),
                 new Tok("2"),
                 new Tok("+"),
                 new Tok("2"),
+                new Tok(")"),
                 new Tok("+"),
                 new Tok("1"),
                 new Tok("end"),
