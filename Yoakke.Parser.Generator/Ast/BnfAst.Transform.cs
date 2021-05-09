@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Yoakke.Collections.Compatibility;
 
@@ -24,7 +25,13 @@ namespace Yoakke.Parser.Generator.Ast
                 && SymbolEqualityComparer.Default.Equals(Method, tr.Method);
             public override int GetHashCode() => HashCode.Combine(Subexpr, Method);
 
-            public override BnfAst Desugar() => new Transform(Subexpr.Desugar(), Method);
+            public override BnfAst Desugar()
+            {
+                // We sink Transform under alternation
+                var sub = Subexpr.Desugar();
+                if (sub is Alt alt) return new Alt(alt.Elements.Select(e => new Transform(e, Method)));
+                return new Transform(sub, Method);
+            }
 
             public override string GetParsedType(RuleSet ruleSet) => Method.ReturnType.ToDisplayString();
         }
