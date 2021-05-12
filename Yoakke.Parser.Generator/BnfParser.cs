@@ -21,8 +21,8 @@ namespace Yoakke.Parser.Generator
         public (string Name, BnfAst Ast) ParseRule()
         {
             var name = Expect(BnfTokenType.Identifier);
-            Expect(BnfTokenType.Colon);
-            var ast = ParseAlt();
+            BnfAst ast = null;
+            if (TryMatch(BnfTokenType.Colon)) ast = ParseAlt();
             Expect(BnfTokenType.End);
             return (name.Value, ast);
         }

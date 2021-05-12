@@ -13,11 +13,7 @@ namespace Yoakke.Parser.Tests
         [Right("^")]
         [Left("*", "/")]
         [Left("+", "-")]
-        [Rule("expression : expression '^' expression")]
-        [Rule("expression : expression '+' expression")]
-        [Rule("expression : expression '-' expression")]
-        [Rule("expression : expression '*' expression")]
-        [Rule("expression : expression '/' expression")]
+        [Rule("expression")]
         private static int Op(int left, IToken op, int right) => op.Text switch
         { 
             "+" => left + right,

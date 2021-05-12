@@ -250,12 +250,15 @@ namespace {namespaceName}
             var rightAttr = LoadSymbol(TypeNames.RightAttribute);
 
             var result = new RuleSet();
-            foreach (var method in symbol.GetMembers().OfType<IMethodSymbol>())
+
+            // Go through the methods in declaration order
+            foreach (var method in symbol.GetMembers().OfType<IMethodSymbol>().OrderBy(sym => sym.Locations.First().SourceSpan.Start))
             {
-                // Collect associativity attributes
+                // Collect associativity attributes in declaration order
                 var precedenceTable = method.GetAttributes()
                     .Where(a => SymbolEquals(a.AttributeClass, leftAttr) || SymbolEquals(a.AttributeClass, rightAttr))
-                    .Select(a => (Left: SymbolEquals(a.AttributeClass, leftAttr), Operators: a.ConstructorArguments.Select(x => x.Value).ToHashSet()))
+                    .OrderBy(a => a.ApplicationSyntaxReference.GetSyntax().GetLocation().SourceSpan.Start)
+                    .Select(a => (Left: SymbolEquals(a.AttributeClass, leftAttr), Operators: a.ConstructorArguments.SelectMany(x => x.Values).Select(x => x.Value).ToHashSet()))
                     .ToList();
                 // Since there can be multiple get all rule attributes attached to this method
                 foreach (var attr in method.GetAttributes().Where(a => SymbolEquals(a.AttributeClass, ruleAttr)))
@@ -263,10 +266,19 @@ namespace {namespaceName}
                     var bnfString = attr.GetCtorValue().ToString();
                     var (name, ast) = BnfParser.Parse(bnfString);
 
+                    if (precedenceTable.Count > 0)
+                    {
+                        result.AddPrecedence(name, precedenceTable, method);
+                        precedenceTable.Clear();
+                    }
+
+                    if (ast == null) continue;
+
                     var rule = new Rule(name, new BnfAst.Transform(ast, method));
                     result.Add(rule);
                 }
             }
+
             result.Desugar();
             return result;
         }

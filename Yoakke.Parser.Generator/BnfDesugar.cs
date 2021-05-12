@@ -20,6 +20,45 @@ namespace Yoakke.Parser.Generator
             return rule;
         }
 
+        public static IList<Rule> GeneratePrecedenceParser(Rule rule, IList<PrecedenceEntry> precedenceTable)
+        {
+            // The resulting precedence rules should look like
+            // RULE_N : (RULE_N OP RULE_(N+1)) {TR} | RULE_(N+1) for left-associative
+            // RULE_N : (RULE_(N+1) OP RULE_N) {TR} | RULE_(N+1) for right-associative
+            // And simply the passed-in rule as atomic
+
+            var result = new List<Rule>();
+            var atom = new Rule($"{rule.Name}_atomic", rule.Ast, false);
+            result.Add(atom);
+            for (int i = 0; i < precedenceTable.Count; ++i)
+            {
+                var prec = precedenceTable[i];
+                var currentCall = new BnfAst.Call(i == 0 ? rule.Name : $"{rule.Name}_level{i}");
+                var nextCall = new BnfAst.Call(i == precedenceTable.Count - 1 ? atom.Name : $"{rule.Name}_level{i + 1}");
+
+                BnfAst toAdd = null;
+                foreach (var op in prec.Operators)
+                {
+                    // TODO: Not just string!
+                    var opNode = new BnfAst.Literal(op.ToString());
+                    var seq = prec.Left
+                        ? new BnfAst[] { currentCall, opNode, nextCall } 
+                        : new BnfAst[] { nextCall, opNode, currentCall };
+                    var alt = new BnfAst.Transform(new BnfAst.Seq(seq), prec.Method);
+                    if (toAdd == null) toAdd = alt;
+                    else toAdd = new BnfAst.Alt(toAdd, alt);
+                }
+                // Default is always stepping a level down
+                if (toAdd == null) toAdd = nextCall;
+                else toAdd = new BnfAst.Alt(toAdd, nextCall);
+
+                result.Add(new Rule(currentCall.Name, toAdd, i == 0));
+            }
+            return result;
+        }
+
+        // Left-recursion //////////////////////////////////////////////////////
+
         /*
          We need to find alternatives that are left recursive
          The problem is that they might be inside transformations
@@ -47,7 +86,7 @@ namespace Yoakke.Parser.Generator
                     continue;
                 }
                 // We found a left-recursive sequence inside an alternative, add it as alpha
-                if (transform.Subexpr is BnfAst.Seq seq && TrySplit(rule, seq, out var alpha))
+                if (transform.Subexpr is BnfAst.Seq seq && TrySplitLeftRecursion(rule, seq, out var alpha))
                 {
                     if (fold == null)
                     {
@@ -68,7 +107,7 @@ namespace Yoakke.Parser.Generator
             return new BnfAst.FoldLeft(betaNode, alphaNode, fold);
         }
 
-        private static bool TrySplit(Rule rule, BnfAst.Seq seq, out BnfAst alpha)
+        private static bool TrySplitLeftRecursion(Rule rule, BnfAst.Seq seq, out BnfAst alpha)
         {
             if (seq.Elements[0] is BnfAst.Call call && call.Name == rule.Name)
             {
