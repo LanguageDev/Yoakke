@@ -65,6 +65,7 @@ namespace Yoakke.Lexer.Generator
             var tokenName = $"{TypeNames.Token}<{enumName}>";
 
             var description = ExtractLexerDescription(symbol);
+            if (description == null) return null;
 
             // Store which token corresponds to which end state
             var tokenToNfaState = new Dictionary<TokenDescription, State>();
@@ -78,6 +79,8 @@ namespace Yoakke.Lexer.Generator
                 {
                     // Parse the regex
                     var regex = regexParser.Parse(token.Regex);
+                    // Desugar it
+                    regex = regex.Desugar();
                     // Construct it into the NFA
                     var (start, end) = regex.ThompsonConstruct(nfa);
                     // Wire the initial state to the start of the construct
@@ -90,6 +93,7 @@ namespace Yoakke.Lexer.Generator
                 catch (Exception ex)
                 {
                     Report(Diagnostics.FailedToParseRegularExpression, token.Symbol.Locations.First(), ex.Message);
+                    return null;
                 }
             }
 
@@ -304,6 +308,7 @@ end_loop:
                     else
                     {
                         Report(Diagnostics.FundamentalTokenTypeAlreadyDefined, member.Locations.First(), result.EndName, "end");
+                        return null;
                     }
                     continue;
                 }
@@ -317,6 +322,7 @@ end_loop:
                     else
                     {
                         Report(Diagnostics.FundamentalTokenTypeAlreadyDefined, member.Locations.First(), result.EndName, "error");
+                        return null;
                     }
                     continue;
                 }
@@ -366,6 +372,7 @@ end_loop:
                     symbol.Locations.First(),
                     result.EndName == null ? "end" : "error",
                     result.EndName == null ? "EndAttribute" : "ErrorAttribute");
+                return null;
             }
             return result;
         }
