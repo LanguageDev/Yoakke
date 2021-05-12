@@ -6,6 +6,7 @@ namespace Yoakke.Lexer.Generator
 {
     internal static class TypeNames
     {
+        private static readonly string CollectionsNamespace = "Yoakke.Collections";
         private static readonly string TextNamespace = "Yoakke.Text";
         private static readonly string LexerNamespace = "Yoakke.Lexer";
 
@@ -23,5 +24,10 @@ namespace Yoakke.Lexer.Generator
         public static readonly string Token = $"{LexerNamespace}.Token";
         public static readonly string Position = $"{TextNamespace}.Position";
         public static readonly string Range = $"{TextNamespace}.Range";
+
+        public static readonly string RingBuffer = $"{CollectionsNamespace}.RingBuffer";
+
+        public static readonly string TextReader = "System.IO.TextReader";
+        public static readonly string StringReader = "System.IO.StringReader";
     }
 }

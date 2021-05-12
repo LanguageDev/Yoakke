@@ -10,16 +10,14 @@ namespace Yoakke.Parser.Tests
     [Parser]
     partial class MyParser
     {
-        /*[Right("^")]
+        [Right("^")]
         [Left("*", "/")]
         [Left("+", "-")]
         [Rule("expression : expression '^' expression")]
         [Rule("expression : expression '+' expression")]
         [Rule("expression : expression '-' expression")]
         [Rule("expression : expression '*' expression")]
-        [Rule("expression : expression '/' expression")]*/
-
-        [Rule("expression : expression ('+' | '-') number")]
+        [Rule("expression : expression '/' expression")]
         private static int Op(int left, IToken op, int right) => op.Text switch
         { 
             "+" => left + right,

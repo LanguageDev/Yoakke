@@ -22,18 +22,18 @@ namespace Yoakke.Collections
         }
         public int Count { get; private set; }
         public int Head { get; private set; }
-        public int Tail => ToStorageIndex(Count);
+        public int Tail => ToStorageIndex(Head + Count);
         public T this[int index] 
         {
             get
             {
                 CheckIndexBounds(index);
-                return storage[ToStorageIndex(index)];
+                return storage[ToStorageIndex(Head + index)];
             }
             set
             {
                 CheckIndexBounds(index);
-                storage[ToStorageIndex(index)] = value;
+                storage[ToStorageIndex(Head + index)] = value;
             }
         }
         T IReadOnlyList<T>.this[int index] => this[index];
@@ -157,7 +157,7 @@ namespace Yoakke.Collections
             }
         }
 
-        private int ToStorageIndex(int index) => Mod(Head + index, Capacity);
+        private int ToStorageIndex(int index) => Mod(index, Capacity);
 
         private void CheckNonEmpty()
         {

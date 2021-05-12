@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using Yoakke.Collections.Compatibility;
 using Yoakke.Parser.Generator.Ast;
 using Yoakke.SourceGenerator.Common;
 
@@ -245,9 +246,17 @@ namespace {namespaceName}
         private RuleSet ExtractRuleSet(INamedTypeSymbol symbol)
         {
             var ruleAttr = LoadSymbol(TypeNames.RuleAttribute);
+            var leftAttr = LoadSymbol(TypeNames.LeftAttribute);
+            var rightAttr = LoadSymbol(TypeNames.RightAttribute);
+
             var result = new RuleSet();
             foreach (var method in symbol.GetMembers().OfType<IMethodSymbol>())
             {
+                // Collect associativity attributes
+                var precedenceTable = method.GetAttributes()
+                    .Where(a => SymbolEquals(a.AttributeClass, leftAttr) || SymbolEquals(a.AttributeClass, rightAttr))
+                    .Select(a => (Left: SymbolEquals(a.AttributeClass, leftAttr), Operators: a.ConstructorArguments.Select(x => x.Value).ToHashSet()))
+                    .ToList();
                 // Since there can be multiple get all rule attributes attached to this method
                 foreach (var attr in method.GetAttributes().Where(a => SymbolEquals(a.AttributeClass, ruleAttr)))
                 {

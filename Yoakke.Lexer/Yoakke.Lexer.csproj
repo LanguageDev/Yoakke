@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Yoakke.Text\Yoakke.Text.csproj" />
+    <ProjectReference Include="..\Yoakke.Collections\Yoakke.Collections.csproj" />
   </ItemGroup>
 
 </Project>
