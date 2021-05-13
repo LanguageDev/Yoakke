@@ -16,7 +16,6 @@ namespace Yoakke.Lexer.Generator
 
         public static readonly string EndAttribute = $"{LexerNamespace}.Attributes.EndAttribute";
         public static readonly string ErrorAttribute = $"{LexerNamespace}.Attributes.ErrorAttribute";
-        public static readonly string IdentAttribute = $"{LexerNamespace}.Attributes.IdentAttribute";
         public static readonly string IgnoreAttribute = $"{LexerNamespace}.Attributes.IgnoreAttribute";
         public static readonly string RegexAttribute = $"{LexerNamespace}.Attributes.RegexAttribute";
         public static readonly string TokenAttribute = $"{LexerNamespace}.Attributes.TokenAttribute";

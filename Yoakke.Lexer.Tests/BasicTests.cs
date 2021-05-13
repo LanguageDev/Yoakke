@@ -16,7 +16,7 @@ namespace Yoakke.Lexer.Tests
             [End] EndOfFile,
 
             [Token("if")] KwIf,
-            [Ident] Ident,
+            [Regex(Regex.Ident)] Ident,
             [Token("+")] Plus,
             [Token("-")] Minus,
             [Token("*")] Star,

@@ -8,12 +8,12 @@ namespace Yoakke.Lexer.Sample
     {
         [Error] Error,
         [End] End,
-        [Ignore] [Regex("[ \r\n\t]")] Whitespace,
+        [Ignore] [Regex(Regex.Space)] Whitespace,
 
         [Token("if")] KwIf,
         [Token("else")] KwElse,
         [Token("func")] KwFunc,
-        [Ident] Ident,
+        [Regex(Regex.Ident)] Ident,
         
         [Token("{")] OpenBrace,
         [Token("}")] CloseBrace,
@@ -23,7 +23,7 @@ namespace Yoakke.Lexer.Sample
         [Token("+")] Plus,
         [Token("-")] Minus,
 
-        [Regex("[0-9]+")] IntLiteral,
+        [Regex(Regex.DecInt)] IntLiteral,
     }
 
     class Program

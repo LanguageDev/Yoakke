@@ -195,7 +195,7 @@ namespace {namespaceName}
         public override {tokenName} Next()
         {{
 begin:
-            if (this.Peek() == null) 
+            if (this.Peek() == '\0') 
             {{
                 return this.TakeToken({enumName}.{description.EndName}, 0);
             }}
@@ -268,17 +268,6 @@ end_loop:
                 }
                 // Regular token
                 var ignore = HasAttribute(member, TypeNames.IgnoreAttribute);
-                // C identifier
-                if (HasAttribute(member, TypeNames.IdentAttribute))
-                {
-                    result.Tokens.Add(new TokenDescription
-                    {
-                        Symbol = (IFieldSymbol)member,
-                        Regex = "[A-Za-z_][A-Za-z0-9_]*",
-                        Ignore = ignore,
-                    });
-                    continue;
-                }
                 // Regex
                 if (TryGetAttribute(member, TypeNames.RegexAttribute, out var attr))
                 {
