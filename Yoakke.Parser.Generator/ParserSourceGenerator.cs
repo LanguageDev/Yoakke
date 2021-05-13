@@ -79,7 +79,7 @@ namespace Yoakke.Parser.Generator
             var parserMethods = new StringBuilder();
             foreach (var rule in ruleSet.Rules)
             {
-                var key = Capitalize(rule.Key);
+                var key = ToPascalCase(rule.Key);
 
                 // TODO: Check if the return types are all compatible
                 var parsedType = rule.Value.Ast.GetParsedType(ruleSet);
@@ -239,7 +239,7 @@ namespace {namespaceName}
 
             case BnfAst.Call call:
             {
-                var key = Capitalize(call.Name);
+                var key = ToPascalCase(call.Name);
                 code.AppendLine($"{resultVar} = impl_Parse{key}({lastIndex});");
                 break;
             }
@@ -323,8 +323,26 @@ namespace {namespaceName}
 
         private string AllocateVarName() => $"a{varIndex++}";
 
+        private static string ToPascalCase(string str)
+        {
+            var result = new StringBuilder();
+            bool prevUnderscore = true;
+            for (int i = 0; i < str.Length; ++i)
+            {
+                if (str[i] == '_')
+                {
+                    prevUnderscore = true;
+                }
+                else
+                {
+                    result.Append(prevUnderscore ? char.ToUpper(str[i]) : str[i]);
+                    prevUnderscore = false;
+                }
+            }
+            return result.ToString();
+        }
+
         private static string GetReturnType(string okType) => $"(int Index, {okType} Result)?";
-        private static string Capitalize(string str) => char.ToUpper(str[0]) + str.Substring(1).ToLowerInvariant();
         private static string FlattenBind(string bind) => bind.Replace("(", string.Empty).Replace(")", string.Empty);
     }
 }
