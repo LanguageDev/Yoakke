@@ -23,7 +23,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Parser.Tests", "Yoak
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.SourceGenerator.Common", "Yoakke.SourceGenerator.Common\Yoakke.SourceGenerator.Common.csproj", "{BEFA414D-D649-402A-8DD1-4F9A1F9558F2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yoakke.Lexer.Sample", "Yoakke.Lexer.Sample\Yoakke.Lexer.Sample.csproj", "{F48F5B87-9918-48BF-A0DF-09D4B168E596}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lexer.Sample", "Yoakke.Lexer.Sample\Yoakke.Lexer.Sample.csproj", "{F48F5B87-9918-48BF-A0DF-09D4B168E596}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lexer", "Lexer", "{A6B22275-5966-47BB-87EE-22E0DDE44A0E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Parser", "Parser", "{99830BF4-010D-4B26-88D9-1C9633853E30}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -78,6 +82,15 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{36D85E41-4CB1-4198-8248-05A30082F0F2} = {A6B22275-5966-47BB-87EE-22E0DDE44A0E}
+		{CB252735-C1B6-4F6E-8299-A552069FDBE6} = {A6B22275-5966-47BB-87EE-22E0DDE44A0E}
+		{A76E877C-B326-4B66-A9CF-53515538773A} = {A6B22275-5966-47BB-87EE-22E0DDE44A0E}
+		{4E6DC779-3A18-4360-B289-02E68757F6EB} = {99830BF4-010D-4B26-88D9-1C9633853E30}
+		{7E7BC74B-EB71-45F1-92B0-AA53F546EB18} = {99830BF4-010D-4B26-88D9-1C9633853E30}
+		{266FD9F8-E6E6-4D4D-A2C8-BA250E480E0E} = {99830BF4-010D-4B26-88D9-1C9633853E30}
+		{F48F5B87-9918-48BF-A0DF-09D4B168E596} = {A6B22275-5966-47BB-87EE-22E0DDE44A0E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1EDE8F07-AE3A-4556-AEF0-3AC518F18F92}
