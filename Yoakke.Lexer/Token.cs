@@ -35,10 +35,13 @@ namespace Yoakke.Lexer
             Kind = kind;
         }
 
+        public override bool Equals(object obj) => obj is Token<TKind> t && Equals(t);
         public bool Equals(IToken other) => other is Token<TKind> t && Equals(t);
         public bool Equals(Token<TKind> other) =>
                Range == other.Range
             && Text == other.Text
             && Kind.Equals(other.Kind);
+
+        public override int GetHashCode() => HashCode.Combine(Range, Text);
     }
 }
