@@ -1,4 +1,5 @@
 ﻿using System;
+using Yoakke.Lexer.Attributes;
 
 namespace Yoakke.Lexer.Sample
 {

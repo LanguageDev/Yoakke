@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Yoakke.Lexer
+namespace Yoakke.Lexer.Attributes
 {
     /// <summary>
     /// An attribute to define a token type in terms of a regular expression.

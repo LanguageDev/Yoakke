@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Yoakke.Lexer
+namespace Yoakke.Lexer.Attributes
 {
     /// <summary>
-    /// An attribute to mark an enum value as the end of source token type.
+    /// An attribute to mark an enum value to be an ignored token type.
     /// </summary>
     [AttributeUsage(AttributeTargets.Field)]
-    public class EndAttribute : Attribute
+    public class IgnoreAttribute : Attribute
     {
     }
 }

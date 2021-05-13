@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Yoakke.Lexer
+namespace Yoakke.Lexer.Attributes
 {
     /// <summary>
     /// An attribute to mark an enum value to be the C-like identifier that matches exactly the regular expression 

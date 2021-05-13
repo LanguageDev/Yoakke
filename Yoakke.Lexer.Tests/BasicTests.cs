@@ -1,4 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Yoakke.Lexer.Attributes;
+using IgnoreAttribute = Yoakke.Lexer.Attributes.IgnoreAttribute;
 
 namespace Yoakke.Lexer.Tests
 {

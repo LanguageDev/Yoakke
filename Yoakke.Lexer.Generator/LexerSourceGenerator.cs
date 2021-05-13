@@ -154,7 +154,6 @@ namespace Yoakke.Lexer.Generator
                     if (dfaStateToToken.TryGetValue(destState, out var token))
                     {
                         // The destination is an accepting state, save it
-                        transitionTable.AppendLine("lastLexerState = currentLexerState;");
                         transitionTable.AppendLine("lastOffset = currentOffset;");
                         if (token.Ignore)
                         {
@@ -181,111 +180,52 @@ namespace Yoakke.Lexer.Generator
             return $@"
 namespace {namespaceName}
 {{
-    {accessibility} class {lexerClassName}
+    {accessibility} class {lexerClassName} : {TypeNames.LexerBase}<{enumName}>
     {{
-        private struct State 
-        {{
-            public {TypeNames.Position} position;
-            public char? lastChar;
-        }}
-
-        private {TypeNames.TextReader} reader;
-        private {TypeNames.RingBuffer}<char> peek;
-        private State state;
-
         public {lexerClassName}({TypeNames.TextReader} reader)
+            : base(reader)
         {{
-            this.reader = reader;
-            this.peek = new {TypeNames.RingBuffer}<char>();
         }}
 
         public {lexerClassName}(string text)
-            : this(new {TypeNames.StringReader}(text))
+            : base(text)
         {{
         }}
 
-        private static {TypeNames.Position} NextPosition({TypeNames.Position} pos, char? last, char current)
-        {{
-            // Windows-style, already advanced at \r
-            if (last == '\r' && current == '\n') return pos;
-            if (current == '\r' || current == '\n') return pos.Newline();
-            if (char.IsControl(current)) return pos;
-            return pos.Advance(1);
-        }}
-
-        private char? Peek(int offset = 0)
-        {{
-            while (this.peek.Count <= offset)
-            {{
-                var next = this.reader.Read();
-                if (next == -1) return null;
-                this.peek.AddBack((char)next);
-            }}
-            return this.peek[offset];
-        }}
-
-        private void SkipPeek(int length)
-        {{
-            for (int i = 0; i < length; ++i) this.peek.RemoveFront();
-        }}
-
-        private string PeekToString(int length)
-        {{
-            var result = string.Empty;
-            for (int i = 0; i < length; ++i) result += this.peek.RemoveFront();
-            return result;
-        }}
-
-        public {tokenName} Next()
+        public override {tokenName} Next()
         {{
 begin:
             if (this.Peek() == null) 
             {{
-                return new {tokenName}(new {TypeNames.Range}(state.position, 0), string.Empty, {enumName}.{description.EndName});
+                return this.TakeToken({enumName}.{description.EndName}, 0);
             }}
 
             var currentState = {dfaStateIdents[dfa.InitalState]};
-            var currentLexerState = state;
             var currentOffset = 0;
 
-            State lastLexerState = state;
             {enumName}? lastTokenType = null;
             var lastOffset = 0;
 
             while (true)
             {{
-                var peek = this.Peek(currentOffset);
-                if (peek == null) break;
-                var currentChar = peek.Value;
-                currentLexerState.position = NextPosition(currentLexerState.position, currentLexerState.lastChar, currentChar);
-                currentLexerState.lastChar = currentChar;
+                var currentChar = this.Peek(currentOffset);
+                if (currentChar == '\0') break;
                 ++currentOffset;
                 {transitionTable}
             }}
 end_loop:
             if (lastOffset > 0)
             {{
-                if (lastTokenType == null) {{
-                    state = lastLexerState;
-                    this.SkipPeek(lastOffset);
+                if (lastTokenType == null) 
+                {{
+                    this.Skip(lastOffset);
                     goto begin;
                 }}
-                var result = new {tokenName}(
-                    new {TypeNames.Range}(state.position, lastLexerState.position), 
-                    this.PeekToString(lastOffset), 
-                    lastTokenType.Value);
-                state = lastLexerState;
-                return result;
+                return this.TakeToken(lastTokenType.Value, lastOffset);
             }}
             else
             {{
-                var faultyChar = this.peek.RemoveFront();
-                var result = new {tokenName}(
-                    new {TypeNames.Range}(state.position, 1), 
-                    faultyChar.ToString(), 
-                    {enumName}.{description.ErrorName});
-                state.position = NextPosition(state.position, state.lastChar, faultyChar);
-                return result;
+                return this.TakeToken({enumName}.{description.ErrorName}, 1);
             }}
         }}
     }}
