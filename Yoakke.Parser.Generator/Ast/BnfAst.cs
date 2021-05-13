@@ -12,6 +12,6 @@ namespace Yoakke.Parser.Generator.Ast
         public abstract override int GetHashCode();
 
         public abstract BnfAst Desugar();
-        public abstract string GetParsedType(RuleSet ruleSet);
+        public abstract string GetParsedType(RuleSet ruleSet, TokenKindSet tokens);
     }
 }

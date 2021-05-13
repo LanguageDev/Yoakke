@@ -29,9 +29,9 @@ namespace Yoakke.Parser.Generator.Ast
 
             public override BnfAst Desugar() => new FoldLeft(First.Desugar(), Second.Desugar(), Method);
 
-            public override string GetParsedType(RuleSet ruleSet)
+            public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens)
             {
-                var firstType = First.GetParsedType(ruleSet);
+                var firstType = First.GetParsedType(ruleSet, tokens);
                 var mappedType = Method.ReturnType.ToDisplayString();
                 if (firstType != mappedType) throw new InvalidOperationException("Incompatible folded types");
                 return firstType;

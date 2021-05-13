@@ -65,10 +65,10 @@ namespace Yoakke.Parser.Generator.Ast
                 return new Seq(newElements);
             }
 
-            public override string GetParsedType(RuleSet ruleSet)
+            public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens)
             {
-                if (Elements.Count == 1) return Elements[0].GetParsedType(ruleSet);
-                return $"({string.Join(", ", Elements.Select(e => e.GetParsedType(ruleSet)))})";
+                if (Elements.Count == 1) return Elements[0].GetParsedType(ruleSet, tokens);
+                return $"({string.Join(", ", Elements.Select(e => e.GetParsedType(ruleSet, tokens)))})";
             }
         }
     }

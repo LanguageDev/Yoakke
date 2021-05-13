@@ -48,7 +48,8 @@ namespace Yoakke.Parser.Generator.Ast
                 return new Alt(newElements);
             }
 
-            public override string GetParsedType(RuleSet ruleSet) => Elements[0].GetParsedType(ruleSet);
+            public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens) => 
+                Elements[0].GetParsedType(ruleSet, tokens);
         }
     }
 }

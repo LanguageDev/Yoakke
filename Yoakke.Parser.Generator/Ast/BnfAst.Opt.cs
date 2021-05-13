@@ -21,7 +21,8 @@ namespace Yoakke.Parser.Generator.Ast
 
             public override BnfAst Desugar() => new Opt(Subexpr.Desugar());
 
-            public override string GetParsedType(RuleSet ruleSet) => $"{Subexpr.GetParsedType(ruleSet)}?";
+            public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens) => 
+                $"{Subexpr.GetParsedType(ruleSet, tokens)}?";
         }
     }
 }

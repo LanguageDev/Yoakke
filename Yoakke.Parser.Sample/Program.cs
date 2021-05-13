@@ -64,8 +64,20 @@ namespace Yoakke.Parser.Sample
 
             while (true)
             {
-                var expr = parser.ParseProgram();
-                Console.WriteLine($" => {expr}");
+                var result = parser.ParseProgram();
+                if (result.IsSuccess)
+                {
+                    Console.WriteLine($" => {result.Success.Value}");
+                }
+                else
+                {
+                    var err = result.Error;
+                    foreach (var element in err.Elements.Values)
+                    {
+                        Console.WriteLine($"  expected {string.Join(" or ", element.Expected)} while parsing {element.Context}");
+                    }
+                    Console.WriteLine($"  but got {(err.Got == null ? "end of input" : err.Got.Text)}");
+                }
             }
         }
     }

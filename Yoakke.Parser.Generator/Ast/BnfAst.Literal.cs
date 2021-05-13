@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.CodeAnalysis;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -21,7 +22,11 @@ namespace Yoakke.Parser.Generator.Ast
 
             public override BnfAst Desugar() => this;
 
-            public override string GetParsedType(RuleSet ruleSet) => TypeNames.IToken;
+            public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens)
+            {
+                if (Value is string) return TypeNames.IToken;
+                else return $"{TypeNames.Token}<{tokens.EnumType.ToDisplayString()}>";
+            }
         }
     }
 }

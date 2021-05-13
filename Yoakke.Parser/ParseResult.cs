@@ -49,5 +49,25 @@ namespace Yoakke.Parser
         {
             value = error;
         }
+
+        /// <summary>
+        /// Unifies two alternative parse results.
+        /// </summary>
+        /// <param name="first">The first result to unify.</param>
+        /// <param name="second">The second result to unify.</param>
+        /// <returns>The unified parse results.</returns>
+        public static ParseResult<T> Unify(ParseResult<T> first, ParseResult<T> second)
+        {
+            if (first.IsSuccess && second.IsSuccess)
+            {
+                if (second.Success.Offset > first.Success.Offset) return second;
+                // NOTE: Even if they are equal, we return the first
+                return first;
+            }
+            if (first.IsSuccess) return first;
+            if (second.IsSuccess) return second;
+            // Both are errors
+            return new ParseResult<T>(ParseError.Unify(first.Error, second.Error));
+        }
     }
 }

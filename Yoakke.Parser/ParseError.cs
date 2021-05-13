@@ -17,7 +17,7 @@ namespace Yoakke.Parser
         /// </summary>
         public readonly IReadOnlyDictionary<string, ParseErrorElement> Elements;
         /// <summary>
-        /// The input that was found.
+        /// The input that was found, if any.
         /// </summary>
         public readonly IToken Got;
 
@@ -39,15 +39,24 @@ namespace Yoakke.Parser
         }
 
         /// <summary>
-        /// Unifies two parse errors.
+        /// Unifies two alternative parse errors.
         /// </summary>
         /// <param name="first">The first error to unify.</param>
         /// <param name="second">The second error to unify.</param>
         /// <returns>The error that represents both of them properly.</returns>
         public static ParseError Unify(ParseError first, ParseError second)
         {
-            if (first.Got.Range.Start < second.Got.Range.Start) return second;
-            if (second.Got.Range.Start < first.Got.Range.Start) return first;
+            if (first.Got == null || second.Got == null)
+            {
+                // At least one of them is out of the input
+                if (first.Got == null && second.Got != null) return first;
+                if (first.Got != null && second.Got == null) return second;
+            }
+            else
+            {
+                if (first.Got.Range.Start < second.Got.Range.Start) return second;
+                if (second.Got.Range.Start < first.Got.Range.Start) return first;
+            }
             // Both of them got stuck at the same place, merge entries
             var elements = first.Elements.Values.ToDictionary(e => e.Context, e => e.Expected.ToHashSet());
             foreach (var element in second.Elements.Values)

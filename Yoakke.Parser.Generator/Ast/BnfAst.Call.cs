@@ -21,10 +21,10 @@ namespace Yoakke.Parser.Generator.Ast
 
             public override BnfAst Desugar() => this;
 
-            public override string GetParsedType(RuleSet ruleSet)
+            public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens)
             {
                 var called = ruleSet.GetRule(Name);
-                return called.Ast.GetParsedType(ruleSet);
+                return called.Ast.GetParsedType(ruleSet, tokens);
             }
         }
     }

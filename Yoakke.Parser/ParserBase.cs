@@ -134,6 +134,14 @@ namespace Yoakke.Parser
             new ParseResult<T>(new ParseSuccess<T>(value, offset));
 
         /// <summary>
+        /// Utility for casting a parse error to a <see cref="ParseResult{T}"/>.
+        /// </summary>
+        /// <typeparam name="T">The parsed value type.</typeparam>
+        /// <param name="error">The error to wrap.</param>
+        /// <returns>The created parse result.</returns>
+        protected static ParseResult<T> MakeError<T>(ParseError error) => new ParseResult<T>(error);
+
+        /// <summary>
         /// Utility for constructing a <see cref="ParseResult{T}"/> as an error variant.
         /// </summary>
         /// <typeparam name="T">The parsed value type.</typeparam>
