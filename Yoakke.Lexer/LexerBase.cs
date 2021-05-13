@@ -17,6 +17,7 @@ namespace Yoakke.Lexer
     public abstract class LexerBase<T> : ILexer
     {
         public Position Position { get; private set; }
+        public bool IsEnd => Peek() == '\0';
 
         private TextReader reader;
         private char prevChar;
@@ -73,6 +74,7 @@ namespace Yoakke.Lexer
         /// <returns>The skipped character.</returns>
         protected char Skip()
         {
+            Peek();
             var current = this.peek.RemoveFront();
             Position = NextPosition(Position, prevChar, current);
             prevChar = current;

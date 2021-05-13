@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Yoakke.Parser
+namespace Yoakke.Parser.Attributes
 {
     /// <summary>
     /// An attribute to mark a class as a parser with rule methods inside.

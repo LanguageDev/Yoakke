@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Yoakke.Parser
+namespace Yoakke.Parser.Attributes
 {
     /// <summary>
     /// An attribute to annotate a right-associative operator.

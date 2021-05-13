@@ -9,15 +9,19 @@ namespace Yoakke.Parser.Generator
         private static readonly string ParserNamespace = "Yoakke.Parser";
         private static readonly string LexerNamespace = "Yoakke.Lexer";
 
-        public static readonly string ParserAttribute = $"{ParserNamespace}.ParserAttribute";
-        public static readonly string RuleAttribute = $"{ParserNamespace}.RuleAttribute";
-        public static readonly string LeftAttribute = $"{ParserNamespace}.LeftAttribute";
-        public static readonly string RightAttribute = $"{ParserNamespace}.RightAttribute";
+        public static readonly string ParserAttribute = $"{ParserNamespace}.Attributes.ParserAttribute";
+        public static readonly string RuleAttribute = $"{ParserNamespace}.Attributes.RuleAttribute";
+        public static readonly string LeftAttribute = $"{ParserNamespace}.Attributes.LeftAttribute";
+        public static readonly string RightAttribute = $"{ParserNamespace}.Attributes.RightAttribute";
+
+        public static readonly string ParserBase = $"{ParserNamespace}.ParserBase";
 
         public static readonly string IToken = $"{LexerNamespace}.IToken";
         public static readonly string Token = $"{LexerNamespace}.Token";
+        public static readonly string ILexer = $"{LexerNamespace}.ILexer";
 
         public static readonly string IList = "System.Collections.Generic.IList";
         public static readonly string List = "System.Collections.Generic.List";
+        public static readonly string IEnumerable = "System.Collections.Generic.IEnumerable";
     }
 }

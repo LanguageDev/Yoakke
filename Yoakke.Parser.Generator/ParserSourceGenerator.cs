@@ -43,7 +43,6 @@ namespace Yoakke.Parser.Generator
         {
             var receiver = (SyntaxReceiver)syntaxReceiver;
 
-            RequireLibrary("Yoakke.Lexer");
             RequireLibrary("Yoakke.Parser");
 
             foreach (var syntax in receiver.CandidateClasses)
@@ -88,12 +87,12 @@ namespace Yoakke.Parser.Generator
                 {
                     // Implement a public method
                     parserMethods.AppendLine($"public {parsedType} Parse{key}() {{");
-                    parserMethods.AppendLine($"    var result = impl_Parse{key}(this.index);");
+                    parserMethods.AppendLine($"    var result = impl_Parse{key}(0);");
                     // TODO: Error handling
                     parserMethods.AppendLine("    if (result == null) throw new System.InvalidOperationException();");
                     // We update the index and return the result
                     parserMethods.AppendLine("    var (index, node) = result.Value;");
-                    parserMethods.AppendLine("    this.index = index;");
+                    parserMethods.AppendLine("    this.TryConsume(index);");
                     parserMethods.AppendLine("    return node;");
                     parserMethods.AppendLine("}");
                 }
@@ -107,14 +106,16 @@ namespace Yoakke.Parser.Generator
             return $@"
 namespace {namespaceName} 
 {{
-    partial class {className}
+    partial class {className} : {TypeNames.ParserBase}
     {{
-        private {TypeNames.IList}<{TypeNames.IToken}> tokens;
-        private int index;
-
-        public {className}({TypeNames.IList}<{TypeNames.IToken}> tokens)
+        public {className}({TypeNames.ILexer} lexer)
+            : base(lexer)
         {{
-            this.tokens = tokens;
+        }}
+
+        public {className}({TypeNames.IEnumerable}<{TypeNames.IToken}> tokens)
+            : base(tokens)
+        {{
         }}
 
         {parserMethods}
@@ -126,7 +127,7 @@ namespace {namespaceName}
         private string GenerateRuleParser(Rule rule)
         {
             var code = new StringBuilder();
-            // "index" is the parameter, that's our default
+            // By default we are at "index"
             var resultVar = GenerateBnf(code, rule.Ast, "index");
             code.AppendLine($"return {resultVar};");
             return code.ToString();
@@ -236,7 +237,6 @@ namespace {namespaceName}
 
             case BnfAst.Call call:
             {
-                // TODO: Recognize if token kind match?
                 var key = Capitalize(call.Name);
                 code.AppendLine($"{resultVar} = impl_Parse{key}({lastIndex});");
                 break;
@@ -244,16 +244,17 @@ namespace {namespaceName}
 
             case BnfAst.Literal lit:
             {
+                var resultTok = AllocateVarName();
                 if (lit.Value is string)
                 {
-                    code.AppendLine($"if (this.tokens[{lastIndex}].Text == \"{lit.Value}\") {resultVar} = ({lastIndex} + 1, this.tokens[{lastIndex}]);");
+                    code.AppendLine($"if (this.TryMatchText({lastIndex}, \"{lit.Value}\", out var {resultTok})) {resultVar} = ({lastIndex} + 1, {resultTok});");
                 }
                 else
                 {
                     // It must be the token type
                     var tokTy = tokenKind.ToDisplayString();
                     var type = (IFieldSymbol)lit.Value;
-                    code.AppendLine($"if ((({TypeNames.Token}<{tokTy}>)this.tokens[{lastIndex}]).Kind == {tokTy}.{type.Name}) {resultVar} = ({lastIndex} + 1, this.tokens[{lastIndex}]);");
+                    code.AppendLine($"if (this.TryMatchKind({lastIndex}, {tokTy}.{type.Name}, out var {resultTok})) {resultVar} = ({lastIndex} + 1, {resultTok});");
                 }
                 break;
             }

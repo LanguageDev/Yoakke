@@ -2,6 +2,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using Yoakke.Lexer;
+using Yoakke.Parser.Attributes;
 using Yoakke.Text;
 using Range = Yoakke.Text.Range;
 
