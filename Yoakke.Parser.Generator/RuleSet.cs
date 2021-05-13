@@ -50,7 +50,7 @@ namespace Yoakke.Parser.Generator
             {
                 if (!Rules.TryGetValue(kv.Key, out var rule)) continue;
                 Rules.Remove(kv.Key);
-                var newRules = BnfDesugar.GeneratePrecedenceParser(rule, kv.Value);
+                var newRules = BnfDesugar.GeneratePrecedenceParser(rule, kv.Value.Reverse().ToList());
                 foreach (var r in newRules) Add(r);
             }
             // Desugar AST nodes

@@ -29,6 +29,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lexer", "Lexer", "{A6B22275
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Parser", "Parser", "{99830BF4-010D-4B26-88D9-1C9633853E30}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yoakke.Parser.Sample", "Yoakke.Parser.Sample\Yoakke.Parser.Sample.csproj", "{CE858304-DC1C-4A7B-AD49-81E8F3CB6F7D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -79,6 +81,10 @@ Global
 		{F48F5B87-9918-48BF-A0DF-09D4B168E596}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F48F5B87-9918-48BF-A0DF-09D4B168E596}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F48F5B87-9918-48BF-A0DF-09D4B168E596}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE858304-DC1C-4A7B-AD49-81E8F3CB6F7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE858304-DC1C-4A7B-AD49-81E8F3CB6F7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE858304-DC1C-4A7B-AD49-81E8F3CB6F7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE858304-DC1C-4A7B-AD49-81E8F3CB6F7D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -91,6 +97,7 @@ Global
 		{7E7BC74B-EB71-45F1-92B0-AA53F546EB18} = {99830BF4-010D-4B26-88D9-1C9633853E30}
 		{266FD9F8-E6E6-4D4D-A2C8-BA250E480E0E} = {99830BF4-010D-4B26-88D9-1C9633853E30}
 		{F48F5B87-9918-48BF-A0DF-09D4B168E596} = {A6B22275-5966-47BB-87EE-22E0DDE44A0E}
+		{CE858304-DC1C-4A7B-AD49-81E8F3CB6F7D} = {99830BF4-010D-4B26-88D9-1C9633853E30}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1EDE8F07-AE3A-4556-AEF0-3AC518F18F92}
