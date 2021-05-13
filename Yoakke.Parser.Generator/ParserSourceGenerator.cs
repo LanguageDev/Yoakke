@@ -29,9 +29,8 @@ namespace Yoakke.Parser.Generator
         }
 
         private RuleSet ruleSet;
-        private ITypeSymbol tokenKind;
-        private HashSet<IFieldSymbol> tokenFields;
         private int varIndex;
+        private TokenKindSet tokenKinds;
 
         public ParserSourceGenerator()
             : base("Yoakke.Parser.Generator") { }
@@ -62,12 +61,15 @@ namespace Yoakke.Parser.Generator
         {
             if (!RequirePartial(syntax) || !RequireNonNested(symbol)) return null;
 
-            tokenKind = null;
             var parserAttr = GetAttribute(symbol, TypeNames.ParserAttribute);
             if (parserAttr.ConstructorArguments.Length > 0)
             {
-                tokenKind = (ITypeSymbol)parserAttr.ConstructorArguments.First().Value;
-                tokenFields = tokenKind.GetMembers().OfType<IFieldSymbol>().ToHashSet();
+                var tokenType = (INamedTypeSymbol)parserAttr.ConstructorArguments.First().Value;
+                tokenKinds = new TokenKindSet(tokenType);
+            }
+            else
+            {
+                tokenKinds = new TokenKindSet();
             }
             // Extract rules from the method annotations
             ruleSet = ExtractRuleSet(symbol);
@@ -252,7 +254,7 @@ namespace {namespaceName}
                 else
                 {
                     // It must be the token type
-                    var tokTy = tokenKind.ToDisplayString();
+                    var tokTy = tokenKinds.EnumType.ToDisplayString();
                     var type = (IFieldSymbol)lit.Value;
                     code.AppendLine($"if (this.TryMatchKind({lastIndex}, {tokTy}.{type.Name}, out var {resultTok})) {resultVar} = ({lastIndex} + 1, {resultTok});");
                 }
@@ -286,7 +288,7 @@ namespace {namespaceName}
                 foreach (var attr in method.GetAttributes().Where(a => SymbolEquals(a.AttributeClass, ruleAttr)))
                 {
                     var bnfString = attr.GetCtorValue().ToString();
-                    var (name, ast) = BnfParser.Parse(bnfString, tokenFields);
+                    var (name, ast) = BnfParser.Parse(bnfString, tokenKinds);
 
                     if (precedenceTable.Count > 0)
                     {
