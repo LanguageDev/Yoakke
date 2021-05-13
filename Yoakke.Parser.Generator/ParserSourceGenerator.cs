@@ -130,12 +130,12 @@ namespace {namespaceName}
         {
             var code = new StringBuilder();
             // By default we are at "index"
-            var resultVar = GenerateBnf(code, rule.Ast, "index");
+            var resultVar = GenerateBnf(code, rule, rule.Ast, "index");
             code.AppendLine($"return {resultVar};");
             return code.ToString();
         }
 
-        private string GenerateBnf(StringBuilder code, BnfAst node, string lastIndex)
+        private string GenerateBnf(StringBuilder code, Rule rule, BnfAst node, string lastIndex)
         {
             var parsedType = node.GetParsedType(ruleSet);
             var resultType = GetReturnType(parsedType);
@@ -146,7 +146,7 @@ namespace {namespaceName}
             {
             case BnfAst.Transform transform:
             {
-                var subVar = GenerateBnf(code, transform.Subexpr, lastIndex);
+                var subVar = GenerateBnf(code, rule, transform.Subexpr, lastIndex);
                 var binder = GetTopLevelPattern(transform.Subexpr);
                 var flattenedValues = FlattenBind(binder);
                 code.AppendLine($"if ({subVar} !=  null) {{");
@@ -160,11 +160,11 @@ namespace {namespaceName}
             {
                 var binder = GetTopLevelPattern(fold.Second);
                 var flattenedValues = FlattenBind(binder);
-                var firstVar = GenerateBnf(code, fold.First, lastIndex);
+                var firstVar = GenerateBnf(code, rule, fold.First, lastIndex);
                 code.AppendLine($"if ({firstVar} != null) {{");
                 code.AppendLine($"    {resultVar} = {firstVar};");
                 code.AppendLine($"    while (true) {{");
-                var secondVar = GenerateBnf(code, fold.Second, $"{resultVar}.Value.Index");
+                var secondVar = GenerateBnf(code, rule, fold.Second, $"{resultVar}.Value.Index");
                 code.AppendLine($"        if ({secondVar} == null) break;");
                 code.AppendLine($"        var {binder} = {secondVar}.Value.Result;");
                 code.AppendLine($"        {resultVar} = ({secondVar}.Value.Index, {fold.Method.Name}({resultVar}.Value.Result, {flattenedValues}));");
@@ -177,7 +177,7 @@ namespace {namespaceName}
             {
                 foreach (var element in alt.Elements)
                 {
-                    var altVar = GenerateBnf(code, element, lastIndex);
+                    var altVar = GenerateBnf(code, rule, element, lastIndex);
                     // Pick the one that got the furthest
                     code.AppendLine($"if ({altVar} != null && ({resultVar} == null || {resultVar}.Value.Index < {altVar}.Value.Index)) {resultVar} = {altVar};");
                 }
@@ -186,12 +186,12 @@ namespace {namespaceName}
 
             case BnfAst.Seq seq:
             {
-                var prevVar = GenerateBnf(code, seq.Elements[0], lastIndex);
+                var prevVar = GenerateBnf(code, rule, seq.Elements[0], lastIndex);
                 var resultSeq = $"{prevVar}.Value.Result";
                 for (int i = 1; i < seq.Elements.Count; ++i)
                 {
                     code.AppendLine($"if ({prevVar} != null) {{");
-                    var nextVar = GenerateBnf(code, seq.Elements[i], $"{prevVar}.Value.Index");
+                    var nextVar = GenerateBnf(code, rule, seq.Elements[i], $"{prevVar}.Value.Index");
                     prevVar = nextVar;
                     resultSeq += $", {prevVar}.Value.Result";
                 }
@@ -205,7 +205,7 @@ namespace {namespaceName}
 
             case BnfAst.Opt opt:
             {
-                var subVar = GenerateBnf(code, opt.Subexpr, lastIndex);
+                var subVar = GenerateBnf(code, rule, opt.Subexpr, lastIndex);
                 // TODO: Might not be correct, might need to take it apart to reconstruct the tuple here
                 code.AppendLine($"if ({subVar} != null) {resultVar} = {subVar};");
                 code.AppendLine($"else {resultVar} = ({lastIndex}, default);");
@@ -221,7 +221,7 @@ namespace {namespaceName}
                 code.AppendLine($"var {listVar} = new {TypeNames.List}<{subexpr.GetParsedType(ruleSet)}>();");
                 code.AppendLine($"var {indexVar} = {lastIndex};");
                 code.AppendLine("while (true) {");
-                var subVar = GenerateBnf(code, subexpr, indexVar);
+                var subVar = GenerateBnf(code, rule, subexpr, indexVar);
                 code.AppendLine($"    if ({subVar} == null) break;");
                 code.AppendLine($"    {indexVar} = {subVar}.Value.Index;");
                 code.AppendLine($"    {listVar}.Add({subVar}.Value.Result);");
@@ -342,7 +342,7 @@ namespace {namespaceName}
             return result.ToString();
         }
 
-        private static string GetReturnType(string okType) => $"(int Index, {okType} Result)?";
+        private static string GetReturnType(string okType) => $"{TypeNames.ParseResult}<{okType}>";
         private static string FlattenBind(string bind) => bind.Replace("(", string.Empty).Replace(")", string.Empty);
     }
 }

@@ -122,5 +122,26 @@ namespace Yoakke.Parser
             for (int i = 0; i < length; ++i) this.peek.RemoveFront();
             return true;
         }
+
+        /// <summary>
+        /// Utility for constructing a <see cref="ParseResult{T}"/> as a success variant.
+        /// </summary>
+        /// <typeparam name="T">The parsed value type.</typeparam>
+        /// <param name="value">The parsed value.</param>
+        /// <param name="offset">The offset in the number of tokens.</param>
+        /// <returns>The created parse result.</returns>
+        protected static ParseResult<T> MakeSuccess<T>(T value, int offset) =>
+            new ParseResult<T>(new ParseSuccess<T>(value, offset));
+
+        /// <summary>
+        /// Utility for constructing a <see cref="ParseResult{T}"/> as an error variant.
+        /// </summary>
+        /// <typeparam name="T">The parsed value type.</typeparam>
+        /// <param name="expected">The expected element.</param>
+        /// <param name="got">The token encountered instead.</param>
+        /// <param name="context">The rule context the error occurred in.</param>
+        /// <returns>The created parse result.</returns>
+        protected static ParseResult<T> MakeError<T>(object expected, IToken got, string context) =>
+            new ParseResult<T>(new ParseError(expected, got, context));
     }
 }
