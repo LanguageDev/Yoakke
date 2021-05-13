@@ -15,6 +15,7 @@ namespace Yoakke.Parser.Generator
         public static readonly string RightAttribute = $"{ParserNamespace}.RightAttribute";
 
         public static readonly string IToken = $"{LexerNamespace}.IToken";
+        public static readonly string Token = $"{LexerNamespace}.Token";
 
         public static readonly string IList = "System.Collections.Generic.IList";
         public static readonly string List = "System.Collections.Generic.List";

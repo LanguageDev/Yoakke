@@ -29,6 +29,8 @@ namespace Yoakke.Parser.Generator
         }
 
         private RuleSet ruleSet;
+        private ITypeSymbol tokenKind;
+        private HashSet<IFieldSymbol> tokenFields;
         private int varIndex;
 
         public ParserSourceGenerator()
@@ -61,6 +63,13 @@ namespace Yoakke.Parser.Generator
         {
             if (!RequirePartial(syntax) || !RequireNonNested(symbol)) return null;
 
+            tokenKind = null;
+            var parserAttr = GetAttribute(symbol, TypeNames.ParserAttribute);
+            if (parserAttr.ConstructorArguments.Length > 0)
+            {
+                tokenKind = (ITypeSymbol)parserAttr.ConstructorArguments.First().Value;
+                tokenFields = tokenKind.GetMembers().OfType<IFieldSymbol>().ToHashSet();
+            }
             // Extract rules from the method annotations
             ruleSet = ExtractRuleSet(symbol);
             var namespaceName = symbol.ContainingNamespace.ToDisplayString();
@@ -234,8 +243,20 @@ namespace {namespaceName}
             }
 
             case BnfAst.Literal lit:
-                code.AppendLine($"if (this.tokens[{lastIndex}].Text == \"{lit.Value}\") {resultVar} = ({lastIndex} + 1, this.tokens[{lastIndex}]);");
+            {
+                if (lit.Value is string)
+                {
+                    code.AppendLine($"if (this.tokens[{lastIndex}].Text == \"{lit.Value}\") {resultVar} = ({lastIndex} + 1, this.tokens[{lastIndex}]);");
+                }
+                else
+                {
+                    // It must be the token type
+                    var tokTy = tokenKind.ToDisplayString();
+                    var type = (IFieldSymbol)lit.Value;
+                    code.AppendLine($"if ((({TypeNames.Token}<{tokTy}>)this.tokens[{lastIndex}]).Kind == {tokTy}.{type.Name}) {resultVar} = ({lastIndex} + 1, this.tokens[{lastIndex}]);");
+                }
                 break;
+            }
 
             default: throw new InvalidOperationException();
             }
@@ -264,7 +285,7 @@ namespace {namespaceName}
                 foreach (var attr in method.GetAttributes().Where(a => SymbolEquals(a.AttributeClass, ruleAttr)))
                 {
                     var bnfString = attr.GetCtorValue().ToString();
-                    var (name, ast) = BnfParser.Parse(bnfString);
+                    var (name, ast) = BnfParser.Parse(bnfString, tokenFields);
 
                     if (precedenceTable.Count > 0)
                     {

@@ -39,8 +39,7 @@ namespace Yoakke.Parser.Generator
                 BnfAst toAdd = null;
                 foreach (var op in prec.Operators)
                 {
-                    // TODO: Not just string!
-                    var opNode = new BnfAst.Literal(op.ToString());
+                    var opNode = new BnfAst.Literal(op);
                     var seq = prec.Left
                         ? new BnfAst[] { currentCall, opNode, nextCall } 
                         : new BnfAst[] { nextCall, opNode, currentCall };

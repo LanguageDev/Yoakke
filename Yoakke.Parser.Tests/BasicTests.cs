@@ -7,7 +7,20 @@ using Range = Yoakke.Text.Range;
 
 namespace Yoakke.Parser.Tests
 {
-    [Parser]
+    enum TokenType
+    {
+        Add,
+        Sub,
+        Mul,
+        Div,
+        Exp,
+        Number,
+        Lparen,
+        Rparen,
+        End,
+    }
+
+    [Parser(typeof(TokenType))]
     partial class MyParser
     {
         [Right("^")]
@@ -27,50 +40,30 @@ namespace Yoakke.Parser.Tests
         [Rule("expression : '(' expression ')'")]
         private static int Grouping(IToken _1, int n, IToken _2) => n;
 
-        [Rule("expression : number")]
-        private static int JustNumber(int n) => n;
-
-        [Rule("number : one | two")]
-        private static int Number(int n) => n;
-
-        [Rule("one : '1'")]
-        private static int One(IToken _) => 1;
-
-        [Rule("two : '2'")]
-        private static int Two(IToken _) => 2;
-    }
-
-    class Tok : IToken
-    {
-        public Range Range => new Range();
-        public string Text { get; }
-
-        public Tok(string text)
-        {
-            Text = text;
-        }
-
-        public bool Equals(IToken other) => other is Tok t && Text == t.Text;
+        [Rule("expression : Number")]
+        private static int Number(IToken tok) => int.Parse(tok.Text);
     }
 
     [TestClass]
     public class BasicTests
     {
+        private static Token<TokenType> Tok(string v, TokenType tt) => new Token<TokenType>(new Range(), v, tt);
+
         [TestMethod]
         public void TestMethod1()
         {
             var tokens = new List<IToken> 
             { 
-                new Tok("1"),
-                new Tok("+"),
-                new Tok("("),
-                new Tok("2"),
-                new Tok("+"),
-                new Tok("2"),
-                new Tok(")"),
-                new Tok("+"),
-                new Tok("1"),
-                new Tok("end"),
+                Tok("1", TokenType.Number),
+                Tok("+", TokenType.Add),
+                Tok("(", TokenType.Lparen),
+                Tok("2", TokenType.Number),
+                Tok("+", TokenType.Add),
+                Tok("2", TokenType.Number),
+                Tok(")", TokenType.Rparen),
+                Tok("+", TokenType.Add),
+                Tok("1", TokenType.Number),
+                Tok("", TokenType.End),
             };
 
             var p = new MyParser(tokens);

@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Microsoft.CodeAnalysis;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Yoakke.Parser.Generator.Ast;
 
@@ -7,15 +9,19 @@ namespace Yoakke.Parser.Generator
 {
     internal class BnfParser
     {
-        public static (string Name, BnfAst Ast) Parse(string source) => Parse(BnfLexer.Lex(source));
-        public static (string Name, BnfAst Ast) Parse(IList<BnfToken> tokens) => new BnfParser(tokens).ParseRule();
+        public static (string Name, BnfAst Ast) Parse(string source, HashSet<IFieldSymbol> tokenKinds) => 
+            Parse(BnfLexer.Lex(source), tokenKinds);
+        public static (string Name, BnfAst Ast) Parse(IList<BnfToken> tokens, HashSet<IFieldSymbol> tokenKinds) => 
+            new BnfParser(tokens, tokenKinds).ParseRule();
 
         private IList<BnfToken> tokens;
         private int index;
+        private HashSet<IFieldSymbol> tokenKinds;
 
-        public BnfParser(IList<BnfToken> tokens)
+        public BnfParser(IList<BnfToken> tokens, HashSet<IFieldSymbol> tokenKinds)
         {
             this.tokens = tokens;
+            this.tokenKinds = tokenKinds;
         }
 
         public (string Name, BnfAst Ast) ParseRule()
@@ -62,7 +68,19 @@ namespace Yoakke.Parser.Generator
                 Expect(BnfTokenType.CloseParen);
                 return sub;
             }
-            if (TryMatch(BnfTokenType.Identifier, out var ident)) return new BnfAst.Call(ident.Value);
+            if (TryMatch(BnfTokenType.Identifier, out var ident))
+            {
+                if (TryParseTokenType(ident.Value, out var kind))
+                {
+                    // It's a literal match
+                    return new BnfAst.Literal(kind);
+                }
+                else
+                {
+                    // It's a rule call
+                    return new BnfAst.Call(ident.Value);
+                }
+            }
             if (TryMatch(BnfTokenType.StringLiteral, out var str)) return new BnfAst.Literal(StrToString(str));
 
             throw new FormatException($"Unexpected token {Peek().Type} (index {Peek().Index})");
@@ -103,5 +121,13 @@ namespace Yoakke.Parser.Generator
         }
 
         private BnfToken Peek(int ahead = 0) => tokens[index + ahead];
+
+        private bool TryParseTokenType(string value, out object kind)
+        {
+            kind = null;
+            if (tokenKinds == null) return false;
+            kind = tokenKinds.FirstOrDefault(k => k.Name == value);
+            return kind != null;
+        }
     }
 }

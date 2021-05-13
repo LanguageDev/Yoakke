@@ -8,9 +8,9 @@ namespace Yoakke.Parser.Generator.Ast
     {
         public class Literal : BnfAst
         {
-            public readonly string Value;
+            public readonly object Value;
 
-            public Literal(string value)
+            public Literal(object value)
             {
                 Value = value;
             }
