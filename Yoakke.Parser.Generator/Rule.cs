@@ -20,6 +20,10 @@ namespace Yoakke.Parser.Generator
         /// True, if this rule should be part of the public API
         /// </summary>
         public readonly bool PublicApi;
+        /// <summary>
+        /// The visual name of this rule.
+        /// </summary>
+        public string VisualName { get; set; }
 
         public Rule(string name, BnfAst ast, bool publicApi = true)
         {

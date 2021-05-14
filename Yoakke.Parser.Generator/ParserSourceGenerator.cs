@@ -318,12 +318,14 @@ namespace {namespaceName}
 
             case BnfAst.Call call:
             {
+                // TODO: Check if it even exists
+                var calledRule = ruleSet.GetRule(call.Name);
                 var peekVar = AllocateVarName();
                 var key = ToPascalCase(call.Name);
                 code.AppendLine($"{resultVar} = parse{key}({lastIndex});");
                 // HEURISTIC: If the parse didn't advance anything, replace error
                 code.AppendLine($"if ({resultVar}.IsError && (!TryPeek({lastIndex}, out var {peekVar}) || ReferenceEquals({peekVar}, {resultVar}.Error.Got))) {{");
-                code.AppendLine($"    {resultVar} = MakeError<{parsedType}>(\"{call.Name}\", {resultVar}.Error.Got, \"{rule.Name}\");");
+                code.AppendLine($"    {resultVar} = MakeError<{parsedType}>(\"{calledRule.VisualName}\", {resultVar}.Error.Got, \"{rule.VisualName}\");");
                 code.AppendLine("}");
                 break;
             }
@@ -338,7 +340,7 @@ namespace {namespaceName}
                     code.AppendLine($"    {resultVar} = MakeOk({resultTok}, {lastIndex} + 1);");
                     code.AppendLine("} else {");
                     code.AppendLine($"    this.TryPeek({lastIndex}, out var got);");
-                    code.AppendLine($"    {resultVar} = MakeError<{parsedType}>(\"{lit.Value}\", got, \"{rule.Name}\");");
+                    code.AppendLine($"    {resultVar} = MakeError<{parsedType}>(\"{lit.Value}\", got, \"{rule.VisualName}\");");
                     code.AppendLine("}");
                 }
                 else
@@ -350,7 +352,7 @@ namespace {namespaceName}
                     code.AppendLine($"    {resultVar} = MakeOk({resultTok}, {lastIndex} + 1);");
                     code.AppendLine("} else {");
                     code.AppendLine($"    this.TryPeek({lastIndex}, out var got);");
-                    code.AppendLine($"    {resultVar} = MakeError<{parsedType}>({tokVariant}, got, \"{rule.Name}\");");
+                    code.AppendLine($"    {resultVar} = MakeError<{parsedType}>({tokVariant}, got, \"{rule.VisualName}\");");
                     code.AppendLine("}");
                 }
                 break;
@@ -393,7 +395,7 @@ namespace {namespaceName}
 
                     if (ast == null) continue;
 
-                    var rule = new Rule(name, new BnfAst.Transform(ast, method));
+                    var rule = new Rule(name, new BnfAst.Transform(ast, method)) { VisualName = name };
                     result.Add(rule);
                 }
             }
