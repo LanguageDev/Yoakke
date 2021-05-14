@@ -123,6 +123,9 @@ namespace Yoakke.Parser
             return true;
         }
 
+        // TODO: Doc
+        protected static ParseResult<T> MakeOk<T>(ParseOk<T> ok) => new ParseResult<T>(ok);
+
         /// <summary>
         /// Utility for constructing a <see cref="ParseResult{T}"/> as a success variant.
         /// </summary>
@@ -130,8 +133,8 @@ namespace Yoakke.Parser
         /// <param name="value">The parsed value.</param>
         /// <param name="offset">The offset in the number of tokens.</param>
         /// <returns>The created parse result.</returns>
-        protected static ParseResult<T> MakeSuccess<T>(T value, int offset) =>
-            new ParseResult<T>(new ParseSuccess<T>(value, offset));
+        protected static ParseResult<T> MakeOk<T>(T value, int offset, ParseError furthestError = null) =>
+            MakeOk(new ParseOk<T>(value, offset, furthestError));
 
         /// <summary>
         /// Utility for casting a parse error to a <see cref="ParseResult{T}"/>.
@@ -150,6 +153,37 @@ namespace Yoakke.Parser
         /// <param name="context">The rule context the error occurred in.</param>
         /// <returns>The created parse result.</returns>
         protected static ParseResult<T> MakeError<T>(object expected, IToken got, string context) =>
-            new ParseResult<T>(new ParseError(expected, got, context));
+            MakeError<T>(new ParseError(expected, got, context));
+
+        // TODO: Doc
+        protected static ParseResult<T> MergeAlternatives<T>(ParseResult<T> first, ParseResult<T> second)
+        {
+            if (first.IsOk && second.IsOk)
+            {
+                if (second.Ok.Offset > first.Ok.Offset) return second;
+                // NOTE: Even if they are equal, we return the first
+                return first;
+            }
+            if (first.IsOk) return first;
+            if (second.IsOk) return second;
+            // Both are errors
+            return new ParseResult<T>(ParseError.Unify(first.Error, second.Error));
+        }
+
+        // TODO: Doc
+        protected static ParseResult<T> MergeError<T>(ParseResult<T> result, ParseError error) =>
+            result.IsOk ? MergeError(result.Ok, error) : MergeError<T>(result.Error, error);
+
+        // TODO: Doc
+        protected static ParseResult<T> MergeError<T>(ParseOk<T> ok, ParseError error)
+        {
+            if (error == null) return MakeOk(ok);
+            if (ok.FurthestError == null) return MakeOk(ok.Value, ok.Offset, error);
+            return MakeOk(ok.Value, ok.Offset, ParseError.Unify(ok.FurthestError, error));
+        }
+
+        // TODO: Doc
+        protected static ParseResult<T> MergeError<T>(ParseError err1, ParseError err2) =>
+            MakeError<T>(ParseError.Unify(err1, err2));
     }
 }

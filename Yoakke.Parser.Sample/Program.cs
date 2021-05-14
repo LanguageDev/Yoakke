@@ -65,9 +65,9 @@ namespace Yoakke.Parser.Sample
             while (true)
             {
                 var result = parser.ParseProgram();
-                if (result.IsSuccess)
+                if (result.IsOk)
                 {
-                    Console.WriteLine($" => {result.Success.Value}");
+                    Console.WriteLine($" => {result.Ok.Value}");
                 }
                 else
                 {
@@ -77,6 +77,7 @@ namespace Yoakke.Parser.Sample
                         Console.WriteLine($"  expected {string.Join(" or ", element.Expected)} while parsing {element.Context}");
                     }
                     Console.WriteLine($"  but got {(err.Got == null ? "end of input" : err.Got.Text)}");
+                    Console.WriteLine("==============================");
                 }
             }
         }

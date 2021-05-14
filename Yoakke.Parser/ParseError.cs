@@ -46,6 +46,8 @@ namespace Yoakke.Parser
         /// <returns>The error that represents both of them properly.</returns>
         public static ParseError Unify(ParseError first, ParseError second)
         {
+            if (first == null) return second;
+            if (second == null) return first;
             if (first.Got == null || second.Got == null)
             {
                 // At least one of them is out of the input

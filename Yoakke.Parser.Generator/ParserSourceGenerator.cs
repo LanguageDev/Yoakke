@@ -98,16 +98,16 @@ namespace Yoakke.Parser.Generator
                     parserMethods.AppendLine("        return false;");
                     parserMethods.AppendLine("    }");
                     // Success case
-                    parserMethods.AppendLine("    value = result.Success.Value;");
-                    parserMethods.AppendLine("    this.TryConsume(result.Success.Offset);");
+                    parserMethods.AppendLine("    value = result.Ok.Value;");
+                    parserMethods.AppendLine("    this.TryConsume(result.Ok.Offset);");
                     parserMethods.AppendLine("    return true;");
                     parserMethods.AppendLine("}");
 
                     // Implement a regular parse-result method
                     parserMethods.AppendLine($"public {returnType} Parse{key}() {{");
                     parserMethods.AppendLine($"    var result = parse{key}(0);");
-                    parserMethods.AppendLine("    if (result.IsSuccess) {");
-                    parserMethods.AppendLine("        this.TryConsume(result.Success.Offset);");
+                    parserMethods.AppendLine("    if (result.IsOk) {");
+                    parserMethods.AppendLine("        this.TryConsume(result.Ok.Offset);");
                     parserMethods.AppendLine("    } else {");
                     // Try to consume one so the parser won't get stuck
                     // TODO: Maybe let the user do this or be smarter about it?
@@ -167,9 +167,10 @@ namespace {namespaceName}
                 var subVar = GenerateBnf(code, rule, transform.Subexpr, lastIndex);
                 var binder = GetTopLevelPattern(transform.Subexpr);
                 var flattenedValues = FlattenBind(binder);
-                code.AppendLine($"if ({subVar}.IsSuccess) {{");
-                code.AppendLine($"    var {binder} = {subVar}.Success.Value;");
-                code.AppendLine($"    {resultVar} = MakeSuccess({transform.Method.Name}({flattenedValues}), {subVar}.Success.Offset);");
+                var call = $"{transform.Method.Name}({flattenedValues})";
+                code.AppendLine($"if ({subVar}.IsOk) {{");
+                code.AppendLine($"    var {binder} = {subVar}.Ok.Value;");
+                code.AppendLine($"    {resultVar} = MakeOk({call}, {subVar}.Ok.Offset, {subVar}.Ok.FurthestError);");
                 code.AppendLine("} else {");
                 code.AppendLine($"    {resultVar} = MakeError<{parsedType}>({subVar}.Error);");
                 code.AppendLine("}");
@@ -181,13 +182,18 @@ namespace {namespaceName}
                 var binder = GetTopLevelPattern(fold.Second);
                 var flattenedValues = FlattenBind(binder);
                 var firstVar = GenerateBnf(code, rule, fold.First, lastIndex);
-                code.AppendLine($"if ({firstVar}.IsSuccess) {{");
+                var call = $"{fold.Method.Name}({resultVar}.Ok.Value, {flattenedValues})";
+                code.AppendLine($"if ({firstVar}.IsOk) {{");
                 code.AppendLine($"    {resultVar} = {firstVar};");
                 code.AppendLine("    while (true) {");
-                var secondVar = GenerateBnf(code, rule, fold.Second, $"{resultVar}.Success.Offset");
-                code.AppendLine($"        if ({secondVar}.IsError) break;");
-                code.AppendLine($"        var {binder} = {secondVar}.Success.Value;");
-                code.AppendLine($"        {resultVar} = MakeSuccess({fold.Method.Name}({resultVar}.Success.Value, {flattenedValues}), {secondVar}.Success.Offset);");
+                var secondVar = GenerateBnf(code, rule, fold.Second, $"{resultVar}.Ok.Offset");
+                var errMerge = $"{TypeNames.ParseError}.Unify({resultVar}.FurthestError, {secondVar}.FurthestError)";
+                code.AppendLine($"        if ({secondVar}.IsError) {{");
+                code.AppendLine($"            {resultVar} = MergeError({resultVar}.Ok, {secondVar}.Error);");
+                code.AppendLine("            break;");
+                code.AppendLine("        }");
+                code.AppendLine($"        var {binder} = {secondVar}.Ok.Value;");
+                code.AppendLine($"        {resultVar} = MakeOk({call}, {secondVar}.Ok.Offset, {errMerge});");
                 code.AppendLine("    }");
                 code.AppendLine("} else {");
                 code.AppendLine($"    {resultVar} = MakeError<{parsedType}>({firstVar}.Error);");
@@ -210,7 +216,7 @@ namespace {namespaceName}
                     else
                     {
                         // Pick the one that got the furthest
-                        code.AppendLine($"{resultVar} = {resultType}.Unify({resultVar}, {altVar});");
+                        code.AppendLine($"{resultVar} = MergeAlternatives({resultVar}, {altVar});");
                     }
                 }
                 break;
@@ -221,18 +227,20 @@ namespace {namespaceName}
                 var varStack = new Stack<string>();
                 var prevVar = GenerateBnf(code, rule, seq.Elements[0], lastIndex);
                 varStack.Push(prevVar);
-                var resultSeq = $"{prevVar}.Success.Value";
+                var resultSeq = $"{prevVar}.Ok.Value";
                 for (int i = 1; i < seq.Elements.Count; ++i)
                 {
-                    code.AppendLine($"if ({prevVar}.IsSuccess) {{");
-                    var nextVar = GenerateBnf(code, rule, seq.Elements[i], $"{prevVar}.Success.Offset");
+                    code.AppendLine($"if ({prevVar}.IsOk) {{");
+                    var nextVar = GenerateBnf(code, rule, seq.Elements[i], $"{prevVar}.Ok.Offset");
+                    // Update it with the error
+                    code.AppendLine($"{nextVar} = MergeError({nextVar}, {prevVar}.Ok.FurthestError);");
                     prevVar = nextVar;
                     varStack.Push(prevVar);
-                    resultSeq += $", {prevVar}.Success.Value";
+                    resultSeq += $", {prevVar}.Ok.Value";
                 }
                 // Unify last
-                code.AppendLine($"if ({prevVar}.IsSuccess) {{");
-                code.AppendLine($"    {resultVar} = MakeSuccess(({resultSeq}), {prevVar}.Success.Offset);");
+                code.AppendLine($"if ({prevVar}.IsOk) {{");
+                code.AppendLine($"    {resultVar} = MakeOk(({resultSeq}), {prevVar}.Ok.Offset, {prevVar}.Ok.FurthestError);");
                 code.AppendLine("} else {");
                 varStack.Pop();
                 code.AppendLine($"    {resultVar} = MakeError<{parsedType}>({prevVar}.Error);");
@@ -251,42 +259,57 @@ namespace {namespaceName}
             {
                 var subVar = GenerateBnf(code, rule, opt.Subexpr, lastIndex);
                 // TODO: Might not be correct, might need to take it apart to reconstruct the tuple here
-                code.AppendLine($"if ({subVar}.IsSuccess) {resultVar} = {subVar};");
-                code.AppendLine($"else {resultVar} = MakeSuccess<{parsedType}>(default, 0);");
+                code.AppendLine($"if ({subVar}.IsOk) {resultVar} = {subVar};");
+                code.AppendLine($"else {resultVar} = MakeOk<{parsedType}>(default, {lastIndex}, {resultVar}.Error);");
                 break;
             }
 
             case BnfAst.Rep0 r0:
             {
+                var elementType = r0.Subexpr.GetParsedType(ruleSet, tokenKinds);
                 var listVar = AllocateVarName();
                 var indexVar = AllocateVarName();
-                code.AppendLine($"var {listVar} = new {TypeNames.List}<{r0.Subexpr.GetParsedType(ruleSet, tokenKinds)}>();");
+                var errVar = AllocateVarName();
+                code.AppendLine($"var {listVar} = new {TypeNames.List}<{elementType}>();");
                 code.AppendLine($"var {indexVar} = {lastIndex};");
+                code.AppendLine($"{TypeNames.ParseError} {errVar} = null;");
                 code.AppendLine("while (true) {");
                 var subVar = GenerateBnf(code, rule, r0.Subexpr, indexVar);
-                code.AppendLine($"    if ({subVar}.IsError) break;");
-                code.AppendLine($"    {indexVar} = {subVar}.Success.Offset;");
-                code.AppendLine($"    {listVar}.Add({subVar}.Success.Value);");
+                code.AppendLine($"    if ({subVar}.IsError) {{");
+                code.AppendLine($"        {errVar} = {TypeNames.ParseError}.Unify({errVar}, {subVar}.Error);");
+                code.AppendLine("        break;");
+                code.AppendLine("    }");
+                code.AppendLine($"    {indexVar} = {subVar}.Ok.Offset;");
+                code.AppendLine($"    {listVar}.Add({subVar}.Ok.Value);");
+                code.AppendLine($"    {errVar} = {TypeNames.ParseError}.Unify({errVar}, {subVar}.Ok.FurthestError);");
                 code.AppendLine("}");
-                code.AppendLine($"{resultVar} = MakeSuccess({listVar}, {indexVar});");
+                code.AppendLine($"{resultVar} = MakeOk({listVar}, {indexVar}, {errVar});");
                 break;
             }
 
             case BnfAst.Rep1 r1:
             {
+                var elementType = r1.Subexpr.GetParsedType(ruleSet, tokenKinds);
                 var listVar = AllocateVarName();
                 var indexVar = AllocateVarName();
+                var errVar = AllocateVarName();
                 var firstVar = GenerateBnf(code, rule, r1.Subexpr, lastIndex);
-                code.AppendLine($"if ({firstVar}.IsSuccess) {{");
-                code.AppendLine($"    var {listVar} = new {TypeNames.List}<{r1.Subexpr.GetParsedType(ruleSet, tokenKinds)}>();");
-                code.AppendLine($"    {listVar}.Add({firstVar}.Success.Value);");
-                code.AppendLine($"    var {indexVar} = {firstVar}.Success.Offset;");
+                code.AppendLine($"if ({firstVar}.IsOk) {{");
+                code.AppendLine($"    var {listVar} = new {TypeNames.List}<{elementType}>();");
+                code.AppendLine($"    {listVar}.Add({firstVar}.Ok.Value);");
+                code.AppendLine($"    var {indexVar} = {firstVar}.Ok.Offset;");
+                code.AppendLine($"    {TypeNames.ParseError} {errVar} = null;");
                 code.AppendLine("    while (true) {");
                 var subVar = GenerateBnf(code, rule, r1.Subexpr, indexVar);
-                code.AppendLine($"        if ({subVar}.IsError) break;");
-                code.AppendLine($"        {indexVar} = {subVar}.Success.Offset;");
-                code.AppendLine($"        {listVar}.Add({subVar}.Success.Value);");
+                code.AppendLine($"        if ({subVar}.IsError) {{");
+                code.AppendLine($"            {errVar} = {TypeNames.ParseError}.Unify({errVar}, {subVar}.Error);");
+                code.AppendLine("            break;");
+                code.AppendLine("        }");
+                code.AppendLine($"        {indexVar} = {subVar}.Ok.Offset;");
+                code.AppendLine($"        {listVar}.Add({subVar}.Ok.Value);");
+                code.AppendLine($"        {errVar} = {TypeNames.ParseError}.Unify({errVar}, {subVar}.Ok.FurthestError);");
                 code.AppendLine("    }");
+                code.AppendLine($"    {resultVar} = MakeOk({listVar}, {indexVar}, {errVar});");
                 code.AppendLine("} else {");
                 code.AppendLine($"    {resultVar} = MakeError<{parsedType}>({firstVar}.Error);");
                 code.AppendLine("}");
@@ -307,7 +330,7 @@ namespace {namespaceName}
                 {
                     // Match text
                     code.AppendLine($"if (this.TryMatchText({lastIndex}, \"{lit.Value}\", out var {resultTok})) {{");
-                    code.AppendLine($"    {resultVar} = MakeSuccess({resultTok}, {lastIndex} + 1);");
+                    code.AppendLine($"    {resultVar} = MakeOk({resultTok}, {lastIndex} + 1);");
                     code.AppendLine("} else {");
                     code.AppendLine($"    this.TryPeek({lastIndex}, out var got);");
                     code.AppendLine($"    {resultVar} = MakeError<{parsedType}>(\"{lit.Value}\", got, \"{rule.Name}\");");
@@ -319,7 +342,7 @@ namespace {namespaceName}
                     var tokenType = tokenKinds.EnumType.ToDisplayString();
                     var tokVariant = $"{tokenType}.{((IFieldSymbol)lit.Value).Name}";
                     code.AppendLine($"if (this.TryMatchKind({lastIndex}, {tokVariant}, out var {resultTok})) {{");
-                    code.AppendLine($"    {resultVar} = MakeSuccess({resultTok}, {lastIndex} + 1);");
+                    code.AppendLine($"    {resultVar} = MakeOk({resultTok}, {lastIndex} + 1);");
                     code.AppendLine("} else {");
                     code.AppendLine($"    this.TryPeek({lastIndex}, out var got);");
                     code.AppendLine($"    {resultVar} = MakeError<{parsedType}>({tokVariant}, got, \"{rule.Name}\");");
