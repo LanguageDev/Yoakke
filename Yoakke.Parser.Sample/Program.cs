@@ -53,6 +53,12 @@ namespace Yoakke.Parser.Sample
 
         [Rule("expression : IntLit")]
         public static int IntLit(IToken token) => int.Parse(token.Text);
+
+        public void Synchronize()
+        {
+            for (; TryPeek(0, out var t) && t.Text != ";"; TryConsume(1)) ;
+            TryConsume(1);
+        }
     }
 
     class Program
@@ -77,7 +83,7 @@ namespace Yoakke.Parser.Sample
                         Console.WriteLine($"  expected {string.Join(" or ", element.Expected)} while parsing {element.Context}");
                     }
                     Console.WriteLine($"  but got {(err.Got == null ? "end of input" : err.Got.Text)}");
-                    Console.WriteLine("==============================");
+                    parser.Synchronize();
                 }
             }
         }
