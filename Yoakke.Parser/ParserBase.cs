@@ -15,6 +15,7 @@ namespace Yoakke.Parser
     {
         private ILexer lexer;
         private RingBuffer<IToken> peek;
+        private bool pushedEnd;
 
         /// <summary>
         /// Initializes a new <see cref="ParserBase"/>.
@@ -89,8 +90,15 @@ namespace Yoakke.Parser
                 {
                     if (lexer.IsEnd)
                     {
-                        token = null;
-                        return false;
+                        if (pushedEnd)
+                        {
+                            token = null;
+                            return false;
+                        }
+                        else
+                        {
+                            pushedEnd = true;
+                        }
                     }
                     peek.AddBack(lexer.Next());
                 }

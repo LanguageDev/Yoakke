@@ -62,10 +62,10 @@ namespace Yoakke.Parser.Generator
             }
 
             // Identifier
-            if (char.IsLetter(ch))
+            if (IsIdent(ch))
             {
                 int length = 1;
-                for (; char.IsLetterOrDigit(Peek(length)); ++length) ;
+                for (; IsIdent(Peek(length)); ++length) ;
                 return Make(length, BnfTokenType.Identifier);
             }
 
@@ -82,5 +82,7 @@ namespace Yoakke.Parser.Generator
 
         private char Peek(int offset = 0, char @default = '\0') => 
             index + offset >= source.Length ? @default : source[index + offset];
+
+        private static bool IsIdent(char ch) => char.IsLetterOrDigit(ch) || ch == '_';
     }
 }
