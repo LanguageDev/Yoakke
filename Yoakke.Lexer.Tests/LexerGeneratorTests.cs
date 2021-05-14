@@ -1,65 +1,26 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Yoakke.Text;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Yoakke.Lexer.Attributes;
+using IgnoreAttribute = Yoakke.Lexer.Attributes.IgnoreAttribute;
 
 namespace Yoakke.Lexer.Tests
 {
     [TestClass]
-    public class LexerBaseTests : TestBase<LexerBaseTests.TokenType>
+    public class LexerGeneratorTests : TestBase<LexerGeneratorTests.TokenType>
     {
+        [Lexer("Lexer")]
         public enum TokenType
         {
-            Number,
-            Identifier,
-            KwIf,
-            KwElse,
-            Plus,
-            Minus,
-            Error,
-            End,
-        }
+            [Ignore] [Regex(Regex.Space)] Whitespace,
 
-        public class Lexer : LexerBase<TokenType>
-        {
-            public Lexer(string source) 
-                : base(source)
-            {
-            }
+            [Error] Error,
+            [End] End,
 
-            public override Token<TokenType> Next()
-            {
-                begin:
-                if (Peek() == '\0') return TakeToken(TokenType.End, 0);
-                if (char.IsWhiteSpace(Peek()))
-                {
-                    Skip();
-                    goto begin;
-                }
-                if (Peek() == '+') return TakeToken(TokenType.Plus, 1);
-                if (Peek() == '-') return TakeToken(TokenType.Minus, 1);
-                if (char.IsDigit(Peek()))
-                {
-                    int length = 1;
-                    for (; char.IsDigit(Peek(length)); ++length) ;
-                    return TakeToken(TokenType.Number, length);
-                }
-                if (char.IsLetter(Peek()))
-                {
-                    int length = 1;
-                    for (; char.IsLetterOrDigit(Peek(length)); ++length) ;
-                    var result = TakeToken(TokenType.Identifier, length);
-                    return result.Text switch
-                    {
-                        "if" => new Token<TokenType>(result.Range, result.Text, TokenType.KwIf),
-                        "else" => new Token<TokenType>(result.Range, result.Text, TokenType.KwElse),
-                        _ => result,
-                    };
-                }
-                return TakeToken(TokenType.Error, 1);
-            }
+            [Token("if")] KwIf,
+            [Token("else")] KwElse,
+            [Regex(Regex.Ident)] Identifier,
+            [Token("+")] Plus,
+            [Token("-")] Minus,
+            [Regex(Regex.DecInt)] Number,
         }
 
         [TestMethod]
