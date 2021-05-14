@@ -318,8 +318,13 @@ namespace {namespaceName}
 
             case BnfAst.Call call:
             {
+                var peekVar = AllocateVarName();
                 var key = ToPascalCase(call.Name);
                 code.AppendLine($"{resultVar} = parse{key}({lastIndex});");
+                // HEURISTIC: If the parse didn't advance anything, replace error
+                code.AppendLine($"if ({resultVar}.IsError && (!TryPeek({lastIndex}, out var {peekVar}) || ReferenceEquals({peekVar}, {resultVar}.Error.Got))) {{");
+                code.AppendLine($"    {resultVar} = MakeError<{parsedType}>(\"{call.Name}\", {resultVar}.Error.Got, \"{rule.Name}\");");
+                code.AppendLine("}");
                 break;
             }
 
