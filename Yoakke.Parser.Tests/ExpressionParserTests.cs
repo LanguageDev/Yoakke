@@ -10,24 +10,7 @@ using Range = Yoakke.Text.Range;
 
 namespace Yoakke.Parser.Tests
 {
-    [Lexer("Lexer")]
-    enum TokenType
-    {
-        [End] End,
-        [Error] Error,
-        [Ignore] [Regex(Regex.Space)] Whitespace,
-
-        [Token("+")] Add,
-        [Token("-")] Sub,
-        [Token("*")] Mul,
-        [Token("/")] Div,
-        [Token("^")] Exp,
-        [Regex(Regex.DecInt)] Number,
-        [Token("(")] Lparen,
-        [Token(")")] Rparen,
-    }
-
-    [Parser(typeof(TokenType))]
+    [Parser(typeof(ExpressionParserTests.TokenType))]
     partial class ExprParser
     {
         [Rule("top_expression : expression End")]
@@ -57,7 +40,24 @@ namespace Yoakke.Parser.Tests
     [TestClass]
     public class ExpressionParserTests
     {
-        private static int Eval(string s) => new ExprParser(new Lexer(s)).ParseTopExpression().Ok.Value;
+        [Lexer("ExprLexer")]
+        public enum TokenType
+        {
+            [End] End,
+            [Error] Error,
+            [Ignore] [Regex(Regex.Space)] Whitespace,
+
+            [Token("+")] Add,
+            [Token("-")] Sub,
+            [Token("*")] Mul,
+            [Token("/")] Div,
+            [Token("^")] Exp,
+            [Regex(Regex.DecInt)] Number,
+            [Token("(")] Lparen,
+            [Token(")")] Rparen,
+        }
+
+        private static int Eval(string s) => new ExprParser(new ExprLexer(s)).ParseTopExpression().Ok.Value;
 
         [TestMethod]
         public void Tests()

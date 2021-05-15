@@ -22,7 +22,7 @@ namespace Yoakke.Parser.Generator.Ast
             public override BnfAst Desugar() => new Rep1(Subexpr.Desugar());
 
             public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens) =>
-                $"{TypeNames.IList}<{Subexpr.GetParsedType(ruleSet, tokens)}>";
+                $"{TypeNames.IReadOnlyList}<{Subexpr.GetParsedType(ruleSet, tokens)}>";
         }
     }
 }

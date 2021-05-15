@@ -24,7 +24,7 @@ namespace Yoakke.Parser.Generator.Ast
 
             public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens)
             {
-                if (Value is string) return TypeNames.IToken;
+                if (tokens.EnumType == null) return TypeNames.IToken;
                 else return $"{TypeNames.Token}<{tokens.EnumType.ToDisplayString()}>";
             }
         }

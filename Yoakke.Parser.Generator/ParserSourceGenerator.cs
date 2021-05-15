@@ -53,7 +53,7 @@ namespace Yoakke.Parser.Generator
                 // Generate code for it
                 var generated = GenerateImplementation(syntax, symbol);
                 if (generated == null) continue;
-                AddSource($"{symbol.Name}.Generated.cs", generated);
+                AddSource($"{symbol.ToDisplayString()}.Generated.cs", generated);
             }
         }
 
@@ -258,8 +258,7 @@ namespace {namespaceName}
             case BnfAst.Opt opt:
             {
                 var subVar = GenerateBnf(code, rule, opt.Subexpr, lastIndex);
-                // TODO: Might not be correct, might need to take it apart to reconstruct the tuple here
-                code.AppendLine($"if ({subVar}.IsOk) {resultVar} = {subVar};");
+                code.AppendLine($"if ({subVar}.IsOk) {resultVar} = MakeOk<{parsedType}>({subVar}.Ok.Value, {subVar}.Ok.Offset, {subVar}.Ok.FurthestError);");
                 code.AppendLine($"else {resultVar} = MakeOk<{parsedType}>(default, {lastIndex}, {resultVar}.Error);");
                 break;
             }
@@ -283,7 +282,7 @@ namespace {namespaceName}
                 code.AppendLine($"    {listVar}.Add({subVar}.Ok.Value);");
                 code.AppendLine($"    {errVar} = {TypeNames.ParseError}.Unify({errVar}, {subVar}.Ok.FurthestError);");
                 code.AppendLine("}");
-                code.AppendLine($"{resultVar} = MakeOk({listVar}, {indexVar}, {errVar});");
+                code.AppendLine($"{resultVar} = MakeOk(({parsedType}){listVar}, {indexVar}, {errVar});");
                 break;
             }
 
@@ -309,7 +308,7 @@ namespace {namespaceName}
                 code.AppendLine($"        {listVar}.Add({subVar}.Ok.Value);");
                 code.AppendLine($"        {errVar} = {TypeNames.ParseError}.Unify({errVar}, {subVar}.Ok.FurthestError);");
                 code.AppendLine("    }");
-                code.AppendLine($"    {resultVar} = MakeOk({listVar}, {indexVar}, {errVar});");
+                code.AppendLine($"    {resultVar} = MakeOk(({parsedType}){listVar}, {indexVar}, {errVar});");
                 code.AppendLine("} else {");
                 code.AppendLine($"    {resultVar} = MakeError<{parsedType}>({firstVar}.Error);");
                 code.AppendLine("}");
@@ -337,7 +336,7 @@ namespace {namespaceName}
                 {
                     // Match text
                     code.AppendLine($"if (this.TryMatchText({lastIndex}, \"{lit.Value}\", out var {resultTok})) {{");
-                    code.AppendLine($"    {resultVar} = MakeOk({resultTok}, {lastIndex} + 1);");
+                    code.AppendLine($"    {resultVar} = MakeOk(({parsedType}){resultTok}, {lastIndex} + 1);");
                     code.AppendLine("} else {");
                     code.AppendLine($"    this.TryPeek({lastIndex}, out var got);");
                     code.AppendLine($"    {resultVar} = MakeError<{parsedType}>(\"{lit.Value}\", got, \"{rule.VisualName}\");");
