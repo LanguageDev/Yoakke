@@ -24,7 +24,7 @@ namespace Yoakke.Parser.Tests
     [TestClass]
     public class SeparatedTests
     {
-        [Lexer("SepLexer")]
+        [Lexer("ListLexer")]
         public enum TokenType
         {
             [End] End,
@@ -37,7 +37,7 @@ namespace Yoakke.Parser.Tests
             [Regex(Regex.Ident)] Identifier,
         }
 
-        private static List<string> Any0NoTrailing(string source) => new ListParser(new SepLexer(source)).ParseAny0NoTrailing().Ok.Value;
+        private static List<string> Any0NoTrailing(string source) => new ListParser(new ListLexer(source)).ParseAny0NoTrailing().Ok.Value;
 
         [TestMethod]
         public void TestEmpty()
