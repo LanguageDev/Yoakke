@@ -50,8 +50,6 @@ namespace Yoakke.Collections.FiniteAutomata
         public DenseNfa()
             : this(Comparer<TSymbol>.Default)
         {
-            transitions = new Dictionary<State, IntervalMap<TSymbol, ISet<State>>>();
-            epsilon = new Dictionary<State, HashSet<State>>();
         }
 
         /// <summary>
@@ -60,6 +58,8 @@ namespace Yoakke.Collections.FiniteAutomata
         /// <param name="comparer">The comparer to use.</param>
         public DenseNfa(IComparer<TSymbol> comparer)
         {
+            transitions = new Dictionary<State, IntervalMap<TSymbol, ISet<State>>>();
+            epsilon = new Dictionary<State, HashSet<State>>();
             this.comparer = comparer;
         }
 
@@ -87,9 +87,9 @@ namespace Yoakke.Collections.FiniteAutomata
 
             while (stk.TryPop(out var top))
             {
-                yield return top;
+                yield return top!;
 
-                if (epsilon.TryGetValue(top, out var states))
+                if (epsilon.TryGetValue(top!, out var states))
                 {
                     foreach (var s in states)
                     {

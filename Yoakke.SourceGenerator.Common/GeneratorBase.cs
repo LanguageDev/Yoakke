@@ -24,6 +24,7 @@ namespace Yoakke.SourceGenerator.Common
 
         public void Execute(GeneratorExecutionContext context)
         {
+            if (context.SyntaxReceiver is null) return;
             if (!IsOwnSyntaxReceiver(context.SyntaxReceiver)) return;
 
             this.Context = context;
@@ -46,6 +47,7 @@ namespace Yoakke.SourceGenerator.Common
             if (!symbolCache.TryGetValue(name, out var value))
             {
                 value = Context.Compilation.GetTypeByMetadataName(name);
+                if (value is null) throw new ArgumentException("can't load symbol with name", nameof(name));
                 symbolCache.Add(name, value);
             }
             return value;
@@ -102,7 +104,7 @@ namespace Yoakke.SourceGenerator.Common
             return true;
         }
 
-        protected static bool SymbolEquals(ISymbol sym1, ISymbol sym2) =>
+        protected static bool SymbolEquals(ISymbol? sym1, ISymbol? sym2) =>
             SymbolEqualityComparer.Default.Equals(sym1, sym2);
     }
 }

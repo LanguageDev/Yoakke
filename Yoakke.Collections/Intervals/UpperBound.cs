@@ -43,7 +43,7 @@ namespace Yoakke.Collections.Intervals
 
         private readonly Bound<T> bound;
 
-        private UpperBound(BoundType type, T value)
+        private UpperBound(BoundType type, T? value)
         {
             bound = new Bound<T>(type, value);
         }
@@ -58,13 +58,13 @@ namespace Yoakke.Collections.Intervals
         /// </summary>
         /// <param name="value">The intervals associated value is written here, if this is an inclusive bound.</param>
         /// <returns>True, if this is an inclusive bound.</returns>
-        public bool IsInclusive(out T value) => bound.IsInclusive(out value);
+        public bool IsInclusive([MaybeNullWhen(false)] out T? value) => bound.IsInclusive(out value);
         /// <summary>
         /// Checks, if this is an interval bound that excludes it's associated value.
         /// </summary>
         /// <param name="value">The intervals associated value is written here, if this is an exclusive bound.</param>
         /// <returns>True, if this is an exclusive bound.</returns>
-        public bool IsExclusive(out T value) => bound.IsExclusive(out value);
+        public bool IsExclusive([MaybeNullWhen(false)] out T? value) => bound.IsExclusive(out value);
 
         /// <summary>
         /// Checks if this lower bound is touching a <see cref="LowerBound{T}"/>.

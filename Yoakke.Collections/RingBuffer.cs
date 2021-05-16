@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,17 +29,17 @@ namespace Yoakke.Collections
             get
             {
                 CheckIndexBounds(index);
-                return storage[ToStorageIndex(Head + index)];
+                return storage![ToStorageIndex(Head + index)]!;
             }
             set
             {
                 CheckIndexBounds(index);
-                storage[ToStorageIndex(Head + index)] = value;
+                storage![ToStorageIndex(Head + index)] = value;
             }
         }
         T IReadOnlyList<T>.this[int index] => this[index];
 
-        private T[] storage;
+        private T?[]? storage;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RingBuffer{T}"/> class that is empty and has the specified initial capacity.
@@ -62,42 +63,42 @@ namespace Yoakke.Collections
         {
             EnsureExtraCapacity(1);
             Head = ToStorageIndex(Head - 1);
-            storage[Head] = item;
+            storage![Head] = item;
             ++Count;
         }
 
         public void AddBack(T item)
         {
             EnsureExtraCapacity(1);
-            storage[Tail] = item;
+            storage![Tail] = item;
             ++Count;
         }
 
         public T RemoveFront()
         {
             CheckNonEmpty();
-            var result = storage[Head];
-            storage[Head] = default;
+            var result = storage![Head];
+            storage![Head] = default;
             Head = ToStorageIndex(Head + 1);
             --Count;
-            return result;
+            return result!;
         }
 
         public T RemoveBack()
         {
             CheckNonEmpty();
             var index = ToStorageIndex(Tail - 1);
-            var result = storage[index];
+            var result = storage![index];
             storage[index] = default;
             --Count;
-            return result;
+            return result!;
         }
 
         public void Clear()
         {
             var ((hstart, hlen), (tstart, tlen)) = GetSlices();
-            for (int i = hstart; i < hstart + hlen; ++i) storage[i] = default;
-            for (int i = tstart; i < tstart + tlen; ++i) storage[i] = default;
+            for (int i = hstart; i < hstart + hlen; ++i) storage![i] = default;
+            for (int i = tstart; i < tstart + tlen; ++i) storage![i] = default;
             Head = 0;
             Count = 0;
         }
@@ -105,8 +106,8 @@ namespace Yoakke.Collections
         public IEnumerator<T> GetEnumerator()
         {
             var ((hstart, hlen), (tstart, tlen)) = GetSlices();
-            for (int i = hstart; i < hstart + hlen; ++i) yield return storage[i];
-            for (int i = tstart; i < tstart + tlen; ++i) yield return storage[i];
+            for (int i = hstart; i < hstart + hlen; ++i) yield return storage![i]!;
+            for (int i = tstart; i < tstart + tlen; ++i) yield return storage![i]!;
         }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

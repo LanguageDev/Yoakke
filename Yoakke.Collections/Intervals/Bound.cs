@@ -26,18 +26,18 @@ namespace Yoakke.Collections.Intervals
             get
             {
                 if (Type == BoundType.Unbounded) throw new InvalidOperationException();
-                return value;
+                return value!;
             }
         }
 
-        private readonly T value;
+        private readonly T? value;
 
         /// <summary>
         /// Initializes a new <see cref="Bound{T}"/>.
         /// </summary>
         /// <param name="type">The type of the bound.</param>
         /// <param name="value">The associated value of the bound, if any.</param>
-        public Bound(BoundType type, T value)
+        public Bound(BoundType type, T? value)
         {
             Type = type;
             this.value = value;
@@ -54,7 +54,7 @@ namespace Yoakke.Collections.Intervals
         /// </summary>
         /// <param name="value">The intervals associated value is written here, if this is an inclusive bound.</param>
         /// <returns>True, if this is an inclusive bound.</returns>
-        public bool IsInclusive(out T value)
+        public bool IsInclusive([MaybeNullWhen(false)] out T? value)
         {
             if (Type == BoundType.Inclusive)
             {
@@ -73,7 +73,7 @@ namespace Yoakke.Collections.Intervals
         /// </summary>
         /// <param name="value">The intervals associated value is written here, if this is an exclusive bound.</param>
         /// <returns>True, if this is an exclusive bound.</returns>
-        public bool IsExclusive(out T value)
+        public bool IsExclusive([MaybeNullWhen(false)] out T? value)
         {
             if (Type == BoundType.Exclusive)
             {

@@ -3,7 +3,7 @@ namespace Yoakke.Collections.Compatibility
 {
     internal struct HashCode
     {
-        public static int Combine(params object[] values)
+        public static int Combine(params object?[] values)
         {
             var h = new HashCode();
             foreach (var item in values) h.Add(item);
@@ -12,9 +12,9 @@ namespace Yoakke.Collections.Compatibility
 
         private int code;
 
-        public void Add(object obj)
+        public void Add(object? obj)
         {
-            if (ReferenceEquals(obj, null))
+            if (obj is null)
             {
                 code = CombineHashCodes(code, 0);
                 return;

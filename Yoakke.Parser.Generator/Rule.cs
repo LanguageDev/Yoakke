@@ -30,6 +30,7 @@ namespace Yoakke.Parser.Generator
             Name = name;
             Ast = ast;
             PublicApi = publicApi;
+            VisualName = name;
         }
     }
 }

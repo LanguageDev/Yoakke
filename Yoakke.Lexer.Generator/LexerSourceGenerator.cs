@@ -48,18 +48,18 @@ namespace Yoakke.Lexer.Generator
                 var model = Context.Compilation.GetSemanticModel(syntax.SyntaxTree);
                 var symbol = model.GetDeclaredSymbol(syntax) as INamedTypeSymbol;
                 // Filter enums without the lexer attributes
-                if (!HasAttribute(symbol, TypeNames.LexerAttribute)) continue;
+                if (!HasAttribute(symbol!, TypeNames.LexerAttribute)) continue;
                 // Generate code for it
-                var generated = GenerateImplementation(syntax, symbol);
+                var generated = GenerateImplementation(syntax, symbol!);
                 if (generated == null) continue;
-                AddSource($"{symbol.ToDisplayString()}.Generated.cs", generated);
+                AddSource($"{symbol!.ToDisplayString()}.Generated.cs", generated);
             }
         }
 
-        private string GenerateImplementation(EnumDeclarationSyntax syntax, INamedTypeSymbol symbol)
+        private string? GenerateImplementation(EnumDeclarationSyntax syntax, INamedTypeSymbol symbol)
         {
             var accessibility = symbol.DeclaredAccessibility.ToString().ToLowerInvariant();
-            var lexerClassName = GetAttribute(symbol, TypeNames.LexerAttribute).GetCtorValue().ToString();
+            var lexerClassName = GetAttribute(symbol, TypeNames.LexerAttribute).GetCtorValue()?.ToString();
             var namespaceName = symbol.ContainingNamespace.ToDisplayString();
             var enumName = symbol.ToDisplayString();
             var tokenName = $"{TypeNames.Token}<{enumName}>";
@@ -78,7 +78,7 @@ namespace Yoakke.Lexer.Generator
                 try
                 {
                     // Parse the regex
-                    var regex = regexParser.Parse(token.Regex);
+                    var regex = regexParser.Parse(token.Regex!);
                     // Desugar it
                     regex = regex.Desugar();
                     // Construct it into the NFA
@@ -92,7 +92,7 @@ namespace Yoakke.Lexer.Generator
                 }
                 catch (Exception ex)
                 {
-                    Report(Diagnostics.FailedToParseRegularExpression, token.Symbol.Locations.First(), ex.Message);
+                    Report(Diagnostics.FailedToParseRegularExpression, token.Symbol!.Locations.First(), ex.Message);
                     return null;
                 }
             }
@@ -163,7 +163,7 @@ namespace Yoakke.Lexer.Generator
                         else
                         {
                             // Save token type
-                            transitionTable.AppendLine($"lastTokenType = {enumName}.{token.Symbol.Name};");
+                            transitionTable.AppendLine($"lastTokenType = {enumName}.{token.Symbol!.Name};");
                         }
                     }
                     transitionTable.AppendLine("break;");
@@ -233,7 +233,7 @@ end_loop:
 ";
         }
 
-        private LexerDescription ExtractLexerDescription(INamedTypeSymbol symbol)
+        private LexerDescription? ExtractLexerDescription(INamedTypeSymbol symbol)
         {
             var result = new LexerDescription();
             foreach (var member in symbol.GetMembers().OfType<IFieldSymbol>())
@@ -261,7 +261,7 @@ end_loop:
                     }
                     else
                     {
-                        Report(Diagnostics.FundamentalTokenTypeAlreadyDefined, member.Locations.First(), result.EndName, "error");
+                        Report(Diagnostics.FundamentalTokenTypeAlreadyDefined, member.Locations.First(), result.EndName!, "error");
                         return null;
                     }
                     continue;
@@ -271,23 +271,15 @@ end_loop:
                 // Regex
                 if (TryGetAttribute(member, TypeNames.RegexAttribute, out var attr))
                 {
-                    result.Tokens.Add(new TokenDescription
-                    {
-                        Symbol = (IFieldSymbol)member,
-                        Regex = attr.GetCtorValue().ToString(),
-                        Ignore = ignore,
-                    });
+                    var regex = attr.GetCtorValue()!.ToString();
+                    result.Tokens.Add(new TokenDescription(member, regex, ignore));
                     continue;
                 }
                 // Token
                 if (TryGetAttribute(member, TypeNames.TokenAttribute, out attr))
                 {
-                    result.Tokens.Add(new TokenDescription
-                    {
-                        Symbol = (IFieldSymbol)member,
-                        Regex = RegExParser.Escape(attr.GetCtorValue().ToString()),
-                        Ignore = ignore,
-                    });
+                    var regex = RegExParser.Escape(attr.GetCtorValue()!.ToString());
+                    result.Tokens.Add(new TokenDescription(member, regex, ignore));
                     continue;
                 }
                 // No attribute, warn

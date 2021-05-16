@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using Yoakke.Parser.Generator.Ast;
@@ -36,7 +37,7 @@ namespace Yoakke.Parser.Generator
                 var currentCall = new BnfAst.Call(i == 0 ? rule.Name : $"{rule.Name}_level{i}");
                 var nextCall = new BnfAst.Call(i == precedenceTable.Count - 1 ? atom.Name : $"{rule.Name}_level{i + 1}");
 
-                BnfAst toAdd = null;
+                BnfAst? toAdd = null;
                 foreach (var op in prec.Operators)
                 {
                     var opNode = new BnfAst.Literal(op);
@@ -75,7 +76,7 @@ namespace Yoakke.Parser.Generator
         {
             var alphas = new List<BnfAst>();
             var betas = new List<BnfAst>();
-            IMethodSymbol fold = null;
+            IMethodSymbol? fold = null;
             foreach (var child in alt.Elements)
             {
                 // If the inside has no transformation, we don't care
@@ -95,7 +96,7 @@ namespace Yoakke.Parser.Generator
                     {
                         throw new InvalidOperationException("Incompatible fold functions");
                     }
-                    alphas.Add(alpha);
+                    alphas.Add(alpha!);
                 }
                 else betas.Add(child);
             }
@@ -103,10 +104,10 @@ namespace Yoakke.Parser.Generator
             // We have left-recursion
             var betaNode = betas.Count == 1 ? betas[0] : new BnfAst.Alt(betas);
             var alphaNode = alphas.Count == 1 ? alphas[0] : new BnfAst.Alt(alphas);
-            return new BnfAst.FoldLeft(betaNode, alphaNode, fold);
+            return new BnfAst.FoldLeft(betaNode, alphaNode, fold!);
         }
 
-        private static bool TrySplitLeftRecursion(Rule rule, BnfAst.Seq seq, out BnfAst alpha)
+        private static bool TrySplitLeftRecursion(Rule rule, BnfAst.Seq seq, [MaybeNullWhen(false)] out BnfAst? alpha)
         {
             if (seq.Elements[0] is BnfAst.Call call && call.Name == rule.Name)
             {

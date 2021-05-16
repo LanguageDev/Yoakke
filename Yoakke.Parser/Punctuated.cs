@@ -23,7 +23,9 @@ namespace Yoakke.Parser
         /// <summary>
         /// The punctuations.
         /// </summary>
-        public IEnumerable<TPunct> Punctuations => underlying.Select(e => e.Punctuation).Where(e => e != null);
+        public IEnumerable<TPunct> Punctuations => underlying
+            .Select(e => e.Punctuation)
+            .OfType<TPunct>();
 
         public int Count => underlying.Count;
         public PunctuatedValue<TValue, TPunct> this[int index] => underlying[index];

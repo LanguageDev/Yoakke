@@ -23,7 +23,7 @@ namespace Yoakke.Parser
         /// <summary>
         /// The furthest error found.
         /// </summary>
-        public readonly ParseError FurthestError;
+        public readonly ParseError? FurthestError;
 
         /// <summary>
         /// Initializes a new <see cref="ParseOk{T}"/>.
@@ -31,7 +31,7 @@ namespace Yoakke.Parser
         /// <param name="value">The parsed value.</param>
         /// <param name="offset">The offset in the number of tokens.</param>
         /// <param name="furthestError">The furthest error found.</param>
-        public ParseOk(T value, int offset, ParseError furthestError = null)
+        public ParseOk(T value, int offset, ParseError? furthestError = null)
         {
             Value = value;
             Offset = offset;

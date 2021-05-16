@@ -7,7 +7,7 @@ namespace Yoakke.Collections.Compatibility
 {
     internal static class Extensions
     {
-        public static bool TryPop<T>(this Stack<T> stack, out T value)
+        public static bool TryPop<T>(this Stack<T> stack, [MaybeNullWhen(false)] out T? value)
         {
             if (stack.Count == 0)
             {

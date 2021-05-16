@@ -12,7 +12,7 @@ namespace Yoakke.Lexer
     /// Represents an atom in a language grammar as the lowest level element (atom/terminal) of parsing.
     /// </summary>
     /// <typeparam name="TKind">The kind type this token uses. Usually an enumeration.</typeparam>
-    public class Token<TKind> : IToken, IEquatable<Token<TKind>>
+    public class Token<TKind> : IToken, IEquatable<Token<TKind>> where TKind : notnull
     {
         public Range Range { get; }
         public string Text { get; }
@@ -35,10 +35,11 @@ namespace Yoakke.Lexer
             Kind = kind;
         }
 
-        public override bool Equals(object obj) => obj is Token<TKind> t && Equals(t);
-        public bool Equals(IToken other) => other is Token<TKind> t && Equals(t);
-        public bool Equals(Token<TKind> other) =>
-               Range == other.Range
+        public override bool Equals(object? obj) => Equals(obj as Token<TKind>);
+        public bool Equals(IToken? other) => Equals(other as Token<TKind>);
+        public bool Equals(Token<TKind>? other) =>
+               other is not null
+            && Range == other.Range
             && Text == other.Text
             && Kind.Equals(other.Kind);
 

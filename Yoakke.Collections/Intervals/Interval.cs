@@ -165,23 +165,23 @@ namespace Yoakke.Collections.Intervals
             {
                 // Starting relation, depends on which ends first
                 var (a, b) = upperCmp < 0 ? (first, second) : (second, first);
-                return new IntervalRelation<T>.Starting(a, new Interval<T>(a.Upper.GetTouching().Value, b.Upper));
+                return new IntervalRelation<T>.Starting(a, new Interval<T>(a.Upper.GetTouching()!.Value, b.Upper));
             }
             if (upperCmp == 0)
             {
-                return new IntervalRelation<T>.Finishing(new Interval<T>(first.Lower, second.Lower.GetTouching().Value), second);
+                return new IntervalRelation<T>.Finishing(new Interval<T>(first.Lower, second.Lower.GetTouching()!.Value), second);
             }
             if (upperCmp > 0)
             {
                 return new IntervalRelation<T>.Containing(
-                    new Interval<T>(first.Lower, second.Lower.GetTouching().Value),
+                    new Interval<T>(first.Lower, second.Lower.GetTouching()!.Value),
                     second,
-                    new Interval<T>(second.Upper.GetTouching().Value, first.Upper));
+                    new Interval<T>(second.Upper.GetTouching()!.Value, first.Upper));
             }
             return new IntervalRelation<T>.Overlapping(
-                new Interval<T>(first.Lower, second.Lower.GetTouching().Value),
+                new Interval<T>(first.Lower, second.Lower.GetTouching()!.Value),
                 new Interval<T>(second.Lower, first.Upper),
-                new Interval<T>(first.Upper.GetTouching().Value, second.Upper));
+                new Interval<T>(first.Upper.GetTouching()!.Value, second.Upper));
         }
 
         public override string ToString()

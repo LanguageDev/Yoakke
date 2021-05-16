@@ -11,7 +11,7 @@ namespace Yoakke.Parser.Attributes
         /// <summary>
         /// The token kind type to use as a parser element.
         /// </summary>
-        public readonly Type TokenType;
+        public readonly Type? TokenType;
 
         /// <summary>
         /// Initializes a new <see cref="ParserAttribute"/>.

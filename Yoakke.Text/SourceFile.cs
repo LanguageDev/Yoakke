@@ -57,8 +57,10 @@ namespace Yoakke.Text
             if (disposing)
             {
                 underlying.Dispose();
-                sourceText = null;
-                lineStarts = null;
+                sourceText.Clear();
+                lineStarts.Clear();
+                sourceText = null!;
+                lineStarts = null!;
             }
             disposed = true;
         }
@@ -103,7 +105,7 @@ namespace Yoakke.Text
         public override Task<int> ReadBlockAsync(char[] buffer, int index, int count) =>
             Task.FromResult(Read(buffer, index, count));
 
-        public override string ReadLine()
+        public override string? ReadLine()
         {
             if (index == sourceText.Length && !ReadNextLine()) return null;
             var lineIndex = lineStarts.BinarySearch(index);
@@ -115,7 +117,7 @@ namespace Yoakke.Text
             return result;
         }
 
-        public override Task<string> ReadLineAsync() => Task.FromResult(ReadLine());
+        public override Task<string?> ReadLineAsync() => Task.FromResult(ReadLine());
 
         public override string ReadToEnd()
         {

@@ -22,7 +22,7 @@ namespace Yoakke.Collections
                 return buffer[0];
             }
         }
-        object IEnumerator.Current => Current;
+        object IEnumerator.Current => Current!;
 
         private readonly IEnumerator<T> underlying;
         private RingBuffer<T> buffer;
@@ -38,7 +38,8 @@ namespace Yoakke.Collections
         public void Dispose()
         {
             underlying.Dispose();
-            buffer = null;
+            buffer.Clear();
+            buffer = null!;
         }
 
         public void Reset()
@@ -66,7 +67,7 @@ namespace Yoakke.Collections
             return TryPeek(0, out var _);
         }
 
-        public bool TryPeek(int amount, out T item)
+        public bool TryPeek(int amount, [MaybeNullWhen(false)] out T? item)
         {
             while (buffer.Count <= amount)
             {
@@ -94,7 +95,7 @@ namespace Yoakke.Collections
         public T Peek(int amount)
         {
             if (!TryPeek(amount, out var item)) throw new ArgumentOutOfRangeException(nameof(item));
-            return item;
+            return item!;
         }
     }
 }

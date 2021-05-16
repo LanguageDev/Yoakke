@@ -28,9 +28,9 @@ namespace Yoakke.Parser.Generator
             }
         }
 
-        private RuleSet ruleSet;
+        private RuleSet? ruleSet;
         private int varIndex;
-        private TokenKindSet tokenKinds;
+        private TokenKindSet? tokenKinds;
 
         public ParserSourceGenerator()
             : base("Yoakke.Parser.Generator") { }
@@ -49,22 +49,22 @@ namespace Yoakke.Parser.Generator
                 var model = Context.Compilation.GetSemanticModel(syntax.SyntaxTree);
                 var symbol = model.GetDeclaredSymbol(syntax) as INamedTypeSymbol;
                 // Filter classes without the parser attributes
-                if (!HasAttribute(symbol, TypeNames.ParserAttribute)) continue;
+                if (!HasAttribute(symbol!, TypeNames.ParserAttribute)) continue;
                 // Generate code for it
-                var generated = GenerateImplementation(syntax, symbol);
+                var generated = GenerateImplementation(syntax, symbol!);
                 if (generated == null) continue;
-                AddSource($"{symbol.ToDisplayString()}.Generated.cs", generated);
+                AddSource($"{symbol!.ToDisplayString()}.Generated.cs", generated);
             }
         }
 
-        private string GenerateImplementation(ClassDeclarationSyntax syntax, INamedTypeSymbol symbol)
+        private string? GenerateImplementation(ClassDeclarationSyntax syntax, INamedTypeSymbol symbol)
         {
             if (!RequirePartial(syntax) || !RequireNonNested(symbol)) return null;
 
             var parserAttr = GetAttribute(symbol, TypeNames.ParserAttribute);
             if (parserAttr.ConstructorArguments.Length > 0)
             {
-                var tokenType = (INamedTypeSymbol)parserAttr.ConstructorArguments.First().Value;
+                var tokenType = (INamedTypeSymbol)parserAttr.ConstructorArguments.First().Value!;
                 tokenKinds = new TokenKindSet(tokenType);
             }
             else
@@ -155,7 +155,7 @@ namespace {namespaceName}
 
         private string GenerateBnf(StringBuilder code, Rule rule, BnfAst node, string lastIndex)
         {
-            var parsedType = node.GetParsedType(ruleSet, tokenKinds);
+            var parsedType = node.GetParsedType(ruleSet!, tokenKinds!);
             var resultType = GetReturnType(parsedType);
             var resultVar = AllocateVarName();
             code.AppendLine($"{resultType} {resultVar};");
@@ -265,7 +265,7 @@ namespace {namespaceName}
 
             case BnfAst.Rep0 r0:
             {
-                var elementType = r0.Subexpr.GetParsedType(ruleSet, tokenKinds);
+                var elementType = r0.Subexpr.GetParsedType(ruleSet!, tokenKinds!);
                 var listVar = AllocateVarName();
                 var indexVar = AllocateVarName();
                 var errVar = AllocateVarName();
@@ -288,7 +288,7 @@ namespace {namespaceName}
 
             case BnfAst.Rep1 r1:
             {
-                var elementType = r1.Subexpr.GetParsedType(ruleSet, tokenKinds);
+                var elementType = r1.Subexpr.GetParsedType(ruleSet!, tokenKinds!);
                 var listVar = AllocateVarName();
                 var indexVar = AllocateVarName();
                 var errVar = AllocateVarName();
@@ -318,7 +318,7 @@ namespace {namespaceName}
             case BnfAst.Call call:
             {
                 // TODO: Check if it even exists
-                var calledRule = ruleSet.GetRule(call.Name);
+                var calledRule = ruleSet!.GetRule(call.Name);
                 var peekVar = AllocateVarName();
                 var key = ToPascalCase(call.Name);
                 code.AppendLine($"{resultVar} = parse{key}({lastIndex});");
@@ -345,7 +345,7 @@ namespace {namespaceName}
                 else
                 {
                     // Match token type
-                    var tokenType = tokenKinds.EnumType.ToDisplayString();
+                    var tokenType = tokenKinds!.EnumType!.ToDisplayString();
                     var tokVariant = $"{tokenType}.{((IFieldSymbol)lit.Value).Name}";
                     code.AppendLine($"if (this.TryMatchKind({lastIndex}, {tokVariant}, out var {resultTok})) {{");
                     code.AppendLine($"    {resultVar} = MakeOk({resultTok}, {lastIndex} + 1);");
@@ -377,18 +377,18 @@ namespace {namespaceName}
                 // Collect associativity attributes in declaration order
                 var precedenceTable = method.GetAttributes()
                     .Where(a => SymbolEquals(a.AttributeClass, leftAttr) || SymbolEquals(a.AttributeClass, rightAttr))
-                    .OrderBy(a => a.ApplicationSyntaxReference.GetSyntax().GetLocation().SourceSpan.Start)
+                    .OrderBy(a => a.ApplicationSyntaxReference!.GetSyntax().GetLocation().SourceSpan.Start)
                     .Select(a => (Left: SymbolEquals(a.AttributeClass, leftAttr), Operators: a.ConstructorArguments.SelectMany(x => x.Values).Select(x => x.Value).ToHashSet()))
                     .ToList();
                 // Since there can be multiple get all rule attributes attached to this method
                 foreach (var attr in method.GetAttributes().Where(a => SymbolEquals(a.AttributeClass, ruleAttr)))
                 {
-                    var bnfString = attr.GetCtorValue().ToString();
-                    var (name, ast) = BnfParser.Parse(bnfString, tokenKinds);
+                    var bnfString = attr.GetCtorValue()!.ToString();
+                    var (name, ast) = BnfParser.Parse(bnfString, tokenKinds!);
 
                     if (precedenceTable.Count > 0)
                     {
-                        result.AddPrecedence(name, precedenceTable, method);
+                        result.AddPrecedence(name, precedenceTable!, method);
                         precedenceTable.Clear();
                     }
 

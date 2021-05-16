@@ -11,10 +11,10 @@ namespace Yoakke.Collections.RegEx
     /// </summary>
     public class RegExParser
     {
-        private string source;
+        private string? source;
         private int index;
 
-        private bool IsEnd => index >= source.Length;
+        private bool IsEnd => source is null || index >= source.Length;
 
         /// <summary>
         /// Parses a string into a regex AST.
@@ -135,7 +135,7 @@ namespace Yoakke.Collections.RegEx
         }
 
         private char Peek(int offset = 0, char @default = '\0') =>
-            index + offset >= source.Length ? @default : source[index + offset];
+            index + offset >= source!.Length ? @default : source[index + offset];
 
         private char Consume()
         {

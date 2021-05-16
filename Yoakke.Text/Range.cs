@@ -53,7 +53,7 @@ namespace Yoakke.Text
         {
         }
 
-        public override bool Equals(object obj) => obj is Range r && Equals(r);
+        public override bool Equals(object? obj) => obj is Range r && Equals(r);
         public override int GetHashCode() => HashCode.Combine(Start, End);
         public bool Equals(Range other) => Start == other.Start && End == other.End;
 

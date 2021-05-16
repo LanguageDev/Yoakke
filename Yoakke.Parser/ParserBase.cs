@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,7 +14,7 @@ namespace Yoakke.Parser
     /// </summary>
     public abstract class ParserBase
     {
-        private ILexer lexer;
+        private ILexer? lexer;
         private RingBuffer<IToken> peek;
         private bool pushedEnd;
 
@@ -45,9 +46,9 @@ namespace Yoakke.Parser
         /// <param name="kind">The token kind to check for.</param>
         /// <param name="token">The token, if it matched the kind.</param>
         /// <returns>True, if the given token ahead has the certain kind.</returns>
-        protected bool TryMatchKind<T>(int offset, T kind, out Token<T> token)
+        protected bool TryMatchKind<T>(int offset, T kind, [MaybeNullWhen(false)] out Token<T>? token) where T : notnull
         {
-            if (TryPeek(offset, out var itoken) && itoken is Token<T> t && t.Kind.Equals(kind))
+            if (TryPeek(offset, out var itoken) && itoken is Token<T> t && kind!.Equals(t.Kind))
             {
                 token = t;
                 return true;
@@ -63,8 +64,8 @@ namespace Yoakke.Parser
         /// <param name="text">The token text to check for.</param>
         /// <param name="token">The token, if it matched the kind.</param>
         /// <returns>True, if the given token ahead has the certain text.</returns>
-        protected bool TryMatchText(int offset, string text, out IToken token) =>
-            TryPeek(offset, out token) && token.Text == text;
+        protected bool TryMatchText(int offset, string text, [MaybeNullWhen(false)] out IToken? token) =>
+            TryPeek(offset, out token) && token!.Text == text;
 
         /// <summary>
         /// Peeks forward in the input.
@@ -72,7 +73,7 @@ namespace Yoakke.Parser
         /// <param name="offset">The amount to peek forward.</param>
         /// <param name="token">The token the given offset ahead, if there were enough tokens.</param>
         /// <returns>True, if there were enough tokens to peek ahead the amount.</returns>
-        protected bool TryPeek(int offset, out IToken token)
+        protected bool TryPeek(int offset, [MaybeNullWhen(false)] out IToken? token)
         {
             if (lexer == null)
             {
@@ -112,7 +113,7 @@ namespace Yoakke.Parser
         /// </summary>
         /// <param name="token">The consumed token if succeeded.</param>
         /// <returns>True, if the token was successfully consumed.</returns>
-        protected bool TryConsume(out IToken token)
+        protected bool TryConsume([MaybeNullWhen(false)] out IToken? token)
         {
             if (!TryPeek(0, out token)) return false;
             this.peek.RemoveFront();
@@ -141,7 +142,7 @@ namespace Yoakke.Parser
         /// <param name="value">The parsed value.</param>
         /// <param name="offset">The offset in the number of tokens.</param>
         /// <returns>The created parse result.</returns>
-        protected static ParseResult<T> MakeOk<T>(T value, int offset, ParseError furthestError = null) =>
+        protected static ParseResult<T> MakeOk<T>(T value, int offset, ParseError? furthestError = null) =>
             MakeOk(new ParseOk<T>(value, offset, furthestError));
 
         /// <summary>

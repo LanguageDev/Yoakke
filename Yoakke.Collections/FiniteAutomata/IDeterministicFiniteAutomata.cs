@@ -18,7 +18,7 @@ namespace Yoakke.Collections.FiniteAutomata
         /// <param name="from">The state to transition from.</param>
         /// <param name="on">The symbol to transition on.</param>
         /// <returns>The state to transition to, or null if there's no transition.</returns>
-        public State GetTransition(State from, TSymbol on);
+        public State? GetTransition(State from, TSymbol on);
 
         /// <summary>
         /// Minifies this deterministic finite automata.

@@ -30,7 +30,6 @@ namespace Yoakke.Collections.FiniteAutomata
         public DenseDfa()
             : this(Comparer<TSymbol>.Default)
         {
-            transitions = new Dictionary<State, IntervalMap<TSymbol, State>>();
         }
 
         /// <summary>
@@ -40,6 +39,7 @@ namespace Yoakke.Collections.FiniteAutomata
         public DenseDfa(IComparer<TSymbol> comparer)
         {
             this.comparer = comparer;
+            transitions = new Dictionary<State, IntervalMap<TSymbol, State>>();
         }
 
         public bool IsAccepting(State state) => AcceptingStates.Contains(state);
@@ -47,10 +47,10 @@ namespace Yoakke.Collections.FiniteAutomata
         public IEnumerable<State> GetTransitions(State from, TSymbol on)
         {
             var to = GetTransition(from, on);
-            if (to != null) yield return to;
+            if (to is not null) yield return to;
         }
 
-        public State GetTransition(State from, TSymbol on)
+        public State? GetTransition(State from, TSymbol on)
         {
             if (transitions.TryGetValue(from, out var map))
             {

@@ -27,7 +27,7 @@ namespace Yoakke.Text
             Column = column;
         }
 
-        public override bool Equals(object obj) => obj is Position position && Equals(position);
+        public override bool Equals(object? obj) => obj is Position position && Equals(position);
         public override int GetHashCode() => HashCode.Combine(Line, Column);
         public bool Equals(Position other) => CompareTo(other) == 0;
 

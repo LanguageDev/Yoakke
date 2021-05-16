@@ -34,7 +34,7 @@ namespace Yoakke.Parser
         /// <summary>
         /// Retrieves the furthest error for this result.
         /// </summary>
-        public ParseError FurthestError => value is ParseOk<T> ok ? ok.FurthestError : (ParseError)value;
+        public ParseError? FurthestError => value is ParseOk<T> ok ? ok.FurthestError : (ParseError)value;
 
         /// <summary>
         /// Initializes a new <see cref="ParseResult{T}"/> as a successful parse.

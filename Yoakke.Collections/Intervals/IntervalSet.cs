@@ -102,8 +102,8 @@ namespace Yoakke.Collections.Intervals
                 var nIntervals = intervals.Count - 1;
                 for (int i = 0; i < nIntervals; ++i)
                 {
-                    var lower = intervals[i].Upper.GetTouching().Value;
-                    var upper = intervals[i + 1].Lower.GetTouching().Value;
+                    var lower = intervals[i].Upper.GetTouching()!.Value;
+                    var upper = intervals[i + 1].Lower.GetTouching()!.Value;
                     intervals[i] = new Interval<T>(lower, upper);
                 }
                 intervals.RemoveAt(intervals.Count - 1);
@@ -113,28 +113,28 @@ namespace Yoakke.Collections.Intervals
                 var nIntervals = intervals.Count;
                 if (nIntervals > 1)
                 {
-                    var prevTouch = intervals[nIntervals - 1].Lower.GetTouching().Value;
+                    var prevTouch = intervals[nIntervals - 1].Lower.GetTouching()!.Value;
 
                     // Modify the last one
-                    var lastLower = intervals[nIntervals - 1].Upper.GetTouching().Value;
+                    var lastLower = intervals[nIntervals - 1].Upper.GetTouching()!.Value;
                     intervals[nIntervals - 1] = new Interval<T>(lastLower, UpperBound<T>.Unbounded());
 
                     for (int i = nIntervals - 2; i > 0; --i)
                     {
                         var loTouch = prevTouch;
-                        var hiTouch = intervals[i].Upper.GetTouching().Value;
-                        prevTouch = intervals[i].Lower.GetTouching().Value;
+                        var hiTouch = intervals[i].Upper.GetTouching()!.Value;
+                        prevTouch = intervals[i].Lower.GetTouching()!.Value;
                         intervals[i] = new Interval<T>(hiTouch, loTouch);
                     }
 
                     // First one
-                    var hTouch = intervals[0].Upper.GetTouching().Value;
+                    var hTouch = intervals[0].Upper.GetTouching()!.Value;
                     intervals[0] = new Interval<T>(hTouch, prevTouch);
                 }
                 else
                 {
                     // Modify the only one
-                    var lower = intervals[0].Upper.GetTouching().Value;
+                    var lower = intervals[0].Upper.GetTouching()!.Value;
                     intervals[0] = new Interval<T>(lower, UpperBound<T>.Unbounded());
                 }
             }
@@ -143,28 +143,28 @@ namespace Yoakke.Collections.Intervals
                 var nIntervals = intervals.Count;
                 if (nIntervals > 1)
                 {
-                    var prevTouch = intervals[0].Upper.GetTouching().Value;
+                    var prevTouch = intervals[0].Upper.GetTouching()!.Value;
 
                     // Modify the first one
-                    var firstUpper = intervals[0].Lower.GetTouching().Value;
+                    var firstUpper = intervals[0].Lower.GetTouching()!.Value;
                     intervals[0] = new Interval<T>(LowerBound<T>.Unbounded(), firstUpper);
 
                     for (int i = 1; i < nIntervals - 1; ++i)
                     {
-                        var loTouch = intervals[i].Lower.GetTouching().Value;
+                        var loTouch = intervals[i].Lower.GetTouching()!.Value;
                         var hiTouch = prevTouch;
-                        prevTouch = intervals[i].Upper.GetTouching().Value;
+                        prevTouch = intervals[i].Upper.GetTouching()!.Value;
                         intervals[i] = new Interval<T>(hiTouch, loTouch);
                     }
 
                     // Last one
-                    var lTouch = intervals[nIntervals - 1].Lower.GetTouching().Value;
+                    var lTouch = intervals[nIntervals - 1].Lower.GetTouching()!.Value;
                     intervals[nIntervals - 1] = new Interval<T>(prevTouch, lTouch);
                 }
                 else
                 {
                     // Modify the only one
-                    var upper = intervals[0].Lower.GetTouching().Value;
+                    var upper = intervals[0].Lower.GetTouching()!.Value;
                     intervals[0] = new Interval<T>(LowerBound<T>.Unbounded(), upper);
                 }
             }
@@ -174,19 +174,19 @@ namespace Yoakke.Collections.Intervals
                 var nIntervals = intervals.Count;
 
                 // Add a last entry
-                intervals.Add(new Interval<T>(intervals[intervals.Count - 1].Upper.GetTouching().Value, UpperBound<T>.Unbounded()));
+                intervals.Add(new Interval<T>(intervals[intervals.Count - 1].Upper.GetTouching()!.Value, UpperBound<T>.Unbounded()));
 
-                var prevTouch = intervals[0].Upper.GetTouching().Value;
+                var prevTouch = intervals[0].Upper.GetTouching()!.Value;
 
                 // Modify first one
-                var firstUpper = intervals[0].Lower.GetTouching().Value;
+                var firstUpper = intervals[0].Lower.GetTouching()!.Value;
                 intervals[0] = new Interval<T>(LowerBound<T>.Unbounded(), firstUpper);
 
                 for (int i = 1; i < nIntervals; ++i)
                 {
-                    var loTouch = intervals[i].Lower.GetTouching().Value;
+                    var loTouch = intervals[i].Lower.GetTouching()!.Value;
                     var upper = prevTouch;
-                    prevTouch = intervals[i].Upper.GetTouching().Value;
+                    prevTouch = intervals[i].Upper.GetTouching()!.Value;
                     intervals[i] = new Interval<T>(upper, loTouch);
                 }
             }

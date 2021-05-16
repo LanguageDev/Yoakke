@@ -14,7 +14,7 @@ namespace Yoakke.Lexer
     /// Base class for implementing a lexer with a simplified API.
     /// </summary>
     /// <typeparam name="T">The token type of the tokens this lexer produces.</typeparam>
-    public abstract class LexerBase<T> : ILexer
+    public abstract class LexerBase<T> : ILexer where T : notnull
     {
         public Position Position { get; private set; }
         public bool IsEnd => Peek() == '\0';

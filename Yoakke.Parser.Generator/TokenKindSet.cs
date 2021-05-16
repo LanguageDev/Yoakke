@@ -8,7 +8,7 @@ namespace Yoakke.Parser.Generator
 {
     internal class TokenKindSet
     {
-        public readonly INamedTypeSymbol EnumType;
+        public readonly INamedTypeSymbol? EnumType;
         private Dictionary<string, IFieldSymbol> fields;
 
         public TokenKindSet()

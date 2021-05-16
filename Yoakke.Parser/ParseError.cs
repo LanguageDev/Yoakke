@@ -19,7 +19,7 @@ namespace Yoakke.Parser
         /// <summary>
         /// The input that was found, if any.
         /// </summary>
-        public readonly IToken Got;
+        public readonly IToken? Got;
 
         /// <summary>
         /// Initializes a new <see cref="ParseError"/>.
@@ -27,12 +27,12 @@ namespace Yoakke.Parser
         /// <param name="expected">The expected input.</param>
         /// <param name="got">The input that was found.</param>
         /// <param name="context">The context in which the error occurred.</param>
-        public ParseError(object expected, IToken got, string context)
+        public ParseError(object expected, IToken? got, string context)
             : this(new Dictionary<string, ParseErrorElement> { { context, new ParseErrorElement(expected, context) } }, got)
         {
         }
 
-        private ParseError(IReadOnlyDictionary<string, ParseErrorElement> elements, IToken got)
+        private ParseError(IReadOnlyDictionary<string, ParseErrorElement> elements, IToken? got)
         {
             Elements = elements;
             Got = got;
@@ -73,7 +73,9 @@ namespace Yoakke.Parser
                     elements.Add(element.Context, part);
                 }
             }
-            return new ParseError(elements.ToDictionary(kv => kv.Key, kv => new ParseErrorElement(kv.Value, kv.Key)), first.Got);
+            return new ParseError(
+                elements.ToDictionary(kv => kv.Key, kv => new ParseErrorElement(kv.Value, kv.Key)), 
+                first.Got);
         }
     }
 }

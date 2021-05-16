@@ -34,7 +34,7 @@ namespace Yoakke.Collections.Intervals
             get
             {
                 if (!TryGetValue(key, out var value)) throw new KeyNotFoundException();
-                return value;
+                return value!;
             }
         }
 
@@ -71,7 +71,7 @@ namespace Yoakke.Collections.Intervals
         public void Clear() => values.Clear();
         public bool ContainsKey(TKey key) => TryGetValue(key, out var _);
 
-        public bool TryGetValue(TKey key, out TValue value)
+        public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue? value)
         {
             var interval = Interval<TKey>.Singleton(key);
             var (from, to) = IntersectingIndexRange(interval);
@@ -118,9 +118,9 @@ namespace Yoakke.Collections.Intervals
                     // Unify values
                     values[idx] = new KeyValuePair<Interval<TKey>, TValue>(values[idx].Key, updateFunc(values[idx].Value, value));
                     // Add interval in between
-                    var upper = values[idx].Key.Lower.GetTouching().Value;
+                    var upper = values[idx].Key.Lower.GetTouching()!.Value;
                     var between = new Interval<TKey>(lower, upper);
-                    lower = values[idx].Key.Upper.GetTouching().Value;
+                    lower = values[idx].Key.Upper.GetTouching()!.Value;
                     if (!between.IsEmpty(Comparer))
                     {
                         values.Insert(idx, new KeyValuePair<Interval<TKey>, TValue>(between, value));

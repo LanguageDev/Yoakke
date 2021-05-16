@@ -7,8 +7,15 @@ namespace Yoakke.Lexer.Generator
 {
     internal class TokenDescription
     {
-        public IFieldSymbol Symbol { get; set; }
-        public string Regex { get; set; }
-        public bool Ignore { get; set; }
+        public readonly IFieldSymbol Symbol;
+        public readonly string Regex;
+        public readonly bool Ignore;
+
+        public TokenDescription(IFieldSymbol symbol, string regex, bool ignore)
+        {
+            Symbol = symbol;
+            Regex = regex;
+            Ignore = ignore;
+        }
     }
 }
