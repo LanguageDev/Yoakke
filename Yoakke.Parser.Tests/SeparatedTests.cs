@@ -9,6 +9,7 @@ using Yoakke.Lexer;
 using Yoakke.Lexer.Attributes;
 using Yoakke.Parser.Attributes;
 using IgnoreAttribute = Yoakke.Lexer.Attributes.IgnoreAttribute;
+using Token = Yoakke.Lexer.Token<Yoakke.Parser.Tests.SeparatedTests.TokenType>;
 
 namespace Yoakke.Parser.Tests
 {
@@ -16,11 +17,8 @@ namespace Yoakke.Parser.Tests
     partial class ListParser
     {
         [Rule("any0_no_trailing : Lparen (Identifier (',' Identifier)*)? Rparen")]
-        private static List<string> ZeroOrMoreNoTrailing(
-            IToken _lp,
-            Punctuated<Token<SeparatedTests.TokenType>, Token<SeparatedTests.TokenType>> elements,
-            IToken _rp) => elements.Values.Select(t => t.Text).ToList();
-
+        private static List<string> ZeroOrMoreNoTrailing(IToken _lp, Punctuated<Token, Token> elements, IToken _rp) => 
+            elements.Values.Select(t => t.Text).ToList();
     }
 
     [TestClass]
