@@ -39,6 +39,8 @@ namespace Yoakke.Text
         public SourceFile(string path, string source)
             : this(path, new StringReader(source))
         {
+            while (ReadNextLine()) ;
+            index = 0;
         }
 
         public string GetLine(int index)

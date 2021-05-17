@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Yoakke.Text;
 
 namespace Yoakke.Reporting
 {
@@ -27,5 +28,47 @@ namespace Yoakke.Reporting
         /// The relevant information for the diagnostic.
         /// </summary>
         public IList<IDiagnosticInfo> Information { get; set; } = new List<IDiagnosticInfo>();
+
+        public Diagnostic WithSeverity(Severity severity)
+        {
+            Severity = severity;
+            return this;
+        }
+
+        public Diagnostic WithCode(string code)
+        {
+            Code = code;
+            return this;
+        }
+
+        public Diagnostic WithMessage(string message)
+        {
+            Message = message;
+            return this;
+        }
+
+        public Diagnostic WithInfo(IDiagnosticInfo info)
+        {
+            Information.Add(info);
+            return this;
+        }
+
+        public Diagnostic WithSourceInfo(Location location, Severity severity, string message) =>
+            WithInfo(new SourceDiagnosticInfo { Location = location, Severity = severity, Message = message });
+
+        public Diagnostic WithSourceInfo(Location location, Severity severity) =>
+            WithInfo(new SourceDiagnosticInfo { Location = location, Severity = severity });
+
+        public Diagnostic WithSourceInfo(Location location, string message) =>
+            WithInfo(new SourceDiagnosticInfo { Location = location, Message = message });
+
+        public Diagnostic WithSourceInfo(Location location) =>
+            WithInfo(new SourceDiagnosticInfo { Location = location });
+
+        public Diagnostic WithFootnoteInfo(Severity severity, string footnote) =>
+            WithInfo(new FootnoteDiagnosticInfo { Severity = severity, Message = footnote });
+
+        public Diagnostic WithFootnoteInfo(string footnote) =>
+            WithInfo(new FootnoteDiagnosticInfo { Message = footnote });
     }
 }

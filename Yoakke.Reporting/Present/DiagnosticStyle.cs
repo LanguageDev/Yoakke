@@ -32,10 +32,6 @@ namespace Yoakke.Reporting.Present
         /// </summary>
         public ConsoleColor LineNumberColor { get; set; } = ConsoleColor.White;
         /// <summary>
-        /// The color of source code text.
-        /// </summary>
-        public ConsoleColor SourceTextColor { get; set; } = ConsoleColor.White;
-        /// <summary>
         /// The default color for anything not specified.
         /// </summary>
         public ConsoleColor DefaultColor { get; set; } = ConsoleColor.White;
@@ -55,5 +51,8 @@ namespace Yoakke.Reporting.Present
         /// How big of a gap can we connect up between annotated lines.
         /// </summary>
         public int ConnectUpLines { get; set; } = 1;
+
+        public ConsoleColor GetSeverityColor(Severity severity) =>
+            SeverityColors.TryGetValue(severity, out var col) ? col : DefaultColor;
     }
 }

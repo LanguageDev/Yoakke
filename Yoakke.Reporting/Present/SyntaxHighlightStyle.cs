@@ -33,5 +33,8 @@ namespace Yoakke.Reporting.Present
         /// The default color to use.
         /// </summary>
         public ConsoleColor DefaultColor { get; set; } = ConsoleColor.White;
+
+        public ConsoleColor GetTokenColor(TokenKind kind) =>
+            TokenColors.TryGetValue(kind, out var col) ? col : DefaultColor;
     }
 }
