@@ -8,6 +8,9 @@ namespace Yoakke.Reporting.Tests
     [TestClass]
     public class TextPresenterTests
     {
+        private static Location Loc(ISourceFile source, int line, int column, int length) =>
+            new Location(source, new Range(new Position(line, column), length));
+
         [TestMethod]
         public void BasicSingleAnnotation()
         {
@@ -17,21 +20,11 @@ prev line
 this is a line of text
 next line
 some other line");
-            var diag = new Diagnostic
-            {
-                Severity = Severity.Error,
-                Code = "E0001",
-                Message = "Some error message",
-                Information =
-                {
-                    new SourceDiagnosticInfo
-                    {
-                        Location = new Location(src, new Range(new Position(line: 2, column: 10), 4)),
-                        Message = "some annotation",
-                        Severity = Severity.Error,
-                    }
-                },
-            };
+            var diag = new Diagnostic()
+                .WithSeverity(Severity.Error)
+                .WithCode("E0001")
+                .WithMessage("Some error message")
+                .WithSourceInfo(Loc(src, line: 2, column: 10, length: 4), Severity.Error, "some annotation");
             var result = new StringWriter();
             var renderer = new TextDiagnosticPresenter(result);
             renderer.Present(diag);
@@ -46,7 +39,6 @@ some other line");
 ", result.ToString());
         }
 
-#if false
         [TestMethod]
         public void TwoAnnotationsRightUnderEachother()
         {
@@ -56,29 +48,15 @@ prev line
 this is a line of text
 some other line
 last line");
-            var diag = new Diagnostic
-            {
-                Severity = Severity.Error,
-                Code = "E0001",
-                Message = "Some error message",
-                Information =
-                {
-                    new SpannedDiagnosticInfo
-                    {
-                        Span = new Span(src, new Position(line: 2, column: 10), 4),
-                        Message = "some annotation1",
-                        Severity = Severity.Error,
-                    },
-                    new SpannedDiagnosticInfo
-                    {
-                        Span = new Span(src, new Position(line: 3, column: 5), 5),
-                        Message = "some annotation2",
-                    },
-                },
-            };
+            var diag = new Diagnostic()
+                .WithSeverity(Severity.Error)
+                .WithCode("E0001")
+                .WithMessage("Some error message")
+                .WithSourceInfo(Loc(src, line: 2, column: 10, length: 4), Severity.Error, "some annotation1")
+                .WithSourceInfo(Loc(src, line: 3, column: 5, length: 5), "some annotation2");
             var result = new StringWriter();
-            var renderer = new TextDiagnosticRenderer(result);
-            renderer.Render(diag);
+            var renderer = new TextDiagnosticPresenter(result);
+            renderer.Present(diag);
             Assert.AreEqual(@"error[E0001]: Some error message
   ┌─ simple.txt:3:11
   │
@@ -102,29 +80,15 @@ this is a line of text
 next line
 some other line
 last line");
-            var diag = new Diagnostic
-            {
-                Severity = Severity.Error,
-                Code = "E0001",
-                Message = "Some error message",
-                Information =
-                {
-                    new SpannedDiagnosticInfo
-                    {
-                        Span = new Span(src, new Position(line: 2, column: 10), 4),
-                        Message = "some annotation1",
-                        Severity = Severity.Error,
-                    },
-                    new SpannedDiagnosticInfo
-                    {
-                        Span = new Span(src, new Position(line: 4, column: 5), 5),
-                        Message = "some annotation2",
-                    },
-                },
-            };
+            var diag = new Diagnostic()
+                .WithSeverity(Severity.Error)
+                .WithCode("E0001")
+                .WithMessage("Some error message")
+                .WithSourceInfo(Loc(src, line: 2, column: 10, length: 4), Severity.Error, "some annotation1")
+                .WithSourceInfo(Loc(src, line: 4, column: 5, length: 5), "some annotation2");
             var result = new StringWriter();
-            var renderer = new TextDiagnosticRenderer(result);
-            renderer.Render(diag);
+            var renderer = new TextDiagnosticPresenter(result);
+            renderer.Present(diag);
             Assert.AreEqual(@"error[E0001]: Some error message
   ┌─ simple.txt:3:11
   │
@@ -150,29 +114,15 @@ next line
 next line2
 some other line
 last line");
-            var diag = new Diagnostic
-            {
-                Severity = Severity.Error,
-                Code = "E0001",
-                Message = "Some error message",
-                Information =
-                {
-                    new SpannedDiagnosticInfo
-                    {
-                        Span = new Span(src, new Position(line: 2, column: 10), 4),
-                        Message = "some annotation1",
-                        Severity = Severity.Error,
-                    },
-                    new SpannedDiagnosticInfo
-                    {
-                        Span = new Span(src, new Position(line: 5, column: 5), 5),
-                        Message = "some annotation2",
-                    },
-                },
-            };
+            var diag = new Diagnostic()
+                .WithSeverity(Severity.Error)
+                .WithCode("E0001")
+                .WithMessage("Some error message")
+                .WithSourceInfo(Loc(src, line: 2, column: 10, length: 4), Severity.Error, "some annotation1")
+                .WithSourceInfo(Loc(src, line: 5, column: 5, length: 5), "some annotation2");
             var result = new StringWriter();
-            var renderer = new TextDiagnosticRenderer(result);
-            renderer.Render(diag);
+            var renderer = new TextDiagnosticPresenter(result);
+            renderer.Present(diag);
             Assert.AreEqual(@"error[E0001]: Some error message
   ┌─ simple.txt:3:11
   │
@@ -200,29 +150,15 @@ line between
 next line2
 some other line
 last line");
-            var diag = new Diagnostic
-            {
-                Severity = Severity.Error,
-                Code = "E0001",
-                Message = "Some error message",
-                Information =
-                {
-                    new SpannedDiagnosticInfo
-                    {
-                        Span = new Span(src, new Position(line: 2, column: 10), 4),
-                        Message = "some annotation1",
-                        Severity = Severity.Error,
-                    },
-                    new SpannedDiagnosticInfo
-                    {
-                        Span = new Span(src, new Position(line: 6, column: 5), 5),
-                        Message = "some annotation2",
-                    },
-                },
-            };
+            var diag = new Diagnostic()
+                .WithSeverity(Severity.Error)
+                .WithCode("E0001")
+                .WithMessage("Some error message")
+                .WithSourceInfo(Loc(src, line: 2, column: 10, length: 4), Severity.Error, "some annotation1")
+                .WithSourceInfo(Loc(src, line: 6, column: 5, length: 5), "some annotation2");
             var result = new StringWriter();
-            var renderer = new TextDiagnosticRenderer(result);
-            renderer.Render(diag);
+            var renderer = new TextDiagnosticPresenter(result);
+            renderer.Present(diag);
             Assert.AreEqual(@"error[E0001]: Some error message
   ┌─ simple.txt:3:11
   │
@@ -252,29 +188,15 @@ line between2
 next line2
 some other line
 last line");
-            var diag = new Diagnostic
-            {
-                Severity = Severity.Error,
-                Code = "E0001",
-                Message = "Some error message",
-                Information =
-                {
-                    new SpannedDiagnosticInfo
-                    {
-                        Span = new Span(src, new Position(line: 2, column: 10), 4),
-                        Message = "some annotation1",
-                        Severity = Severity.Error,
-                    },
-                    new SpannedDiagnosticInfo
-                    {
-                        Span = new Span(src, new Position(line: 7, column: 5), 5),
-                        Message = "some annotation2",
-                    },
-                },
-            };
+            var diag = new Diagnostic()
+                .WithSeverity(Severity.Error)
+                .WithCode("E0001")
+                .WithMessage("Some error message")
+                .WithSourceInfo(Loc(src, line: 2, column: 10, length: 4), Severity.Error, "some annotation1")
+                .WithSourceInfo(Loc(src, line: 7, column: 5, length: 5), "some annotation2");
             var result = new StringWriter();
-            var renderer = new TextDiagnosticRenderer(result);
-            renderer.Render(diag);
+            var renderer = new TextDiagnosticPresenter(result);
+            renderer.Present(diag);
             Assert.AreEqual(@"error[E0001]: Some error message
   ┌─ simple.txt:3:11
   │
@@ -290,6 +212,5 @@ last line");
   │
 ", result.ToString());
         }
-#endif
     }
 }

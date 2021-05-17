@@ -127,7 +127,7 @@ namespace Yoakke.Reporting.Present
             buffer.WriteLine();
 
             // Write a single separator line
-            buffer.WriteLine($"{lineNumberPadding} |");
+            buffer.WriteLine($"{lineNumberPadding} │");
 
             // Now print all the line primitives
             foreach (var line in linePrimitives)
@@ -138,24 +138,24 @@ namespace Yoakke.Reporting.Present
                     buffer.ForegroundColor = Style.LineNumberColor;
                     buffer.Write((sourceLine.Line + 1).ToString().PadLeft(lineNumberPadding.Length, Style.LineNumberPadding));
                     buffer.ForegroundColor = Style.DefaultColor;
-                    buffer.Write(" | ");
+                    buffer.Write(" │ ");
                     WriteSourceLine(sourceLine);
                     buffer.WriteLine();
                     break;
 
                 case AnnotationLine annotation:
-                    WriteAnnotationLine(annotation, $"{lineNumberPadding} | ");
+                    WriteAnnotationLine(annotation, $"{lineNumberPadding} │ ");
                     break;
 
                 case DotLine dotLine:
                     buffer.ForegroundColor = Style.DefaultColor;
-                    buffer.WriteLine($"{lineNumberPadding} | ...");
+                    buffer.WriteLine($"{lineNumberPadding} │ ...");
                     break;
                 }
             }
 
             // Write a single separator line
-            buffer.WriteLine($"{lineNumberPadding} |");
+            buffer.WriteLine($"{lineNumberPadding} │");
         }
 
         private void WriteFootnote(FootnoteDiagnosticInfo info)
@@ -166,16 +166,16 @@ namespace Yoakke.Reporting.Present
 
         private void WriteSourceLine(SourceLine line)
         {
-            var bufferInitialX = buffer.CursorX;
+            var xOffset = buffer.CursorX;
             // First print the source line with the default color
             buffer.ForegroundColor = SyntaxHighlighter.Style.DefaultColor;
             var lineText = line.Source!.GetLine(line.Line);
-            var xOffset = 0;
+            var lineCur = 0;
             foreach (var ch in lineText)
             {
                 if (ch == '\r' || ch == '\n') break;
-                if (AdvanceCursor(ref xOffset, ch)) buffer.Write(ch);
-                buffer.CursorX = bufferInitialX + xOffset;
+                if (AdvanceCursor(ref lineCur, ch)) buffer.Write(ch);
+                buffer.CursorX = xOffset + lineCur;
             }
             // Get the syntax highlight info
             var coloredTokens = SyntaxHighlighter.GetHighlightingForLine(line.Source, line.Line)
@@ -184,19 +184,19 @@ namespace Yoakke.Reporting.Present
             if (coloredTokens.Count > 0)
             {
                 // There is info to highlight
-                xOffset = 0;
+                lineCur = 0;
                 var charIndex = 0;
                 foreach (var token in coloredTokens)
                 {
                     // Walk there until the next token
-                    for (; charIndex < token.Start; AdvanceCursor(ref xOffset, lineText[charIndex++])) ;
+                    for (; charIndex < token.Start; AdvanceCursor(ref lineCur, lineText[charIndex++])) ;
                     // Go through the token
-                    var tokenStart = xOffset;
-                    for (; charIndex < token.Start + token.Length; AdvanceCursor(ref xOffset, lineText[charIndex++])) ;
-                    var tokenEnd = xOffset;
+                    var tokenStart = lineCur;
+                    for (; charIndex < token.Start + token.Length; AdvanceCursor(ref lineCur, lineText[charIndex++])) ;
+                    var tokenEnd = lineCur;
                     // Recolor it
                     buffer.ForegroundColor = SyntaxHighlighter.Style.GetTokenColor(token.Kind);
-                    buffer.Recolor(bufferInitialX + tokenStart, buffer.CursorY, tokenEnd - tokenStart, 1);
+                    buffer.Recolor(xOffset + tokenStart, buffer.CursorY, tokenEnd - tokenStart, 1);
                 }
             }
         }
@@ -213,7 +213,7 @@ namespace Yoakke.Reporting.Present
             var arrowHeadColumns = new List<(int Column, SourceDiagnosticInfo Info)>();
             buffer.ForegroundColor = Style.DefaultColor;
             buffer.Write(prefix);
-            var xOffset = 0;
+            var lineCur = 0;
             var charIdx = 0;
             foreach (var annot in annotationsOrdered)
             {
@@ -223,15 +223,15 @@ namespace Yoakke.Reporting.Present
                     if (charIdx < lineText.Length)
                     {
                         // Still in range of the line
-                        AdvanceCursor(ref xOffset, lineText[charIdx]);
+                        AdvanceCursor(ref lineCur, lineText[charIdx]);
                     }
                     else
                     {
                         // After the line
-                        xOffset += 1;
+                        lineCur += 1;
                     }
                 }
-                buffer.CursorX = prefix.Length + xOffset;
+                buffer.CursorX = prefix.Length + lineCur;
                 // Now we are inside the span
                 var arrowHead = annot.Severity != null ? '^' : '-';
                 var startColumn = buffer.CursorX;
@@ -242,11 +242,11 @@ namespace Yoakke.Reporting.Present
                     if (charIdx < lineText.Length)
                     {
                         // Still in range of the line
-                        var oldOffset = xOffset;
-                        AdvanceCursor(ref xOffset, lineText[charIdx]);
+                        var oldOffset = lineCur;
+                        AdvanceCursor(ref lineCur, lineText[charIdx]);
                         // Fill with arrow head
-                        buffer.Fill(oldOffset, buffer.CursorY, xOffset - oldOffset, 1, arrowHead);
-                        buffer.CursorX = xOffset;
+                        buffer.Fill(prefix.Length + oldOffset, buffer.CursorY, lineCur - oldOffset, 1, arrowHead);
+                        buffer.CursorX = prefix.Length + lineCur;
                     }
                     else
                     {

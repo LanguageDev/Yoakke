@@ -23,5 +23,12 @@ namespace Yoakke.Reporting.Present
         /// The kind of the token.
         /// </summary>
         public readonly TokenKind Kind;
+
+        public ColoredToken(int start, int length, TokenKind kind)
+        {
+            Start = start;
+            Length = length;
+            Kind = kind;
+        }
     }
 }
