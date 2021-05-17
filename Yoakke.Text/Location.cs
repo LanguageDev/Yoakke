@@ -12,9 +12,9 @@ namespace Yoakke.Text
     public readonly struct Location
     {
         /// <summary>
-        /// The path of the file.
+        /// The source file.
         /// </summary>
-        public readonly string Path;
+        public readonly ISourceFile File;
         /// <summary>
         /// The range.
         /// </summary>
@@ -23,11 +23,11 @@ namespace Yoakke.Text
         /// <summary>
         /// Initializes a new <see cref="Location"/>.
         /// </summary>
-        /// <param name="path">The path of the file.</param>
+        /// <param name="file">The source file.</param>
         /// <param name="range">The range in the file.</param>
-        public Location(string path, Range range)
+        public Location(ISourceFile file, Range range)
         {
-            Path = path;
+            File = file;
             Range = range;
         }
     }
