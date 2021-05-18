@@ -35,9 +35,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Reporting", "Reporting", "{
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Reporting", "Yoakke.Reporting\Yoakke.Reporting.csproj", "{4B505051-7CE0-4264-B0F4-C5F0ADE14AB4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yoakke.Reporting.Tests", "Yoakke.Reporting.Tests\Yoakke.Reporting.Tests.csproj", "{0E8166B6-8855-4B9B-B4D9-95C1890D850B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Reporting.Tests", "Yoakke.Reporting.Tests\Yoakke.Reporting.Tests.csproj", "{0E8166B6-8855-4B9B-B4D9-95C1890D850B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yoakke.Reporting.Sample", "Yoakke.Reporting.Sample\Yoakke.Reporting.Sample.csproj", "{094A2608-9A68-45D2-B2CF-1BBCEE88086A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Reporting.Sample", "Yoakke.Reporting.Sample\Yoakke.Reporting.Sample.csproj", "{094A2608-9A68-45D2-B2CF-1BBCEE88086A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yoakke.Sample", "Yoakke.Sample\Yoakke.Sample.csproj", "{94C26FC8-A4E7-435D-91B4-57F75719DC45}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -105,6 +107,10 @@ Global
 		{094A2608-9A68-45D2-B2CF-1BBCEE88086A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{094A2608-9A68-45D2-B2CF-1BBCEE88086A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{094A2608-9A68-45D2-B2CF-1BBCEE88086A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94C26FC8-A4E7-435D-91B4-57F75719DC45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94C26FC8-A4E7-435D-91B4-57F75719DC45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94C26FC8-A4E7-435D-91B4-57F75719DC45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94C26FC8-A4E7-435D-91B4-57F75719DC45}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

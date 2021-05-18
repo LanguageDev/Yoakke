@@ -6,9 +6,9 @@ This library provides utilities for language development in .NET.
 
 # Modules planned
 
- - [ ] Lexer (WIP)
- - [ ] Parser (WIP)
- - [ ] Error message reporting
+ - [x] Lexer (WIP)
+ - [x] Parser (WIP)
+ - [x] Error message reporting (WIP)
  - [ ] AST generator, visitor
  - [ ] Lexical symbols
  - [ ] Type-system (?)

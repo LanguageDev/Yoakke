@@ -16,7 +16,7 @@ namespace Yoakke.Parser.Generator
             if (rule.Ast is BnfAst.Alt alt)
             {
                 var newAlt = EliminateLeftRecursionInAlternation(rule, alt);
-                return new Rule(rule.Name, newAlt) { VisualName = rule.VisualName };
+                return new Rule(rule.Name, newAlt, rule.PublicApi) { VisualName = rule.VisualName };
             }
             return rule;
         }

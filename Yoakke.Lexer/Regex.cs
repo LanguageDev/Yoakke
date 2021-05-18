@@ -23,5 +23,9 @@ namespace Yoakke.Lexer
         /// Decimal integer.
         /// </summary>
         public const string DecInt = "[0-9]+";
+        /// <summary>
+        /// A single-line string.
+        /// </summary>
+        public const string LineString = @"""((\\[^\n\r])|[^\r\n\\""])*""";
     }
 }

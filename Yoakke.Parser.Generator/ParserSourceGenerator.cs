@@ -259,7 +259,7 @@ namespace {namespaceName}
             {
                 var subVar = GenerateBnf(code, rule, opt.Subexpr, lastIndex);
                 code.AppendLine($"if ({subVar}.IsOk) {resultVar} = MakeOk<{parsedType}>({subVar}.Ok.Value, {subVar}.Ok.Offset, {subVar}.Ok.FurthestError);");
-                code.AppendLine($"else {resultVar} = MakeOk<{parsedType}>(default, {lastIndex}, {resultVar}.Error);");
+                code.AppendLine($"else {resultVar} = MakeOk<{parsedType}>(default, {lastIndex}, {subVar}.Error);");
                 break;
             }
 
