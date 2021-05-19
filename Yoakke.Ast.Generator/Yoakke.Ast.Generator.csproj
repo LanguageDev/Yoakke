@@ -13,4 +13,9 @@
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.0" PrivateAssets="all" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Include="../Yoakke.SourceGenerator.Common/**/*.cs" Link="Yoakke.SourceGenerator.Common"/>
+    <Compile Remove="../Yoakke.SourceGenerator.Common/obj/**/*.cs"/>
+  </ItemGroup>
+
 </Project>
