@@ -180,7 +180,7 @@ public {node.Name}({string.Join(", ", fields.Select(f => $"{f.Type.ToDisplayStri
                 if (isRoot && node.ImplementEquality)
                 {
                     // Define equality abstractly
-                    extraDefinitions.AppendLine($"public abstract override bool Equals({node.Name} other);");
+                    extraDefinitions.AppendLine($"public abstract bool Equals({node.Name} other);");
                 }
             }
             else
@@ -237,10 +237,10 @@ namespace {surroundingNamespace} {{
             var hash = new List<string>();
             foreach (var field in fields)
             {
-                if (field.Type.ImplementsInterface(readOnlyListInterface))
+                if (field.Type.ImplementsGenericInterface(readOnlyListInterface))
                 {
                     // Use .SequenceEquals and add each element to hash one by one
-                    equality.Add($"this.{field.Name}.Count == other.{field.Name}.Count && this.{field.Name}.SequenceEquals(other.{field.Name})");
+                    equality.Add($"this.{field.Name}.Count == other.{field.Name}.Count && this.{field.Name}.SequenceEqual(other.{field.Name})");
                     hash.Add($"foreach (var item in this.{field.Name}) hash.Add(item);");
                 }
                 else

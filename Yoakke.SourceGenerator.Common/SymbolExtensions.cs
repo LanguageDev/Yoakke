@@ -15,7 +15,7 @@ namespace Yoakke.SourceGenerator.Common
             symbol.AllInterfaces.Any(i => SymbolEqualityComparer.Default.Equals(i, interf));
 
         public static bool ImplementsGenericInterface(this ITypeSymbol symbol, INamedTypeSymbol interf) =>
-               SymbolEqualityComparer.Default.Equals(symbol, interf)
+               SymbolEqualityComparer.Default.Equals(symbol.OriginalDefinition, interf)
             || symbol.AllInterfaces.Any(i => SymbolEqualityComparer.Default.Equals(i.OriginalDefinition, interf));
     }
 }

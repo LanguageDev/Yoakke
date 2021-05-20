@@ -21,6 +21,7 @@ namespace Yoakke.Sample
         static void Main(string[] args)
         {
             var k = new Foo(3, new int[] { 1, 2, 3 });
+            var h = k.GetHashCode();
 
             var code = @"
 1 + 2 * -foo(""hello"", not x)()
