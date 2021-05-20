@@ -138,22 +138,24 @@ namespace Yoakke.Ast.Generator
             var extraDefinitions = new StringBuilder();
 
             // Generate implementation for ChildNodes
-            var childNodes = fields.Where(f => HasAttribute(f.Type, TypeNames.AstAttribute));
-            extraDefinitions.AppendLine($"public {TypeNames.IEnumerable}<{TypeNames.IAstNode}> ChildNodes");
+            var childNodes = fields.Where(f => HasAttribute(f.Type, TypeNames.AstAttribute)).ToList();
+            extraDefinitions.AppendLine($"{TypeNames.IEnumerable}<{TypeNames.IAstNode}> {TypeNames.IAstNode}.ChildNodes");
             extraDefinitions.AppendLine("{ get {");
             extraDefinitions.AppendLine(string.Join(string.Empty, childNodes.Select(n => $"yield return {n.Name};")));
+            if (childNodes.Count == 0) extraDefinitions.AppendLine("yield break;");
             extraDefinitions.AppendLine("} }");
 
             // Generate implementation for LeafObjects
-            var leafObjects = fields.Except(childNodes);
-            extraDefinitions.AppendLine($"public {TypeNames.IEnumerable}<object> LeafObjects");
+            var leafObjects = fields.Except(childNodes).ToList();
+            extraDefinitions.AppendLine($"{TypeNames.IEnumerable}<object> {TypeNames.IAstNode}.LeafObjects");
             extraDefinitions.AppendLine("{ get {");
             extraDefinitions.AppendLine(string.Join(string.Empty, leafObjects.Select(n => $"yield return {n.Name};")));
+            if (leafObjects.Count == 0) extraDefinitions.AppendLine("yield break;");
             extraDefinitions.AppendLine("} }");
 
             // Generate implementation for pretty-print
             // TODO: Stub for now
-            extraDefinitions.AppendLine($"public string PrettyPrint({TypeNames.PrettyPrintFormat} format)");
+            extraDefinitions.AppendLine($"string {TypeNames.IAstNode}.PrettyPrint({TypeNames.PrettyPrintFormat} format)");
             extraDefinitions.AppendLine("{");
             extraDefinitions.AppendLine("    return string.Empty;");
             extraDefinitions.AppendLine("}");
@@ -170,7 +172,7 @@ public {node.Name}({string.Join(", ", fields.Select(f => $"{f.Type.ToDisplayStri
             if (isRoot && node.ImplementEquality)
             {
                 // A root node that needs equality always defines object.Equals
-                extraDefinitions.AppendLine($"public override bool Equals(object? other) => Equals(other as {node.Name});");
+                extraDefinitions.AppendLine($"public override bool Equals(object other) => Equals(other as {node.Name});");
             }
 
             if (node.IsAbstract)
@@ -178,7 +180,7 @@ public {node.Name}({string.Join(", ", fields.Select(f => $"{f.Type.ToDisplayStri
                 if (isRoot && node.ImplementEquality)
                 {
                     // Define equality abstractly
-                    extraDefinitions.AppendLine($"public abstract override bool Equals({node.Name}? other);");
+                    extraDefinitions.AppendLine($"public abstract override bool Equals({node.Name} other);");
                 }
             }
             else
@@ -190,7 +192,7 @@ public {node.Name}({string.Join(", ", fields.Select(f => $"{f.Type.ToDisplayStri
                     var (eqCmp, hash) = GenerateEqualityElements(node.Symbol, fields);
                     
                     var comparisons = string.Join(" && ", eqCmp);
-                    extraDefinitions.AppendLine($"public override bool Equals({lastEquality}? o) =>");
+                    extraDefinitions.AppendLine($"public override bool Equals({lastEquality} o) =>");
                     extraDefinitions.AppendLine($"    o is {node.Name} other && {comparisons};");
 
                     extraDefinitions.AppendLine("public override int GetHashCode()");
