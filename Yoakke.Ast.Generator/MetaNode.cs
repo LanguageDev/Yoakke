@@ -17,25 +17,13 @@ namespace Yoakke.Ast.Generator
         public readonly IDictionary<string, MetaNode> Children = new Dictionary<string, MetaNode>();
         public readonly IList<(string Name, Type ReturnType)> Visitors = new List<(string Name, Type ReturnType)>();
 
-        private bool? implementClone;
-        public bool ImplementClone
-        {
-            get => implementClone == null ? Parent == null ? false : Parent.ImplementClone : implementClone.Value;
-            set => implementClone = value;
-        }
+        public MetaNode Root => Parent == null ? this : Parent.Root;
 
         private bool? implementEquality;
         public bool ImplementEquality
         {
             get => implementEquality == null ? Parent == null ? false : Parent.ImplementEquality : implementEquality.Value;
             set => implementEquality = value; 
-        }
-
-        private bool? implementHash;
-        public bool ImplementHash
-        {
-            get => implementHash == null ? Parent == null ? false : Parent.ImplementHash : implementHash.Value;
-            set => implementHash = value;
         }
 
         public MetaNode(INamedTypeSymbol symbol, MetaNode? parent)
