@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Yoakke.Collections.Compatibility;
 using Yoakke.SourceGenerator.Common;
 
 namespace Yoakke.Ast.Generator
@@ -26,6 +27,7 @@ namespace Yoakke.Ast.Generator
         }
 
         private Dictionary<string, MetaNode> rootNodes = new();
+        private Dictionary<string, MetaNode> allNodes = new();
 
         public AstSourceGenerator() 
             : base("Yoakke.Ast.Generator")
@@ -41,28 +43,67 @@ namespace Yoakke.Ast.Generator
 
             RequireLibrary("Yoakke.Ast");
 
+            BuildMetaNodes(receiver.CandidateClasses);
+        }
+
+        private void BuildMetaNodes(IList<ClassDeclarationSyntax> classDeclarations)
+        {
             // Collect only the classes that have the AstAttribute
-            var astNodeClasses = receiver.CandidateClasses
-                .Select(syntax =>
-                {
-                    var model = Context.Compilation.GetSemanticModel(syntax.SyntaxTree);
-                    return model.GetDeclaredSymbol(syntax) as INamedTypeSymbol;
-                })
-                .Where(symbol => HasAttribute(symbol!, TypeNames.AstAttribute))
-                .ToList();
+            var astNodeSymbols = new HashSet<INamedTypeSymbol>();
+            foreach (var syntax in classDeclarations)
+            {
+                var model = Context.Compilation.GetSemanticModel(syntax.SyntaxTree);
+                var symbol = model.GetDeclaredSymbol(syntax) as INamedTypeSymbol;
+                if (!HasAttribute(symbol!, TypeNames.AstAttribute)) continue;
+                if (!RequirePartial(syntax)) continue;
+                astNodeSymbols.Add(symbol!);
+            }
 
             // Select all the root nodes
             // They are all the nodes without a base class or with a base class that's not an AST node
-            rootNodes = astNodeClasses
-                .Where(sym => sym!.BaseType != null && !HasAttribute(sym.BaseType, TypeNames.AstAttribute))
-                .Select(sym => MakeMetaNode(sym!, null))
+            var rootNodeSymbols = astNodeSymbols
+                .Where(sym => sym.BaseType == null || !HasAttribute(sym.BaseType, TypeNames.AstAttribute))
+                .ToHashSet();
+            rootNodes = rootNodeSymbols
+                .Select(sym => MakeMetaNode(sym, null))
                 .ToDictionary(n => n.Name);
+            // Clone them to all nodes
+            allNodes = rootNodes.ToDictionary(n => n.Key, n => n.Value);
+
+            // Remove them from all symbols
+            astNodeSymbols = astNodeSymbols
+                .Except(rootNodeSymbols)
+                .ToHashSet();
+
+            // Now loop until all nodes could be attached somewhere
+            while (astNodeSymbols.Count > 0)
+            {
+                var toRemove = new HashSet<INamedTypeSymbol>();
+                foreach (var symbol in astNodeSymbols)
+                {
+                    if (!allNodes.TryGetValue(symbol.BaseType!.Name, out var parentNode)) continue;
+                    // We found this node's parent in out existing nodes
+                    var node = MakeMetaNode(symbol, parentNode);
+                    allNodes.Add(node.Name, node);
+                    toRemove.Add(symbol);
+                }
+                // Remove all found nodes
+                astNodeSymbols = astNodeSymbols
+                    .Except(toRemove)
+                    .ToHashSet();
+                // If we removed nothing, there's an error
+                if (toRemove.Count == 0)
+                {
+                    // TODO: Error
+                    break;
+                }
+            }
         }
 
         private MetaNode MakeMetaNode(INamedTypeSymbol symbol, MetaNode? parent)
         {
             var node = new MetaNode(symbol, parent);
-            if (parent != null) parent.Children.Add(node);
+            if (parent != null) parent.Children.Add(node.Name, node);
 
             if (TryGetAttribute(symbol, TypeNames.ImplementCloneAttribute, out var cloneAttr))
             {

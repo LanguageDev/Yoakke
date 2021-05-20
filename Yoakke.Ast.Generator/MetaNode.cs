@@ -14,7 +14,7 @@ namespace Yoakke.Ast.Generator
         public string Name => Symbol.Name;
         public bool IsAbstract => Symbol.IsAbstract;
         public readonly IList<string> Nesting;
-        public readonly IList<MetaNode> Children = new List<MetaNode>();
+        public readonly IDictionary<string, MetaNode> Children = new Dictionary<string, MetaNode>();
         public readonly IList<(string Name, Type ReturnType)> Visitors = new List<(string Name, Type ReturnType)>();
 
         private bool? implementClone;
