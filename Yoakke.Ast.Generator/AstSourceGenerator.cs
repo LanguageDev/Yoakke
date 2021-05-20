@@ -40,8 +40,6 @@ namespace Yoakke.Ast.Generator
 
         protected override void GenerateCode(ISyntaxReceiver syntaxReceiver)
         {
-            Debugger.Launch();
-
             var receiver = (SyntaxReceiver)syntaxReceiver;
 
             RequireLibrary("Yoakke.Ast");
@@ -255,7 +253,11 @@ namespace {surroundingNamespace} {{
 
         private static MetaNode? LastParentThat(MetaNode root, Predicate<MetaNode> pred)
         {
-            if (root.Parent == null) return null;
+            if (root.Parent == null)
+            {
+                if (pred(root)) return root;
+                return null;
+            }
             if (!pred(root.Parent)) return root;
             return LastParentThat(root.Parent, pred);
         }
