@@ -6,6 +6,7 @@ namespace Yoakke.Sample
 {
     [Yoakke.Ast.Attributes.Ast]
     [Yoakke.Ast.Attributes.ImplementEquality]
+    [Yoakke.Ast.Attributes.Visitor("MyVisitor", typeof(int))]
     abstract partial class Node
     { }
 

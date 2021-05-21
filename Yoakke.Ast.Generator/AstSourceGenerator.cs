@@ -48,6 +48,10 @@ namespace Yoakke.Ast.Generator
 
             // Now generate each node source
             foreach (var node in allNodes.Values) GenerateNodeSource(node);
+
+            //Debugger.Launch();
+            // Generate visitor contents
+            foreach (var node in rootNodes.Values) GenerateVisitorSource(node);
         }
 
         private void BuildMetaNodes(IList<ClassDeclarationSyntax> classDeclarations)
@@ -231,7 +235,37 @@ namespace {surroundingNamespace} {{
             AddSource($"{node.Symbol.ToDisplayString()}.Generated.cs", sourceCode);
         }
 
-        private Dictionary<string, (INamedTypeSymbol Root, StringBuilder Content)> GenerateVisitor(
+        private void GenerateVisitorSource(MetaNode node)
+        {
+            var visitors = GenerateVisitors(node, new Dictionary<string, (INamedTypeSymbol Root, StringBuilder Content, INamedTypeSymbol ReturnType)>());
+            foreach (var visitor in visitors)
+            {
+                // Surrounding crud
+                var surroundingNamespace = node.Symbol.ContainingNamespace.ToDisplayString();
+                var nestClassPrefix = new StringBuilder();
+                var nestClassSuffix = new StringBuilder();
+                foreach (var nest in node.Nesting)
+                {
+                    nestClassPrefix.AppendLine($"partial class {nest} {{");
+                    nestClassSuffix.AppendLine("}");
+                }
+
+                var sourceCode = $@"
+namespace {surroundingNamespace} {{
+    {nestClassPrefix}
+    partial class {visitor.Value.Root.Name} {{
+        public abstract class {visitor.Key} {{
+            {visitor.Value.Content}
+        }}
+    }}
+    {nestClassSuffix}
+}}
+";
+                AddSource($"{node.Symbol.ToDisplayString()}.{visitor.Key}.Generated.cs", sourceCode);
+            }
+        }
+
+        private Dictionary<string, (INamedTypeSymbol Root, StringBuilder Content)> GenerateVisitors(
             MetaNode node, 
             IReadOnlyDictionary<string, (INamedTypeSymbol Root, StringBuilder Content, INamedTypeSymbol ReturnType)> visitors)
         {
@@ -262,16 +296,20 @@ namespace {surroundingNamespace} {{
             }
 
             // Now for each visitor, generate the visitor for the current node
-            var nonLeafChildren = node.Symbol.GetMembers()
+            // TODO: This is way more complicated!
+            /* var nonLeafChildren = node.Symbol.GetMembers()
                 .Where(member => !member.IsStatic)
                 .OfType<IFieldSymbol>()
                 .Where(f => HasAttribute(f.Type, TypeNames.AstAttribute))
                 .ToList();
+            */
             foreach (var visitor in newVisitors.Values)
             {
                 var content = visitor.Content;
                 var returnType = visitor.ReturnType.ToDisplayString();
                 content.AppendLine($"protected virtual {returnType} Visit({node.Symbol.ToDisplayString()} node) {{");
+                // TODO. WAY MORE COMPLICATED
+                /*
                 if (nonLeafChildren.Count > 0)
                 {
                     // Generate visit for children
@@ -285,12 +323,23 @@ namespace {surroundingNamespace} {{
                     }
                     content.AppendLine("}");
                 }
+                */
                 if (returnType != "void") content.AppendLine("    return default;");
                 content.AppendLine("}");
             }
 
-            // TODO: Call children, merge results?
-            throw new NotImplementedException();
+            // Unify all results
+            var unified = new Dictionary<string, (INamedTypeSymbol Root, StringBuilder Content)>();
+            foreach (var cv in newVisitors)
+            {
+                unified[cv.Key] = (cv.Value.Root, cv.Value.Content);
+            }
+            foreach (var child in node.Children.Values)
+            {
+                var childResult = GenerateVisitors(child, newVisitors);
+                foreach (var cv in childResult) unified[cv.Key] = cv.Value;
+            }
+            return unified;
         }
 
         private (List<string> Equality, List<string> Hash) GenerateEqualityElements(ISymbol symbol, List<IFieldSymbol> fields)
