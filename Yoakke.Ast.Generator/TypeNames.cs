@@ -10,6 +10,7 @@ namespace Yoakke.Ast.Generator
 
         public static readonly string AstAttribute = $"{AstNamespace}.Attributes.AstAttribute";
         public static readonly string ImplementEqualityAttribute = $"{AstNamespace}.Attributes.ImplementEqualityAttribute";
+        public static readonly string VisitorAttribute = $"{AstNamespace}.Attributes.VisitorAttribute";
 
         public static readonly string IAstNode = $"{AstNamespace}.IAstNode";
         public static readonly string PrettyPrintFormat = $"{AstNamespace}.PrettyPrintFormat";

@@ -179,8 +179,9 @@ public {node.Name}({string.Join(", ", fields.Select(f => $"{f.Type.ToDisplayStri
             {
                 if (isRoot && node.ImplementEquality)
                 {
-                    // Define equality abstractly
+                    // Define equality and hash abstractly
                     extraDefinitions.AppendLine($"public abstract bool Equals({node.Name} other);");
+                    extraDefinitions.AppendLine("public abstract override int GetHashCode();");
                 }
             }
             else
@@ -228,6 +229,68 @@ namespace {surroundingNamespace} {{
 }}
 ";
             AddSource($"{node.Symbol.ToDisplayString()}.Generated.cs", sourceCode);
+        }
+
+        private Dictionary<string, (INamedTypeSymbol Root, StringBuilder Content)> GenerateVisitor(
+            MetaNode node, 
+            IReadOnlyDictionary<string, (INamedTypeSymbol Root, StringBuilder Content, INamedTypeSymbol ReturnType)> visitors)
+        {
+            // Get all visitor attributes on this node
+            var visitorAttr = LoadSymbol(TypeNames.VisitorAttribute);
+            var visitorAttrs = node.Symbol.GetAttributes()
+                .Where(attr => SymbolEquals(attr.AttributeClass, visitorAttr))
+                .ToDictionary(attr => attr.GetCtorValue(0)!.ToString(), attr => (INamedTypeSymbol)attr.GetCtorValue(1)!);
+            // Go through all visitors, old or new
+            var newVisitors = new Dictionary<string, (INamedTypeSymbol Root, StringBuilder Content, INamedTypeSymbol ReturnType)>();
+            foreach (var visitorName in visitors.Keys.Union(visitorAttrs.Select(v => v.Key)))
+            {
+                if (visitors.TryGetValue(visitorName, out var old) && visitorAttrs.TryGetValue(visitorName, out var newType))
+                {
+                    // Updated return value
+                    newVisitors.Add(visitorName, (old.Root, old.Content, newType));
+                }
+                else if (visitors.TryGetValue(visitorName, out old))
+                {
+                    // Just the old value
+                    newVisitors.Add(visitorName, (old.Root, old.Content, old.ReturnType));
+                }
+                else
+                {
+                    // New thing
+                    newVisitors.Add(visitorName, (node.Symbol, new StringBuilder(), visitorAttrs[visitorName]));
+                }
+            }
+
+            // Now for each visitor, generate the visitor for the current node
+            var nonLeafChildren = node.Symbol.GetMembers()
+                .Where(member => !member.IsStatic)
+                .OfType<IFieldSymbol>()
+                .Where(f => HasAttribute(f.Type, TypeNames.AstAttribute))
+                .ToList();
+            foreach (var visitor in newVisitors.Values)
+            {
+                var content = visitor.Content;
+                var returnType = visitor.ReturnType.ToDisplayString();
+                content.AppendLine($"protected virtual {returnType} Visit({node.Symbol.ToDisplayString()} node) {{");
+                if (nonLeafChildren.Count > 0)
+                {
+                    // Generate visit for children
+                    content.AppendLine("switch (node) {");
+                    for (int i = 0; i < nonLeafChildren.Count; ++i)
+                    {
+                        var subnodeType = nonLeafChildren[i].ToDisplayString();
+                        content.AppendLine($"case {subnodeType} sub{i}:");
+                        content.AppendLine($"    Visit(sub{i});");
+                        content.AppendLine("    break;");
+                    }
+                    content.AppendLine("}");
+                }
+                if (returnType != "void") content.AppendLine("    return default;");
+                content.AppendLine("}");
+            }
+
+            // TODO: Call children, merge results?
+            throw new NotImplementedException();
         }
 
         private (List<string> Equality, List<string> Hash) GenerateEqualityElements(ISymbol symbol, List<IFieldSymbol> fields)
