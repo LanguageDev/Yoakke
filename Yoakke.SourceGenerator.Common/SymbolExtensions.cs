@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 
@@ -15,7 +16,26 @@ namespace Yoakke.SourceGenerator.Common
             symbol.AllInterfaces.Any(i => SymbolEqualityComparer.Default.Equals(i, interf));
 
         public static bool ImplementsGenericInterface(this ITypeSymbol symbol, INamedTypeSymbol interf) =>
-               SymbolEqualityComparer.Default.Equals(symbol.OriginalDefinition, interf)
-            || symbol.AllInterfaces.Any(i => SymbolEqualityComparer.Default.Equals(i.OriginalDefinition, interf));
+            ImplementsGenericInterface(symbol, interf, out var _);
+
+        public static bool ImplementsGenericInterface(
+            this ITypeSymbol symbol, 
+            INamedTypeSymbol interf, 
+            [MaybeNullWhen(false)] out IReadOnlyList<ITypeSymbol>? genericArgs)
+        {
+            if (SymbolEqualityComparer.Default.Equals(symbol.OriginalDefinition, interf))
+            {
+                genericArgs = ((INamedTypeSymbol)symbol).TypeArguments;
+                return true;
+            }
+            var sub = symbol.AllInterfaces.FirstOrDefault(i => SymbolEqualityComparer.Default.Equals(i.OriginalDefinition, interf));
+            if (sub != null)
+            {
+                genericArgs = sub.TypeArguments;
+                return true;
+            }
+            genericArgs = null;
+            return false;
+        }
     }
 }

@@ -269,6 +269,8 @@ namespace {surroundingNamespace} {{
             MetaNode node, 
             IReadOnlyDictionary<string, (INamedTypeSymbol Root, StringBuilder Content, INamedTypeSymbol ReturnType)> visitors)
         {
+            var readOnlyList = LoadSymbol(TypeNames.IReadOnlyList);
+
             // Get all visitor attributes on this node
             var visitorAttr = LoadSymbol(TypeNames.VisitorAttribute);
             var visitorAttrs = node.Symbol.GetAttributes()
@@ -295,21 +297,33 @@ namespace {surroundingNamespace} {{
                 }
             }
 
-            // Now for each visitor, generate the visitor for the current node
-            // TODO: This is way more complicated!
-            /* var nonLeafChildren = node.Symbol.GetMembers()
+            var members = node.Symbol.GetMembers()
                 .Where(member => !member.IsStatic)
                 .OfType<IFieldSymbol>()
-                .Where(f => HasAttribute(f.Type, TypeNames.AstAttribute))
                 .ToList();
-            */
             foreach (var visitor in newVisitors.Values)
             {
                 var content = visitor.Content;
                 var returnType = visitor.ReturnType.ToDisplayString();
                 content.AppendLine($"protected virtual {returnType} Visit({node.Symbol.ToDisplayString()} node) {{");
                 // Visit each member of the type
-
+                foreach (var member in members)
+                {
+                    if (HasAttribute(member.Type, TypeNames.AstAttribute))
+                    {
+                        // It's a subnode, we have to visit it (with a null check)
+                        content.AppendLine($"if (node.{member.Name} != null) this.Visit(node.{member.Name});");
+                    }
+                    else if (member.Type.ImplementsGenericInterface(readOnlyList, out var args))
+                    {
+                        // It's a list of something
+                        if (HasAttribute(args![0], TypeNames.AstAttribute))
+                        {
+                            // It's a list of visitable things, visit them
+                            content.AppendLine($"foreach (var item in node.{member.Name}) this.Visit(item);");
+                        }
+                    }
+                }
                 // If has subtypes, visit the proper type
                 if (node.Children.Count > 0)
                 {

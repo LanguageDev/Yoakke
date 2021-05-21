@@ -14,7 +14,8 @@ namespace Yoakke.Sample
     partial class Foo : Node
     {
         public readonly int A;
-        public readonly IReadOnlyList<int> B;
+        public readonly IReadOnlyList<Node> B;
+        public readonly Node? C;
     }
 
     class NodeVisitor : Node.MyVisitor
@@ -26,7 +27,7 @@ namespace Yoakke.Sample
     {
         static void Main(string[] args)
         {
-            var k = new Foo(3, new int[] { 1, 2, 3 });
+            var k = new Foo(3, new Node[] { }, null);
             var h = k.GetHashCode();
 
             var v = new NodeVisitor();
