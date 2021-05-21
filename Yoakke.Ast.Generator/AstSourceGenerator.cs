@@ -308,22 +308,24 @@ namespace {surroundingNamespace} {{
                 var content = visitor.Content;
                 var returnType = visitor.ReturnType.ToDisplayString();
                 content.AppendLine($"protected virtual {returnType} Visit({node.Symbol.ToDisplayString()} node) {{");
-                // TODO. WAY MORE COMPLICATED
-                /*
-                if (nonLeafChildren.Count > 0)
+                // Visit each member of the type
+
+                // If has subtypes, visit the proper type
+                if (node.Children.Count > 0)
                 {
-                    // Generate visit for children
+                    // Generate visit for concrete type
                     content.AppendLine("switch (node) {");
-                    for (int i = 0; i < nonLeafChildren.Count; ++i)
+                    var i = 0;
+                    foreach (var child in node.Children.Values)
                     {
-                        var subnodeType = nonLeafChildren[i].ToDisplayString();
+                        var subnodeType = child.Symbol.ToDisplayString();
                         content.AppendLine($"case {subnodeType} sub{i}:");
                         content.AppendLine($"    Visit(sub{i});");
                         content.AppendLine("    break;");
+                        ++i;
                     }
                     content.AppendLine("}");
                 }
-                */
                 if (returnType != "void") content.AppendLine("    return default;");
                 content.AppendLine("}");
             }

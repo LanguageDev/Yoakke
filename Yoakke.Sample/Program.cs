@@ -17,12 +17,20 @@ namespace Yoakke.Sample
         public readonly IReadOnlyList<int> B;
     }
 
+    class NodeVisitor : Node.MyVisitor
+    {
+        public void Haha(Node n) => Visit(n);
+    }
+
     class Program
     {
         static void Main(string[] args)
         {
             var k = new Foo(3, new int[] { 1, 2, 3 });
             var h = k.GetHashCode();
+
+            var v = new NodeVisitor();
+            v.Haha(k);
 
             var code = @"
 1 + 2 * -foo(""hello"", not x)()
