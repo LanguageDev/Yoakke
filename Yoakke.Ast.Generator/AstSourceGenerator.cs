@@ -142,28 +142,28 @@ namespace Yoakke.Ast.Generator
                 if (node.ImplementEquality) interfacesToImplement.Add($"{TypeNames.IEquatable}<{node.Symbol.ToDisplayString()}>");
             }
 
-            var fields = node.Symbol.GetMembers()
-                .Where(member => !member.IsStatic)
-                .OfType<IFieldSymbol>()
-                .Select(s => (Symbol: s, Kind: CategorizeField(s)))
-                .ToList();
+            var fields = CategorizeAllFields(node.Symbol);
 
             var extraDefinitions = new StringBuilder();
 
-            // Generate implementation for ChildNodes
-            var childNodes = fields.Where(f => HasAttribute(f.Type, TypeNames.AstAttribute)).ToList();
+            // Generate implementation for ChildNodes, which yields subnodes and subnode lists
+            var subnodeLeaves = fields.Where(f => f.Kind == FieldKind.Subnode).Select(f => f.Symbol).ToList();
+            var subnodeLists = fields.Where(f => f.Kind == FieldKind.SubnodeList).Select(f => f.Symbol).ToList();
             extraDefinitions.AppendLine($"{TypeNames.IEnumerable}<{TypeNames.IAstNode}> {TypeNames.IAstNode}.ChildNodes");
             extraDefinitions.AppendLine("{ get {");
-            extraDefinitions.AppendLine(string.Join(string.Empty, childNodes.Select(n => $"yield return {n.Name};")));
-            if (childNodes.Count == 0) extraDefinitions.AppendLine("yield break;");
+            foreach (var subnode in subnodeLeaves) extraDefinitions.AppendLine($"yield return this.{subnode.Name};");
+            foreach (var subnodeList in subnodeLists) extraDefinitions.AppendLine($"foreach (var item in this.{subnodeList.Name}) yield return item;");
+            if (subnodeLeaves.Count == 0 && subnodeLists.Count == 0) extraDefinitions.AppendLine("yield break;");
             extraDefinitions.AppendLine("} }");
 
-            // Generate implementation for LeafObjects
-            var leafObjects = fields.Except(childNodes).ToList();
+            // Generate implementation for LeafObjects, which yields leaf members and leaf lists
+            var leafObjects = fields.Where(f => f.Kind == FieldKind.Leaf).Select(f => f.Symbol).ToList();
+            var leafLists = fields.Where(f => f.Kind == FieldKind.LeafList).Select(f => f.Symbol).ToList();
             extraDefinitions.AppendLine($"{TypeNames.IEnumerable}<object> {TypeNames.IAstNode}.LeafObjects");
             extraDefinitions.AppendLine("{ get {");
-            extraDefinitions.AppendLine(string.Join(string.Empty, leafObjects.Select(n => $"yield return {n.Name};")));
-            if (leafObjects.Count == 0) extraDefinitions.AppendLine("yield break;");
+            foreach (var leaf in leafObjects) extraDefinitions.AppendLine($"yield return this.{leaf.Name};");
+            foreach (var leafList in leafLists) extraDefinitions.AppendLine($"foreach (var item in this.{leafList.Name}) yield return item;");
+            if (leafObjects.Count == 0 && leafLists.Count == 0) extraDefinitions.AppendLine("yield break;");
             extraDefinitions.AppendLine("} }");
 
             // Generate implementation for pretty-print
@@ -175,8 +175,8 @@ namespace Yoakke.Ast.Generator
 
             // Generate ctor
             var ctorSource = $@"
-public {node.Name}({string.Join(", ", fields.Select(f => $"{f.Type.ToDisplayString()} {f.Name}"))}) {{
-    {string.Join(string.Empty, fields.Select(f => $"this.{f.Name} = {f.Name};"))};
+public {node.Name}({string.Join(", ", fields.Select(f => $"{f.Symbol.Type.ToDisplayString()} {f.Symbol.Name}"))}) {{
+    {string.Join(string.Empty, fields.Select(f => $"this.{f.Symbol.Name} = {f.Symbol.Name};"))};
 }}
 ";
             var emptyCtorSource = fields.Count == 0 ? string.Empty : $"protected {node.Name}() {{ }}";
@@ -306,31 +306,24 @@ namespace {surroundingNamespace} {{
                 }
             }
 
-            var members = node.Symbol.GetMembers()
-                .Where(member => !member.IsStatic)
-                .OfType<IFieldSymbol>()
-                .ToList();
+            var members = CategorizeAllFields(node.Symbol);
             foreach (var visitor in newVisitors.Values)
             {
                 var content = visitor.Content;
                 var returnType = visitor.ReturnType.ToDisplayString();
                 content.AppendLine($"protected virtual {returnType} Visit({node.Symbol.ToDisplayString()} node) {{");
                 // Visit each member of the type
-                foreach (var member in members)
+                foreach (var (member, kind) in members)
                 {
-                    if (HasAttribute(member.Type, TypeNames.AstAttribute))
+                    if (kind == FieldKind.Subnode)
                     {
                         // It's a subnode, we have to visit it (with a null check)
                         content.AppendLine($"if (node.{member.Name} != null) this.Visit(node.{member.Name});");
                     }
-                    else if (member.Type.ImplementsGenericInterface(readOnlyList, out var args))
+                    else if (kind == FieldKind.SubnodeList)
                     {
-                        // It's a list of something
-                        if (HasAttribute(args![0], TypeNames.AstAttribute))
-                        {
-                            // It's a list of visitable things, visit them
-                            content.AppendLine($"foreach (var item in node.{member.Name}) this.Visit(item);");
-                        }
+                        // It's a list of visitable things, visit them
+                        content.AppendLine($"foreach (var item in node.{member.Name}) this.Visit(item);");
                     }
                 }
                 // If has subtypes, visit the proper type
@@ -367,28 +360,36 @@ namespace {surroundingNamespace} {{
             return unified;
         }
 
-        private (List<string> Equality, List<string> Hash) GenerateEqualityElements(ISymbol symbol, List<IFieldSymbol> fields)
+        private (List<string> Equality, List<string> Hash) GenerateEqualityElements(
+            ISymbol symbol, 
+            List<(IFieldSymbol Symbol, FieldKind Kind)> fields)
         {
-            var readOnlyListInterface = LoadSymbol(TypeNames.IReadOnlyList);
             var equality = new List<string>();
             var hash = new List<string>();
             foreach (var field in fields)
             {
-                if (field.Type.ImplementsGenericInterface(readOnlyListInterface))
+                if (field.Kind == FieldKind.LeafList || field.Kind == FieldKind.SubnodeList)
                 {
                     // Use .SequenceEquals and add each element to hash one by one
-                    equality.Add($"this.{field.Name}.Count == other.{field.Name}.Count && this.{field.Name}.SequenceEqual(other.{field.Name})");
-                    hash.Add($"foreach (var item in this.{field.Name}) hash.Add(item);");
+                    equality.Add($"this.{field.Symbol.Name}.Count == other.{field.Symbol.Name}.Count && this.{field.Symbol.Name}.SequenceEqual(other.{field.Symbol.Name})");
+                    hash.Add($"foreach (var item in this.{field.Symbol.Name}) hash.Add(item);");
                 }
                 else
                 {
                     // Just call Equals and add to hash
-                    equality.Add($"this.{field.Name}.Equals(other.{field.Name})");
-                    hash.Add($"hash.Add(this.{field.Name});");
+                    equality.Add($"this.{field.Symbol.Name}.Equals(other.{field.Symbol.Name})");
+                    hash.Add($"hash.Add(this.{field.Symbol.Name});");
                 }
             }
             return (equality, hash);
         }
+
+        private List<(IFieldSymbol Symbol, FieldKind Kind)> CategorizeAllFields(ITypeSymbol symbol) => symbol
+            .GetMembers()
+            .Where(m => !m.IsStatic)
+            .OfType<IFieldSymbol>()
+            .Select(f => (Symbol: f, Kind: CategorizeField(f)))
+            .ToList();
 
         private FieldKind CategorizeField(IFieldSymbol symbol)
         {
