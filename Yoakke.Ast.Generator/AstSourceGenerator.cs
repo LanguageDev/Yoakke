@@ -27,6 +27,14 @@ namespace Yoakke.Ast.Generator
             }
         }
 
+        private enum FieldKind 
+        { 
+            Leaf,
+            Subnode,
+            LeafList,
+            SubnodeList,
+        }
+
         private Dictionary<string, MetaNode> rootNodes = new();
         private Dictionary<string, MetaNode> allNodes = new();
 
@@ -137,6 +145,7 @@ namespace Yoakke.Ast.Generator
             var fields = node.Symbol.GetMembers()
                 .Where(member => !member.IsStatic)
                 .OfType<IFieldSymbol>()
+                .Select(s => (Symbol: s, Kind: CategorizeField(s)))
                 .ToList();
 
             var extraDefinitions = new StringBuilder();
@@ -379,6 +388,35 @@ namespace {surroundingNamespace} {{
                 }
             }
             return (equality, hash);
+        }
+
+        private FieldKind CategorizeField(IFieldSymbol symbol)
+        {
+            var readOnlyList = LoadSymbol(TypeNames.IReadOnlyList);
+            if (HasAttribute(symbol.Type, TypeNames.AstAttribute))
+            {
+                // It's a subnode
+                return FieldKind.Subnode;
+            }
+            else if (symbol.Type.ImplementsGenericInterface(readOnlyList, out var args))
+            {
+                // It's a list of something
+                if (HasAttribute(args![0], TypeNames.AstAttribute))
+                {
+                    // It's a list of subnodes
+                    return FieldKind.SubnodeList;
+                }
+                else
+                {
+                    // It's a list of leaves
+                    return FieldKind.LeafList;
+                }
+            }
+            else
+            {
+                // It's some leaf
+                return FieldKind.Leaf;
+            }
         }
 
         private static MetaNode? LastParentThat(MetaNode root, Predicate<MetaNode> pred)
