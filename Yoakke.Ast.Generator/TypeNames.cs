@@ -20,5 +20,6 @@ namespace Yoakke.Ast.Generator
         public static readonly string IEquatable = "System.IEquatable";
         public static readonly string IReadOnlyList = "System.Collections.Generic.IReadOnlyList`1";
         public static readonly string IEnumerable = "System.Collections.Generic.IEnumerable";
+        public static readonly string StringBuilder = $"System.Text.StringBuilder";
     }
 }

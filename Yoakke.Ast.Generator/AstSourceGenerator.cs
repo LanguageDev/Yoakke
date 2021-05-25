@@ -167,11 +167,41 @@ namespace Yoakke.Ast.Generator
             extraDefinitions.AppendLine("} }");
 
             // Generate implementation for pretty-print
-            // TODO: Stub for now
             extraDefinitions.AppendLine($"string {TypeNames.IAstNode}.PrettyPrint({TypeNames.PrettyPrintFormat} format)");
             extraDefinitions.AppendLine("{");
-            extraDefinitions.AppendLine("    return string.Empty;");
+            extraDefinitions.AppendLine($"    var result = new {TypeNames.StringBuilder}();");
+            extraDefinitions.AppendLine("    this.PrettyPrintImpl(format, result, 0);");
+            extraDefinitions.AppendLine("    return result.ToString();");
             extraDefinitions.AppendLine("}");
+            // Pretty-print internals
+            if (node.IsAbstract)
+            {
+                extraDefinitions.AppendLine($"protected abstract void PrettyPrintImpl({TypeNames.PrettyPrintFormat} format, {TypeNames.StringBuilder} builder, int indent);");
+            }
+            else
+            {
+                extraDefinitions.AppendLine($"protected override void PrettyPrintImpl({TypeNames.PrettyPrintFormat} format, {TypeNames.StringBuilder} builder, int indent)");
+                extraDefinitions.AppendLine("{");
+                // TODO: For now we only do XML
+                extraDefinitions.AppendLine("builder.Append(' ', 2 * indent);");
+                extraDefinitions.AppendLine($"builder.Append(\"<{node.Name}\");");
+                if (leafObjects.Count > 0)
+                {
+                    // Leaves are attributes
+                    foreach (var leaf in leafObjects)
+                    {
+                        extraDefinitions.AppendLine($"builder.Append($\" {leaf.Name}=\\\"{{{leaf.Name}}}\\\"\");");
+                    }
+                }
+                extraDefinitions.AppendLine($"builder.AppendLine(\">\");");
+                foreach (var leafList in leafLists)
+                {
+                    if ()
+                }
+                extraDefinitions.AppendLine("builder.Append(' ', 2 * indent);");
+                extraDefinitions.AppendLine($"builder.AppendLine(\"<{node.Name} />\");");
+                extraDefinitions.AppendLine("}");
+            }
 
             // Generate ctor
             var ctorSource = $@"

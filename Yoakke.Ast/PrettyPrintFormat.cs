@@ -11,7 +11,6 @@ namespace Yoakke.Ast
     /// </summary>
     public enum PrettyPrintFormat
     {
-        Json,
         Xml,
     }
 }
