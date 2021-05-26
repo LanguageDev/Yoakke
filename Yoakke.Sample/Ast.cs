@@ -8,6 +8,7 @@ using Yoakke.Ast.Attributes;
 namespace Yoakke.Sample
 {
     [Ast]
+    [Visitor("TreeEvaluator", typeof(void))]
     public abstract partial class AstNode
     {
     }
@@ -80,6 +81,7 @@ namespace Yoakke.Sample
     }
 
     [Ast]
+    [Visitor("TreeEvaluator", typeof(object))]
     public abstract partial class Expression : AstNode
     {
         [Ast]

@@ -10,7 +10,7 @@ namespace Yoakke.Sample
         static void Main(string[] args)
         {
             var code = @"
-1 + 2 * -foo(""hello"", not x)()
+(1 + 2) * 3
 ";
             var src = new SourceFile("test.sample", code);
             var lexer = new Lexer(src);
@@ -18,6 +18,7 @@ namespace Yoakke.Sample
 
             var result = parser.ParseExpr();
             Console.WriteLine(PrettyPrinter.Print(result.Ok.Value, PrettyPrintFormat.Xml));
+            Console.WriteLine(new TreeEvaluator().Evaluate(result.Ok.Value));
         }
     }
 }

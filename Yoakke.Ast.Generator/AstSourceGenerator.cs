@@ -308,23 +308,29 @@ namespace {surroundingNamespace} {{
                 var content = visitor.Content;
                 var returnType = visitor.ReturnType.ToDisplayString();
                 content.AppendLine($"protected virtual {returnType} Visit({node.Symbol.ToDisplayString()} node) {{");
-                // Visit each member of the type
-                foreach (var (member, kind) in members)
+                if (node.Children.Count == 0)
                 {
-                    if (kind == FieldKind.Subnode)
+                    // No subtypes
+                    // Visit each member of the type
+                    foreach (var (member, kind) in members)
                     {
-                        // It's a subnode, we have to visit it (with a null check)
-                        content.AppendLine($"if (node.{member.Name} != null) this.Visit(node.{member.Name});");
-                    }
-                    else if (kind == FieldKind.SubnodeList)
-                    {
-                        // It's a list of visitable things, visit them
-                        content.AppendLine($"foreach (var item in node.{member.Name}) this.Visit(item);");
+                        if (kind == FieldKind.Subnode)
+                        {
+                            // It's a subnode, we have to visit it (with a null check)
+                            content.AppendLine($"if (node.{member.Name} != null) this.Visit(node.{member.Name});");
+                        }
+                        else if (kind == FieldKind.SubnodeList)
+                        {
+                            // It's a list of visitable things, visit them
+                            content.AppendLine($"foreach (var item in node.{member.Name}) this.Visit(item);");
+                        }
                     }
                 }
-                // If has subtypes, visit the proper type
-                if (node.Children.Count > 0)
+                else if (node.Children.Count > 0)
                 {
+                    // TODO: Visit fields if non-abstract?
+                    // TODO: error in default case if abstract?
+                    // If has subtypes, visit the proper type
                     // Generate visit for concrete type
                     content.AppendLine("switch (node) {");
                     var i = 0;
@@ -332,8 +338,15 @@ namespace {surroundingNamespace} {{
                     {
                         var subnodeType = child.Symbol.ToDisplayString();
                         content.AppendLine($"case {subnodeType} sub{i}:");
-                        content.AppendLine($"    Visit(sub{i});");
-                        content.AppendLine("    break;");
+                        if (returnType == "void")
+                        {
+                            content.AppendLine($"    Visit(sub{i});");
+                            content.AppendLine("    break;");
+                        }
+                        else
+                        {
+                            content.AppendLine($"    return Visit(sub{i});");
+                        }
                         ++i;
                     }
                     content.AppendLine("}");
