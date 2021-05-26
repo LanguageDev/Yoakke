@@ -146,62 +146,28 @@ namespace Yoakke.Ast.Generator
 
             var extraDefinitions = new StringBuilder();
 
-            // Generate implementation for ChildNodes, which yields subnodes and subnode lists
-            var subnodeLeaves = fields.Where(f => f.Kind == FieldKind.Subnode).Select(f => f.Symbol).ToList();
-            var subnodeLists = fields.Where(f => f.Kind == FieldKind.SubnodeList).Select(f => f.Symbol).ToList();
-            extraDefinitions.AppendLine($"{TypeNames.IEnumerable}<{TypeNames.IAstNode}> {TypeNames.IAstNode}.ChildNodes");
-            extraDefinitions.AppendLine("{ get {");
-            foreach (var subnode in subnodeLeaves) extraDefinitions.AppendLine($"yield return this.{subnode.Name};");
-            foreach (var subnodeList in subnodeLists) extraDefinitions.AppendLine($"foreach (var item in this.{subnodeList.Name}) yield return item;");
-            if (subnodeLeaves.Count == 0 && subnodeLists.Count == 0) extraDefinitions.AppendLine("yield break;");
-            extraDefinitions.AppendLine("} }");
-
-            // Generate implementation for LeafObjects, which yields leaf members and leaf lists
-            var leafObjects = fields.Where(f => f.Kind == FieldKind.Leaf).Select(f => f.Symbol).ToList();
-            var leafLists = fields.Where(f => f.Kind == FieldKind.LeafList).Select(f => f.Symbol).ToList();
-            extraDefinitions.AppendLine($"{TypeNames.IEnumerable}<object> {TypeNames.IAstNode}.LeafObjects");
-            extraDefinitions.AppendLine("{ get {");
-            foreach (var leaf in leafObjects) extraDefinitions.AppendLine($"yield return this.{leaf.Name};");
-            foreach (var leafList in leafLists) extraDefinitions.AppendLine($"foreach (var item in this.{leafList.Name}) yield return item;");
-            if (leafObjects.Count == 0 && leafLists.Count == 0) extraDefinitions.AppendLine("yield break;");
-            extraDefinitions.AppendLine("} }");
-
-            // Generate implementation for pretty-print
-            extraDefinitions.AppendLine($"string {TypeNames.IAstNode}.PrettyPrint({TypeNames.PrettyPrintFormat} format)");
-            extraDefinitions.AppendLine("{");
-            extraDefinitions.AppendLine($"    var result = new {TypeNames.StringBuilder}();");
-            extraDefinitions.AppendLine("    this.PrettyPrintImpl(format, result, 0);");
-            extraDefinitions.AppendLine("    return result.ToString();");
-            extraDefinitions.AppendLine("}");
-            // Pretty-print internals
-            if (node.IsAbstract)
+            // Utility to create the getter
+            void WriteGetter(string valueType, string propName, IEnumerable<IFieldSymbol> symbols)
             {
-                extraDefinitions.AppendLine($"protected abstract void PrettyPrintImpl({TypeNames.PrettyPrintFormat} format, {TypeNames.StringBuilder} builder, int indent);");
-            }
-            else
-            {
-                extraDefinitions.AppendLine($"protected override void PrettyPrintImpl({TypeNames.PrettyPrintFormat} format, {TypeNames.StringBuilder} builder, int indent)");
-                extraDefinitions.AppendLine("{");
-                // TODO: For now we only do XML
-                extraDefinitions.AppendLine("builder.Append(' ', 2 * indent);");
-                extraDefinitions.AppendLine($"builder.Append(\"<{node.Name}\");");
-                if (leafObjects.Count > 0)
+                var kvType = $"{TypeNames.KeyValuePair}<string, {valueType}>";
+                var typeName = $"{TypeNames.IEnumerable}<{kvType}>";
+                extraDefinitions!.AppendLine($"{typeName} {TypeNames.IAstNode}.{propName}");
+                extraDefinitions.AppendLine("{ get {");
+                bool hasAny = false;
+                foreach (var symbol in symbols)
                 {
-                    // Leaves are attributes
-                    foreach (var leaf in leafObjects)
-                    {
-                        extraDefinitions.AppendLine($"builder.Append($\" {leaf.Name}=\\\"{{{leaf.Name}}}\\\"\");");
-                    }
+                    hasAny = true;
+                    extraDefinitions.AppendLine($"yield return new {kvType}(\"{symbol.Name}\", this.{symbol.Name});");
                 }
-                extraDefinitions.AppendLine($"builder.AppendLine(\">\");");
-                foreach (var leafList in leafLists)
-                {
-                    if ()
-                }
-                extraDefinitions.AppendLine("builder.Append(' ', 2 * indent);");
-                extraDefinitions.AppendLine($"builder.AppendLine(\"<{node.Name} />\");");
-                extraDefinitions.AppendLine("}");
+                if (!hasAny) extraDefinitions.AppendLine("yield break;");
+                extraDefinitions.AppendLine("} }");
             }
+
+            // Generate overrides for IAstNode children getters
+            WriteGetter(TypeNames.IAstNode, "ChildNodes", fields.Where(f => f.Kind == FieldKind.Subnode).Select(f => f.Symbol));
+            WriteGetter($"{TypeNames.IReadOnlyCollection}<{TypeNames.IAstNode}>", "ChildNodeCollections", fields.Where(f => f.Kind == FieldKind.SubnodeList).Select(f => f.Symbol));
+            WriteGetter("object", "LeafObjects", fields.Where(f => f.Kind == FieldKind.Leaf).Select(f => f.Symbol));
+            WriteGetter($"{TypeNames.IReadOnlyCollection}<object>", "LeafObjectCollections", fields.Where(f => f.Kind == FieldKind.LeafList).Select(f => f.Symbol));
 
             // Generate ctor
             var ctorSource = $@"
@@ -308,7 +274,7 @@ namespace {surroundingNamespace} {{
             MetaNode node, 
             IReadOnlyDictionary<string, (INamedTypeSymbol Root, StringBuilder Content, INamedTypeSymbol ReturnType)> visitors)
         {
-            var readOnlyList = LoadSymbol(TypeNames.IReadOnlyList);
+            var readOnlyCollection = LoadSymbol(TypeNames.IReadOnlyCollectionG);
 
             // Get all visitor attributes on this node
             var visitorAttr = LoadSymbol(TypeNames.VisitorAttribute);
@@ -423,13 +389,13 @@ namespace {surroundingNamespace} {{
 
         private FieldKind CategorizeField(IFieldSymbol symbol)
         {
-            var readOnlyList = LoadSymbol(TypeNames.IReadOnlyList);
+            var readOnlyCollection = LoadSymbol(TypeNames.IReadOnlyCollectionG);
             if (HasAttribute(symbol.Type, TypeNames.AstAttribute))
             {
                 // It's a subnode
                 return FieldKind.Subnode;
             }
-            else if (symbol.Type.ImplementsGenericInterface(readOnlyList, out var args))
+            else if (symbol.Type.ImplementsGenericInterface(readOnlyCollection, out var args))
             {
                 // It's a list of something
                 if (HasAttribute(args![0], TypeNames.AstAttribute))

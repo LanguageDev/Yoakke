@@ -14,10 +14,18 @@ namespace Yoakke.Ast
         /// <summary>
         /// The child nodes of this one.
         /// </summary>
-        public IEnumerable<IAstNode> ChildNodes { get; }
+        public IEnumerable<KeyValuePair<string, IAstNode>> ChildNodes { get; }
+        /// <summary>
+        /// The child node collections of this one.
+        /// </summary>
+        public IEnumerable<KeyValuePair<string, IReadOnlyCollection<IAstNode>>> ChildNodeCollections { get; }
         /// <summary>
         /// The leaf objects of this node.
         /// </summary>
-        public IEnumerable<object> LeafObjects { get; }
+        public IEnumerable<KeyValuePair<string, object>> LeafObjects { get; }
+        /// <summary>
+        /// The leaf object collections of this node.
+        /// </summary>
+        public IEnumerable<KeyValuePair<string, IReadOnlyCollection<object>>> LeafObjectCollections { get; }
     }
 }
