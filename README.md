@@ -9,8 +9,8 @@ This library provides utilities for language development in .NET.
  - [x] Lexer (WIP)
  - [x] Parser (WIP)
  - [x] Error message reporting (WIP)
- - [ ] AST generator, visitor
- - [ ] Lexical symbols
+ - [x] AST generator, visitor (WIP)
+ - [x] Lexical symbols (WIP)
  - [ ] Type-system (?)
  - [ ] Virtual Machine
  - [ ] X86 Assembly

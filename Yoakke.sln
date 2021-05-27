@@ -43,9 +43,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Sample", "Yoakke.Sam
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ast", "Ast", "{58417641-179E-4F53-9528-234B4E87944E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yoakke.Ast", "Yoakke.Ast\Yoakke.Ast.csproj", "{384A70A8-96CE-4C1C-BC5C-BF3341B522E5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Ast", "Yoakke.Ast\Yoakke.Ast.csproj", "{384A70A8-96CE-4C1C-BC5C-BF3341B522E5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yoakke.Ast.Generator", "Yoakke.Ast.Generator\Yoakke.Ast.Generator.csproj", "{C3B90E58-A8C7-4F79-B8C7-140D0E6687E6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Ast.Generator", "Yoakke.Ast.Generator\Yoakke.Ast.Generator.csproj", "{C3B90E58-A8C7-4F79-B8C7-140D0E6687E6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yoakke.Symbols", "Yoakke.Symbols\Yoakke.Symbols.csproj", "{80BDC869-2344-4EEC-BB01-A3AC72CA26ED}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -125,6 +127,10 @@ Global
 		{C3B90E58-A8C7-4F79-B8C7-140D0E6687E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C3B90E58-A8C7-4F79-B8C7-140D0E6687E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C3B90E58-A8C7-4F79-B8C7-140D0E6687E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80BDC869-2344-4EEC-BB01-A3AC72CA26ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80BDC869-2344-4EEC-BB01-A3AC72CA26ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80BDC869-2344-4EEC-BB01-A3AC72CA26ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80BDC869-2344-4EEC-BB01-A3AC72CA26ED}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
