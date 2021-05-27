@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Yoakke.Text;
 
 namespace Yoakke.Symbols
 {
@@ -19,5 +20,9 @@ namespace Yoakke.Symbols
         /// The name of this symbol.
         /// </summary>
         public string Name { get; }
+        /// <summary>
+        /// The definition location of the symbol, if any.
+        /// </summary>
+        public Location? Definition { get; }
     }
 }
