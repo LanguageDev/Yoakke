@@ -9,45 +9,12 @@ namespace Yoakke.Symbols
     /// <summary>
     /// A symbol table that can be used to build the dymbol tree.
     /// </summary>
-    /// <typeparam name="TKey">The key type to associate symbols with.</typeparam>
-    public interface ISymbolTable<TKey> : IReadOnlySymbolTable<TKey>
+    public interface ISymbolTable : IReadOnlySymbolTable
     {
         /// <summary>
         /// The current scope that we are adding symbols to.
         /// </summary>
         public IScope CurrentScope { get; }
-
-        /// <summary>
-        /// The associated scopes.
-        /// </summary>
-        new public IReadOnlyDictionary<TKey, IScope> AssociatedScopes { get; }
-
-        /// <summary>
-        /// Associates a key with a scope.
-        /// </summary>
-        /// <param name="key">The key to associate.</param>
-        /// <param name="scope">The scope to associate the key with.</param>
-        public void AssociateScope(TKey key, IScope scope);
-
-        /// <summary>
-        /// Associates a key with the current scope.
-        /// </summary>
-        /// <param name="key">The key to associate.</param>
-        public void AssociateCurrentScope(TKey key);
-
-        /// <summary>
-        /// Associates the symbol as being defined with the given key.
-        /// </summary>
-        /// <param name="key">The key to associate the symbol with.</param>
-        /// <param name="symbol">The symbol to add as being defined.</param>
-        public void AddDefinedSymbol(TKey key, ISymbol symbol);
-
-        /// <summary>
-        /// Associates the symbol as being referred to with the given key.
-        /// </summary>
-        /// <param name="key">The key to associate the symbol with.</param>
-        /// <param name="symbol">The symbol to add as being referred.</param>
-        public void AddReferencedSymbol(TKey key, ISymbol symbol);
 
         /// <summary>
         /// Pushes a new scope as the current scope.
