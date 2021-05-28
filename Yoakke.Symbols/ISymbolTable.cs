@@ -12,6 +12,10 @@ namespace Yoakke.Symbols
     public interface ISymbolTable : IReadOnlySymbolTable
     {
         /// <summary>
+        /// The global scope in the symbol hierarchy.
+        /// </summary>
+        new public IScope GlobalScope { get; }
+        /// <summary>
         /// The current scope that we are adding symbols to.
         /// </summary>
         public IScope CurrentScope { get; }

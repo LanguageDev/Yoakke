@@ -11,7 +11,8 @@ namespace Yoakke.Symbols
     /// </summary>
     public class SymbolTable : ISymbolTable
     {
-        public IReadOnlyScope GlobalScope { get; }
+        IReadOnlyScope IReadOnlySymbolTable.GlobalScope => GlobalScope;
+        public IScope GlobalScope { get; }
         public IScope CurrentScope { get; private set; }
 
         /// <summary>
