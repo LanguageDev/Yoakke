@@ -18,17 +18,18 @@ namespace Yoakke.Symbols
         public IReadOnlyScope GlobalScope { get; }
 
         /// <summary>
-        /// Retrieves the symbol that has a definition entry for the associated key.
+        /// The associated scopes.
         /// </summary>
-        /// <param name="key">The key to get the defined symbol for.</param>
-        /// <returns>The defined symbol for the key, or null if there was none.</returns>
-        public ISymbol? GetDeclaringSymbol(TKey key);
+        public IReadOnlyDictionary<TKey, IReadOnlyScope> AssociatedScopes { get; }
 
         /// <summary>
-        /// Retrieves the symbol that has a reference entry for the associated key.
+        /// The associated defined symbols.
         /// </summary>
-        /// <param name="key">The key to get the referred symbol for.</param>
-        /// <returns>The referred symbol for the key, or null if there was none.</returns>
-        public ISymbol? GetReferringSymbol(TKey key);
+        public IReadOnlyDictionary<TKey, ISymbol> DefinedSymbols { get; }
+
+        /// <summary>
+        /// The associated referenced symbols.
+        /// </summary>
+        public IReadOnlyDictionary<TKey, ISymbol> ReferencedSymbols { get; }
     }
 }
