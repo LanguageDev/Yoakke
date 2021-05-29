@@ -18,7 +18,7 @@ namespace Yoakke.Symbols
         /// <summary>
         /// The current scope that we are adding symbols to.
         /// </summary>
-        public IScope CurrentScope { get; }
+        public IScope CurrentScope { get; set; }
 
         /// <summary>
         /// Pushes a new scope as the current scope.

@@ -13,7 +13,7 @@ namespace Yoakke.Symbols
     {
         IReadOnlyScope IReadOnlySymbolTable.GlobalScope => GlobalScope;
         public IScope GlobalScope { get; }
-        public IScope CurrentScope { get; private set; }
+        public IScope CurrentScope { get; set; }
 
         /// <summary>
         /// Initializes a new <see cref="SymbolTable{TKey}"/>.
