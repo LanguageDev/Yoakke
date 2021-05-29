@@ -12,6 +12,7 @@
     <ProjectReference Include="..\Yoakke.Lexer.Generator\Yoakke.Lexer.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="False" />
     <ProjectReference Include="..\Yoakke.Parser.Generator\Yoakke.Parser.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="False" />
     <ProjectReference Include="..\Yoakke.Ast.Generator\Yoakke.Ast.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="False" />
+    <ProjectReference Include="..\Yoakke.Symbols\Yoakke.Symbols.csproj" />
   </ItemGroup>
 
 </Project>

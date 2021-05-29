@@ -16,7 +16,7 @@ namespace Yoakke.Sample
         // Statements
         
         [Rule("program : stmt*")]
-        private static Statement Program(IReadOnlyList<Statement> statements) => new Statement.List(statements);
+        private static Statement Program(IReadOnlyList<Statement> statements) => new Statement.Program(statements);
 
         [Rule("stmt : 'func' Ident '(' (Ident (',' Ident)*)? ')' block_stmt")]
         private static Statement Func(

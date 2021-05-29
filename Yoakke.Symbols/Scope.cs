@@ -56,6 +56,13 @@ namespace Yoakke.Symbols
             return null;
         }
 
-        public void DefineSymbol(ISymbol symbol) => symbols[symbol.Name] = symbol;
+        public void DefineSymbol(ISymbol symbol)
+        {
+            if (symbol.Scope != this)
+            {
+                throw new ArgumentException("the scope of the symbol is not set to this", nameof(symbol));
+            }
+            symbols[symbol.Name] = symbol;
+        }
     }
 }

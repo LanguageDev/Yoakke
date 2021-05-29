@@ -8,6 +8,7 @@ using Yoakke.Ast.Attributes;
 namespace Yoakke.Sample
 {
     [Ast]
+    [Visitor("PassVisitor", typeof(void))]
     [Visitor("TreeEvaluator", typeof(void))]
     public abstract partial class AstNode
     {
@@ -16,6 +17,12 @@ namespace Yoakke.Sample
     [Ast]
     public abstract partial class Statement : AstNode
     {
+        [Ast]
+        public partial class Program : Statement
+        {
+            public readonly IReadOnlyList<Statement> Statements;
+        }
+
         [Ast]
         public partial class List : Statement
         {

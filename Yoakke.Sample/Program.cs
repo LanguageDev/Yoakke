@@ -18,8 +18,6 @@ func max(a, b) {
         return b;
     }
 }
-
-print(max(7, 2));
 ";
             var src = new SourceFile("test.sample", code);
             var lexer = new Lexer(src);
@@ -34,6 +32,8 @@ print(max(7, 2));
 
             var ast = result.Ok.Value;
             Console.WriteLine(PrettyPrinter.Print(ast, PrettyPrintFormat.Xml));
+            var resolve = new SymbolResolution();
+            resolve.Resolve(ast);
             var runtime = new TreeEvaluator();
             runtime.Bind("print", (Func<object[], object?>)(arg => { Console.WriteLine(arg[0].ToString()); return null; }));
             runtime.Execute(ast);
