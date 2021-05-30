@@ -10,14 +10,16 @@ namespace Yoakke.Sample
         static void Main(string[] args)
         {
             var code = @"
-func max(a, b) {
-    if a > b {
-        return a;
+func fib(a) {
+    if a < 2 {
+        return 1;
     }
     else {
-        return b;
+        return fib(a - 1) + fib(a - 2);
     }
 }
+
+print(fib(7));
 ";
             var src = new SourceFile("test.sample", code);
             var lexer = new Lexer(src);
@@ -33,9 +35,10 @@ func max(a, b) {
             var ast = result.Ok.Value;
             Console.WriteLine(PrettyPrinter.Print(ast, PrettyPrintFormat.Xml));
             var resolve = new SymbolResolution();
+            resolve.SymbolTable.GlobalScope.DefineSymbol(
+                new ConstSymbol(resolve.SymbolTable.GlobalScope, "print", (Func<object[], object?>)(arg => { Console.WriteLine(arg[0].ToString()); return null; })));
             resolve.Resolve(ast);
-            var runtime = new TreeEvaluator();
-            runtime.Bind("print", (Func<object[], object?>)(arg => { Console.WriteLine(arg[0].ToString()); return null; }));
+            var runtime = new TreeEvaluator(resolve);
             runtime.Execute(ast);
             //Console.WriteLine(new TreeEvaluator().Evaluate(result.Ok.Value));
         }

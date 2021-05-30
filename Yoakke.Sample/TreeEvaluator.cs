@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Yoakke.Symbols;
 
 namespace Yoakke.Sample
 {
@@ -17,30 +18,33 @@ namespace Yoakke.Sample
                 Value = value;
             }
         }
-        
-        private Dictionary<string, object> bindings = new Dictionary<string, object>();
+
+        private class StackFrame
+        {
+            public readonly Dictionary<ISymbol, object> Values = new();
+        }
+
+        private SymbolResolution symbolResolution;
+        private StackFrame globalFrame = new();
+        private Stack<StackFrame> callStack = new();
+
+        public TreeEvaluator(SymbolResolution symbolResolution)
+        {
+            this.symbolResolution = symbolResolution;
+        }
 
         public void Execute(Statement stmt) => Visit(stmt);
         public object Evaluate(Expression expr) => Visit(expr);
 
         // Statement related ///////////////////////////////////////////////////
 
-        protected override void Visit(Statement.Var vars) => Bind(vars.Name, Visit(vars.Value));
+        protected override void Visit(Statement.Var vars)
+        {
+            var symbol = symbolResolution.Symbols[vars];
+            Bind(symbol, Visit(vars.Value));
+        }
 
-        protected override void Visit(Statement.Func func) => Bind(func.Name, (Func<object[], object?>)(args => 
-            {
-                if (func.Parameters.Count != args.Length) throw new InvalidOperationException();
-                foreach (var (name, value) in func.Parameters.Zip(args)) Bind(name, value);
-                try
-                {
-                    Visit(func.Body);
-                }
-                catch (Return ret)
-                {
-                    return ret.Value;
-                }
-                return null;
-            }));
+        protected override void Visit(Statement.Func func) { /* no-op */ }
 
         protected override void Visit(Statement.Return ret) => 
             throw new Return(ret.Value == null ? null : Visit(ret.Value));
@@ -60,8 +64,47 @@ namespace Yoakke.Sample
 
         protected override object? Visit(Expression.Call call)
         {
-            var func = (Delegate)Evaluate(call.Function);
-            return func.DynamicInvoke(new object[] { call.Arguments.Select(Visit).ToArray() });
+            var func = Visit(call.Function);
+            var args = call.Arguments.Select(Visit).ToArray();
+            if (func is Statement.Func langFunc)
+            {
+                // Language function
+                if (langFunc.Parameters.Count != args.Length)
+                {
+                    throw new InvalidOperationException("argc mismatch");
+                }
+                // Push frame
+                var frame = new StackFrame();
+                callStack.Push(frame);
+                // Bind arguments
+                foreach (var (name, value) in langFunc.Parameters.Zip(args))
+                {
+                    var symbol = symbolResolution.Symbols[(langFunc, name)];
+                    frame.Values[symbol] = value;
+                }
+                // Evaluate, return value
+                object? returnValue = null;
+                try
+                {
+                    Visit(langFunc.Body);
+                }
+                catch (Return ret)
+                {
+                    returnValue = ret.Value;
+                }
+                // Pop frame
+                callStack.Pop();
+                return returnValue;
+            }
+            else if (func is Func<object[], object> nativeFunc)
+            {
+                // Native function
+                return nativeFunc(args);
+            }
+            else
+            {
+                throw new InvalidOperationException("tried to call non-function");
+            }
         }
 
         protected override object Visit(Expression.Unary ury) => ury.Op switch
@@ -99,13 +142,38 @@ namespace Yoakke.Sample
             _ => throw new NotSupportedException(),
         };
 
-        protected override object Visit(Expression.Ident ident) => bindings[ident.Name];
+        protected override object? Visit(Expression.Ident ident)
+        {
+            var symbol = symbolResolution.Symbols[ident];
+            if (symbol is VarSymbol)
+            {
+                // Variable
+                if (callStack.TryPeek(out var top) && top.Values.TryGetValue(symbol, out var value)) return value;
+                return globalFrame.Values[symbol];
+            }
+            else
+            {
+                // Constant
+                return ((ConstSymbol)symbol).Value;
+            }
+        }
+
         protected override object Visit(Expression.StringLit strLit) => strLit.Value;
         protected override object Visit(Expression.IntLit intLit) => intLit.Value;
 
         // Runtime drivers /////////////////////////////////////////////////////
 
-        public object Bind(string name, object value) => bindings[name] = value;
+        private object Bind(ISymbol symbol, object value)
+        {
+            if (callStack.TryPeek(out var top))
+            {
+                return top.Values[symbol] = value;
+            }
+            else
+            {
+                return globalFrame.Values[symbol] = value;
+            }
+        }
 
         private object PerformAdd(object left, object right)
         {

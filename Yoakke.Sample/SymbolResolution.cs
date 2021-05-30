@@ -81,7 +81,7 @@ namespace Yoakke.Sample
         // Define order-dependent variables
         private class VarPass : AstNode.PassVisitor
         {
-            public Dictionary<AstNode, ISymbol> Symbols { get; } = new();
+            public Dictionary<object, ISymbol> Symbols { get; } = new();
 
             private Dictionary<AstNode, IScope> scopes;
 
@@ -97,6 +97,7 @@ namespace Yoakke.Sample
                 var scope = scopes[var];
                 var symbol = new VarSymbol(scope, var.Name);
                 scope.DefineSymbol(symbol);
+                Symbols[var] = symbol;
                 base.Visit(var);
             }
 
@@ -107,7 +108,7 @@ namespace Yoakke.Sample
                 {
                     var symbol = new VarSymbol(innerScope, param);
                     innerScope.DefineSymbol(symbol);
-                    // TODO: Somehow associate symbol with param?
+                    Symbols[(func, param)] = symbol;
                 }
                 Visit(func.Body);
             }
@@ -134,16 +135,16 @@ namespace Yoakke.Sample
             }
         }
 
+        public SymbolTable SymbolTable { get; private set; } = new SymbolTable(new Scope<ScopeKind>(ScopeKind.Global));
         public IReadOnlyDictionary<AstNode, IReadOnlyScope> Scopes => scopes;
-        public IReadOnlyDictionary<AstNode, ISymbol> Symbols => symbols;
+        public IReadOnlyDictionary<object, ISymbol> Symbols => symbols;
 
         private Dictionary<AstNode, IReadOnlyScope> scopes = new();
-        private Dictionary<AstNode, ISymbol> symbols = new();
+        private Dictionary<object, ISymbol> symbols = new();
 
         public void Resolve(Statement program)
         {
-            var symbolTable = new SymbolTable(new Scope<ScopeKind>(ScopeKind.Global));
-            var pass1 = new ScopePass(symbolTable);
+            var pass1 = new ScopePass(SymbolTable);
             pass1.Pass(program);
             var pass2 = new ConstPass(pass1.Scopes);
             pass2.Pass(program);
