@@ -90,9 +90,28 @@ namespace Yoakke.LSP.Generator
             TypeNode.Ident id => TranslateTypeName(id.Name),
             TypeNode.Array arr => $"IReadOnlyList<{Translate(null, arr.ElementType)}>",
             TypeNode.Object obj => TranslateObject(hintName, obj),
-            TypeNode.Or => throw new NotImplementedException(),
+            TypeNode.Or or => TranslateOr(or),
             _ => throw new InvalidOperationException(),
         };
+
+        static string TranslateOr(TypeNode.Or or)
+        {
+            if (or.Alternatives.Count == 0) throw new InvalidOperationException();
+
+            if (or.Alternatives.Any(alt => alt is TypeNode.Ident id && id.Name == "null"))
+            {
+                // Basically a nullable type, take it out, translate without it, add nullability
+                var nonNullAlternatives = or.Alternatives
+                    .Where(alt => alt is not TypeNode.Ident id || id.Name != "null")
+                    .ToArray();
+                var result = nonNullAlternatives.Length == 1
+                    ? Translate(null, nonNullAlternatives[0])
+                    : Translate(null, new TypeNode.Or(nonNullAlternatives));
+                return WithOptional(result);
+            }
+
+            throw new NotImplementedException();
+        }
 
         static string TranslateObject(string? hintName, TypeNode.Object obj)
         {
@@ -112,10 +131,13 @@ namespace Yoakke.LSP.Generator
             var result = new StringBuilder();
             var fieldName = Capitalize(field.Name);
             if (field.Docs != null) result.AppendLine(TranslateDocComment("    ", field.Docs));
-            result.AppendLine($"    [{JsonPropertyAttribute}(\"{field.Name}\")]");
+            string propExtra = "";
+            if (field.Optional) propExtra += ", NullValueHandling = NullValueHandling.Ignore";
+            result.AppendLine($"    [{JsonPropertyAttribute}(\"{field.Name}\"{propExtra})]");
             result.Append("    public ");
-            result.Append(Translate(fieldName, field.Type));
-            if (field.Optional) result.Append('?');
+            var typeName = Translate(fieldName, field.Type);
+            if (field.Optional) typeName = WithOptional(typeName);
+            result.Append(typeName);
             result.Append(' ');
             result.Append(fieldName);
             result.Append(" { get; set; }");
@@ -145,6 +167,8 @@ namespace Yoakke.LSP.Generator
         static string TranslateTypeName(string name) => name switch
         {
             "boolean" => "bool",
+            "any" => "object",
+            "integer" => "int",
             _ => name,
         };
 
@@ -183,5 +207,7 @@ namespace Yoakke.LSP.Generator
         static string Capitalize(string s) => string.IsNullOrEmpty(s)
             ? s
             : char.ToUpper(s[0]) + s.Substring(1);
+
+        static string WithOptional(string type) => type.EndsWith('?') ? type : $"{type}?";
     }
 }

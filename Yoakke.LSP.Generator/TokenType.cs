@@ -27,6 +27,7 @@ namespace Yoakke.LSP.Generator
         [Token("namespace")] KwNamespace,
         [Token("const")] KwConst,
         [Token("extends")] KwExtends,
+        [Token("type")] KwType,
 
         [Token("(")] OpenParen,
         [Token(")")] CloseParen,

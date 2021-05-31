@@ -25,6 +25,17 @@ namespace Yoakke.LSP.Generator
                 Docs = doc?.Text,
             };
 
+        [Rule("namespace : DocComment? 'export'? 'type' Ident '=' StringLit ('|' StringLit)+ ';'")]
+        private static NamespaceDef StringSumType(
+            IToken? doc,
+            IToken _1, IToken _2,
+            IToken name, IToken _3,
+            Token<TokenType> first, IReadOnlyList<(Token<TokenType>, Token<TokenType>)> rest, IToken _4) =>
+            new NamespaceDef(name.Text, rest.Select(r => r.Item2).Prepend(first).Select(StringLitToNamespaceField).ToArray())
+            {
+                Docs = doc?.Text,
+            };
+
         [Rule("n_field : DocComment? 'export'? 'const' Ident (':' (Ident | StringLit | NumLit))? '=' (StringLit | NumLit) ';'")]
         private static NamespaceField NField(
             IToken? doc,
@@ -73,6 +84,14 @@ namespace Yoakke.LSP.Generator
 
         [Rule("type_atom : '{' i_field* '}'")]
         private static TypeNode Object(IToken _1, IReadOnlyList<InterfaceField> fs, IToken _2) => new TypeNode.Object(fs);
+
+        private static NamespaceField StringLitToNamespaceField(Token<TokenType> t)
+        {
+            if (t.Kind != TokenType.StringLit) throw new ArgumentException("string literal expected");
+            var text = t.Text.Substring(1, t.Text.Length - 2);
+            var capitalText = char.ToUpper(text[0]) + text.Substring(1);
+            return new NamespaceField(capitalText, text);
+        }
 
         private static object MakeNamespaceValue(Token<TokenType> t) => t.Kind == TokenType.NumLit
             ? int.Parse(t.Text)
