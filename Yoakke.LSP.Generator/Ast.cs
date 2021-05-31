@@ -10,9 +10,10 @@ namespace Yoakke.LSP.Generator
     {
         public readonly string Name;
         public readonly IReadOnlyList<string> Bases;
-        public readonly IReadOnlyList<Field> Fields;
+        public readonly IReadOnlyList<InterfaceField> Fields;
+        public string? Docs { get; set; }
 
-        public InterfaceDef(string name, IReadOnlyList<string> bases, IReadOnlyList<Field> fields)
+        public InterfaceDef(string name, IReadOnlyList<string> bases, IReadOnlyList<InterfaceField> fields)
         {
             Name = name;
             Bases = bases;
@@ -20,17 +21,44 @@ namespace Yoakke.LSP.Generator
         }
     }
 
-    class Field
+    class NamespaceDef
+    {
+        public readonly string Name;
+        public readonly IReadOnlyList<NamespaceField> Fields;
+        public string? Docs { get; set; }
+
+        public NamespaceDef(string name, IReadOnlyList<NamespaceField> fields)
+        {
+            Name = name;
+            Fields = fields;
+        }
+    }
+
+    class InterfaceField
     {
         public readonly string Name;
         public readonly bool Optional;
         public readonly TypeNode Type;
+        public string? Docs { get; set; }
 
-        public Field(string name, bool optional, TypeNode type)
+        public InterfaceField(string name, bool optional, TypeNode type)
         {
             Name = name;
             Optional = optional;
             Type = type;
+        }
+    }
+
+    class NamespaceField
+    {
+        public readonly string Name;
+        public readonly int Value;
+        public string? Docs { get; set; }
+
+        public NamespaceField(string name, int value)
+        {
+            Name = name;
+            Value = value;
         }
     }
 
@@ -68,9 +96,9 @@ namespace Yoakke.LSP.Generator
 
         public class Object : TypeNode
         {
-            public readonly IReadOnlyList<Field> Fields;
+            public readonly IReadOnlyList<InterfaceField> Fields;
 
-            public Object(IReadOnlyList<Field> fields)
+            public Object(IReadOnlyList<InterfaceField> fields)
             {
                 Fields = fields;
             }

@@ -17,8 +17,10 @@ namespace Yoakke.LSP.Generator
         [Ignore]
         [Regex(Regex.Whitespace)]
         [Regex(Regex.LineComment)]
-        [Regex(Regex.MultilineComment)]
         Ignore,
+
+        [Regex(Regex.MultilineComment)]
+        DocComment,
 
         [Token("export")] KwExport,
         [Token("interface")] KwInterface,
