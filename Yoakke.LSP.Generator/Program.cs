@@ -17,10 +17,16 @@ namespace Yoakke.LSP.Generator
             var parser = new TsParser(lexer);
             while (true)
             {
-                var parseResult = parser.ParseInterface();
+                var parseResult = parser.ParseDefinition();
                 if (parseResult.IsError)
                 {
                     Console.WriteLine("Failed to parse!");
+                    var err = parseResult.Error;
+                    foreach (var element in err.Elements.Values)
+                    {
+                        Console.WriteLine($"  expected {string.Join(" or ", element.Expected)} while parsing {element.Context}");
+                    }
+                    Console.WriteLine($"  but got {(err.Got == null ? "end of input" : err.Got.Text)}");
                     break;
                 }
                 var ast = parseResult.Ok.Value;
@@ -38,6 +44,20 @@ namespace Yoakke.LSP.Generator
             }
         }
 
+        static void Translate(DefBase def)
+        {
+            switch (def)
+            {
+            case InterfaceDef i: 
+                Translate(i); 
+                break;
+            case NamespaceDef n: 
+                Translate(n); 
+                break;
+            default: throw new InvalidOperationException();
+            }
+        }
+
         static void Translate(InterfaceDef interfaceDef)
         {
             var result = new StringBuilder();
@@ -46,6 +66,18 @@ namespace Yoakke.LSP.Generator
             result.AppendLine($"public class {interfaceDef.Name}");
             result.AppendLine("{");
             foreach (var field in interfaceDef.Fields) result.AppendLine(Translate(field));
+            result.AppendLine("}");
+            typeDefinitions.Add(result.ToString());
+        }
+
+        static void Translate(NamespaceDef namespaceDef)
+        {
+            var result = new StringBuilder();
+            // TODO: Subclassing
+            if (namespaceDef.Docs != null) result.AppendLine(TranslateDocComment("", namespaceDef.Docs));
+            result.AppendLine($"public enum {namespaceDef.Name}");
+            result.AppendLine("{");
+            foreach (var field in namespaceDef.Fields) result.AppendLine(Translate(field));
             result.AppendLine("}");
             typeDefinitions.Add(result.ToString());
         }
@@ -84,6 +116,27 @@ namespace Yoakke.LSP.Generator
             result.Append(' ');
             result.Append(fieldName);
             result.Append(" { get; set; }");
+            return result.ToString();
+        }
+
+        static string Translate(NamespaceField field)
+        {
+            var result = new StringBuilder();
+            var fieldName = Capitalize(field.Name);
+            if (field.Docs != null) result.AppendLine(TranslateDocComment("    ", field.Docs));
+            if (field.Value is string strValue)
+            {
+                // TODO: Annotate that it's a string
+                //result.AppendLine($"    [JsonPropertyName(\"{field.Name}\")]");
+            }
+            result.Append("    ");
+            result.Append(fieldName);
+            if (field.Value is int intValue)
+            {
+                result.Append(" = ");
+                result.Append(intValue);
+            }
+            result.Append(",");
             return result.ToString();
         }
 

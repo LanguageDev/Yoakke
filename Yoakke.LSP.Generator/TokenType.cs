@@ -40,5 +40,7 @@ namespace Yoakke.LSP.Generator
         [Token(";")] Semicolon,
 
         [Regex(Regex.Identifier)] Ident,
+        [Regex(@"'[^']*'")] StringLit,
+        [Regex(Regex.IntLiteral)] NumLit,
     }
 }

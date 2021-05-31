@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace Yoakke.LSP.Generator
 {
-    class InterfaceDef
+    abstract class DefBase { }
+
+    class InterfaceDef : DefBase
     {
         public readonly string Name;
         public readonly IReadOnlyList<string> Bases;
@@ -21,7 +23,7 @@ namespace Yoakke.LSP.Generator
         }
     }
 
-    class NamespaceDef
+    class NamespaceDef : DefBase
     {
         public readonly string Name;
         public readonly IReadOnlyList<NamespaceField> Fields;
@@ -52,10 +54,10 @@ namespace Yoakke.LSP.Generator
     class NamespaceField
     {
         public readonly string Name;
-        public readonly int Value;
+        public readonly object Value;
         public string? Docs { get; set; }
 
-        public NamespaceField(string name, int value)
+        public NamespaceField(string name, object value)
         {
             Name = name;
             Value = value;
