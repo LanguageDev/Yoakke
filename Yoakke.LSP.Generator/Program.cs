@@ -9,6 +9,9 @@ namespace Yoakke.LSP.Generator
 {
     class Program
     {
+        static readonly string JsonPropertyAttribute = "JsonProperty";
+        static readonly string JsonEnumValueAttribute = "EnumMember";
+
         static List<string> typeDefinitions = new();
 
         static void Main(string[] args)
@@ -109,7 +112,7 @@ namespace Yoakke.LSP.Generator
             var result = new StringBuilder();
             var fieldName = Capitalize(field.Name);
             if (field.Docs != null) result.AppendLine(TranslateDocComment("    ", field.Docs));
-            result.AppendLine($"    [JsonPropertyName(\"{field.Name}\")]");
+            result.AppendLine($"    [{JsonPropertyAttribute}(\"{field.Name}\")]");
             result.Append("    public ");
             result.Append(Translate(fieldName, field.Type));
             if (field.Optional) result.Append('?');
@@ -126,8 +129,7 @@ namespace Yoakke.LSP.Generator
             if (field.Docs != null) result.AppendLine(TranslateDocComment("    ", field.Docs));
             if (field.Value is string strValue)
             {
-                // TODO: Annotate that it's a string
-                //result.AppendLine($"    [JsonPropertyName(\"{field.Name}\")]");
+                result.AppendLine($"    [{JsonEnumValueAttribute}(\"{strValue}\")]");
             }
             result.Append("    ");
             result.Append(fieldName);
