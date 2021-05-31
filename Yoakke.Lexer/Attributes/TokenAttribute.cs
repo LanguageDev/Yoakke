@@ -9,7 +9,7 @@ namespace Yoakke.Lexer.Attributes
     /// <summary>
     /// An attribute to define a token type in terms of a literal string to match.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Field)]
+    [AttributeUsage(AttributeTargets.Field, AllowMultiple = true)]
     public class TokenAttribute : Attribute
     {
         /// <summary>

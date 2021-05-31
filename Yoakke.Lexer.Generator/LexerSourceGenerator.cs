@@ -235,6 +235,9 @@ end_loop:
 
         private LexerDescription? ExtractLexerDescription(INamedTypeSymbol symbol)
         {
+            var regexAttr = LoadSymbol(TypeNames.RegexAttribute);
+            var tokenAttr = LoadSymbol(TypeNames.TokenAttribute);
+
             var result = new LexerDescription();
             foreach (var member in symbol.GetMembers().OfType<IFieldSymbol>())
             {
@@ -252,7 +255,7 @@ end_loop:
                     }
                     continue;
                 }
-                // End
+                // Error token
                 if (HasAttribute(member, TypeNames.ErrorAttribute))
                 {
                     if (result.ErrorName == null)
@@ -268,22 +271,30 @@ end_loop:
                 }
                 // Regular token
                 var ignore = HasAttribute(member, TypeNames.IgnoreAttribute);
-                // Regex
-                if (TryGetAttribute(member, TypeNames.RegexAttribute, out var attr))
+                // Ask for all regex and token attributes
+                var relevantAttribs = member.GetAttributes()
+                    .Where(attr => SymbolEquals(attr.AttributeClass, regexAttr) || SymbolEquals(attr.AttributeClass, tokenAttr))
+                    .ToList();
+                foreach (var attr in relevantAttribs)
                 {
-                    var regex = attr.GetCtorValue()!.ToString();
-                    result.Tokens.Add(new TokenDescription(member, regex, ignore));
-                    continue;
+                    if (SymbolEquals(attr.AttributeClass, regexAttr))
+                    {
+                        // Regex
+                        var regex = attr.GetCtorValue()!.ToString();
+                        result.Tokens.Add(new TokenDescription(member, regex, ignore));
+                    }
+                    else
+                    {
+                        // Token
+                        var regex = RegExParser.Escape(attr.GetCtorValue()!.ToString());
+                        result.Tokens.Add(new TokenDescription(member, regex, ignore));
+                    }
                 }
-                // Token
-                if (TryGetAttribute(member, TypeNames.TokenAttribute, out attr))
+                if (relevantAttribs.Count == 0)
                 {
-                    var regex = RegExParser.Escape(attr.GetCtorValue()!.ToString());
-                    result.Tokens.Add(new TokenDescription(member, regex, ignore));
-                    continue;
+                    // No attribute, warn
+                    Report(Diagnostics.NoAttributeForTokenType, member.Locations.First(), member.Name);
                 }
-                // No attribute, warn
-                Report(Diagnostics.NoAttributeForTokenType, member.Locations.First(), member.Name);
             }
             // Check if everything has been filled out
             if (result.EndName == null || result.ErrorName == null)

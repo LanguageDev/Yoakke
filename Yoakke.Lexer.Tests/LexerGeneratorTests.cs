@@ -15,7 +15,7 @@ namespace Yoakke.Lexer.Tests
             [Error] Error,
             [End] End,
 
-            [Token("if")] KwIf,
+            [Token("IF")] [Token("if")] KwIf,
             [Token("else")] KwElse,
             [Regex(Regex.Ident)] Identifier,
             [Token("+")] Plus,
@@ -47,6 +47,19 @@ namespace Yoakke.Lexer.Tests
             Assert.AreEqual(Tok("b", TokenType.Identifier, Rn((0, 10), 1)), lexer.Next());
             Assert.AreEqual(Tok("123", TokenType.Number, Rn((0, 12), 3)), lexer.Next());
             Assert.AreEqual(Tok("", TokenType.End, Rn((0, 15), 0)), lexer.Next());
+        }
+
+        [TestMethod]
+        public void SimpleSequenceWithAlias()
+        {
+            var lexer = new Lexer("if    asd+b 123 IF");
+            Assert.AreEqual(Tok("if", TokenType.KwIf, Rn((0, 0), 2)), lexer.Next());
+            Assert.AreEqual(Tok("asd", TokenType.Identifier, Rn((0, 6), 3)), lexer.Next());
+            Assert.AreEqual(Tok("+", TokenType.Plus, Rn((0, 9), 1)), lexer.Next());
+            Assert.AreEqual(Tok("b", TokenType.Identifier, Rn((0, 10), 1)), lexer.Next());
+            Assert.AreEqual(Tok("123", TokenType.Number, Rn((0, 12), 3)), lexer.Next());
+            Assert.AreEqual(Tok("IF", TokenType.KwIf, Rn((0, 16), 2)), lexer.Next());
+            Assert.AreEqual(Tok("", TokenType.End, Rn((0, 18), 0)), lexer.Next());
         }
 
         [TestMethod]

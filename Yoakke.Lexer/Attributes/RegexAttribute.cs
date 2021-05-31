@@ -9,7 +9,7 @@ namespace Yoakke.Lexer.Attributes
     /// <summary>
     /// An attribute to define a token type in terms of a regular expression.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Field)]
+    [AttributeUsage(AttributeTargets.Field, AllowMultiple = true)]
     public class RegexAttribute : Attribute
     {
         /// <summary>
