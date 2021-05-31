@@ -51,7 +51,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Symbols", "Yoakke.Sy
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LanguageServerProtocol", "LanguageServerProtocol", "{C32F06FE-A533-4BD3-B361-2D9BECCDFBDF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yoakke.LSP.Generator", "Yoakke.LSP.Generator\Yoakke.LSP.Generator.csproj", "{14BA531F-4D06-4507-A3C5-027FB097E970}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lsp.Generator", "Yoakke.Lsp.Generator\Yoakke.Lsp.Generator.csproj", "{14BA531F-4D06-4507-A3C5-027FB097E970}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lsp.Sample", "Yoakke.Lsp.Sample\Yoakke.Lsp.Sample.csproj", "{A4D7FE59-C1D4-47AC-9822-A51BC09045BC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yoakke.Lsp", "Yoakke.Lsp\Yoakke.Lsp.csproj", "{01035D94-6005-47DB-BC9B-0925F98CFA1F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -139,6 +143,14 @@ Global
 		{14BA531F-4D06-4507-A3C5-027FB097E970}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{14BA531F-4D06-4507-A3C5-027FB097E970}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{14BA531F-4D06-4507-A3C5-027FB097E970}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A4D7FE59-C1D4-47AC-9822-A51BC09045BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4D7FE59-C1D4-47AC-9822-A51BC09045BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4D7FE59-C1D4-47AC-9822-A51BC09045BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4D7FE59-C1D4-47AC-9822-A51BC09045BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01035D94-6005-47DB-BC9B-0925F98CFA1F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01035D94-6005-47DB-BC9B-0925F98CFA1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01035D94-6005-47DB-BC9B-0925F98CFA1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01035D94-6005-47DB-BC9B-0925F98CFA1F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -158,6 +170,8 @@ Global
 		{384A70A8-96CE-4C1C-BC5C-BF3341B522E5} = {58417641-179E-4F53-9528-234B4E87944E}
 		{C3B90E58-A8C7-4F79-B8C7-140D0E6687E6} = {58417641-179E-4F53-9528-234B4E87944E}
 		{14BA531F-4D06-4507-A3C5-027FB097E970} = {C32F06FE-A533-4BD3-B361-2D9BECCDFBDF}
+		{A4D7FE59-C1D4-47AC-9822-A51BC09045BC} = {C32F06FE-A533-4BD3-B361-2D9BECCDFBDF}
+		{01035D94-6005-47DB-BC9B-0925F98CFA1F} = {C32F06FE-A533-4BD3-B361-2D9BECCDFBDF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1EDE8F07-AE3A-4556-AEF0-3AC518F18F92}
