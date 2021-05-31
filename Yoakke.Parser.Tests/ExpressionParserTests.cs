@@ -45,14 +45,14 @@ namespace Yoakke.Parser.Tests
         {
             [End] End,
             [Error] Error,
-            [Ignore] [Regex(Regex.Space)] Whitespace,
+            [Ignore] [Regex(Regex.Whitespace)] Whitespace,
 
             [Token("+")] Add,
             [Token("-")] Sub,
             [Token("*")] Mul,
             [Token("/")] Div,
             [Token("^")] Exp,
-            [Regex(Regex.DecInt)] Number,
+            [Regex(Regex.IntLiteral)] Number,
             [Token("(")] Lparen,
             [Token(")")] Rparen,
         }

@@ -10,17 +10,17 @@ namespace Yoakke.Lexer.Tests
         [Lexer("Lexer")]
         public enum TokenType
         {
-            [Ignore] [Regex(Regex.Space)] Whitespace,
+            [Ignore] [Regex(Regex.Whitespace)] Whitespace,
 
             [Error] Error,
             [End] End,
 
             [Token("IF")] [Token("if")] KwIf,
             [Token("else")] KwElse,
-            [Regex(Regex.Ident)] Identifier,
+            [Regex(Regex.Identifier)] Identifier,
             [Token("+")] Plus,
             [Token("-")] Minus,
-            [Regex(Regex.DecInt)] Number,
+            [Regex(Regex.IntLiteral)] Number,
         }
 
         [TestMethod]

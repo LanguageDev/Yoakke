@@ -14,7 +14,7 @@ namespace Yoakke.Sample
         [Error] Error,
         [End] End,
 
-        [Ignore] [Regex(Regex.Space)] Whitespace,
+        [Ignore] [Regex(Regex.Whitespace)] Whitespace,
 
         [Token("func")] KwFunc,
         [Token("if")] KwIf,
@@ -47,8 +47,8 @@ namespace Yoakke.Sample
         [Token("!")] Exclamation,
         [Token(",")] Comma,
 
-        [Regex(Regex.Ident)] Ident,
-        [Regex(Regex.DecInt)] IntLit,
-        [Regex(Regex.LineString)] StrLit,
+        [Regex(Regex.Identifier)] Ident,
+        [Regex(Regex.IntLiteral)] IntLit,
+        [Regex(Regex.StringLiteral)] StrLit,
     }
 }

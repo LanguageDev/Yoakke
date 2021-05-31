@@ -47,7 +47,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Ast", "Yoakke.Ast\Yo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Ast.Generator", "Yoakke.Ast.Generator\Yoakke.Ast.Generator.csproj", "{C3B90E58-A8C7-4F79-B8C7-140D0E6687E6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yoakke.Symbols", "Yoakke.Symbols\Yoakke.Symbols.csproj", "{80BDC869-2344-4EEC-BB01-A3AC72CA26ED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Symbols", "Yoakke.Symbols\Yoakke.Symbols.csproj", "{80BDC869-2344-4EEC-BB01-A3AC72CA26ED}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LanguageServerProtocol", "LanguageServerProtocol", "{C32F06FE-A533-4BD3-B361-2D9BECCDFBDF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
