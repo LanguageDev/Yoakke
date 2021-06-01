@@ -34,16 +34,20 @@ namespace Yoakke.LSP.Generator
                 }
                 var ast = parseResult.Ok.Value;
                 Translate(ast);
-            }
 
-            Console.WriteLine("====================================================");
-            Console.WriteLine();
-            Console.WriteLine("Generated types:");
-
-            foreach (var typeDef in typeDefinitions)
-            {
+                Console.WriteLine("====================================================");
+                Console.WriteLine("Generated types:");
                 Console.WriteLine();
-                Console.WriteLine(typeDef);
+
+                foreach (var typeDef in typeDefinitions)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine(typeDef);
+                }
+
+                Console.WriteLine("====================================================");
+
+                typeDefinitions.Clear();
             }
         }
 
@@ -64,9 +68,11 @@ namespace Yoakke.LSP.Generator
         static void Translate(InterfaceDef interfaceDef)
         {
             var result = new StringBuilder();
-            // TODO: Subclassing
+            if (interfaceDef.Bases.Count > 1) throw new NotSupportedException();
             if (interfaceDef.Docs != null) result.AppendLine(TranslateDocComment("", interfaceDef.Docs));
-            result.AppendLine($"public class {interfaceDef.Name}");
+            result.Append($"public class {interfaceDef.Name}");
+            if (interfaceDef.Bases.Count == 1) result.Append(" : ").Append(interfaceDef.Bases[0]);
+            result.AppendLine();
             result.AppendLine("{");
             foreach (var field in interfaceDef.Fields) result.AppendLine(Translate(field));
             result.AppendLine("}");
@@ -76,7 +82,6 @@ namespace Yoakke.LSP.Generator
         static void Translate(NamespaceDef namespaceDef)
         {
             var result = new StringBuilder();
-            // TODO: Subclassing
             if (namespaceDef.Docs != null) result.AppendLine(TranslateDocComment("", namespaceDef.Docs));
             result.AppendLine($"public enum {namespaceDef.Name}");
             result.AppendLine("{");
@@ -90,11 +95,11 @@ namespace Yoakke.LSP.Generator
             TypeNode.Ident id => TranslateTypeName(id.Name),
             TypeNode.Array arr => $"IReadOnlyList<{Translate(null, arr.ElementType)}>",
             TypeNode.Object obj => TranslateObject(hintName, obj),
-            TypeNode.Or or => TranslateOr(or),
+            TypeNode.Or or => TranslateOr(hintName, or),
             _ => throw new InvalidOperationException(),
         };
 
-        static string TranslateOr(TypeNode.Or or)
+        static string TranslateOr(string? hintName, TypeNode.Or or)
         {
             if (or.Alternatives.Count == 0) throw new InvalidOperationException();
 
@@ -105,9 +110,29 @@ namespace Yoakke.LSP.Generator
                     .Where(alt => alt is not TypeNode.Ident id || id.Name != "null")
                     .ToArray();
                 var result = nonNullAlternatives.Length == 1
-                    ? Translate(null, nonNullAlternatives[0])
-                    : Translate(null, new TypeNode.Or(nonNullAlternatives));
+                    ? Translate(hintName, nonNullAlternatives[0])
+                    : Translate(hintName, new TypeNode.Or(nonNullAlternatives));
                 return WithOptional(result);
+            }
+
+            if (or.Alternatives.Count == 2)
+            {
+                // Check if it's a bool | object pattern
+                if (   or.Alternatives[0] is TypeNode.Ident idLeft 
+                    && idLeft.Name == "boolean" 
+                    && or.Alternatives[1] is TypeNode.Object objRight)
+                {
+                    var objType = TranslateObject(hintName, objRight);
+                    return $"BoolOrObject<{objType}>";
+                }
+                // Check if it's an object | bool pattern
+                if (or.Alternatives[1] is TypeNode.Ident idRight
+                    && idRight.Name == "boolean"
+                    && or.Alternatives[0] is TypeNode.Object objLeft)
+                {
+                    var objType = TranslateObject(hintName, objLeft);
+                    return $"BoolOrObject<{objType}>";
+                }
             }
 
             throw new NotImplementedException();
@@ -151,7 +176,7 @@ namespace Yoakke.LSP.Generator
             if (field.Docs != null) result.AppendLine(TranslateDocComment("    ", field.Docs));
             if (field.Value is string strValue)
             {
-                result.AppendLine($"    [{JsonEnumValueAttribute}(\"{strValue}\")]");
+                result.AppendLine($"    [{JsonEnumValueAttribute}(Value = \"{strValue}\")]");
             }
             result.Append("    ");
             result.Append(fieldName);
@@ -169,6 +194,7 @@ namespace Yoakke.LSP.Generator
             "boolean" => "bool",
             "any" => "object",
             "integer" => "int",
+            "uinteger" => "uint",
             _ => name,
         };
 
@@ -193,14 +219,21 @@ namespace Yoakke.LSP.Generator
                 result.Append(prefix);
                 result.AppendLine("/// </summary>");
             }
+            if (doc.Since != null)
+            {
+                var versionParts = doc.Since.Split('.');
+                result.Append(prefix);
+                result.Append("[Since(");
+                result.Append(string.Join(", ", versionParts));
+                result.AppendLine(")]");
+            }
             if (doc.Deprecation != null)
             {
                 result.Append(prefix);
-                result.Append("[ObsoleteAttribute(\"");
+                result.Append("[Obsolete(\"");
                 result.Append(doc.Deprecation);
                 result.AppendLine("\")]");
             }
-            // TODO: Since?
             return result.ToString().TrimEnd();
         }
 

@@ -2,6 +2,7 @@
 using StreamJsonRpc;
 using System;
 using System.Threading.Tasks;
+using Yoakke.Lsp.Model.General;
 
 namespace Yoakke.Lsp.Sample
 {
@@ -11,7 +12,7 @@ namespace Yoakke.Lsp.Sample
         {
             var stream = FullDuplexStream.Splice(Console.OpenStandardInput(), Console.OpenStandardOutput());
             var jsonRpc = new JsonRpc(stream);
-            jsonRpc.AddLocalRpcMethod("add", (Func<object, int>)((a) =>
+            jsonRpc.AddLocalRpcMethod("initialize", (Func<InitializeParams, int>)((a) =>
             {
                 int x = 0;
                 return 0;
