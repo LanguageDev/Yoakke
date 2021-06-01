@@ -8,8 +8,8 @@ namespace Yoakke.Lsp.Model.Serialization
     {
         public override ProgressToken ReadJson(JsonReader reader, Type objectType, ProgressToken existingValue, bool hasExistingValue, JsonSerializer serializer) =>
             reader.TokenType == JsonToken.String
-                ? new ProgressToken(reader.ReadAsString())
-                : new ProgressToken(reader.ReadAsInt32()!.Value);
+                ? new ProgressToken((string)reader.Value)
+                : new ProgressToken((int)reader.Value);
 
         public override void WriteJson(JsonWriter writer, ProgressToken value, JsonSerializer serializer) =>
             writer.WriteValue(value.Value);

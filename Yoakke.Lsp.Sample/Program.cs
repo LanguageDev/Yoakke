@@ -11,14 +11,18 @@ namespace Yoakke.Lsp.Sample
         static async Task Main(string[] args)
         {
             var stream = FullDuplexStream.Splice(Console.OpenStandardInput(), Console.OpenStandardOutput());
-            var jsonRpc = new JsonRpc(stream);
-            jsonRpc.AddLocalRpcMethod("initialize", (Func<InitializeParams, int>)((a) =>
-            {
-                int x = 0;
-                return 0;
-            }));
-            jsonRpc.StartListening();
+            var jsonRpc = JsonRpc.Attach(stream, new Server());
             await jsonRpc.Completion;
+        }
+    }
+
+    class Server
+    {
+        [JsonRpcMethod("initialize", UseSingleObjectParameterDeserialization = true)]
+        public int Initialize(InitializeParams initializeParams)
+        {
+            var x = 0;
+            return 0;
         }
     }
 }

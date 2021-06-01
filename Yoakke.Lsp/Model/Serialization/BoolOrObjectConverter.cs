@@ -17,7 +17,7 @@ namespace Yoakke.Lsp.Model.Serialization
         {
             if (reader.TokenType == JsonToken.Boolean)
             { 
-                return Activator.CreateInstance(objectType, reader.ReadAsBoolean())!;
+                return Activator.CreateInstance(objectType, (bool)reader.Value)!;
             }
             else
             {
