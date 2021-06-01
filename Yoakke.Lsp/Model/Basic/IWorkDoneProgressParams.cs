@@ -2,7 +2,7 @@
 
 namespace Yoakke.Lsp.Model.Basic
 {
-    public class WorkDoneProgressParams
+    public interface IWorkDoneProgressParams
     {
         /// <summary>
         /// An optional token that a server can use to report work done progress.

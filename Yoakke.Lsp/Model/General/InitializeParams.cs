@@ -7,7 +7,7 @@ using Yoakke.Lsp.Model.Workspace;
 
 namespace Yoakke.Lsp.Model.General
 {
-    public class InitializeParams : WorkDoneProgressParams
+    public class InitializeParams : IWorkDoneProgressParams
     {
         public class ClientInformation
         {
@@ -23,6 +23,11 @@ namespace Yoakke.Lsp.Model.General
             public string? Version { get; set; }
         }
 
+        /// <summary>
+        /// An optional token that a server can use to report work done progress.
+        /// </summary>
+        [JsonProperty("workDoneToken", NullValueHandling = NullValueHandling.Ignore)]
+        public ProgressToken? WorkDoneToken { get; set; }
         /// <summary>
         /// The process Id of the parent process that started the server. Is null if
         /// the process has not been started by another process. If the parent

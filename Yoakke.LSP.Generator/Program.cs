@@ -65,13 +65,21 @@ namespace Yoakke.LSP.Generator
             }
         }
 
+        static readonly string[] knownInterfaces = new string[] 
+        {
+            "WorkDoneProgressParams", "WorkDoneProgressOptions",
+        };
+
         static void Translate(InterfaceDef interfaceDef)
         {
             var result = new StringBuilder();
-            if (interfaceDef.Bases.Count > 1) throw new NotSupportedException();
+            var interfaces = interfaceDef.Bases.Intersect(knownInterfaces).ToList();
+            var baseClasses = interfaceDef.Bases.Except(interfaces).ToList();
             if (interfaceDef.Docs != null) result.AppendLine(TranslateDocComment("", interfaceDef.Docs));
             result.Append($"public class {interfaceDef.Name}");
-            if (interfaceDef.Bases.Count == 1) result.Append(" : ").Append(interfaceDef.Bases[0]);
+            if (baseClasses.Count > 1) throw new NotSupportedException();
+            var toExtend = baseClasses.Concat(interfaces.Select(i => $"I{i}")).ToList();
+            if (toExtend.Count > 0) result.Append(" : ").Append(string.Join(", ", toExtend));
             result.AppendLine();
             result.AppendLine("{");
             foreach (var field in interfaceDef.Fields) result.AppendLine(Translate(field));

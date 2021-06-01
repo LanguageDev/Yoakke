@@ -18,7 +18,6 @@ namespace Yoakke.Lsp.Model.Capabilities.Server
         /// </summary>
         [JsonProperty("textDocumentSync", NullValueHandling = NullValueHandling.Ignore)]
         public Either<TextDocumentSyncOptions, TextDocumentSyncKind>? TextDocumentSync { get; set; }
-#if false
         /// <summary>
         /// The server provides completion support.
         /// </summary>
@@ -34,6 +33,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Server
         /// </summary>
         [JsonProperty("signatureHelpProvider", NullValueHandling = NullValueHandling.Ignore)]
         public SignatureHelpOptions? SignatureHelpProvider { get; set; }
+#if false
         /// <summary>
         /// The server provides go to declaration support.
         /// </summary>
