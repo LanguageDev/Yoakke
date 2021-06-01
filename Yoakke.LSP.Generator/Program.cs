@@ -68,6 +68,8 @@ namespace Yoakke.LSP.Generator
         static readonly string[] knownInterfaces = new string[] 
         {
             "WorkDoneProgressParams", "WorkDoneProgressOptions",
+            "TextDocumentRegistrationOptions",
+            "StaticRegistrationOptions",
         };
 
         static void Translate(InterfaceDef interfaceDef)
@@ -184,14 +186,18 @@ namespace Yoakke.LSP.Generator
             return result.ToString();
         }
 
-        static string TranslateTypeName(string name) => name switch
+        static string TranslateTypeName(string name)
         {
-            "boolean" => "bool",
-            "any" => "object",
-            "integer" => "int",
-            "uinteger" => "uint",
-            _ => name,
-        };
+            if (knownInterfaces.Contains(name)) throw new InvalidOperationException();
+            return name switch
+            {
+                "boolean" => "bool",
+                "any" => "object",
+                "integer" => "int",
+                "uinteger" => "uint",
+                _ => name,
+            };
+        }
 
         static string TranslateDocComment(string prefix, string docComment)
         {

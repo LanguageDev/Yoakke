@@ -47,13 +47,13 @@ namespace Yoakke.LSP.Generator
                 Docs = doc?.Text,
             };
 
-        [Rule("interface : DocComment? 'export'? 'interface' Ident ('extends' Ident+)? '{' i_field* '}'")]
+        [Rule("interface : DocComment? 'export'? 'interface' Ident ('extends' Ident (',' Ident)*)? '{' i_field* '}'")]
         private static InterfaceDef Interface(
             IToken? doc,
             IToken _1, IToken _2, 
-            IToken name, (IToken, IReadOnlyList<Token<TokenType>>)? extend, 
+            IToken name, (IToken, IToken, IReadOnlyList<(Token<TokenType>, Token<TokenType>)>)? extend, 
             IToken _3, IReadOnlyList<InterfaceField> fields, IToken _4) =>
-            new InterfaceDef(name.Text, extend?.Item2?.Select(t => t.Text).ToArray() ?? new string[] { }, fields)
+            new InterfaceDef(name.Text, extend?.Item3?.Select(t => t.Item2.Text).Prepend(extend.Value.Item2.Text).ToArray() ?? new string[] { }, fields)
             { 
                 Docs = doc?.Text,
             };
