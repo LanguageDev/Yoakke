@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Yoakke.Lsp.Model.Capabilities.Server;
 
 namespace Yoakke.Lsp.Model.General
 {
@@ -26,8 +27,8 @@ namespace Yoakke.Lsp.Model.General
         /// <summary>
         /// The capabilities the language server provides.
         /// </summary>
-        //[JsonProperty("capabilities")]
-        //public ServerCapabilities Capabilities { get; set; }
+        [JsonProperty("capabilities")]
+        public ServerCapabilities Capabilities { get; set; }
         /// <summary>
         /// Information about the server.
         /// </summary>

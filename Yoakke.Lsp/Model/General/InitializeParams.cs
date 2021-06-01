@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using Yoakke.Lsp.Model.Basic;
-using Yoakke.Lsp.Model.General.Capabilities.Client;
+using Yoakke.Lsp.Model.Capabilities.Client;
 using Yoakke.Lsp.Model.Workspace;
 
 namespace Yoakke.Lsp.Model.General
