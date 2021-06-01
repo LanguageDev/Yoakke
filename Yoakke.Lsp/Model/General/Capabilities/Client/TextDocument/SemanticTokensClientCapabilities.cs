@@ -30,13 +30,13 @@ namespace Yoakke.Lsp.Model.General.Capabilities.Client.TextDocument
             /// if the server provides a corresponding handler.
             /// </summary>
             [JsonProperty("range", NullValueHandling = NullValueHandling.Ignore)]
-            public BoolOrObject<RangeCapabilities>? Range { get; set; }
+            public Either<bool, RangeCapabilities>? Range { get; set; }
             /// <summary>
             /// The client will send the `textDocument/semanticTokens/full` request
             /// if the server provides a corresponding handler.
             /// </summary>
             [JsonProperty("full", NullValueHandling = NullValueHandling.Ignore)]
-            public BoolOrObject<FullCapabilities>? Full { get; set; }
+            public Either<bool, FullCapabilities>? Full { get; set; }
         }
 
         /// <summary>

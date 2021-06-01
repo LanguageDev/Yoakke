@@ -115,24 +115,11 @@ namespace Yoakke.LSP.Generator
                 return WithOptional(result);
             }
 
-            if (or.Alternatives.Count == 2)
+            if (or.Alternatives.Count == 2 || or.Alternatives.Count == 3)
             {
-                // Check if it's a bool | object pattern
-                if (   or.Alternatives[0] is TypeNode.Ident idLeft 
-                    && idLeft.Name == "boolean" 
-                    && or.Alternatives[1] is TypeNode.Object objRight)
-                {
-                    var objType = TranslateObject(hintName, objRight);
-                    return $"BoolOrObject<{objType}>";
-                }
-                // Check if it's an object | bool pattern
-                if (or.Alternatives[1] is TypeNode.Ident idRight
-                    && idRight.Name == "boolean"
-                    && or.Alternatives[0] is TypeNode.Object objLeft)
-                {
-                    var objType = TranslateObject(hintName, objLeft);
-                    return $"BoolOrObject<{objType}>";
-                }
+                // Generate an either type
+                var alts = string.Join(", ", or.Alternatives.Select(alt => Translate(hintName, alt)));
+                return $"Either<{alts}>";
             }
 
             throw new NotImplementedException();

@@ -15,5 +15,7 @@ namespace Yoakke.Lsp.Model.Basic
         }
 
         public bool Equals(DocumentUri other) => Value.Equals(other.Value);
+
+        public static implicit operator DocumentUri(string value) => new DocumentUri(value);
     }
 }
