@@ -1,4 +1,4 @@
-﻿namespace Yoakke.Lsp.Model.Capabilities.Server
+﻿namespace Yoakke.Lsp.Model.Capabilities.Server.RegistrationOptions
 {
     /// <summary>
     /// Execute command registration options.

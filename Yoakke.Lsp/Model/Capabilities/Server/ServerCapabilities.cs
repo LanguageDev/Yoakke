@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Yoakke.Lsp.Model.Capabilities.Server.RegistrationOptions;
 using Yoakke.Lsp.Model.TextSynchronization;
 
 namespace Yoakke.Lsp.Model.Capabilities.Server

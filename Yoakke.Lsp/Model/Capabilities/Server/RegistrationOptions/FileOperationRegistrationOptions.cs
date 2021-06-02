@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Yoakke.Lsp.Model.Workspace;
 
-namespace Yoakke.Lsp.Model.Capabilities.Server
+namespace Yoakke.Lsp.Model.Capabilities.Server.RegistrationOptions
 {
     /// <summary>
     /// The options to register for file operations.

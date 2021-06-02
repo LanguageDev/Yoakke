@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using Yoakke.Lsp.Model.Basic;
 
-namespace Yoakke.Lsp.Model.Capabilities.Server
+namespace Yoakke.Lsp.Model.Capabilities.Server.RegistrationOptions
 {
-    public class DocumentHighlightRegistrationOptions : DocumentHighlightOptions, ITextDocumentRegistrationOptions
+    public class RenameRegistrationOptions : RenameOptions, ITextDocumentRegistrationOptions
     {
         [JsonProperty("documentSelector")]
         public IReadOnlyList<DocumentFilter>? DocumentSelector { get; set; }

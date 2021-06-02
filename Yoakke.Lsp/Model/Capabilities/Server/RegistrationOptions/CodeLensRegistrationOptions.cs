@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Yoakke.Lsp.Model.Basic;
 
-namespace Yoakke.Lsp.Model.Capabilities.Server
+namespace Yoakke.Lsp.Model.Capabilities.Server.RegistrationOptions
 {
     public class CodeLensRegistrationOptions : CodeLensOptions, ITextDocumentRegistrationOptions
     {
