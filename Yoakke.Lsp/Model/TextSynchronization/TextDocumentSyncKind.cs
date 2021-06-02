@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Yoakke.Lsp.Model.TextSynchronization
+﻿namespace Yoakke.Lsp.Model.TextSynchronization
 {
     /// <summary>
     /// Defines how the host (editor) should sync document changes to the language

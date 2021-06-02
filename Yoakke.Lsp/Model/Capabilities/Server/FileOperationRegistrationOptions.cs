@@ -1,11 +1,8 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Yoakke.Lsp.Model.Workspace;
 
-namespace Yoakke.Lsp.Model.Workspace
+namespace Yoakke.Lsp.Model.Capabilities.Server
 {
     /// <summary>
     /// The options to register for file operations.
