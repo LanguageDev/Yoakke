@@ -10,19 +10,13 @@ namespace Yoakke.Lsp.Sample
     {
         static async Task Main(string[] args)
         {
-            var stream = FullDuplexStream.Splice(Console.OpenStandardInput(), Console.OpenStandardOutput());
-            var jsonRpc = JsonRpc.Attach(stream, new Server());
-            await jsonRpc.Completion;
-        }
-    }
+            var languageServer = LanguageServer.Configure()
+                .WithNameAndVersion("Test Language Server", "0.0.1-pre-alpha")
+                .WithInputAndOutputStream(Console.OpenStandardInput(), Console.OpenStandardOutput())
+                .CreateServer();
 
-    class Server
-    {
-        [JsonRpcMethod("initialize", UseSingleObjectParameterDeserialization = true)]
-        public int Initialize(InitializeParams initializeParams)
-        {
-            var x = 0;
-            return 0;
+            var exitCode = await languageServer.RunAsync();
+            Console.WriteLine($"Language server exited with code {exitCode}");
         }
     }
 }

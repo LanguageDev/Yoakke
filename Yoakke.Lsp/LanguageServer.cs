@@ -17,6 +17,12 @@ namespace Yoakke.Lsp
     /// </summary>
     public class LanguageServer
     {
+        /// <summary>
+        /// Creates a configurator for a language server.
+        /// </summary>
+        /// <returns>The created configurator.</returns>
+        public static LanguageServerConfigurator Configure() => new LanguageServerConfigurator();
+
         // These should come in strictly increasing order
         private enum ServerState
         {
@@ -31,30 +37,28 @@ namespace Yoakke.Lsp
         /// <summary>
         /// The name of this language server.
         /// </summary>
-        public string Name { get; init; }
+        public string Name => configurator.Name ?? "Language Server";
         /// <summary>
         /// The version of this language server.
         /// </summary>
-        public string Version { get; init; }
+        public string Version => configurator.Version ?? "0.0.1";
+
         /// <summary>
         /// The exit code of the language server.
         /// </summary>
         public int ExitCode { get; private set; }
 
-        private JsonRpc? rpcServer;
-        private Stream? rpcStream;
+        private LanguageServerConfigurator configurator;
         // TODO: Interlocked? This is not thread-safe
-        private ServerState state = ServerState.NotStarted;
+        private ServerState state;
+        private JsonRpc rpcServer;
 
-        /// <summary>
-        /// Initializes a new <see cref="LanguageServer"/>.
-        /// </summary>
-        /// <param name="name">The name of the language server.</param>
-        /// <param name="version">The version of the language server.</param>
-        public LanguageServer(string name = "My Language Server", string version = "0.0.1")
+        internal LanguageServer(LanguageServerConfigurator configurator)
         {
-            Name = name;
-            Version = version;
+            this.configurator = configurator;
+            state = ServerState.NotStarted;
+            rpcServer = new JsonRpc(configurator.GetCommunicationStream());
+            rpcServer.AddLocalRpcTarget(this, new JsonRpcTargetOptions { AllowNonPublicInvocation = true });
         }
 
         /// <summary>
@@ -64,23 +68,9 @@ namespace Yoakke.Lsp
         /// of the language server.</returns>
         public async Task<int> RunAsync()
         {
-            rpcServer = BuildRpcServer();
             rpcServer.StartListening();
             await rpcServer.Completion;
             return ExitCode;
-        }
-
-        // Builder /////////////////////////////////////////////////////////////
-
-        /// <summary>
-        /// Sets the communication stream for this server.
-        /// </summary>
-        /// <param name="stream">The stream to communicate through with the client.</param>
-        /// <returns>This instance, so subsequent calls can be chained.</returns>
-        public LanguageServer WithStream(Stream stream)
-        {
-            this.rpcStream = stream;
-            return this;
         }
 
         // Messages ////////////////////////////////////////////////////////////
@@ -137,16 +127,6 @@ namespace Yoakke.Lsp
             if (rpcServer != null) rpcServer.Dispose();
         }
 
-        // Setup ///////////////////////////////////////////////////////////////
-
-        private JsonRpc BuildRpcServer()
-        {
-            if (rpcStream == null) throw new InvalidOperationException("No stream specified!");
-            var result = new JsonRpc(rpcStream);
-            result.AddLocalRpcTarget(this, new JsonRpcTargetOptions { AllowNonPublicInvocation = true });
-            return result;
-        }
-
         // State modification //////////////////////////////////////////////////
 
         private void SetServerState(ServerState toState)
@@ -158,6 +138,7 @@ namespace Yoakke.Lsp
                     ErrorCode = (int)JsonRpcErrorCode.InternalError,
                 };
             }
+            this.state = toState;
         }
 
         private void AssertState(ServerState expectedState, JsonRpcErrorCode errorCode) =>
