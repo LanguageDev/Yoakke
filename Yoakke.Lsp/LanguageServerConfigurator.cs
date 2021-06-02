@@ -1,11 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Nerdbank.Streams;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Yoakke.Lsp
 {
@@ -131,6 +127,17 @@ namespace Yoakke.Lsp
             configure(serviceCollection);
             return this;
         }
+
+        /*
+         Add patterns to support:
+            AddSingleton(Type, Func<IServiceProvider,Object>)	
+            AddSingleton(Type, Object)	
+            AddSingleton(Type, Type)	
+            AddSingleton<TService>(TService)	
+            AddSingleton<TService>(Func<IServiceProvider,TService>)	
+            AddSingleton<TService, TImplementation>()	
+            AddSingleton<TService, TImplementation>(Func<IServiceProvider, TImplementation>)	
+         */
 
         internal Stream GetCommunicationStream()
         {

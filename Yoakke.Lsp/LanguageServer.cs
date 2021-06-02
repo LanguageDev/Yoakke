@@ -1,10 +1,5 @@
 ﻿using StreamJsonRpc;
 using StreamJsonRpc.Protocol;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Yoakke.Lsp.Model.General;
 

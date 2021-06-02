@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using System;
-using Yoakke.Lsp.Model.Basic;
 using Yoakke.Lsp.Model.Serialization;
 using Range = Yoakke.Lsp.Model.Basic.Range;
 
