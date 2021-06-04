@@ -1,22 +1,22 @@
-﻿using StreamJsonRpc;
+﻿using Microsoft.Extensions.Hosting;
+using StreamJsonRpc;
 using StreamJsonRpc.Protocol;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Yoakke.Lsp.Model.General;
 
-namespace Yoakke.Lsp
+namespace Yoakke.Lsp.Internal
 {
-    // TODO: Message ordering guarantees?
-
-    /// <summary>
-    /// Implements basic LSP server logic.
-    /// </summary>
-    public class LanguageServer
+    internal class LspService : IHostedService, IDisposable
     {
-        /// <summary>
-        /// Creates a configurator for a language server.
-        /// </summary>
-        /// <returns>The created configurator.</returns>
-        public static LanguageServerConfigurator Configure() => new LanguageServerConfigurator();
+        private static readonly JsonRpcTargetOptions JsonRpcTargetOptions = new JsonRpcTargetOptions 
+        { 
+            AllowNonPublicInvocation = true 
+        };
 
         // These should come in strictly increasing order
         private enum ServerState
@@ -29,44 +29,41 @@ namespace Yoakke.Lsp
             Exited,
         }
 
-        /// <summary>
-        /// The name of this language server.
-        /// </summary>
-        public string Name => configurator.Name ?? "Language Server";
-        /// <summary>
-        /// The version of this language server.
-        /// </summary>
-        public string Version => configurator.Version ?? "0.0.1";
+        private JsonRpc jsonRpc;
 
-        /// <summary>
-        /// The exit code of the language server.
-        /// </summary>
+        // TODO: Interlocked anywhere? This is not thread-safe
+
+        // TODO. Get these as configuration instead?
+        public string? Name { get; set; }
+        public string? Version { get; set; }
+
         public int ExitCode { get; private set; }
-
-        private LanguageServerConfigurator configurator;
-        // TODO: Interlocked? This is not thread-safe
+        
         private ServerState state;
-        private JsonRpc rpcServer;
 
-        internal LanguageServer(LanguageServerConfigurator configurator)
+        public LspService(JsonRpc jsonRpc)
         {
-            this.configurator = configurator;
-            state = ServerState.NotStarted;
-            rpcServer = new JsonRpc(configurator.GetCommunicationStream());
-            rpcServer.AddLocalRpcTarget(this, new JsonRpcTargetOptions { AllowNonPublicInvocation = true });
+            this.jsonRpc = jsonRpc;
+            this.state = ServerState.NotStarted;
+            this.jsonRpc.AddLocalRpcTarget(this, JsonRpcTargetOptions);
         }
 
-        /// <summary>
-        /// Runs the RPC server.
-        /// </summary>
-        /// <returns>A task that completes when the Language Server is terminated and it's value is the exit code
-        /// of the language server.</returns>
-        public async Task<int> RunAsync()
+        // Lifecycle ///////////////////////////////////////////////////////////
+
+        public void Dispose()
         {
-            rpcServer.StartListening();
-            await rpcServer.Completion;
-            return ExitCode;
+            jsonRpc.Dispose();
         }
+
+        public Task StartAsync(CancellationToken cancellationToken)
+        {
+            SetServerState(ServerState.WaitingForInitializeRequest);
+            jsonRpc.StartListening();
+            return Task.CompletedTask;
+        }
+
+        // TODO: Cancellation?
+        public Task StopAsync(CancellationToken cancellationToken) => jsonRpc.Completion;
 
         // Messages ////////////////////////////////////////////////////////////
 
@@ -79,8 +76,8 @@ namespace Yoakke.Lsp
             {
                 ServerInfo = new InitializeResult.ServerInformation
                 {
-                    Name = Name,
-                    Version = Version,
+                    Name = Name ?? "Language Server",
+                    Version = Version ?? "0.0.1",
                 },
                 // TODO
             };
@@ -119,7 +116,7 @@ namespace Yoakke.Lsp
             // Increment server state
             SetServerState(ServerState.Exited);
             // Kill the connection
-            if (rpcServer != null) rpcServer.Dispose();
+            if (jsonRpc != null) jsonRpc.Dispose();
         }
 
         // State modification //////////////////////////////////////////////////
@@ -141,7 +138,7 @@ namespace Yoakke.Lsp
 
         private void AssertState(ServerState expectedState, int errorCode)
         {
-            if ((int)this.state != (int)expectedState)
+            if (this.state != expectedState)
             {
                 throw new LocalRpcException($"server was not in the expected {expectedState} state for the request")
                 {
