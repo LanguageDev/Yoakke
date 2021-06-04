@@ -1,12 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Nerdbank.Streams;
-using StreamJsonRpc;
+﻿using Microsoft.Extensions.Hosting;
 using System;
 using System.Threading.Tasks;
-using Yoakke.Lsp.Api.Handlers;
 using Yoakke.Lsp.Hosting;
-using Yoakke.Lsp.Model.General;
 
 namespace Yoakke.Lsp.Sample
 {

@@ -2,11 +2,6 @@
 using Microsoft.Extensions.Hosting;
 using StreamJsonRpc;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Yoakke.Lsp.Hosting;
 using Yoakke.Lsp.Hosting.Internal;
 using Yoakke.Lsp.Internal;
 
