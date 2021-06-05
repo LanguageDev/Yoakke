@@ -33,7 +33,7 @@ public enum TokenType
     [Regex(@"[0-9]+")] IntLiteral,
 }
 ```
-The attribute `Lexer("Lexer")` tells the source generator to generate the lexer class with the name `MyLexer`. It will be defined in the same namespace as the annotated enumeration. The generated class implements `ILexer` and inherits from `LexerBase<T>`. You can find more documentation about `LexerBase<T>` later in the chapter [rolling your own lexer](#rolling-your-own-lexer).
+The attribute `Lexer("MyLexer")` tells the source generator to generate the lexer class with the name `MyLexer`. It will be defined in the same namespace as the annotated enumeration. The generated class implements `ILexer` and inherits from `LexerBase<T>`. You can find more documentation about `LexerBase<T>` later in the chapter [rolling your own lexer](#rolling-your-own-lexer).
 
 There are two special token types you need to define: `Error` and `End`. An `Error` kind token will be returned when there is no appropriate rule to apply, hence it denotes a lexical error. The `End` token type will signal the end of the source text.
 
