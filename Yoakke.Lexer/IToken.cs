@@ -10,12 +10,12 @@ namespace Yoakke.Lexer
 {
     /// <summary>
     /// Represents an atom in a language grammar as the lowest level element (atom/terminal) of parsing.
-    /// A token-typeless interface of all tokens.
+    /// Usually tokens have a kind/category tag attached to them, for that <see cref="Token{TKind}"/>.
     /// </summary>
     public interface IToken : IEquatable<IToken>
     {
         /// <summary>
-        /// The range that the token can be found at in the source.
+        /// The <see cref="Text.Range"/> that the token can be found at in the source.
         /// </summary>
         public Range Range { get; }
         /// <summary>

@@ -10,24 +10,25 @@ namespace Yoakke.Lexer
 {
     /// <summary>
     /// Represents an atom in a language grammar as the lowest level element (atom/terminal) of parsing.
+    /// This is a tagged implementation of <see cref="IToken"/>.
     /// </summary>
-    /// <typeparam name="TKind">The kind type this token uses. Usually an enumeration.</typeparam>
+    /// <typeparam name="TKind">The kind type this <see cref="Token{TKind}"/> uses. Usually an enumeration type.</typeparam>
     public class Token<TKind> : IToken, IEquatable<Token<TKind>> where TKind : notnull
     {
         public Range Range { get; }
         public string Text { get; }
 
         /// <summary>
-        /// The kind tag of this token.
+        /// The kind tag of this <see cref="Token{TKind}"/>.
         /// </summary>
         public readonly TKind Kind;
 
         /// <summary>
-        /// Initializes a new token.
+        /// Initializes a new <see cref="Token{TKind}"/>.
         /// </summary>
-        /// <param name="range">The range of the token in the source.</param>
-        /// <param name="text">The text the token was parsed from.</param>
-        /// <param name="kind">The kind tag of the token.</param>
+        /// <param name="range">The <see cref="Text.Range"/> of the <see cref="Token{TKind}"/> in the source.</param>
+        /// <param name="text">The text the <see cref="Token{TKind}"/> was parsed from.</param>
+        /// <param name="kind">The <see cref="TKind"/> of the <see cref="Token{TKind}"/>.</param>
         public Token(Range range, string text, TKind kind)
         {
             Range = range;

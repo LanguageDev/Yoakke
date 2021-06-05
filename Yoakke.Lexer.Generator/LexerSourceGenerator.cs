@@ -37,8 +37,6 @@ namespace Yoakke.Lexer.Generator
 
         protected override void GenerateCode(ISyntaxReceiver syntaxReceiver)
         {
-            //Debugger.Launch();
-
             var receiver = (SyntaxReceiver)syntaxReceiver;
 
             RequireLibrary("Yoakke.Lexer");
@@ -50,13 +48,13 @@ namespace Yoakke.Lexer.Generator
                 // Filter enums without the lexer attributes
                 if (!HasAttribute(symbol!, TypeNames.LexerAttribute)) continue;
                 // Generate code for it
-                var generated = GenerateImplementation(syntax, symbol!);
+                var generated = GenerateImplementation(symbol!);
                 if (generated == null) continue;
                 AddSource($"{symbol!.ToDisplayString()}.Generated.cs", generated);
             }
         }
 
-        private string? GenerateImplementation(EnumDeclarationSyntax syntax, INamedTypeSymbol symbol)
+        private string? GenerateImplementation(INamedTypeSymbol symbol)
         {
             var accessibility = symbol.DeclaredAccessibility.ToString().ToLowerInvariant();
             var lexerClassName = GetAttribute(symbol, TypeNames.LexerAttribute).GetCtorValue()?.ToString();
@@ -177,6 +175,8 @@ namespace Yoakke.Lexer.Generator
             transitionTable.AppendLine($"default: throw new {TypeNames.InvalidOperationException}();");
             transitionTable.AppendLine("}");
 
+            // TODO: Consuming a single token on error might not be the best strategy
+            // Also we might want to report if there was a token type that was being matched, while the error occurred
             return $@"
 namespace {namespaceName}
 {{
@@ -197,7 +197,7 @@ namespace {namespaceName}
 begin:
             if (this.Peek() == '\0') 
             {{
-                return this.TakeToken({enumName}.{description.EndName}, 0);
+                return this.TakeToken({enumName}.{description.EndSymbol!.Name}, 0);
             }}
 
             var currentState = {dfaStateIdents[dfa.InitalState]};
@@ -225,7 +225,7 @@ end_loop:
             }}
             else
             {{
-                return this.TakeToken({enumName}.{description.ErrorName}, 1);
+                return this.TakeToken({enumName}.{description.ErrorSymbol!.Name}, 1);
             }}
         }}
     }}
@@ -244,13 +244,13 @@ end_loop:
                 // End token
                 if (HasAttribute(member, TypeNames.EndAttribute))
                 { 
-                    if (result.EndName == null)
+                    if (result.EndSymbol == null)
                     {
-                        result.EndName = member.Name;
+                        result.EndSymbol = member;
                     }
                     else
                     {
-                        Report(Diagnostics.FundamentalTokenTypeAlreadyDefined, member.Locations.First(), result.EndName, "end");
+                        Report(Diagnostics.FundamentalTokenTypeAlreadyDefined, member.Locations.First(), result.EndSymbol.Name, "end");
                         return null;
                     }
                     continue;
@@ -258,13 +258,13 @@ end_loop:
                 // Error token
                 if (HasAttribute(member, TypeNames.ErrorAttribute))
                 {
-                    if (result.ErrorName == null)
+                    if (result.ErrorSymbol == null)
                     {
-                        result.ErrorName = member.Name;
+                        result.ErrorSymbol = member;
                     }
                     else
                     {
-                        Report(Diagnostics.FundamentalTokenTypeAlreadyDefined, member.Locations.First(), result.EndName!, "error");
+                        Report(Diagnostics.FundamentalTokenTypeAlreadyDefined, member.Locations.First(), result.ErrorSymbol.Name, "error");
                         return null;
                     }
                     continue;
@@ -297,13 +297,13 @@ end_loop:
                 }
             }
             // Check if everything has been filled out
-            if (result.EndName == null || result.ErrorName == null)
+            if (result.EndSymbol == null || result.ErrorSymbol == null)
             {
                 Report(
                     Diagnostics.FundamentalTokenTypeNotDefined,
                     symbol.Locations.First(),
-                    result.EndName == null ? "end" : "error",
-                    result.EndName == null ? "EndAttribute" : "ErrorAttribute");
+                    result.EndSymbol is null ? "end" : "error",
+                    result.EndSymbol is null ? "EndAttribute" : "ErrorAttribute");
                 return null;
             }
             return result;

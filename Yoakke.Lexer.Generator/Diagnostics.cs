@@ -7,6 +7,9 @@ namespace Yoakke.Lexer.Generator
 {
     internal static class Diagnostics
     {
+        // TODO: Not sure what this would be good for, consider it
+
+#pragma warning disable RS2008 // Enable analyzer release tracking
         public static readonly DiagnosticDescriptor FundamentalTokenTypeAlreadyDefined = new(
             id: "YKLEXERGEN001",
             title: "Fundamental token type already defined",
@@ -38,5 +41,6 @@ namespace Yoakke.Lexer.Generator
             category: "Yoakke.Lexer.Generator",
             DiagnosticSeverity.Error,
             isEnabledByDefault: true);
+#pragma warning restore RS2008 // Enable analyzer release tracking
     }
 }

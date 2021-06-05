@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Yoakke.Lexer
 {
     /// <summary>
-    /// Common regular expression constants.
+    /// Common regular expression constants. This can be used for the declarative, attribute-based API.
     /// </summary>
     public static class Regex
     {

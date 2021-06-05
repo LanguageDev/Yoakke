@@ -11,22 +11,29 @@ using Range = Yoakke.Text.Range;
 namespace Yoakke.Lexer
 {
     /// <summary>
-    /// Base class for implementing a lexer with a simplified API.
+    /// Base-class to provide common functionality for lexers, if a custom solution is needed.
     /// </summary>
-    /// <typeparam name="T">The token type of the tokens this lexer produces.</typeparam>
+    /// <typeparam name="T">The token-kind of the <see cref="Token{T}"/>s this <see cref="LexerBase{T}"/> produces.</typeparam>
     public abstract class LexerBase<T> : ILexer where T : notnull
     {
         public Position Position { get; private set; }
-        public bool IsEnd => Peek() == '\0';
+        public bool IsEnd
+        {
+            get
+            {
+                Peek();
+                return this.peek.Count == 0;
+            }
+        }
 
-        private TextReader reader;
+        private readonly TextReader reader;
+        private readonly RingBuffer<char> peek;
         private char prevChar;
-        private RingBuffer<char> peek;
 
         /// <summary>
-        /// Initializes a new lexer with the given source.
+        /// Initializes a new <see cref="LexerBase{T}"/> with the given source reader.
         /// </summary>
-        /// <param name="reader">The text reader to read from.</param>
+        /// <param name="reader">The <see cref="TextReader"/> that reads the source text.</param>
         public LexerBase(TextReader reader)
         {
             this.reader = reader;
@@ -34,9 +41,9 @@ namespace Yoakke.Lexer
         }
 
         /// <summary>
-        /// Initializes a new lexer with the given source.
+        /// Initializes a new <see cref="LexerBase{T}"/> with the given source text.
         /// </summary>
-        /// <param name="source">The string to read as source.</param>
+        /// <param name="source">The string to lex.</param>
         public LexerBase(string source)
             : this(new StringReader(source))
         {
@@ -52,9 +59,36 @@ namespace Yoakke.Lexer
         }
 
         /// <summary>
-        /// Peeks ahead into the input.
+        /// Checks, if the upcoming text matches a given string.
         /// </summary>
-        /// <param name="offset">The amount to peek forward.</param>
+        /// <param name="text">The string to compare with the upcoming text.</param>
+        /// <returns>True, if there is a full match.</returns>
+        protected bool Matches(string text)
+        {
+            for (int i = 0; i < text.Length; ++i)
+            {
+                if (!TryPeek(out var ch, i)) return false;
+                if (ch != text[i]) return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Peeks ahead some characters into the input.
+        /// </summary>
+        /// <param name="result">The peeked character is written here, if the method returns true.</param>
+        /// <param name="offset">The amount to peek forward. 0 means next character.</param>
+        /// <returns><True, if there was a character to peek (the end has not been reached)./returns>
+        protected bool TryPeek(out char result, int offset = 0)
+        {
+            result = Peek(offset);
+            return this.peek.Count > offset;
+        }
+
+        /// <summary>
+        /// Peeks ahead some characters into the input.
+        /// </summary>
+        /// <param name="offset">The amount to peek forward. 0 means next character.</param>
         /// <param name="default">The default character to return if the end has been reached.</param>
         /// <returns>The peeked character, or default if the end has been reached.</returns>
         protected char Peek(int offset = 0, char @default = '\0')
@@ -103,11 +137,11 @@ namespace Yoakke.Lexer
         }
 
         /// <summary>
-        /// Skips characters in the input and builds a token from the skipped characters.
+        /// Skips characters in the input and builds a <see cref="Token{T}"/> from the skipped characters.
         /// </summary>
-        /// <param name="kind">The token kind to build.</param>
+        /// <param name="kind">The token-kind to build.</param>
         /// <param name="length">The amount of characters to skip.</param>
-        /// <returns>The constructed token.</returns>
+        /// <returns>The constructed <see cref="Token{T}"/>.</returns>
         protected Token<T> TakeToken(T kind, int length)
         {
             var start = Position;
@@ -119,9 +153,9 @@ namespace Yoakke.Lexer
         IToken ILexer.Next() => Next();
 
         /// <summary>
-        /// Lexes the next token in the input.
+        /// Lexes the next <see cref="Token{T}"/> in the input.
         /// </summary>
-        /// <returns>The lexed token.</returns>
+        /// <returns>The lexed <see cref="Token{T}"/>.</returns>
         public abstract Token<T> Next();
     }
 }

@@ -4,13 +4,16 @@ using System.Text;
 
 namespace Yoakke.Lexer.Generator
 {
+    /// <summary>
+    /// Common type-names so we don't have hardcoded strings in the source-generator.
+    /// </summary>
     internal static class TypeNames
     {
         private static readonly string CollectionsNamespace = "Yoakke.Collections";
         private static readonly string TextNamespace = "Yoakke.Text";
         private static readonly string LexerNamespace = "Yoakke.Lexer";
 
-        public static readonly string InvalidOperationException = $"System.InvalidOperationException";
+        public static readonly string InvalidOperationException = "System.InvalidOperationException";
 
         public static readonly string LexerAttribute = $"{LexerNamespace}.Attributes.LexerAttribute";
 
