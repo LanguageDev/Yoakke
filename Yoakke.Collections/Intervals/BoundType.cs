@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Yoakke.Collections.Intervals
+﻿namespace Yoakke.Collections.Intervals
 {
     /// <summary>
     /// The different bound types an interval bound can have.

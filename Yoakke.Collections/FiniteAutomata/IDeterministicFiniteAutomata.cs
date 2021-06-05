@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Yoakke.Collections.FiniteAutomata
+﻿namespace Yoakke.Collections.FiniteAutomata
 {
     /// <summary>
     /// Represents a deterministic finite automata that has only one way to step on a symbol.

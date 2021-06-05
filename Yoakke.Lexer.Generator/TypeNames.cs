@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Yoakke.Lexer.Generator
+﻿namespace Yoakke.Lexer.Generator
 {
     /// <summary>
     /// Common type-names so we don't have hardcoded strings in the source-generator.
