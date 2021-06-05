@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.IO;
+using Yoakke.Lsp.Server.Handlers;
 
 namespace Yoakke.Lsp.Server.Hosting
 {
@@ -63,6 +64,11 @@ namespace Yoakke.Lsp.Server.Hosting
 
         // Handler registration ////////////////////////////////////////////////
 
-        // TODO
+        // TODO: Doc
+
+        public static ILanguageServerBuilder UseHandler<THandler, TImplementation>(this ILanguageServerBuilder builder)
+            where THandler : class, IHandler
+            where TImplementation : class, THandler =>
+            builder.ConfigureServices(s => s.AddSingleton<THandler, TImplementation>());
     }
 }

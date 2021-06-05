@@ -12,6 +12,15 @@ namespace Yoakke.Lsp.Server.Handlers
     public interface ITextDocumentSyncHandler : IHandler
     {
         /// <summary>
+        /// True, if open and close events should be sent.
+        /// </summary>
+        public bool SendOpenClose { get; }
+        /// <summary>
+        /// The synchronization kind.
+        /// </summary>
+        public TextDocumentSyncKind SyncKind { get; }
+
+        /// <summary>
         /// Signals a newly opened document.
         /// </summary>
         /// <param name="openParams">The open parameters.</param>

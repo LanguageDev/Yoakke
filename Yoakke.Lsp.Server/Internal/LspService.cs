@@ -1,10 +1,16 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using StreamJsonRpc;
 using StreamJsonRpc.Protocol;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Yoakke.Lsp.Model;
+using Yoakke.Lsp.Model.Capabilities.Server;
 using Yoakke.Lsp.Model.General;
+using Yoakke.Lsp.Model.TextSynchronization;
+using Yoakke.Lsp.Server.Handlers;
 
 namespace Yoakke.Lsp.Server.Internal
 {
@@ -37,12 +43,15 @@ namespace Yoakke.Lsp.Server.Internal
         public int ExitCode { get; private set; }
         
         private ServerState state;
+        private ITextDocumentSyncHandler textDocumentSyncHandler;
 
-        public LspService(JsonRpc jsonRpc)
+        public LspService(JsonRpc jsonRpc, IServiceProvider serviceProvider)
         {
             this.jsonRpc = jsonRpc;
             this.state = ServerState.NotStarted;
             this.jsonRpc.AddLocalRpcTarget(this, JsonRpcTargetOptions);
+            // Dependencies
+            textDocumentSyncHandler = serviceProvider.GetRequiredService<ITextDocumentSyncHandler>();
         }
 
         // Lifecycle ///////////////////////////////////////////////////////////
@@ -76,7 +85,10 @@ namespace Yoakke.Lsp.Server.Internal
                     Name = Name ?? "Language Server",
                     Version = Version ?? "0.0.1",
                 },
-                // TODO
+                Capabilities = new ServerCapabilities
+                {
+                    TextDocumentSync = GetTextDocumentSyncCapability(),
+                }
             };
             // Increment server state
             SetServerState(ServerState.WaitingForInitializedNotification);
@@ -143,5 +155,16 @@ namespace Yoakke.Lsp.Server.Internal
                 };
             }
         }
+
+        // Capability construction
+
+        private Either<TextDocumentSyncOptions, TextDocumentSyncKind> GetTextDocumentSyncCapability() => 
+            textDocumentSyncHandler.SendOpenClose
+                ? new TextDocumentSyncOptions
+                {
+                    OpenClose = true,
+                    Change = textDocumentSyncHandler.SyncKind,
+                }
+                : textDocumentSyncHandler.SyncKind;
     }
 }
