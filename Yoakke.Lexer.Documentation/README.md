@@ -1,4 +1,4 @@
-## Using the Lexer libraries
+# Using the Lexer libraries
 There are 2 libraries for Lexing:
 -   `Yoakke.Lexer`: Basic structures for lexing, abstraction for a hand-written lexer.
 -   `Yoakke.Lexer.Generator`: A source generator that can generate a lexer from attribute annotations on token-types.
@@ -93,7 +93,7 @@ Fortunately, you can define as many rules for a token-type, as you wish. Present
 ```
 
 #### Supported regex constructs
-Only those regular expressions are supported, that keep their expression power at the regular language level. The constructs are the usual, you would fine in a modern engine - just less of them:
+Only those regular expressions are supported, that keep their expression power at the regular language level. The constructs are the usual, you would find in a modern engine - just less of them:
 
  * `abc`: Match the literals `a`, `b` and `c` in sequence
  * `a|b`: Match either `a` or `b`
