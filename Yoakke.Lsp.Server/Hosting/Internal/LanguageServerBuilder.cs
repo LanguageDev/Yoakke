@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace Yoakke.Lsp.Hosting.Internal
+namespace Yoakke.Lsp.Server.Hosting.Internal
 {
     internal class LanguageServerBuilder : ILanguageServerBuilder
     {

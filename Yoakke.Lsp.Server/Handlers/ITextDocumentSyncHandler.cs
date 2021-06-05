@@ -2,7 +2,7 @@
 using Yoakke.Lsp.Model.Basic;
 using Yoakke.Lsp.Model.TextSynchronization;
 
-namespace Yoakke.Lsp.Api.Handlers
+namespace Yoakke.Lsp.Server.Handlers
 {
     // TODO: Async?
 

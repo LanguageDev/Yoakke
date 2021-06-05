@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Yoakke.Lsp\Yoakke.Lsp.csproj" />
+    <ProjectReference Include="..\Yoakke.Lsp.Server\Yoakke.Lsp.Server.csproj" />
   </ItemGroup>
 
 </Project>

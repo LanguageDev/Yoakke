@@ -1,4 +1,4 @@
-﻿namespace Yoakke.Lsp.Hosting
+﻿namespace Yoakke.Lsp.Server.Hosting
 {
     public class LanguageServerBuilderContext
     {

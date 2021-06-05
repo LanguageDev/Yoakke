@@ -2,9 +2,9 @@
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using Yoakke.Lsp.Internal;
+using Yoakke.Lsp.Server.Internal;
 
-namespace Yoakke.Lsp.Hosting.Internal
+namespace Yoakke.Lsp.Server.Hosting.Internal
 {
     internal class LanguageServer : ILanguageServer
     {

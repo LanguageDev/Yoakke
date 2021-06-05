@@ -13,4 +13,8 @@
     <PackageReference Include="StreamJsonRpc" Version="2.7.76" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Yoakke.Lsp.Model\Yoakke.Lsp.Model.csproj" />
+  </ItemGroup>
+
 </Project>

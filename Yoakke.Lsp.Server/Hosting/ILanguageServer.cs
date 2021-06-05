@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Yoakke.Lsp.Hosting
+namespace Yoakke.Lsp.Server.Hosting
 {
     /// <summary>
     /// Represents a configurable Language Server.

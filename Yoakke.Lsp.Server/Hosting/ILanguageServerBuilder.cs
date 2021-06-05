@@ -2,7 +2,7 @@
 using System;
 using System.IO;
 
-namespace Yoakke.Lsp.Hosting
+namespace Yoakke.Lsp.Server.Hosting
 {
     /// <summary>
     /// A builder for <see cref="ILanguageServer"/>.

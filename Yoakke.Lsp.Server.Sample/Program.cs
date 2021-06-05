@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Hosting;
 using System;
 using System.Threading.Tasks;
-using Yoakke.Lsp.Hosting;
+using Yoakke.Lsp.Server.Hosting;
 
 namespace Yoakke.Lsp.Sample
 {

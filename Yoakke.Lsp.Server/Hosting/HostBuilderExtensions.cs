@@ -2,10 +2,10 @@
 using Microsoft.Extensions.Hosting;
 using StreamJsonRpc;
 using System;
-using Yoakke.Lsp.Hosting.Internal;
-using Yoakke.Lsp.Internal;
+using Yoakke.Lsp.Server.Hosting.Internal;
+using Yoakke.Lsp.Server.Internal;
 
-namespace Yoakke.Lsp.Hosting
+namespace Yoakke.Lsp.Server.Hosting
 {
     /// <summary>
     /// Extension functionality for <see cref="IHostBuilder"/>s.

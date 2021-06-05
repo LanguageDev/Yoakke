@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Yoakke.Lsp.Model.General;
 
-namespace Yoakke.Lsp.Internal
+namespace Yoakke.Lsp.Server.Internal
 {
     internal class LspService : IHostedService, IDisposable
     {
