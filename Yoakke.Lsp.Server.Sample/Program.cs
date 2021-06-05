@@ -51,7 +51,7 @@ namespace Yoakke.Lsp.Sample
             await CreateHostBuilder(args).Build().RunAsync();
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
+            new HostBuilder()
                 .ConfigureLanguageServer(langServerBuilder =>
                 {
                     langServerBuilder

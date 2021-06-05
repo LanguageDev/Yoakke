@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Yoakke.Lsp.Model;
+using Yoakke.Lsp.Model.Basic;
 using Yoakke.Lsp.Model.Capabilities.Server;
 using Yoakke.Lsp.Model.General;
 using Yoakke.Lsp.Model.TextSynchronization;
@@ -16,9 +17,10 @@ namespace Yoakke.Lsp.Server.Internal
 {
     internal class LspService : IHostedService, IDisposable
     {
-        private static readonly JsonRpcTargetOptions JsonRpcTargetOptions = new JsonRpcTargetOptions 
-        { 
-            AllowNonPublicInvocation = true 
+        private static readonly JsonRpcTargetOptions JsonRpcTargetOptions = new JsonRpcTargetOptions
+        {
+            AllowNonPublicInvocation = true,
+            UseSingleObjectParameterDeserialization = true,
         };
 
         // These should come in strictly increasing order
@@ -41,7 +43,7 @@ namespace Yoakke.Lsp.Server.Internal
         public string? Version { get; set; }
 
         public int ExitCode { get; private set; }
-        
+
         private ServerState state;
         private ITextDocumentSyncHandler textDocumentSyncHandler;
 
@@ -72,6 +74,8 @@ namespace Yoakke.Lsp.Server.Internal
         public Task StopAsync(CancellationToken cancellationToken) => jsonRpc.Completion;
 
         // Messages ////////////////////////////////////////////////////////////
+
+        // General /////////////////////
 
         [JsonRpcMethod("initialize", UseSingleObjectParameterDeserialization = true)]
         private InitializeResult Initialize(InitializeParams initializeParams)
@@ -126,6 +130,50 @@ namespace Yoakke.Lsp.Server.Internal
             SetServerState(ServerState.Exited);
             // Kill the connection
             if (jsonRpc != null) jsonRpc.Dispose();
+        }
+
+        // Text synchronization ////////
+
+        [JsonRpcMethod("textDocument/didOpen", UseSingleObjectParameterDeserialization = true)]
+        private void TextDocument_DidOpen(DidOpenTextDocumentParams didOpenParams)
+        {
+            AssertState(ServerState.Operating, JsonRpcErrorCode.InvalidRequest);
+            textDocumentSyncHandler.DidOpen(didOpenParams);
+        }
+
+        [JsonRpcMethod("textDocument/didChange", UseSingleObjectParameterDeserialization = true)]
+        private void TextDocument_DidChange(DidChangeTextDocumentParams didChangeParams)
+        {
+            AssertState(ServerState.Operating, JsonRpcErrorCode.InvalidRequest);
+            textDocumentSyncHandler.DidChange(didChangeParams);
+        }
+
+        [JsonRpcMethod("textDocument/willSave", UseSingleObjectParameterDeserialization = true)]
+        private void TextDocument_WillSave(WillSaveTextDocumentParams willSaveParams)
+        {
+            AssertState(ServerState.Operating, JsonRpcErrorCode.InvalidRequest);
+            textDocumentSyncHandler.WillSave(willSaveParams);
+        }
+
+        [JsonRpcMethod("textDocument/willSaveWaitUntil", UseSingleObjectParameterDeserialization = true)]
+        private IReadOnlyList<TextEdit>? TextDocument_WillSaveWaitUntil(WillSaveTextDocumentParams willSaveParams)
+        {
+            AssertState(ServerState.Operating, JsonRpcErrorCode.InvalidRequest);
+            return textDocumentSyncHandler.WillSaveWaitUntil(willSaveParams);
+        }
+
+        [JsonRpcMethod("textDocument/didSave", UseSingleObjectParameterDeserialization = true)]
+        private void TextDocument_DidSave(DidSaveTextDocumentParams didSaveParams)
+        {
+            AssertState(ServerState.Operating, JsonRpcErrorCode.InvalidRequest);
+            textDocumentSyncHandler.DidSave(didSaveParams);
+        }
+
+        [JsonRpcMethod("textDocument/didClose", UseSingleObjectParameterDeserialization = true)]
+        private void TextDocument_DidClose(DidCloseTextDocumentParams didCloseParams)
+        {
+            AssertState(ServerState.Operating, JsonRpcErrorCode.InvalidRequest);
+            textDocumentSyncHandler.DidClose(didCloseParams);
         }
 
         // State modification //////////////////////////////////////////////////
