@@ -55,15 +55,16 @@ namespace Yoakke.Lexer
         }
 
         /// <summary>
-        /// Checks, if the upcoming text matches a given string.
+        /// Checks, some upcoming text matches a given string.
         /// </summary>
         /// <param name="text">The string to compare with the upcoming text.</param>
+        /// <param name="offset">The offset to start the match at in the input.</param>
         /// <returns>True, if there is a full match.</returns>
-        protected bool Matches(string text)
+        protected bool Matches(string text, int offset = 0)
         {
             for (int i = 0; i < text.Length; ++i)
             {
-                if (!TryPeek(out var ch, i)) return false;
+                if (!TryPeek(out var ch, offset + i)) return false;
                 if (ch != text[i]) return false;
             }
             return true;
