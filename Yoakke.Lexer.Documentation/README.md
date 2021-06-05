@@ -210,4 +210,4 @@ public class MyLexer : LexerBase<TokenType>
 }
 ```
 
-Just like with the generated lexer, text position tracking is taken care for you.
+Just like with the generated lexer, text position tracking is taken care for for you.
