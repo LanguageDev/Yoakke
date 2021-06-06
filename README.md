@@ -3,6 +3,8 @@
 	<i>Language- and Compiler development tools in .NET.</i>
 </p>
 
+![BuildSolution workflow](https://github.com/LanguageDev/Yoakke/actions/workflows/BuildSolution.yml/badge.svg)
+
 ## What is Yoakke?
 Yoakke is a collection of libraries aimed at compiler- and language developers to help them in their development. Most common tasks - like lexing and parsing - are completely automated, but extensibility is kept in mind at every step. All components let you roll your custom solution, but are capable enough to fit most cases by default.
 
