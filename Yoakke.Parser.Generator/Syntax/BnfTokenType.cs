@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Yoakke.Parser.Generator
+namespace Yoakke.Parser.Generator.Syntax
 {
+    /// <summary>
+    /// The possible different kinds for a <see cref="BnfToken"/>.
+    /// </summary>
     internal enum BnfTokenType
     {
         End,

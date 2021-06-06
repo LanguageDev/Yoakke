@@ -4,6 +4,9 @@ using System.Text;
 
 namespace Yoakke.Parser.Generator
 {
+    /// <summary>
+    /// Common type-names so we don't have hardcoded strings in the source-generator.
+    /// </summary>
     internal static class TypeNames
     {
         private static readonly string ParserNamespace = "Yoakke.Parser";

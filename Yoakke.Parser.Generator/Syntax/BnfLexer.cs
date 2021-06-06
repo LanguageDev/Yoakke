@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Yoakke.Parser.Generator
+namespace Yoakke.Parser.Generator.Syntax
 {
+    /// <summary>
+    /// The lexer for BNF grammar, producing <see cref="BnfToken"/>s.
+    /// </summary>
     internal class BnfLexer
     {
         public static IList<BnfToken> Lex(string source)

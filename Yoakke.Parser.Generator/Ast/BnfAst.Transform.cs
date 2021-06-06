@@ -9,9 +9,18 @@ namespace Yoakke.Parser.Generator.Ast
 {
     partial class BnfAst
     {
+        /// <summary>
+        /// Represents a rule thats result is transformed using a method.
+        /// </summary>
         public class Transform : BnfAst
         {
+            /// <summary>
+            /// The rule that needs its results transformed.
+            /// </summary>
             public readonly BnfAst Subexpr;
+            /// <summary>
+            /// The transformation method.
+            /// </summary>
             public readonly IMethodSymbol Method;
 
             public Transform(BnfAst subexpr, IMethodSymbol method)

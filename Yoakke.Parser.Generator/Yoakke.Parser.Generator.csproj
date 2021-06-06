@@ -19,8 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="../Yoakke.Collections/**/*.cs" Link="Yoakke.Collections"/>
-    <Compile Remove="../Yoakke.Collections/obj/**/*.cs"/>
+    <Compile Include="../Yoakke.Collections/**/*.cs" Link="Yoakke.Collections" />
+    <Compile Remove="../Yoakke.Collections/obj/**/*.cs" />
 
     <Compile Include="../Yoakke.SourceGenerator.Common/**/*.cs" Link="Yoakke.SourceGenerator.Common" />
     <Compile Remove="../Yoakke.SourceGenerator.Common/obj/**/*.cs" />

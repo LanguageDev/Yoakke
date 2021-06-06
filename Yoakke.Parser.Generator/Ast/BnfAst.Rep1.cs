@@ -6,8 +6,14 @@ namespace Yoakke.Parser.Generator.Ast
 {
     partial class BnfAst
     {
+        /// <summary>
+        /// Represents a sub-rule that can be repeated 1 or more times.
+        /// </summary>
         public class Rep1 : BnfAst
         {
+            /// <summary>
+            /// The sub-rule to repeat.
+            /// </summary>
             public readonly BnfAst Subexpr;
 
             public Rep1(BnfAst subexpr)

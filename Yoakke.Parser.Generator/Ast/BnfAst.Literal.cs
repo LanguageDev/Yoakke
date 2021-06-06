@@ -7,8 +7,14 @@ namespace Yoakke.Parser.Generator.Ast
 {
     partial class BnfAst
     {
+        /// <summary>
+        /// A literal token match, either by text or by token kind.
+        /// </summary>
         public class Literal : BnfAst
         {
+            /// <summary>
+            /// The value to match.
+            /// </summary>
             public readonly object Value;
 
             public Literal(object value)

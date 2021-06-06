@@ -8,8 +8,14 @@ namespace Yoakke.Parser.Generator.Ast
 {
     partial class BnfAst
     {
+        /// <summary>
+        /// Represents alternative sub-rules to parse.
+        /// </summary>
         public class Alt : BnfAst
         {
+            /// <summary>
+            /// The list of alternative rules.
+            /// </summary>
             public readonly IReadOnlyList<BnfAst> Elements;
 
             public Alt(BnfAst first, BnfAst second)

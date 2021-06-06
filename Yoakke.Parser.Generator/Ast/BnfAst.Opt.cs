@@ -6,8 +6,14 @@ namespace Yoakke.Parser.Generator.Ast
 {
     partial class BnfAst
     {
+        /// <summary>
+        /// Represents an optional sub-rule application.
+        /// </summary>
         public class Opt : BnfAst
         {
+            /// <summary>
+            /// The optional sub-rule.
+            /// </summary>
             public readonly BnfAst Subexpr;
 
             public Opt(BnfAst subexpr)

@@ -173,9 +173,9 @@ namespace Yoakke.Parser
             result.IsOk ? MergeError(result.Ok, error) : ParseError.Unify(result.Error, error);
 
         // TODO: Doc
-        protected static ParseResult<T> MergeError<T>(ParseOk<T> ok, ParseError error)
+        protected static ParseResult<T> MergeError<T>(ParseOk<T> ok, ParseError? error)
         {
-            if (error == null) return ok;
+            if (error is null) return ok;
             if (ok.FurthestError == null) return Ok(ok.Value, ok.Offset, error);
             return Ok(ok.Value, ok.Offset, ParseError.Unify(ok.FurthestError, error));
         }

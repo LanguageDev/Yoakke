@@ -8,6 +8,9 @@ using Yoakke.Parser.Generator.Ast;
 
 namespace Yoakke.Parser.Generator
 {
+    /// <summary>
+    /// Represents a set of BNF <see cref="Rule"/> definitions.
+    /// </summary>
     internal class RuleSet
     {
         /// <summary>

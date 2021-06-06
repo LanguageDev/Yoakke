@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using Yoakke.Collections.Compatibility;
 using Yoakke.Parser.Generator.Ast;
+using Yoakke.Parser.Generator.Syntax;
 using Yoakke.SourceGenerator.Common;
 
 namespace Yoakke.Parser.Generator

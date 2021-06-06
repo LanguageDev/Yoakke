@@ -8,8 +8,14 @@ namespace Yoakke.Parser.Generator.Ast
 {
     partial class BnfAst
     {
+        /// <summary>
+        /// Represents a sequence of rules to apply one after another.
+        /// </summary>
         public class Seq : BnfAst
         {
+            /// <summary>
+            /// The sequence of rules.
+            /// </summary>
             public readonly IReadOnlyList<BnfAst> Elements;
 
             public Seq(BnfAst first, BnfAst second)

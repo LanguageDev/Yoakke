@@ -6,8 +6,11 @@ using System.Linq;
 using System.Text;
 using Yoakke.Parser.Generator.Ast;
 
-namespace Yoakke.Parser.Generator
+namespace Yoakke.Parser.Generator.Syntax
 {
+    /// <summary>
+    /// The parser for BNF grammar, that creates the <see cref="BnfAst"/>.
+    /// </summary>
     internal class BnfParser
     {
         public static (string Name, BnfAst? Ast) Parse(string source, TokenKindSet tokenKinds) => 

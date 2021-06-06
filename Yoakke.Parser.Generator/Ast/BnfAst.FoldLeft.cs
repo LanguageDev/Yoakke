@@ -8,10 +8,23 @@ namespace Yoakke.Parser.Generator.Ast
 {
     partial class BnfAst
     {
+        /// <summary>
+        /// Represents a repeating, folding parse rule.
+        /// This is used for left-recursion elimination.
+        /// </summary>
         public class FoldLeft : BnfAst
         {
+            /// <summary>
+            /// The sub-element to apply.
+            /// </summary>
             public readonly BnfAst First;
+            /// <summary>
+            /// The element to apply repeatedly after.
+            /// </summary>
             public readonly BnfAst Second;
+            /// <summary>
+            /// The transformation method that does the folding.
+            /// </summary>
             public readonly IMethodSymbol Method;
 
             public FoldLeft(BnfAst first, BnfAst second, IMethodSymbol method)

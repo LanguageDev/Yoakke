@@ -9,8 +9,16 @@ using Yoakke.Parser.Generator.Ast;
 
 namespace Yoakke.Parser.Generator
 {
+    /// <summary>
+    /// Utilities for various external desugaring steps for <see cref="Rule"/>s.
+    /// </summary>
     internal static class BnfDesugar
     {
+        /// <summary>
+        /// Eliminates direct left-recursion in a <see cref="Rule"/>.
+        /// </summary>
+        /// <param name="rule">The <see cref="Rule"/> to eliminate direct left-recursion in.</param>
+        /// <returns>The left-recursion eliminated <see cref="Rule"/>.</returns>
         public static Rule EliminateLeftRecursion(Rule rule)
         {
             if (rule.Ast is BnfAst.Alt alt)
@@ -21,6 +29,12 @@ namespace Yoakke.Parser.Generator
             return rule;
         }
 
+        /// <summary>
+        /// Generates a precedence-parser for a <see cref="Rule"/>.
+        /// </summary>
+        /// <param name="rule">The <see cref="Rule"/> that represents the operants for a precedence-parser.</param>
+        /// <param name="precedenceTable">The precedence table, going from the highest-precedence entry to the lowest one.</param>
+        /// <returns>The new set of <see cref="Rule"/>s that correctly parse with precedence.</returns>
         public static IList<Rule> GeneratePrecedenceParser(Rule rule, IList<PrecedenceEntry> precedenceTable)
         {
             // The resulting precedence rules should look like
