@@ -161,7 +161,7 @@ namespace Yoakke.Parser
             if (first.IsOk) return first;
             if (second.IsOk) return second;
             // Both are errors
-            return new ParseResult<T>(ParseError.Unify(first.Error, second.Error));
+            return new ParseResult<T>(ParseError.Unify(first.Error, second.Error)!);
         }
 
         // TODO: Doc

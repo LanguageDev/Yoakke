@@ -67,7 +67,7 @@ namespace Yoakke.Parser.Generator.Syntax
             {
                 var sub = ParseAlt();
                 Expect(BnfTokenType.CloseParen);
-                return sub;
+                return new BnfAst.Group(sub);
             }
             if (TryMatch(BnfTokenType.Identifier, out var ident))
             {
