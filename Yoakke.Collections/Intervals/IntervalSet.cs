@@ -11,8 +11,8 @@ namespace Yoakke.Collections.Intervals
     {
         public int Count => intervals.Count;
 
-        private List<Interval<T>> intervals = new List<Interval<T>>();
-        private IComparer<T> comparer;
+        private readonly List<Interval<T>> intervals = new List<Interval<T>>();
+        private readonly IComparer<T> comparer;
 
         /// <summary>
         /// Initializes an empty <see cref="IntervalSet{T}"/> with the default comparer.

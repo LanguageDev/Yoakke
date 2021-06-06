@@ -90,9 +90,8 @@ namespace Yoakke.Collections.Intervals
         };
 
         public override bool Equals(object obj) => obj is UpperBound<T> ub && Equals(ub);
-        public override int GetHashCode() => HashCode.Combine(Type, Value);
-
         public bool Equals(UpperBound<T> other) => CompareTo(other) == 0;
+        public override int GetHashCode() => HashCode.Combine(Type, Value);
 
         /// <summary>
         /// Compares this bound to another one using the default comparer.

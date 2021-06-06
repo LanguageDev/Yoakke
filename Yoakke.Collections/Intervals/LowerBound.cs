@@ -96,9 +96,8 @@ namespace Yoakke.Collections.Intervals
         };
 
         public override bool Equals(object obj) => obj is LowerBound<T> lb && Equals(lb);
-        public override int GetHashCode() => HashCode.Combine(Type, Value);
-
         public bool Equals(LowerBound<T> other) => CompareTo(other) == 0;
+        public override int GetHashCode() => HashCode.Combine(Type, Value);
 
         /// <summary>
         /// Compares this bound to another one using the default comparer.

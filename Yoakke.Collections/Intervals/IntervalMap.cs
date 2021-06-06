@@ -329,7 +329,6 @@ namespace Yoakke.Collections.Intervals
 
         private (int, int) IntersectingIndexRange(Interval<TKey> interval)
         {
-            //ReadOnlySpan<KeyValuePair<Interval<TKey>, TValue>> span = CollectionsMarshal.AsSpan(values);
             var (from, _) = values.BinarySearch(interval.Lower, iv => iv.Key.Upper, (k1, k2) => k1.CompareTo(k2, Comparer));
             var (to, _) = values.BinarySearch(from, interval.Upper, iv => iv.Key.Lower, (k1, k2) => k1.CompareTo(k2, Comparer));
             return (from, to);

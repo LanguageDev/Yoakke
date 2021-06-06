@@ -53,7 +53,7 @@ namespace Yoakke.LSP.Generator
             IToken _1, IToken _2, 
             IToken name, (IToken, IToken, IReadOnlyList<(Token<TokenType>, Token<TokenType>)>)? extend, 
             IToken _3, IReadOnlyList<InterfaceField> fields, IToken _4) =>
-            new InterfaceDef(name.Text, extend?.Item3?.Select(t => t.Item2.Text).Prepend(extend.Value.Item2.Text).ToArray() ?? new string[] { }, fields)
+            new InterfaceDef(name.Text, extend?.Item3?.Select(t => t.Item2.Text).Prepend(extend.Value.Item2.Text).ToArray() ?? Array.Empty<string>(), fields)
             { 
                 Docs = doc?.Text,
             };

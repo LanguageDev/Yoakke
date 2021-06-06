@@ -25,15 +25,15 @@ namespace Yoakke.Collections.Tests
             }
         }
 
-        private List<int> UnifyLists(List<int> l1, List<int> l2) => l1.Concat(l2).ToList();
+        private static List<int> UnifyLists(List<int> l1, List<int> l2) => l1.Concat(l2).ToList();
 
-        private KeyValuePair<Interval<int>, List<int>> Kv(string iv, params int[] ints) =>
+        private static KeyValuePair<Interval<int>, List<int>> Kv(string iv, params int[] ints) =>
             new KeyValuePair<Interval<int>, List<int>>(Iv(iv), ints.ToList());
 
-        private List<KeyValuePair<Interval<int>, List<int>>> KvList(params KeyValuePair<Interval<int>, List<int>>[] kvs) =>
+        private static List<KeyValuePair<Interval<int>, List<int>>> KvList(params KeyValuePair<Interval<int>, List<int>>[] kvs) =>
             kvs.ToList();
 
-        private List<int> VList(params int[] ints) => ints.ToList();
+        private static List<int> VList(params int[] ints) => ints.ToList();
 
         [TestMethod]
         public void InsertIntoEmptyMap()

@@ -91,7 +91,7 @@ namespace Yoakke.Collections
 
         public T Peek(int amount)
         {
-            if (!TryPeek(amount, out var item)) throw new ArgumentOutOfRangeException(nameof(item));
+            if (!TryPeek(amount, out var item)) throw new ArgumentOutOfRangeException(nameof(amount));
             return item!;
         }
     }

@@ -112,7 +112,7 @@ namespace Yoakke.Collections.Tests
             var l = new List<int> { 1 };
             IPeekableEnumerator<int> e = new PeekableEnumerator<int>(l.GetEnumerator());
 
-            Assert.AreEqual(e.Peek(1), 1);
+            Assert.AreEqual(1, e.Peek(1));
         }
 
         [TestMethod]

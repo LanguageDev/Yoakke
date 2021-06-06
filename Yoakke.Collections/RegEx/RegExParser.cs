@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace Yoakke.Collections.RegEx
 {
@@ -126,10 +127,10 @@ namespace Yoakke.Collections.RegEx
 
         private int ParseNumber()
         {
-            var result = "";
-            for (; char.IsDigit(Peek()); result += Consume()) ;
+            var result = new StringBuilder();
+            for (; char.IsDigit(Peek()); result.Append(Consume()));
             if (result.Length == 0) throw new FormatException($"number expected (position {index})");
-            return int.Parse(result);
+            return int.Parse(result.ToString());
         }
 
         private char Peek(int offset = 0, char @default = '\0') =>

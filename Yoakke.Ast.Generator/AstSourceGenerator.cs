@@ -57,7 +57,6 @@ namespace Yoakke.Ast.Generator
             // Now generate each node source
             foreach (var node in allNodes.Values) GenerateNodeSource(node);
 
-            //Debugger.Launch();
             // Generate visitor contents
             foreach (var node in rootNodes.Values) GenerateVisitorSource(node);
         }

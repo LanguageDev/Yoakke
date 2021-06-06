@@ -5,6 +5,6 @@
     /// </summary>
     public struct Epsilon
     {
-        public static Epsilon Default = new Epsilon();
+        public static readonly Epsilon Default = new Epsilon();
     }
 }

@@ -12,6 +12,13 @@ namespace Yoakke.LSP.Generator
         static readonly string JsonPropertyAttribute = "JsonProperty";
         static readonly string JsonEnumValueAttribute = "EnumMember";
 
+        static readonly string[] knownInterfaces = new string[]
+        {
+            "WorkDoneProgressParams", "WorkDoneProgressOptions",
+            "TextDocumentRegistrationOptions",
+            "StaticRegistrationOptions",
+        };
+
         static List<string> typeDefinitions = new();
 
         static void Main(string[] args)
@@ -64,13 +71,6 @@ namespace Yoakke.LSP.Generator
             default: throw new InvalidOperationException();
             }
         }
-
-        static readonly string[] knownInterfaces = new string[] 
-        {
-            "WorkDoneProgressParams", "WorkDoneProgressOptions",
-            "TextDocumentRegistrationOptions",
-            "StaticRegistrationOptions",
-        };
 
         static void Translate(InterfaceDef interfaceDef)
         {
@@ -182,7 +182,7 @@ namespace Yoakke.LSP.Generator
                 result.Append(" = ");
                 result.Append(intValue);
             }
-            result.Append(",");
+            result.Append(',');
             return result.ToString();
         }
 

@@ -8,11 +8,11 @@ namespace Yoakke.Collections.FiniteAutomata
     /// <summary>
     /// Represents a single state of a finite automata.
     /// </summary>
-    public class State : IEquatable<State>, IComparable<State>
+    public sealed class State : IEquatable<State>, IComparable<State>
     {
-        public static State Invalid = new State(Enumerable.Empty<State>());
+        public static readonly State Invalid = new State(Enumerable.Empty<State>());
 
-        private int[] indices;
+        private readonly int[] indices;
 
         public State(params int[] index)
         {

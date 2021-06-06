@@ -30,7 +30,7 @@ namespace Yoakke.Lexer
         /// Initializes a new <see cref="LexerBase{T}"/> with the given source reader.
         /// </summary>
         /// <param name="reader">The <see cref="TextReader"/> that reads the source text.</param>
-        public LexerBase(TextReader reader)
+        protected LexerBase(TextReader reader)
         {
             this.reader = reader;
             this.peek = new RingBuffer<char>();
@@ -40,7 +40,7 @@ namespace Yoakke.Lexer
         /// Initializes a new <see cref="LexerBase{T}"/> with the given source text.
         /// </summary>
         /// <param name="source">The string to lex.</param>
-        public LexerBase(string source)
+        protected LexerBase(string source)
             : this(new StringReader(source))
         {
         }
