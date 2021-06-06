@@ -2,7 +2,6 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Yoakke.Collections.Compatibility;
@@ -32,6 +31,7 @@ namespace Yoakke.Parser.Generator
         private RuleSet? ruleSet;
         private int varIndex;
         private TokenKindSet? tokenKinds;
+        private INamedTypeSymbol? parserType;
 
         public ParserSourceGenerator()
             : base("Yoakke.Parser.Generator") { }
@@ -74,6 +74,9 @@ namespace Yoakke.Parser.Generator
             }
             // Extract rules from the method annotations
             ruleSet = ExtractRuleSet(symbol);
+            parserType = symbol;
+            if (!CheckRuleSet()) return null;
+
             var namespaceName = symbol.ContainingNamespace.ToDisplayString();
             var className = symbol.Name;
 
@@ -144,6 +147,41 @@ namespace {namespaceName}
 }}
 ";
         }
+
+        // Sanity-checks ///////////////////////////////////////////////////////
+
+        private bool CheckRuleSet() => ruleSet!.Rules.Values.All(CheckRule);
+        private bool CheckRule(Rule rule) => CheckBnfAst(rule.Ast);
+
+        // For now we only check if all references are valid (referencing existing rules) or not
+        private bool CheckBnfAst(BnfAst ast) => ast switch
+        {
+            BnfAst.Alt alt => alt.Elements.All(CheckBnfAst),
+            BnfAst.Seq seq => seq.Elements.All(CheckBnfAst),
+            BnfAst.FoldLeft foldl => CheckBnfAst(foldl.First) && CheckBnfAst(foldl.Second),
+            BnfAst.Opt opt => CheckBnfAst(opt.Subexpr),
+            BnfAst.Rep0 rep0 => CheckBnfAst(rep0.Subexpr),
+            BnfAst.Rep1 rep1 => CheckBnfAst(rep1.Subexpr),
+            BnfAst.Transform tr => CheckBnfAst(tr.Subexpr),
+            BnfAst.Call call => CheckReferenceValidity(call.Name),
+            BnfAst.Literal => true,
+            _ => throw new InvalidOperationException(),
+        };
+
+        private bool CheckReferenceValidity(string referenceName)
+        {
+            // If the rule-set has such method, we are in the clear
+            if (ruleSet!.Rules.ContainsKey(referenceName)) return true;
+            // If there is such a terminal, also OK
+            if (tokenKinds!.Fields.ContainsKey(referenceName)) return true;
+            // As a last-effort, check for a "parse<ReferenceName>" in the type definition
+            if (parserType!.GetMembers($"parse{referenceName}").Length > 0) return true;
+            // It is an unknown reference, report it
+            Report(Diagnostics.UnknownRuleIdentifier, referenceName);
+            return false;
+        }
+
+        // Code-generation /////////////////////////////////////////////////////
 
         private string GenerateRuleParser(Rule rule)
         {

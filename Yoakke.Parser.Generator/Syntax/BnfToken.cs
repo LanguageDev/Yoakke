@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Yoakke.Parser.Generator.Syntax
+﻿namespace Yoakke.Parser.Generator.Syntax
 {
     /// <summary>
     /// A single token (terminal) in the BNF grammar.

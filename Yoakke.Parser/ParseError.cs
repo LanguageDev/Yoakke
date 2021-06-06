@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Yoakke.Lexer;
 
 namespace Yoakke.Parser
@@ -44,9 +42,9 @@ namespace Yoakke.Parser
         /// <param name="first">The first error to unify.</param>
         /// <param name="second">The second error to unify.</param>
         /// <returns>The error that represents both of them properly.</returns>
-        public static ParseError Unify(ParseError? first, ParseError? second)
+        public static ParseError? Unify(ParseError? first, ParseError? second)
         {
-            if (first is null && second is null) throw new ArgumentException("Both errors can not be null");
+            if (first is null && second is null) return null;
             if (first is null) return second!;
             if (second is null) return first;
             if (first.Got == null || second.Got == null)

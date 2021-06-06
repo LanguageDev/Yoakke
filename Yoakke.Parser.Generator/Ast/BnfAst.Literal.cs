@@ -1,9 +1,4 @@
-﻿using Microsoft.CodeAnalysis;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Yoakke.Parser.Generator.Ast
+﻿namespace Yoakke.Parser.Generator.Ast
 {
     partial class BnfAst
     {

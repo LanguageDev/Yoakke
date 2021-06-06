@@ -1,8 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Yoakke.Collections.Compatibility;
 
 namespace Yoakke.Parser.Generator.Ast

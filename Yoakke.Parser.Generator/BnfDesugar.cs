@@ -1,10 +1,8 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Text;
 using Yoakke.Parser.Generator.Ast;
 
 namespace Yoakke.Parser.Generator

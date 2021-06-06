@@ -1,12 +1,9 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
 using Yoakke.Lexer;
 using Yoakke.Lexer.Attributes;
 using Yoakke.Parser.Attributes;
-using Yoakke.Text;
 using IgnoreAttribute = Yoakke.Lexer.Attributes.IgnoreAttribute;
-using Range = Yoakke.Text.Range;
 
 namespace Yoakke.Parser.Tests
 {

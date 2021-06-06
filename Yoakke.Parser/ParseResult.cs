@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Yoakke.Parser
+﻿namespace Yoakke.Parser
 {
     /// <summary>
     /// The result of a parse.

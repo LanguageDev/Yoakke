@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Yoakke.Lexer;
-
-namespace Yoakke.Parser
+﻿namespace Yoakke.Parser
 {
     /// <summary>
     /// A single, punctuated element.
