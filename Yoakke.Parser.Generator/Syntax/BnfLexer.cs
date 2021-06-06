@@ -22,7 +22,7 @@ namespace Yoakke.Parser.Generator.Syntax
             return result;
         }
 
-        private string source;
+        private readonly string source;
         private int index;
 
         public BnfLexer(string source)

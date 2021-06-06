@@ -18,7 +18,7 @@ namespace Yoakke.Parser.Generator
         /// </summary>
         public IDictionary<string, Rule> Rules { get; private set; } = new Dictionary<string, Rule>();
 
-        private Dictionary<string, IList<PrecedenceEntry>> precedences = new();
+        private readonly Dictionary<string, IList<PrecedenceEntry>> precedences = new();
 
         public bool TryGetRule(string name, out Rule rule) => Rules.TryGetValue(name, out rule);
         public Rule GetRule(string name) => Rules[name];

@@ -14,7 +14,7 @@ namespace Yoakke.Parser
     /// <typeparam name="TPunct">The punctuation element type.</typeparam>
     public class Punctuated<TValue, TPunct> : IReadOnlyList<PunctuatedValue<TValue, TPunct>>
     {
-        private IReadOnlyList<PunctuatedValue<TValue, TPunct>> underlying;
+        private readonly IReadOnlyList<PunctuatedValue<TValue, TPunct>> underlying;
 
         /// <summary>
         /// The punctuated values.

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Yoakke.Collections;
 using Yoakke.Lexer;
+using Yoakke.Text;
 
 namespace Yoakke.Parser
 {
@@ -14,8 +15,8 @@ namespace Yoakke.Parser
     /// </summary>
     public abstract class ParserBase
     {
-        private ILexer? lexer;
-        private RingBuffer<IToken> peek;
+        private readonly ILexer? lexer;
+        private readonly RingBuffer<IToken> peek;
         private bool pushedEnd;
 
         /// <summary>
