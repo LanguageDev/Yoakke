@@ -1,4 +1,4 @@
-name: 'Build solution'
+name: 'Run tests'
 
 on:
   push:
@@ -21,6 +21,6 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '5.0.202'
-    - name: Build
+    - name: Test
       run: |
-        dotnet build -c release
+        dotnet test
