@@ -34,6 +34,7 @@ namespace Yoakke.Parser
         /// <param name="tokens">The tokens to lex.</param>
         public ParserBase(IEnumerable<IToken> tokens)
         {
+            // TODO: Make this lazy instead of loading it into the peek-buffer?
             peek = new RingBuffer<IToken>();
             foreach (var token in tokens) peek.AddBack(token);
         }
@@ -132,37 +133,25 @@ namespace Yoakke.Parser
             return true;
         }
 
-        // TODO: Doc
-        protected static ParseResult<T> MakeOk<T>(ParseOk<T> ok) => new ParseResult<T>(ok);
-
         /// <summary>
-        /// Utility for constructing a <see cref="ParseResult{T}"/> as a success variant.
+        /// Utility for constructing a <see cref="ParseOk{T}"/>.
         /// </summary>
         /// <typeparam name="T">The parsed value type.</typeparam>
         /// <param name="value">The parsed value.</param>
         /// <param name="offset">The offset in the number of tokens.</param>
-        /// <returns>The created parse result.</returns>
-        protected static ParseResult<T> MakeOk<T>(T value, int offset, ParseError? furthestError = null) =>
-            MakeOk(new ParseOk<T>(value, offset, furthestError));
+        /// <returns>The created <see cref="ParseOk{T}"/>.</returns>
+        protected static ParseOk<T> Ok<T>(T value, int offset, ParseError? furthestError = null) =>
+            new(value, offset, furthestError);
 
         /// <summary>
-        /// Utility for casting a parse error to a <see cref="ParseResult{T}"/>.
+        /// Utility for constructing a <see cref="ParseError"/>.
         /// </summary>
-        /// <typeparam name="T">The parsed value type.</typeparam>
-        /// <param name="error">The error to wrap.</param>
-        /// <returns>The created parse result.</returns>
-        protected static ParseResult<T> MakeError<T>(ParseError error) => new ParseResult<T>(error);
-
-        /// <summary>
-        /// Utility for constructing a <see cref="ParseResult{T}"/> as an error variant.
-        /// </summary>
-        /// <typeparam name="T">The parsed value type.</typeparam>
         /// <param name="expected">The expected element.</param>
         /// <param name="got">The token encountered instead.</param>
         /// <param name="context">The rule context the error occurred in.</param>
-        /// <returns>The created parse result.</returns>
-        protected static ParseResult<T> MakeError<T>(object expected, IToken got, string context) =>
-            MakeError<T>(new ParseError(expected, got, context));
+        /// <returns>The created <see cref="ParseError"/>.</returns>
+        protected static ParseError Error(object expected, IToken got, string context) => 
+            new(expected, got, context);
 
         // TODO: Doc
         protected static ParseResult<T> MergeAlternatives<T>(ParseResult<T> first, ParseResult<T> second)
@@ -181,18 +170,14 @@ namespace Yoakke.Parser
 
         // TODO: Doc
         protected static ParseResult<T> MergeError<T>(ParseResult<T> result, ParseError error) =>
-            result.IsOk ? MergeError(result.Ok, error) : MergeError<T>(result.Error, error);
+            result.IsOk ? MergeError(result.Ok, error) : ParseError.Unify(result.Error, error);
 
         // TODO: Doc
         protected static ParseResult<T> MergeError<T>(ParseOk<T> ok, ParseError error)
         {
-            if (error == null) return MakeOk(ok);
-            if (ok.FurthestError == null) return MakeOk(ok.Value, ok.Offset, error);
-            return MakeOk(ok.Value, ok.Offset, ParseError.Unify(ok.FurthestError, error));
+            if (error == null) return ok;
+            if (ok.FurthestError == null) return Ok(ok.Value, ok.Offset, error);
+            return Ok(ok.Value, ok.Offset, ParseError.Unify(ok.FurthestError, error));
         }
-
-        // TODO: Doc
-        protected static ParseResult<T> MergeError<T>(ParseError err1, ParseError err2) =>
-            MakeError<T>(ParseError.Unify(err1, err2));
     }
 }

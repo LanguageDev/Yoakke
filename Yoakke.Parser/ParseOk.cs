@@ -21,7 +21,7 @@ namespace Yoakke.Parser
         /// </summary>
         public readonly int Offset;
         /// <summary>
-        /// The furthest error found.
+        /// The furthest <see cref="ParseError"/> found so far.
         /// </summary>
         public readonly ParseError? FurthestError;
 
@@ -30,12 +30,14 @@ namespace Yoakke.Parser
         /// </summary>
         /// <param name="value">The parsed value.</param>
         /// <param name="offset">The offset in the number of tokens.</param>
-        /// <param name="furthestError">The furthest error found.</param>
+        /// <param name="furthestError">The furthest <see cref="ParseError"/> found so far.</param>
         public ParseOk(T value, int offset, ParseError? furthestError = null)
         {
             Value = value;
             Offset = offset;
             FurthestError = furthestError;
         }
+
+        public static implicit operator T(ParseOk<T> ok) => ok.Value;
     }
 }

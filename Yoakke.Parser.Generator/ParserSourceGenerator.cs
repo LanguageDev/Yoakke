@@ -170,9 +170,9 @@ namespace {namespaceName}
                 var call = $"{transform.Method.Name}({flattenedValues})";
                 code.AppendLine($"if ({subVar}.IsOk) {{");
                 code.AppendLine($"    var {binder} = {subVar}.Ok.Value;");
-                code.AppendLine($"    {resultVar} = MakeOk({call}, {subVar}.Ok.Offset, {subVar}.Ok.FurthestError);");
+                code.AppendLine($"    {resultVar} = {TypeNames.ParserBase}.Ok({call}, {subVar}.Ok.Offset, {subVar}.Ok.FurthestError);");
                 code.AppendLine("} else {");
-                code.AppendLine($"    {resultVar} = MakeError<{parsedType}>({subVar}.Error);");
+                code.AppendLine($"    {resultVar} = {subVar}.Error;");
                 code.AppendLine("}");
                 break;
             }
@@ -189,14 +189,14 @@ namespace {namespaceName}
                 var secondVar = GenerateBnf(code, rule, fold.Second, $"{resultVar}.Ok.Offset");
                 var errMerge = $"{TypeNames.ParseError}.Unify({resultVar}.FurthestError, {secondVar}.FurthestError)";
                 code.AppendLine($"        if ({secondVar}.IsError) {{");
-                code.AppendLine($"            {resultVar} = MergeError({resultVar}.Ok, {secondVar}.Error);");
+                code.AppendLine($"            {resultVar} = {TypeNames.ParserBase}.MergeError({resultVar}.Ok, {secondVar}.Error);");
                 code.AppendLine("            break;");
                 code.AppendLine("        }");
                 code.AppendLine($"        var {binder} = {secondVar}.Ok.Value;");
-                code.AppendLine($"        {resultVar} = MakeOk({call}, {secondVar}.Ok.Offset, {errMerge});");
+                code.AppendLine($"        {resultVar} = {TypeNames.ParserBase}.Ok({call}, {secondVar}.Ok.Offset, {errMerge});");
                 code.AppendLine("    }");
                 code.AppendLine("} else {");
-                code.AppendLine($"    {resultVar} = MakeError<{parsedType}>({firstVar}.Error);");
+                code.AppendLine($"    {resultVar} = {firstVar}.Error;");
                 code.AppendLine("}");
                 break;
             }
@@ -216,7 +216,7 @@ namespace {namespaceName}
                     else
                     {
                         // Pick the one that got the furthest
-                        code.AppendLine($"{resultVar} = MergeAlternatives({resultVar}, {altVar});");
+                        code.AppendLine($"{resultVar} = {TypeNames.ParserBase}.MergeAlternatives({resultVar}, {altVar});");
                     }
                 }
                 break;
@@ -240,16 +240,16 @@ namespace {namespaceName}
                 }
                 // Unify last
                 code.AppendLine($"if ({prevVar}.IsOk) {{");
-                code.AppendLine($"    {resultVar} = MakeOk(({resultSeq}), {prevVar}.Ok.Offset, {prevVar}.Ok.FurthestError);");
+                code.AppendLine($"    {resultVar} = {TypeNames.ParserBase}.Ok(({resultSeq}), {prevVar}.Ok.Offset, {prevVar}.Ok.FurthestError);");
                 code.AppendLine("} else {");
                 varStack.Pop();
-                code.AppendLine($"    {resultVar} = MakeError<{parsedType}>({prevVar}.Error);");
+                code.AppendLine($"    {resultVar} = {prevVar}.Error;");
                 code.AppendLine("}");
                 // Close nesting and errors
                 while (varStack.TryPop(out var top))
                 {
                     code.AppendLine("} else {");
-                    code.AppendLine($"    {resultVar} = MakeError<{parsedType}>({top}.Error);");
+                    code.AppendLine($"    {resultVar} = {top}.Error;");
                     code.AppendLine("}");
                 }
                 break;
@@ -258,8 +258,8 @@ namespace {namespaceName}
             case BnfAst.Opt opt:
             {
                 var subVar = GenerateBnf(code, rule, opt.Subexpr, lastIndex);
-                code.AppendLine($"if ({subVar}.IsOk) {resultVar} = MakeOk<{parsedType}>({subVar}.Ok.Value, {subVar}.Ok.Offset, {subVar}.Ok.FurthestError);");
-                code.AppendLine($"else {resultVar} = MakeOk<{parsedType}>(default, {lastIndex}, {subVar}.Error);");
+                code.AppendLine($"if ({subVar}.IsOk) {resultVar} = {TypeNames.ParserBase}.Ok<{parsedType}>({subVar}.Ok.Value, {subVar}.Ok.Offset, {subVar}.Ok.FurthestError);");
+                code.AppendLine($"else {resultVar} = {TypeNames.ParserBase}.Ok(default({parsedType}), {lastIndex}, {subVar}.Error);");
                 break;
             }
 
@@ -282,7 +282,7 @@ namespace {namespaceName}
                 code.AppendLine($"    {listVar}.Add({subVar}.Ok.Value);");
                 code.AppendLine($"    {errVar} = {TypeNames.ParseError}.Unify({errVar}, {subVar}.Ok.FurthestError);");
                 code.AppendLine("}");
-                code.AppendLine($"{resultVar} = MakeOk(({parsedType}){listVar}, {indexVar}, {errVar});");
+                code.AppendLine($"{resultVar} = {TypeNames.ParserBase}.Ok(({parsedType}){listVar}, {indexVar}, {errVar});");
                 break;
             }
 
@@ -308,9 +308,9 @@ namespace {namespaceName}
                 code.AppendLine($"        {listVar}.Add({subVar}.Ok.Value);");
                 code.AppendLine($"        {errVar} = {TypeNames.ParseError}.Unify({errVar}, {subVar}.Ok.FurthestError);");
                 code.AppendLine("    }");
-                code.AppendLine($"    {resultVar} = MakeOk(({parsedType}){listVar}, {indexVar}, {errVar});");
+                code.AppendLine($"    {resultVar} = {TypeNames.ParserBase}.Ok(({parsedType}){listVar}, {indexVar}, {errVar});");
                 code.AppendLine("} else {");
-                code.AppendLine($"    {resultVar} = MakeError<{parsedType}>({firstVar}.Error);");
+                code.AppendLine($"    {resultVar} = {firstVar}.Error;");
                 code.AppendLine("}");
                 break;
             }
@@ -324,7 +324,7 @@ namespace {namespaceName}
                 code.AppendLine($"{resultVar} = parse{key}({lastIndex});");
                 // HEURISTIC: If the parse didn't advance anything, replace error
                 code.AppendLine($"if ({resultVar}.IsError && (!TryPeek({lastIndex}, out var {peekVar}) || ReferenceEquals({peekVar}, {resultVar}.Error.Got))) {{");
-                code.AppendLine($"    {resultVar} = MakeError<{parsedType}>(\"{calledRule.VisualName}\", {resultVar}.Error.Got, \"{rule.VisualName}\");");
+                code.AppendLine($"    {resultVar} = {TypeNames.ParserBase}.Error(\"{calledRule.VisualName}\", {resultVar}.Error.Got, \"{rule.VisualName}\");");
                 code.AppendLine("}");
                 break;
             }
@@ -336,10 +336,10 @@ namespace {namespaceName}
                 {
                     // Match text
                     code.AppendLine($"if (this.TryMatchText({lastIndex}, \"{lit.Value}\", out var {resultTok})) {{");
-                    code.AppendLine($"    {resultVar} = MakeOk(({parsedType}){resultTok}, {lastIndex} + 1);");
+                    code.AppendLine($"    {resultVar} = {TypeNames.ParserBase}.Ok(({parsedType}){resultTok}, {lastIndex} + 1);");
                     code.AppendLine("} else {");
                     code.AppendLine($"    this.TryPeek({lastIndex}, out var got);");
-                    code.AppendLine($"    {resultVar} = MakeError<{parsedType}>(\"{lit.Value}\", got, \"{rule.VisualName}\");");
+                    code.AppendLine($"    {resultVar} = {TypeNames.ParserBase}.Error(\"{lit.Value}\", got, \"{rule.VisualName}\");");
                     code.AppendLine("}");
                 }
                 else
@@ -348,10 +348,10 @@ namespace {namespaceName}
                     var tokenType = tokenKinds!.EnumType!.ToDisplayString();
                     var tokVariant = $"{tokenType}.{((IFieldSymbol)lit.Value).Name}";
                     code.AppendLine($"if (this.TryMatchKind({lastIndex}, {tokVariant}, out var {resultTok})) {{");
-                    code.AppendLine($"    {resultVar} = MakeOk({resultTok}, {lastIndex} + 1);");
+                    code.AppendLine($"    {resultVar} = {TypeNames.ParserBase}.Ok({resultTok}, {lastIndex} + 1);");
                     code.AppendLine("} else {");
                     code.AppendLine($"    this.TryPeek({lastIndex}, out var got);");
-                    code.AppendLine($"    {resultVar} = MakeError<{parsedType}>({tokVariant}, got, \"{rule.VisualName}\");");
+                    code.AppendLine($"    {resultVar} = {TypeNames.ParserBase}.Error({tokVariant}, got, \"{rule.VisualName}\");");
                     code.AppendLine("}");
                 }
                 break;

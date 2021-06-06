@@ -39,7 +39,7 @@ namespace Yoakke.Parser
         }
 
         /// <summary>
-        /// Unifies two alternative parse errors.
+        /// Unifies two alternative <see cref="ParseError"/>s.
         /// </summary>
         /// <param name="first">The first error to unify.</param>
         /// <param name="second">The second error to unify.</param>
