@@ -4,6 +4,9 @@ namespace Yoakke.SourceGenerator.Common
 {
     internal static class Diagnostics
     {
+        // TODO: Not sure what this would be good for, consider it
+
+#pragma warning disable RS2008 // Enable analyzer release tracking
         public static readonly DiagnosticDescriptor RequiredLibraryNotReferenced = new(
             id: "YKGEN001",
             title: "Required library not referenced",
@@ -27,5 +30,6 @@ namespace Yoakke.SourceGenerator.Common
             category: "Yoakke.Generator",
             DiagnosticSeverity.Error,
             isEnabledByDefault: true);
+#pragma warning restore RS2008 // Enable analyzer release tracking
     }
 }

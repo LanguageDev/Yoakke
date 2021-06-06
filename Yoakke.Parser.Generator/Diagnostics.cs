@@ -4,6 +4,9 @@ namespace Yoakke.Parser.Generator
 {
     internal static class Diagnostics
     {
+        // TODO: Not sure what this would be good for, consider it
+
+#pragma warning disable RS2008 // Enable analyzer release tracking
         public static readonly DiagnosticDescriptor UnknownRuleIdentifier = new(
             id: "YKPARSERGEN001",
             title: "Identifier is neither a rule, nor a terminal",
@@ -11,5 +14,6 @@ namespace Yoakke.Parser.Generator
             category: "Yoakke.Parser.Generator",
             DiagnosticSeverity.Error,
             isEnabledByDefault: true);
+#pragma warning restore RS2008 // Enable analyzer release tracking
     }
 }
