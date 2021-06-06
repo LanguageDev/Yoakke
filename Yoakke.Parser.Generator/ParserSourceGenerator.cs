@@ -160,6 +160,7 @@ namespace {namespaceName}
             BnfAst.Seq seq => seq.Elements.All(CheckBnfAst),
             BnfAst.FoldLeft foldl => CheckBnfAst(foldl.First) && CheckBnfAst(foldl.Second),
             BnfAst.Opt opt => CheckBnfAst(opt.Subexpr),
+            BnfAst.Group grp => CheckBnfAst(grp.Subexpr),
             BnfAst.Rep0 rep0 => CheckBnfAst(rep0.Subexpr),
             BnfAst.Rep1 rep1 => CheckBnfAst(rep1.Subexpr),
             BnfAst.Transform tr => CheckBnfAst(tr.Subexpr),
@@ -299,6 +300,13 @@ namespace {namespaceName}
                 var subVar = GenerateBnf(code, rule, opt.Subexpr, lastIndex);
                 code.AppendLine($"if ({subVar}.IsOk) {resultVar} = {TypeNames.ParserBase}.Ok<{parsedType}>({subVar}.Ok.Value, {subVar}.Ok.Offset, {subVar}.Ok.FurthestError);");
                 code.AppendLine($"else {resultVar} = {TypeNames.ParserBase}.Ok(default({parsedType}), {lastIndex}, {subVar}.Error);");
+                break;
+            }
+
+            case BnfAst.Group grp:
+            {
+                var subVar = GenerateBnf(code, rule, grp.Subexpr, lastIndex);
+                code.AppendLine($"{resultVar} = {subVar};");
                 break;
             }
 
@@ -450,6 +458,7 @@ namespace {namespaceName}
                BnfAst.Transform
             or BnfAst.Call 
             or BnfAst.Opt
+            or BnfAst.Group
             or BnfAst.Rep0
             or BnfAst.Rep1
             or BnfAst.Literal => AllocateVarName(),
