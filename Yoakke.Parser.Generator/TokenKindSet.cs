@@ -15,20 +15,22 @@ namespace Yoakke.Parser.Generator
         /// The enum that defines the token-kinds.
         /// </summary>
         public readonly INamedTypeSymbol? EnumType;
-
-        private Dictionary<string, IFieldSymbol> fields;
+        /// <summary>
+        /// The fields (token-kinds) defined in the kind-enum <see cref="EnumType"/>.
+        /// </summary>
+        public readonly IReadOnlyDictionary<string, IFieldSymbol> Fields;
 
         public TokenKindSet()
         {
-            fields = new Dictionary<string, IFieldSymbol>();
+            Fields = new Dictionary<string, IFieldSymbol>();
         }
 
         public TokenKindSet(INamedTypeSymbol enumType)
         {
             EnumType = enumType;
-            fields = enumType.GetMembers().OfType<IFieldSymbol>().ToDictionary(s => s.Name);
+            Fields = enumType.GetMembers().OfType<IFieldSymbol>().ToDictionary(s => s.Name);
         }
 
-        public bool TryGetVariant(string name, out IFieldSymbol symbol) => fields.TryGetValue(name, out symbol);
+        public bool TryGetVariant(string name, out IFieldSymbol symbol) => Fields.TryGetValue(name, out symbol);
     }
 }
