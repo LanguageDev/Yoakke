@@ -128,85 +128,85 @@ Let's implement the lexer we generated above, but using `LexerBase<T>`, and maki
 ```csharp
 public class MyLexer : LexerBase<TokenType>
 {
-	public MyLexer(TextReader reader)
-	    : base(reader)
+    public MyLexer(TextReader reader)
+        : base(reader)
     {
     }
 
-	// Just a helper for valid identifier characters
-	private static bool IsIdent(char ch) => char.IsLetterOrDigit(ch) || ch == '_';
+    // Just a helper for valid identifier characters
+    private static bool IsIdent(char ch) => char.IsLetterOrDigit(ch) || ch == '_';
 
-	public Token<TokenType> Next()
-	{
-		while (true)
-		{
-			// If there's nothing to peek, means end of source
-			if (!TryPeek(out var _)) return TakeToken(TokenType.End, 0);
-			// Skip whitespace
-			if (char.IsWhiteSpace(Peek()))
-			{
-				Skip();
-				continue;
-			}
-			// Line-comment
-			if (Matches("//"))
-			{
-				// Start from 2, as // is not consumed yet
-				int i = 2;
-				// Take advantage of the fact, that the default character can signal the EOF too
-				for (; Peek(i, '\n') != '\n'; ++i);
-				Skip(i);
-				continue;
-			}
-			// Nestable multi-line comment
-			if (Matches("/*"))
-			{
-				// Start from 2, as /* is not consumed yet
-				int i = 2;
-				int depth = 1;
-				// While there is nesting and also it's not EOF
-				while (depth > 0 && TryPeek(out var _))
-				{
-					if (Match("/*")) 
-					{
-						++depth;
-						i += 2;
-					}
-					if (Match("*/")) 
-					{
-						--depth;
-						i += 2;
-					}
-					else ++i;
-				}
-				Skip(i);
-				continue;
-			}
-			// Plus and minus
-			if (Peek() == '+') return TakeToken(TokenType.Plus, 1);
-			if (Peek() == '-') return TakeToken(TokenType.Minus, 1);
-			// Int literal
-			if (char.IsDigit(Peek()))
-			{
-				int i = 1;
-				for (; char.IsDigit(Peek(i)); ++i);
-				return TakeToken(TokenType.IntLiteral, i);
-			}
-			// Keywords and identifier
-			if (IsIdent(Peek()))
-			{
-				int i = 1;
-				for (; IsIdent(Peek(i)); ++i);
-				var result = TakeToken(TokenType.Identifier, i);
-				// If it's a keyword, transform the token type
-				if (result.Text == "if") return new Token<TokenType>(result.Range, result.Text, TokenType.KwIf);
-				else if (result.Text == "else") return new Token<TokenType>(result.Range, result.Text, TokenType.KwElse);
-				else return result;
-			}
-			// Unknown, error
-			return TakeToken(TokenType.Error, 1);
-		}
-	}
+    public Token<TokenType> Next()
+    {
+        while (true)
+        {
+            // If there's nothing to peek, means end of source
+            if (!TryPeek(out var _)) return TakeToken(TokenType.End, 0);
+            // Skip whitespace
+            if (char.IsWhiteSpace(Peek()))
+            {
+                Skip();
+                continue;
+            }
+            // Line-comment
+            if (Matches("//"))
+            {
+                // Start from 2, as // is not consumed yet
+                int i = 2;
+                // Take advantage of the fact, that the default character can signal the EOF too
+                for (; Peek(i, '\n') != '\n'; ++i);
+                Skip(i);
+                continue;
+            }
+            // Nestable multi-line comment
+            if (Matches("/*"))
+            {
+                // Start from 2, as /* is not consumed yet
+                int i = 2;
+                int depth = 1;
+                // While there is nesting and also it's not EOF
+                while (depth > 0 && TryPeek(out var _))
+                {
+                    if (Match("/*")) 
+                    {
+                        ++depth;
+                        i += 2;
+                    }
+                    if (Match("*/")) 
+                    {
+                        --depth;
+                        i += 2;
+                    }
+                    else ++i;
+                }
+                Skip(i);
+                continue;
+            }
+            // Plus and minus
+            if (Peek() == '+') return TakeToken(TokenType.Plus, 1);
+            if (Peek() == '-') return TakeToken(TokenType.Minus, 1);
+            // Int literal
+            if (char.IsDigit(Peek()))
+            {
+                int i = 1;
+                for (; char.IsDigit(Peek(i)); ++i);
+                return TakeToken(TokenType.IntLiteral, i);
+            }
+            // Keywords and identifier
+            if (IsIdent(Peek()))
+            {
+                int i = 1;
+                for (; IsIdent(Peek(i)); ++i);
+                var result = TakeToken(TokenType.Identifier, i);
+                // If it's a keyword, transform the token type
+                if (result.Text == "if") return new Token<TokenType>(result.Range, result.Text, TokenType.KwIf);
+                else if (result.Text == "else") return new Token<TokenType>(result.Range, result.Text, TokenType.KwElse);
+                else return result;
+            }
+            // Unknown, error
+            return TakeToken(TokenType.Error, 1);
+        }
+    }
 }
 ```
 
