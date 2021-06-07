@@ -33,6 +33,13 @@ namespace Yoakke.Lexer.Tests
                     Skip();
                     goto begin;
                 }
+                if (Matches("//"))
+                {
+                    int i = 0;
+                    for (; Peek(i, '\n') != '\n'; ++i) ;
+                    Skip(i);
+                    goto begin;
+                }
                 if (Peek() == '+') return TakeToken(TokenType.Plus, 1);
                 if (Peek() == '-') return TakeToken(TokenType.Minus, 1);
                 if (char.IsDigit(Peek()))
@@ -94,6 +101,19 @@ asd+b 123
             Assert.AreEqual(Token("+", TokenType.Plus, Range((1, 3), 1)), lexer.Next());
             Assert.AreEqual(Token("b", TokenType.Identifier, Range((1, 4), 1)), lexer.Next());
             Assert.AreEqual(Token("123", TokenType.Number, Range((1, 6), 3)), lexer.Next());
+            Assert.AreEqual(Token("-", TokenType.Minus, Range((2, 0), 1)), lexer.Next());
+            Assert.AreEqual(Token("2", TokenType.Number, Range((2, 1), 1)), lexer.Next());
+            Assert.AreEqual(Token("b5", TokenType.Identifier, Range((2, 3), 2)), lexer.Next());
+            Assert.AreEqual(Token("", TokenType.End, Range((2, 5), 0)), lexer.Next());
+        }
+
+        [TestMethod]
+        public void SimpleMultilineSequenceCommented()
+        {
+            var lexer = new Lexer(@"if    
+// asd+b 123 
+-2 b5");
+            Assert.AreEqual(Token("if", TokenType.KwIf, Range((0, 0), 2)), lexer.Next());
             Assert.AreEqual(Token("-", TokenType.Minus, Range((2, 0), 1)), lexer.Next());
             Assert.AreEqual(Token("2", TokenType.Number, Range((2, 1), 1)), lexer.Next());
             Assert.AreEqual(Token("b5", TokenType.Identifier, Range((2, 3), 2)), lexer.Next());
