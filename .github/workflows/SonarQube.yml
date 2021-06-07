@@ -1,4 +1,4 @@
-name: Build
+name: Sonar Qube
 on:
   push:
     branches:
@@ -48,3 +48,8 @@ jobs:
           dotnet build
           dotnet test /p:CollectCoverage=true /p:CoverletOutput="../" /p:MergeWith="../coverage.json" /maxcpucount:1 /p:CoverletOutputFormat=\"json,opencover\"
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+      - name: Test TestArtifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: TestArtifact
+          path: .
