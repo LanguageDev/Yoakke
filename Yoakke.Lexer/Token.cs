@@ -8,7 +8,7 @@ namespace Yoakke.Lexer
     /// This is a tagged implementation of <see cref="IToken"/>.
     /// </summary>
     /// <typeparam name="TKind">The kind type this <see cref="Token{TKind}"/> uses. Usually an enumeration type.</typeparam>
-    public class Token<TKind> : IToken, IEquatable<Token<TKind>> where TKind : notnull
+    public sealed class Token<TKind> : IToken, IEquatable<Token<TKind>> where TKind : notnull
     {
         public Range Range { get; }
         public string Text { get; }
@@ -39,6 +39,6 @@ namespace Yoakke.Lexer
             && Text == other.Text
             && Kind.Equals(other.Kind);
 
-        public override int GetHashCode() => HashCode.Combine(Range, Text);
+        public override int GetHashCode() => HashCode.Combine(Range, Text, Kind);
     }
 }

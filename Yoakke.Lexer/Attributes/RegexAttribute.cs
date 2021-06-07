@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Yoakke.Lexer.Attributes
 {
@@ -6,6 +7,7 @@ namespace Yoakke.Lexer.Attributes
     /// An attribute to define a token type in terms of a regular expression.
     /// </summary>
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = true)]
+    [ExcludeFromCodeCoverage]
     public class RegexAttribute : Attribute
     {
         /// <summary>

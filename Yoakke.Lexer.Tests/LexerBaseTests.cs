@@ -27,7 +27,7 @@ namespace Yoakke.Lexer.Tests
             public override Token<TokenType> Next()
             {
                 begin:
-                if (Peek() == '\0') return TakeToken(TokenType.End, 0);
+                if (IsEnd) return TakeToken(TokenType.End, 0);
                 if (char.IsWhiteSpace(Peek()))
                 {
                     Skip();
