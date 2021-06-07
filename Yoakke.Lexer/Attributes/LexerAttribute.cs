@@ -7,7 +7,6 @@ namespace Yoakke.Lexer.Attributes
     /// An attribute to mark an enum to generate a lexer for it's token types.
     /// </summary>
     [AttributeUsage(AttributeTargets.Enum)]
-    [ExcludeFromCodeCoverage]
     public class LexerAttribute : Attribute
     {
         /// <summary>

@@ -7,7 +7,6 @@ namespace Yoakke.Lexer.Attributes
     /// An attribute to mark an enum value as an error token type.
     /// </summary>
     [AttributeUsage(AttributeTargets.Field)]
-    [ExcludeFromCodeCoverage]
     public class ErrorAttribute : Attribute
     {
     }

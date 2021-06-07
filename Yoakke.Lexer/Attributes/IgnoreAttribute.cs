@@ -7,7 +7,6 @@ namespace Yoakke.Lexer.Attributes
     /// An attribute to mark an enum value to be an ignored token type.
     /// </summary>
     [AttributeUsage(AttributeTargets.Field)]
-    [ExcludeFromCodeCoverage]
     public class IgnoreAttribute : Attribute
     {
     }
