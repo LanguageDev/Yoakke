@@ -46,7 +46,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        shell: powershell
+        shell: cmd
         run: |
           .\.sonar\scanner\dotnet-sonarscanner begin /k:"LanguageDev_Yoakke" /o:"languagedev" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="CoverageResults/coverage.opencover.xml" /d:"sonar.verbose=true"
           dotnet build
