@@ -57,7 +57,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lsp.Server.Sample", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lsp.Server", "Yoakke.Lsp.Server\Yoakke.Lsp.Server.csproj", "{01035D94-6005-47DB-BC9B-0925F98CFA1F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yoakke.Lsp.Model", "Yoakke.Lsp.Model\Yoakke.Lsp.Model.csproj", "{7F60E2A0-832A-4FA5-AB69-2B8D6916FAE9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lsp.Model", "Yoakke.Lsp.Model\Yoakke.Lsp.Model.csproj", "{7F60E2A0-832A-4FA5-AB69-2B8D6916FAE9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
