@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Yoakke.Lexer;
 
 namespace Yoakke.LSP.Generator
 {
     class Program
     {
-        static readonly string JsonPropertyAttribute = "JsonProperty";
-        static readonly string JsonEnumValueAttribute = "EnumMember";
+        private const string JsonPropertyAttribute = "JsonProperty";
+        private const string JsonEnumValueAttribute = "EnumMember";
 
         static readonly string[] knownInterfaces = new string[]
         {
@@ -62,13 +61,13 @@ namespace Yoakke.LSP.Generator
         {
             switch (def)
             {
-            case InterfaceDef i: 
-                Translate(i); 
-                break;
-            case NamespaceDef n: 
-                Translate(n); 
-                break;
-            default: throw new InvalidOperationException();
+                case InterfaceDef i:
+                    Translate(i);
+                    break;
+                case NamespaceDef n:
+                    Translate(n);
+                    break;
+                default: throw new InvalidOperationException();
             }
         }
 

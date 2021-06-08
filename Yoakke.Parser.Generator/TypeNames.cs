@@ -5,8 +5,8 @@
     /// </summary>
     internal static class TypeNames
     {
-        private static readonly string ParserNamespace = "Yoakke.Parser";
-        private static readonly string LexerNamespace = "Yoakke.Lexer";
+        private const string ParserNamespace = "Yoakke.Parser";
+        private const string LexerNamespace = "Yoakke.Lexer";
 
         public static readonly string ParserAttribute = $"{ParserNamespace}.Attributes.ParserAttribute";
         public static readonly string RuleAttribute = $"{ParserNamespace}.Attributes.RuleAttribute";
@@ -23,9 +23,9 @@
         public static readonly string Token = $"{LexerNamespace}.Token";
         public static readonly string ILexer = $"{LexerNamespace}.ILexer";
 
-        public static readonly string IReadOnlyList = "System.Collections.Generic.IReadOnlyList";
-        public static readonly string IList = "System.Collections.Generic.IList";
-        public static readonly string List = "System.Collections.Generic.List";
-        public static readonly string IEnumerable = "System.Collections.Generic.IEnumerable";
+        public const string IReadOnlyList = "System.Collections.Generic.IReadOnlyList";
+        public const string IList = "System.Collections.Generic.IList";
+        public const string List = "System.Collections.Generic.List";
+        public const string IEnumerable = "System.Collections.Generic.IEnumerable";
     }
 }

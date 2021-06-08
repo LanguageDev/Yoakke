@@ -5,11 +5,11 @@
     /// </summary>
     internal static class TypeNames
     {
-        private static readonly string CollectionsNamespace = "Yoakke.Collections";
-        private static readonly string TextNamespace = "Yoakke.Text";
-        private static readonly string LexerNamespace = "Yoakke.Lexer";
+        private const string CollectionsNamespace = "Yoakke.Collections";
+        private const string TextNamespace = "Yoakke.Text";
+        private const string LexerNamespace = "Yoakke.Lexer";
 
-        public static readonly string InvalidOperationException = "System.InvalidOperationException";
+        public const string InvalidOperationException = "System.InvalidOperationException";
 
         public static readonly string LexerAttribute = $"{LexerNamespace}.Attributes.LexerAttribute";
 
@@ -24,8 +24,8 @@
         public static readonly string Position = $"{TextNamespace}.Position";
         public static readonly string Range = $"{TextNamespace}.Range";
 
-        public static readonly string RingBuffer = $"{CollectionsNamespace}.RingBuffer";
+        public const string RingBuffer = "{CollectionsNamespace}.RingBuffer";
 
-        public static readonly string TextReader = "System.IO.TextReader";
+        public const string TextReader = "System.IO.TextReader";
     }
 }
