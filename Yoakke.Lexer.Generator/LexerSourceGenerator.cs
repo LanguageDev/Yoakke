@@ -61,54 +61,14 @@ namespace Yoakke.Lexer.Generator
             var enumName = symbol.ToDisplayString();
             var tokenName = $"{TypeNames.Token}<{enumName}>";
 
+            // Extract the lexer from the attributes
             var description = ExtractLexerDescription(symbol);
-            if (description == null) return null;
+            if (description is null) return null;
 
-            // Store which token corresponds to which end state
-            var tokenToNfaState = new Dictionary<TokenDescription, State>();
-            // Construct the NFA from the regexes
-            var nfa = new DenseNfa<char>();
-            nfa.InitalState = nfa.NewState();
-            var regexParser = new RegExParser();
-            foreach (var token in description.Tokens)
-            {
-                try
-                {
-                    // Parse the regex
-                    var regex = regexParser.Parse(token.Regex!);
-                    // Desugar it
-                    regex = regex.Desugar();
-                    // Construct it into the NFA
-                    var (start, end) = regex.ThompsonConstruct(nfa);
-                    // Wire the initial state to the start of the construct
-                    nfa.AddTransition(nfa.InitalState, Epsilon.Default, start);
-                    // Mark the state as accepting
-                    nfa.AcceptingStates.Add(end);
-                    // Save the final state as a state that accepts this token
-                    tokenToNfaState.Add(token, end);
-                }
-                catch (Exception ex)
-                {
-                    Report(Diagnostics.FailedToParseRegularExpression, token.Symbol!.Locations.First(), ex.Message);
-                    return null;
-                }
-            }
-
-            // Determinize it
-            var dfa = nfa.Determinize();
-            // Now we have to figure out which new accepting states correspond to which token
-            var dfaStateToToken = new Dictionary<State, TokenDescription>();
-            // We go in the order of each token because this ensures the precedence in which order the tokens were declared
-            foreach (var token in description.Tokens)
-            {
-                var nfaAccepting = tokenToNfaState[token];
-                var dfaAccepting = dfa.AcceptingStates.Where(dfaState => nfaAccepting.IsSubstateOf(dfaState));
-                foreach (var dfaState in dfaAccepting)
-                {
-                    // This check ensures the unambiuous accepting states
-                    if (!dfaStateToToken.ContainsKey(dfaState)) dfaStateToToken.Add(dfaState, token);
-                }
-            }
+            // Build the DFA and state -> token associations from the description
+            var dfaResult = BuildDfa(description);
+            if (dfaResult is null) return null;
+            var (dfa, dfaStateToToken) = dfaResult.Value;
 
             // Allocate unique numbers for each DFA state as we have the hierarchical numbers from determinization
             var dfaStateIdents = new Dictionary<State, int>();
@@ -230,6 +190,57 @@ end_loop:
     }}
 }}
 ";
+        }
+
+        private (DenseDfa<char> Dfa, Dictionary<State, TokenDescription> StateToToken)? BuildDfa(LexerDescription description)
+        {
+            // Store which token corresponds to which end state
+            var tokenToNfaState = new Dictionary<TokenDescription, State>();
+            // Construct the NFA from the regexes
+            var nfa = new DenseNfa<char>();
+            nfa.InitalState = nfa.NewState();
+            var regexParser = new RegExParser();
+            foreach (var token in description.Tokens)
+            {
+                try
+                {
+                    // Parse the regex
+                    var regex = regexParser.Parse(token.Regex!);
+                    // Desugar it
+                    regex = regex.Desugar();
+                    // Construct it into the NFA
+                    var (start, end) = regex.ThompsonConstruct(nfa);
+                    // Wire the initial state to the start of the construct
+                    nfa.AddTransition(nfa.InitalState, Epsilon.Default, start);
+                    // Mark the state as accepting
+                    nfa.AcceptingStates.Add(end);
+                    // Save the final state as a state that accepts this token
+                    tokenToNfaState.Add(token, end);
+                }
+                catch (Exception ex)
+                {
+                    Report(Diagnostics.FailedToParseRegularExpression, token.Symbol!.Locations.First(), ex.Message);
+                    return null;
+                }
+            }
+
+            // Determinize it
+            var dfa = nfa.Determinize();
+            // Now we have to figure out which new accepting states correspond to which token
+            var dfaStateToToken = new Dictionary<State, TokenDescription>();
+            // We go in the order of each token because this ensures the precedence in which order the tokens were declared
+            foreach (var token in description.Tokens)
+            {
+                var nfaAccepting = tokenToNfaState[token];
+                var dfaAccepting = dfa.AcceptingStates.Where(dfaState => nfaAccepting.IsSubstateOf(dfaState));
+                foreach (var dfaState in dfaAccepting)
+                {
+                    // This check ensures the unambiuous accepting states
+                    if (!dfaStateToToken.ContainsKey(dfaState)) dfaStateToToken.Add(dfaState, token);
+                }
+            }
+
+            return (dfa, dfaStateToToken);
         }
 
         private LexerDescription? ExtractLexerDescription(INamedTypeSymbol symbol)
