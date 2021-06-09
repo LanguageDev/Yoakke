@@ -61,13 +61,13 @@ namespace Yoakke.LSP.Generator
         {
             switch (def)
             {
-                case InterfaceDef i:
-                    Translate(i);
-                    break;
-                case NamespaceDef n:
-                    Translate(n);
-                    break;
-                default: throw new InvalidOperationException();
+            case InterfaceDef i:
+                Translate(i);
+                break;
+            case NamespaceDef n:
+                Translate(n);
+                break;
+            default: throw new InvalidOperationException();
             }
         }
 
