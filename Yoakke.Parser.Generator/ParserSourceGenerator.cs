@@ -267,7 +267,7 @@ namespace {namespaceName}
                 var varStack = new Stack<string>();
                 var prevVar = GenerateBnf(code, rule, seq.Elements[0], lastIndex);
                 varStack.Push(prevVar);
-                var resultSeq = $"{prevVar}.Ok.Value";
+                var resultSeq = new StringBuilder($"{prevVar}.Ok.Value");
                 for (int i = 1; i < seq.Elements.Count; ++i)
                 {
                     code.AppendLine($"if ({prevVar}.IsOk) {{");
@@ -276,7 +276,7 @@ namespace {namespaceName}
                     code.AppendLine($"{nextVar} = MergeError({nextVar}, {prevVar}.Ok.FurthestError);");
                     prevVar = nextVar;
                     varStack.Push(prevVar);
-                    resultSeq += $", {prevVar}.Ok.Value";
+                    resultSeq.Append($", {prevVar}.Ok.Value");
                 }
                 // Unify last
                 code.AppendLine($"if ({prevVar}.IsOk) {{");
