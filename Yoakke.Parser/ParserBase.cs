@@ -18,7 +18,7 @@ namespace Yoakke.Parser
         /// Initializes a new <see cref="ParserBase"/>.
         /// </summary>
         /// <param name="lexer">The underlying lexer to use.</param>
-        public ParserBase(ILexer lexer)
+        protected ParserBase(ILexer lexer)
         {
             this.lexer = lexer;
             this.peek = new RingBuffer<IToken>();
@@ -28,7 +28,7 @@ namespace Yoakke.Parser
         /// Initializes a new <see cref="ParserBase"/>.
         /// </summary>
         /// <param name="tokens">The tokens to lex.</param>
-        public ParserBase(IEnumerable<IToken> tokens)
+        protected ParserBase(IEnumerable<IToken> tokens)
         {
             // TODO: Make this lazy instead of loading it into the peek-buffer?
             peek = new RingBuffer<IToken>();
