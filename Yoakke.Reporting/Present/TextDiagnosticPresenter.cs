@@ -29,7 +29,7 @@ namespace Yoakke.Reporting.Present
         /// <summary>
         /// A default text presenter that writes to the console error.
         /// </summary>
-        public static readonly TextDiagnosticPresenter Default = new TextDiagnosticPresenter(Console.Error);
+        public static readonly TextDiagnosticPresenter Default = new(Console.Error);
 
         public DiagnosticStyle Style { get; set; } = DiagnosticStyle.Default;
         public ISyntaxHighlighter SyntaxHighlighter { get; set; } = ISyntaxHighlighter.Null;
@@ -39,7 +39,7 @@ namespace Yoakke.Reporting.Present
         /// </summary>
         public TextWriter Writer { get; }
 
-        private ColoredBuffer buffer;
+        private readonly ColoredBuffer buffer;
 
         /// <summary>
         /// Initializes a new <see cref="TextDiagnosticPresenter"/>.

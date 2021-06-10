@@ -18,7 +18,7 @@ namespace Yoakke.Text
         public int LineCount => lineStarts.Count;
 
         // The reader we read from
-        private TextReader underlying;
+        private readonly TextReader underlying;
         // The buffer we read into
         private StringBuilder sourceText;
         // The offset we are at in the buffer

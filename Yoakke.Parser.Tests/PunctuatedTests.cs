@@ -44,7 +44,7 @@ namespace Yoakke.Parser.Tests
         [TestMethod]
         public void Empty0NoTrailing()
         {
-            Assert.IsTrue(Any0NoTrailing("()").SequenceEqual(new string[] { }));
+            Assert.IsTrue(Any0NoTrailing("()").SequenceEqual(Array.Empty<string>()));
         }
 
         [TestMethod]

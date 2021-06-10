@@ -20,7 +20,7 @@ namespace Yoakke.Reporting.Present
         public int CursorX { get; set; }
         public int CursorY { get; set; }
 
-        private List<Line> lines = new List<Line>();
+        private readonly List<Line> lines = new List<Line>();
 
         public void Clear()
         {

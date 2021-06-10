@@ -24,9 +24,9 @@ namespace Yoakke.Sample
             public readonly Dictionary<ISymbol, object> Values = new();
         }
 
-        private SymbolResolution symbolResolution;
-        private StackFrame globalFrame = new();
-        private Stack<StackFrame> callStack = new();
+        private readonly SymbolResolution symbolResolution;
+        private readonly StackFrame globalFrame = new();
+        private readonly Stack<StackFrame> callStack = new();
 
         public TreeEvaluator(SymbolResolution symbolResolution)
         {
