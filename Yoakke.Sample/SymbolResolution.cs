@@ -14,7 +14,7 @@ namespace Yoakke.Sample
         {
             public Dictionary<AstNode, IScope> Scopes { get; } = new();
 
-            private SymbolTable symbolTable;
+            private readonly SymbolTable symbolTable;
 
             public ScopePass(SymbolTable symbolTable)
             {
@@ -55,7 +55,7 @@ namespace Yoakke.Sample
         {
             public Dictionary<AstNode, ISymbol> Symbols { get; } = new();
 
-            private Dictionary<AstNode, IScope> scopes;
+            private readonly Dictionary<AstNode, IScope> scopes;
 
             public ConstPass(Dictionary<AstNode, IScope> scopes)
             {
@@ -83,7 +83,7 @@ namespace Yoakke.Sample
         {
             public Dictionary<object, ISymbol> Symbols { get; } = new();
 
-            private Dictionary<AstNode, IScope> scopes;
+            private readonly Dictionary<AstNode, IScope> scopes;
 
             public VarPass(Dictionary<AstNode, IScope> scopes)
             {
@@ -139,8 +139,8 @@ namespace Yoakke.Sample
         public IReadOnlyDictionary<AstNode, IReadOnlyScope> Scopes => scopes;
         public IReadOnlyDictionary<object, ISymbol> Symbols => symbols;
 
-        private Dictionary<AstNode, IReadOnlyScope> scopes = new();
-        private Dictionary<object, ISymbol> symbols = new();
+        private readonly Dictionary<AstNode, IReadOnlyScope> scopes = new();
+        private readonly Dictionary<object, ISymbol> symbols = new();
 
         public void Resolve(Statement program)
         {

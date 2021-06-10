@@ -10,10 +10,10 @@ namespace Yoakke.SourceGenerator.Common
     {
         protected GeneratorExecutionContext Context { get; private set; }
 
-        private string libraryName;
-        private Dictionary<string, INamedTypeSymbol> symbolCache;
+        private readonly string libraryName;
+        private readonly Dictionary<string, INamedTypeSymbol> symbolCache;
 
-        public GeneratorBase(string libraryName)
+        protected GeneratorBase(string libraryName)
         {
             this.libraryName = libraryName;
             this.symbolCache = new();

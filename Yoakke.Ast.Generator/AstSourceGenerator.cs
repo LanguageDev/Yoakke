@@ -273,8 +273,6 @@ namespace {surroundingNamespace} {{
             MetaNode node, 
             IReadOnlyDictionary<string, (INamedTypeSymbol Root, StringBuilder Content, INamedTypeSymbol ReturnType)> visitors)
         {
-            var readOnlyCollection = LoadSymbol(TypeNames.IReadOnlyCollectionG);
-
             // Get all visitor attributes on this node
             var visitorAttr = LoadSymbol(TypeNames.VisitorAttribute);
             var visitorAttrs = node.Symbol.GetAttributes()

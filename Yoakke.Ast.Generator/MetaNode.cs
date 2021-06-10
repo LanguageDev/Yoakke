@@ -22,7 +22,7 @@ namespace Yoakke.Ast.Generator
         private bool? implementEquality;
         public bool ImplementEquality
         {
-            get => implementEquality == null ? Parent == null ? false : Parent.ImplementEquality : implementEquality.Value;
+            get => implementEquality ?? Parent?.ImplementEquality ?? false;
             set => implementEquality = value; 
         }
 

@@ -40,7 +40,6 @@ print(fib(7));
             resolve.Resolve(ast);
             var runtime = new TreeEvaluator(resolve);
             runtime.Execute(ast);
-            //Console.WriteLine(new TreeEvaluator().Evaluate(result.Ok.Value));
         }
     }
 }

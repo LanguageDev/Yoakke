@@ -43,7 +43,6 @@ namespace Yoakke.Collections.Intervals
 
         public override bool Equals(object obj) => obj is Interval<T> iv && Equals(iv);
         public bool Equals(Interval<T> other) => Equals(other, Comparer<T>.Default);
-        public override int GetHashCode() => HashCode.Combine(Lower, Upper);
 
         /// <summary>
         /// Checks if this interval equals another one.
@@ -54,6 +53,8 @@ namespace Yoakke.Collections.Intervals
         public bool Equals(Interval<T> other, IComparer<T> comparer) =>
                Lower.CompareTo(other.Lower, comparer) == 0
             && Upper.CompareTo(other.Upper, comparer) == 0;
+
+        public override int GetHashCode() => HashCode.Combine(Lower, Upper);
 
         /// <summary>
         /// Checks if a value is inside this interval.
