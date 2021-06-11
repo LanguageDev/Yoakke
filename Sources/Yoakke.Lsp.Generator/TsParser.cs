@@ -22,7 +22,7 @@ namespace Yoakke.LSP.Generator
             IToken _1, IToken _2,
             IToken name,
             IToken _3, IReadOnlyList<NamespaceField> fields, IToken _4) =>
-            new NamespaceDef(name.Text, fields)
+            new(name.Text, fields)
             {
                 Docs = doc?.Text,
             };
@@ -33,7 +33,7 @@ namespace Yoakke.LSP.Generator
             IToken _1, IToken _2,
             IToken name, IToken _3,
             Token<TokenType> first, IReadOnlyList<(Token<TokenType>, Token<TokenType>)> rest, IToken _4) =>
-            new NamespaceDef(name.Text, rest.Select(r => r.Item2).Prepend(first).Select(StringLitToNamespaceField).ToArray())
+            new(name.Text, rest.Select(r => r.Item2).Prepend(first).Select(StringLitToNamespaceField).ToArray())
             {
                 Docs = doc?.Text,
             };
@@ -44,7 +44,7 @@ namespace Yoakke.LSP.Generator
             IToken? _1, IToken _2,
             IToken name, (IToken, IToken)? _3, IToken _4,
             Token<TokenType> value, IToken _5) =>
-            new NamespaceField(name.Text, MakeNamespaceValue(value))
+            new(name.Text, MakeNamespaceValue(value))
             {
                 Docs = doc?.Text,
             };
@@ -55,14 +55,14 @@ namespace Yoakke.LSP.Generator
             IToken _1, IToken _2,
             IToken name, (IToken, IToken, IReadOnlyList<(Token<TokenType>, Token<TokenType>)>)? extend,
             IToken _3, IReadOnlyList<InterfaceField> fields, IToken _4) =>
-            new InterfaceDef(name.Text, extend?.Item3?.Select(t => t.Item2.Text).Prepend(extend.Value.Item2.Text).ToArray() ?? Array.Empty<string>(), fields)
+            new(name.Text, extend?.Item3?.Select(t => t.Item2.Text).Prepend(extend.Value.Item2.Text).ToArray() ?? Array.Empty<string>(), fields)
             {
                 Docs = doc?.Text,
             };
 
         [Rule("i_field : DocComment? Ident '?'? ':' type ';'")]
         private static InterfaceField IField(IToken? doc, IToken name, IToken? opt, IToken _1, TypeNode type, IToken _2) =>
-            new InterfaceField(name.Text, opt != null, type)
+            new(name.Text, opt != null, type)
             {
                 Docs = doc?.Text,
             };

@@ -15,7 +15,7 @@ namespace Yoakke.Reporting.Present
         /// <summary>
         /// The default diagnostic style.
         /// </summary>
-        public static readonly DiagnosticStyle Default = new DiagnosticStyle();
+        public static readonly DiagnosticStyle Default = new();
 
         /// <summary>
         /// The color of different severities.

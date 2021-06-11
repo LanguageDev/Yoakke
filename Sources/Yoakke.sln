@@ -63,6 +63,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Text.Tests", "Yoakke
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BADE4D16-62B1-41F1-9BD7-31901BE84E33}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		ProjectBase.props = ProjectBase.props
 		Yoakke.ruleset = Yoakke.ruleset
 	EndProjectSection

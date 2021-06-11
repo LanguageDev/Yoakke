@@ -21,7 +21,7 @@ namespace Yoakke.Lsp.Server.Internal
 {
     internal class LspService : IHostedService, IDisposable
     {
-        private static readonly JsonRpcTargetOptions JsonRpcTargetOptions = new JsonRpcTargetOptions
+        private static readonly JsonRpcTargetOptions JsonRpcTargetOptions = new()
         {
             AllowNonPublicInvocation = true,
             UseSingleObjectParameterDeserialization = true,

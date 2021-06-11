@@ -15,7 +15,7 @@ namespace Yoakke.Reporting.Present
         /// <summary>
         /// The default syntax highlight style.
         /// </summary>
-        public static readonly SyntaxHighlightStyle Default = new SyntaxHighlightStyle();
+        public static readonly SyntaxHighlightStyle Default = new();
 
         /// <summary>
         /// The colors for the different token kinds.

@@ -12,11 +12,11 @@ namespace Yoakke.Reporting
     /// </summary>
     public readonly struct Severity : IEquatable<Severity>, IComparable<Severity>
     {
-        public static readonly Severity Note = new Severity("note", 0);
-        public static readonly Severity Help = new Severity("help", 1);
-        public static readonly Severity Warning = new Severity("warning", 2);
-        public static readonly Severity Error = new Severity("error", 3);
-        public static readonly Severity InternalError = new Severity("internal error", 4);
+        public static readonly Severity Note = new("note", 0);
+        public static readonly Severity Help = new("help", 1);
+        public static readonly Severity Warning = new("warning", 2);
+        public static readonly Severity Error = new("error", 3);
+        public static readonly Severity InternalError = new("internal error", 4);
 
         /// <summary>
         /// The name of the severity level.

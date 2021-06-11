@@ -15,7 +15,7 @@ namespace Yoakke.Collections.Intervals
     {
         public int Count => this.intervals.Count;
 
-        private readonly List<Interval<T>> intervals = new List<Interval<T>>();
+        private readonly List<Interval<T>> intervals = new();
         private readonly IComparer<T> comparer;
 
         /// <summary>

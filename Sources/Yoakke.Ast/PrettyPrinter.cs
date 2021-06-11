@@ -16,7 +16,7 @@ namespace Yoakke.Ast
         /// <summary>
         /// The settings to use for formatting XML.
         /// </summary>
-        public static readonly XmlWriterSettings XmlSettings = new XmlWriterSettings
+        public static readonly XmlWriterSettings XmlSettings = new()
         {
             Indent = true,
         };

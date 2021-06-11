@@ -9,6 +9,6 @@ namespace Yoakke.Collections.FiniteAutomata
     /// </summary>
     public struct Epsilon
     {
-        public static readonly Epsilon Default = new Epsilon();
+        public static readonly Epsilon Default = new();
     }
 }

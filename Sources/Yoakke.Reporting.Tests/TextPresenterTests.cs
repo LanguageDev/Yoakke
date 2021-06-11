@@ -13,7 +13,7 @@ namespace Yoakke.Reporting.Tests
     public class TextPresenterTests
     {
         private static Location Loc(ISourceFile source, int line, int column, int length) =>
-            new Location(source, new Range(new Position(line, column), length));
+            new(source, new Range(new Position(line, column), length));
 
         [TestMethod]
         public void BasicSingleAnnotation()

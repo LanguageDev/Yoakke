@@ -15,7 +15,7 @@ namespace Yoakke.Reporting.Present
         /// <summary>
         /// A default instance for the null syntax highlighter.
         /// </summary>
-        public static readonly NullSyntaxHighlighter Default = new NullSyntaxHighlighter();
+        public static readonly NullSyntaxHighlighter Default = new();
 
         public SyntaxHighlightStyle Style { get; set; } = SyntaxHighlightStyle.Default;
 

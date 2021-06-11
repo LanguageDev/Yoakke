@@ -63,12 +63,12 @@ namespace Yoakke.Text
         /// </summary>
         /// <param name="amount">The amount to advance in the current line.</param>
         /// <returns>The <see cref="Position"/> in the same line, advanced by columns.</returns>
-        public Position Advance(int amount = 1) => new Position(line: this.Line, column: this.Column + amount);
+        public Position Advance(int amount = 1) => new(line: this.Line, column: this.Column + amount);
 
         /// <summary>
         /// Creates a <see cref="Position"/> that points to the first character of the next line.
         /// </summary>
         /// <returns>A <see cref="Position"/> in the next line's first character.</returns>
-        public Position Newline() => new Position(line: this.Line + 1, column: 0);
+        public Position Newline() => new(line: this.Line + 1, column: 0);
     }
 }

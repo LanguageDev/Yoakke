@@ -18,13 +18,13 @@ namespace Yoakke.Collections.Intervals
         /// Constructs a new interval that represents all values included.
         /// </summary>
         /// <returns>The constructed interval.</returns>
-        public static Interval<T> Full() => new Interval<T>(LowerBound<T>.Unbounded(), UpperBound<T>.Unbounded());
+        public static Interval<T> Full() => new(LowerBound<T>.Unbounded(), UpperBound<T>.Unbounded());
 
         /// <summary>
         /// Constructs a new interval that contains the single value that was passed.
         /// </summary>
         /// <returns>The constructed interval.</returns>
-        public static Interval<T> Singleton(T value) => new Interval<T>(LowerBound<T>.Inclusive(value), UpperBound<T>.Inclusive(value));
+        public static Interval<T> Singleton(T value) => new(LowerBound<T>.Inclusive(value), UpperBound<T>.Inclusive(value));
 
         /// <summary>
         /// The lower bound of the interval.

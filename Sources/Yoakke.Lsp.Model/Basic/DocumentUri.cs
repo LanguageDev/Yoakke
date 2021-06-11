@@ -20,6 +20,6 @@ namespace Yoakke.Lsp.Model.Basic
 
         public bool Equals(DocumentUri other) => this.Value.Equals(other.Value);
 
-        public static implicit operator DocumentUri(string value) => new DocumentUri(value);
+        public static implicit operator DocumentUri(string value) => new(value);
     }
 }

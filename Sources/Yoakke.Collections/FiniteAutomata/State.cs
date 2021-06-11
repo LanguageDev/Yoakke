@@ -14,7 +14,7 @@ namespace Yoakke.Collections.FiniteAutomata
     /// </summary>
     public sealed class State : IEquatable<State>, IComparable<State>
     {
-        public static readonly State Invalid = new State(Enumerable.Empty<State>());
+        public static readonly State Invalid = new(Enumerable.Empty<State>());
 
         private readonly int[] indices;
 

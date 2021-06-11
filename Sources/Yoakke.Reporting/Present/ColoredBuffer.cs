@@ -26,7 +26,7 @@ namespace Yoakke.Reporting.Present
 
         public int CursorY { get; set; }
 
-        private readonly List<Line> lines = new List<Line>();
+        private readonly List<Line> lines = new();
 
         public void Clear()
         {

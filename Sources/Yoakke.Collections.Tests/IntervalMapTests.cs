@@ -16,7 +16,7 @@ namespace Yoakke.Collections.Tests
     {
         private class TestEqualityComparer : IEqualityComparer<KeyValuePair<Interval<int>, List<int>>>
         {
-            public static readonly TestEqualityComparer Default = new TestEqualityComparer();
+            public static readonly TestEqualityComparer Default = new();
 
             public bool Equals(KeyValuePair<Interval<int>, List<int>> x, KeyValuePair<Interval<int>, List<int>> y) =>
                 x.Key.Equals(y.Key) && x.Value.SequenceEqual(y.Value);
@@ -30,7 +30,7 @@ namespace Yoakke.Collections.Tests
         private static List<int> UnifyLists(List<int> l1, List<int> l2) => l1.Concat(l2).ToList();
 
         private static KeyValuePair<Interval<int>, List<int>> Kv(string iv, params int[] ints) =>
-            new KeyValuePair<Interval<int>, List<int>>(Iv(iv), ints.ToList());
+            new(Iv(iv), ints.ToList());
 
         private static List<KeyValuePair<Interval<int>, List<int>>> KvList(params KeyValuePair<Interval<int>, List<int>>[] kvs) =>
             kvs.ToList();

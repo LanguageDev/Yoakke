@@ -40,9 +40,9 @@ namespace Yoakke.Lsp.Model
         {
         }
 
-        public static implicit operator Either<T1, T2>(T1 value) => new Either<T1, T2>(value);
+        public static implicit operator Either<T1, T2>(T1 value) => new(value);
 
-        public static implicit operator Either<T1, T2>(T2 value) => new Either<T1, T2>(value);
+        public static implicit operator Either<T1, T2>(T2 value) => new(value);
     }
 
     [JsonConverter(typeof(EitherConverter))]
@@ -82,10 +82,10 @@ namespace Yoakke.Lsp.Model
         {
         }
 
-        public static implicit operator Either<T1, T2, T3>(T1 value) => new Either<T1, T2, T3>(value);
+        public static implicit operator Either<T1, T2, T3>(T1 value) => new(value);
 
-        public static implicit operator Either<T1, T2, T3>(T2 value) => new Either<T1, T2, T3>(value);
+        public static implicit operator Either<T1, T2, T3>(T2 value) => new(value);
 
-        public static implicit operator Either<T1, T2, T3>(T3 value) => new Either<T1, T2, T3>(value);
+        public static implicit operator Either<T1, T2, T3>(T3 value) => new(value);
     }
 }
