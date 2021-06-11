@@ -18,32 +18,32 @@ namespace Yoakke.Sample
                 this.symbolTable = symbolTable;
             }
 
-            public void Pass(Statement statement) => Visit(statement);
+            public void Pass(Statement statement) => this.Visit(statement);
 
             protected override void Visit(Statement statement)
             {
-                Scopes[statement] = symbolTable.CurrentScope;
+                this.Scopes[statement] = this.symbolTable.CurrentScope;
                 base.Visit(statement);
             }
 
             protected override void Visit(Expression expression)
             {
-                Scopes[expression] = symbolTable.CurrentScope;
+                this.Scopes[expression] = this.symbolTable.CurrentScope;
                 base.Visit(expression);
             }
 
             protected override void Visit(Statement.List list)
             {
-                symbolTable.PushScope(parent => new Scope<ScopeKind>(parent, ScopeKind.Local));
+                this.symbolTable.PushScope(parent => new Scope<ScopeKind>(parent, ScopeKind.Local));
                 base.Visit(list);
-                symbolTable.PopScope();
+                this.symbolTable.PopScope();
             }
 
             protected override void Visit(Statement.Func list)
             {
-                symbolTable.PushScope(parent => new Scope<ScopeKind>(parent, ScopeKind.Function));
+                this.symbolTable.PushScope(parent => new Scope<ScopeKind>(parent, ScopeKind.Function));
                 base.Visit(list);
-                symbolTable.PopScope();
+                this.symbolTable.PopScope();
             }
         }
 
@@ -63,13 +63,13 @@ namespace Yoakke.Sample
 
             protected override void Visit(Statement.Func func)
             {
-                var scope = scopes[func];
+                var scope = this.scopes[func];
                 if (scope.Symbols.ContainsKey(func.Name))
                 {
                     throw new InvalidOperationException($"{func.Name} already defined in scope");
                 }
                 var symbol = new ConstSymbol(scope, func.Name, func);
-                Symbols[func] = symbol;
+                this.Symbols[func] = symbol;
                 scope.DefineSymbol(symbol);
                 base.Visit(func);
             }
@@ -91,28 +91,28 @@ namespace Yoakke.Sample
 
             protected override void Visit(Statement.Var var)
             {
-                var scope = scopes[var];
+                var scope = this.scopes[var];
                 var symbol = new VarSymbol(scope, var.Name);
                 scope.DefineSymbol(symbol);
-                Symbols[var] = symbol;
+                this.Symbols[var] = symbol;
                 base.Visit(var);
             }
 
             protected override void Visit(Statement.Func func)
             {
-                var innerScope = scopes[func.Body];
+                var innerScope = this.scopes[func.Body];
                 foreach (var param in func.Parameters)
                 {
                     var symbol = new VarSymbol(innerScope, param);
                     innerScope.DefineSymbol(symbol);
-                    Symbols[(func, param)] = symbol;
+                    this.Symbols[(func, param)] = symbol;
                 }
                 Visit(func.Body);
             }
 
             protected override void Visit(Expression.Ident ident)
             {
-                var scope = scopes[ident];
+                var scope = this.scopes[ident];
                 var symbol = scope.ReferenceSymbol(ident.Name);
                 if (symbol == null)
                 {
@@ -128,29 +128,29 @@ namespace Yoakke.Sample
                         throw new InvalidOperationException($"variable {ident.Name} is not global or function-local");
                     }
                 }
-                Symbols[ident] = symbol;
+                this.Symbols[ident] = symbol;
             }
         }
 
         public SymbolTable SymbolTable { get; private set; } = new SymbolTable(new Scope<ScopeKind>(ScopeKind.Global));
-        public IReadOnlyDictionary<AstNode, IReadOnlyScope> Scopes => scopes;
-        public IReadOnlyDictionary<object, ISymbol> Symbols => symbols;
+        public IReadOnlyDictionary<AstNode, IReadOnlyScope> Scopes => this.scopes;
+        public IReadOnlyDictionary<object, ISymbol> Symbols => this.symbols;
 
         private readonly Dictionary<AstNode, IReadOnlyScope> scopes = new();
         private readonly Dictionary<object, ISymbol> symbols = new();
 
         public void Resolve(Statement program)
         {
-            var pass1 = new ScopePass(SymbolTable);
+            var pass1 = new ScopePass(this.SymbolTable);
             pass1.Pass(program);
             var pass2 = new ConstPass(pass1.Scopes);
             pass2.Pass(program);
             var pass3 = new VarPass(pass1.Scopes);
             pass3.Pass(program);
 
-            foreach (var (k, v) in pass1.Scopes) scopes[k] = v;
-            foreach (var (k, v) in pass2.Symbols) symbols[k] = v;
-            foreach (var (k, v) in pass3.Symbols) symbols[k] = v;
+            foreach (var (k, v) in pass1.Scopes) this.scopes[k] = v;
+            foreach (var (k, v) in pass2.Symbols) this.symbols[k] = v;
+            foreach (var (k, v) in pass3.Symbols) this.symbols[k] = v;
         }
     }
 }

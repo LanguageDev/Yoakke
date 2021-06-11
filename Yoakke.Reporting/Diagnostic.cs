@@ -27,44 +27,44 @@ namespace Yoakke.Reporting
 
         public Diagnostic WithSeverity(Severity severity)
         {
-            Severity = severity;
+            this.Severity = severity;
             return this;
         }
 
         public Diagnostic WithCode(string code)
         {
-            Code = code;
+            this.Code = code;
             return this;
         }
 
         public Diagnostic WithMessage(string message)
         {
-            Message = message;
+            this.Message = message;
             return this;
         }
 
         public Diagnostic WithInfo(IDiagnosticInfo info)
         {
-            Information.Add(info);
+            this.Information.Add(info);
             return this;
         }
 
         public Diagnostic WithSourceInfo(Location location, Severity severity, string message) =>
-            WithInfo(new SourceDiagnosticInfo { Location = location, Severity = severity, Message = message });
+            this.WithInfo(new SourceDiagnosticInfo { Location = location, Severity = severity, Message = message });
 
         public Diagnostic WithSourceInfo(Location location, Severity severity) =>
-            WithInfo(new SourceDiagnosticInfo { Location = location, Severity = severity });
+            this.WithInfo(new SourceDiagnosticInfo { Location = location, Severity = severity });
 
         public Diagnostic WithSourceInfo(Location location, string message) =>
-            WithInfo(new SourceDiagnosticInfo { Location = location, Message = message });
+            this.WithInfo(new SourceDiagnosticInfo { Location = location, Message = message });
 
         public Diagnostic WithSourceInfo(Location location) =>
-            WithInfo(new SourceDiagnosticInfo { Location = location });
+            this.WithInfo(new SourceDiagnosticInfo { Location = location });
 
         public Diagnostic WithFootnoteInfo(Severity severity, string footnote) =>
-            WithInfo(new FootnoteDiagnosticInfo { Severity = severity, Message = footnote });
+            this.WithInfo(new FootnoteDiagnosticInfo { Severity = severity, Message = footnote });
 
         public Diagnostic WithFootnoteInfo(string footnote) =>
-            WithInfo(new FootnoteDiagnosticInfo { Message = footnote });
+            this.WithInfo(new FootnoteDiagnosticInfo { Message = footnote });
     }
 }

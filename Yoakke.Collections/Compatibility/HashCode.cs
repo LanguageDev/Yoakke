@@ -16,13 +16,13 @@ namespace Yoakke.Collections.Compatibility
         {
             if (obj is null)
             {
-                code = CombineHashCodes(code, 0);
+                this.code = CombineHashCodes(this.code, 0);
                 return;
             }
-            code = CombineHashCodes(code, obj.GetHashCode());
+            this.code = CombineHashCodes(this.code, obj.GetHashCode());
         }
 
-        public int ToHashCode() => code;
+        public int ToHashCode() => this.code;
 
         private static int CombineHashCodes(int code1, int code2)
         {

@@ -26,10 +26,10 @@ namespace Yoakke.Parser.Generator
 
         public Rule(string name, BnfAst ast, bool publicApi = true)
         {
-            Name = name;
-            Ast = ast;
-            PublicApi = publicApi;
-            VisualName = name;
+            this.Name = name;
+            this.Ast = ast;
+            this.PublicApi = publicApi;
+            this.VisualName = name;
         }
     }
 }

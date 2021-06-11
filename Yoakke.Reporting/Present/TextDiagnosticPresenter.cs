@@ -45,18 +45,18 @@ namespace Yoakke.Reporting.Present
         /// <param name="writer">The writer to write to.</param>
         public TextDiagnosticPresenter(TextWriter writer)
         {
-            Writer = writer;
-            buffer = new ColoredBuffer();
+            this.Writer = writer;
+            this.buffer = new ColoredBuffer();
         }
 
         public void Present(Diagnostic diagnostic)
         {
             // Clear the buffer
-            buffer.Clear();
+            this.buffer.Clear();
 
             // Write the head
             // error[CS123]: Some message
-            WriteDiagnosticHead(diagnostic);
+            this.WriteDiagnosticHead(diagnostic);
 
             // Collect out source information grouped by the files and ordered by their positions
             var sourceInfo = diagnostic.Information
@@ -64,14 +64,14 @@ namespace Yoakke.Reporting.Present
                 .OrderBy(si => si.Location.Range.Start)
                 .GroupBy(si => si.Location.File);
             // Print the groups
-            foreach (var info in sourceInfo) WriteSourceGroup(info);
+            foreach (var info in sourceInfo) this.WriteSourceGroup(info);
 
             // Finally print the footnores
             var footnotes = diagnostic.Information.OfType<FootnoteDiagnosticInfo>();
-            foreach (var footnote in footnotes) WriteFootnote(footnote);
+            foreach (var footnote in footnotes) this.WriteFootnote(footnote);
 
             // Dump results to the buffer
-            buffer.OutputTo(Writer);
+            this.buffer.OutputTo(this.Writer);
         }
 
         // Format is
@@ -80,22 +80,22 @@ namespace Yoakke.Reporting.Present
         {
             if (diagnostic.Severity != null)
             {
-                buffer.ForegroundColor = Style.GetSeverityColor(diagnostic.Severity.Value);
-                buffer.Write(diagnostic.Severity.Value.Name);
+                this.buffer.ForegroundColor = this.Style.GetSeverityColor(diagnostic.Severity.Value);
+                this.buffer.Write(diagnostic.Severity.Value.Name);
             }
             if (diagnostic.Code != null)
             {
-                if (diagnostic.Severity != null) buffer.Write('[');
-                buffer.Write(diagnostic.Code);
-                if (diagnostic.Severity != null) buffer.Write(']');
-                if (diagnostic.Message != null) buffer.Write(": ");
+                if (diagnostic.Severity != null) this.buffer.Write('[');
+                this.buffer.Write(diagnostic.Code);
+                if (diagnostic.Severity != null) this.buffer.Write(']');
+                if (diagnostic.Message != null) this.buffer.Write(": ");
             }
             if (diagnostic.Message != null)
             {
-                buffer.ForegroundColor = Style.DefaultColor;
-                buffer.Write(diagnostic.Message);
+                this.buffer.ForegroundColor = this.Style.DefaultColor;
+                this.buffer.Write(diagnostic.Message);
             }
-            if (diagnostic.Severity != null || diagnostic.Code != null || diagnostic.Message != null) buffer.WriteLine();
+            if (diagnostic.Severity != null || diagnostic.Code != null || diagnostic.Message != null) this.buffer.WriteLine();
         }
 
         private void WriteSourceGroup(IEnumerable<SourceDiagnosticInfo> infos)
@@ -111,21 +111,21 @@ namespace Yoakke.Reporting.Present
                 ?? infos.First();
 
             // Generate all line primitives
-            var linePrimitives = CollectLinePrimitives(infos).ToList();
+            var linePrimitives = this.CollectLinePrimitives(infos).ToList();
             // Find the largest line index printed
             var maxLineIndex = linePrimitives.OfType<SourceLine>().Select(l => l.Line).Max();
             // Create a padding to fit all line numbers from the largest of the group
             var lineNumberPadding = new string(' ', (maxLineIndex + 1).ToString().Length);
 
             // Print the ┌─ <file name>
-            buffer.ForegroundColor = Style.DefaultColor;
-            buffer.Write($"{lineNumberPadding} ┌─ {sourceFile.Path}");
+            this.buffer.ForegroundColor = this.Style.DefaultColor;
+            this.buffer.Write($"{lineNumberPadding} ┌─ {sourceFile.Path}");
             // If there is a primary info, write the line and column
-            if (primaryInfo != null) buffer.Write($":{primaryInfo.Location.Range.Start.Line + 1}:{primaryInfo.Location.Range.Start.Column + 1}");
-            buffer.WriteLine();
+            if (primaryInfo != null) this.buffer.Write($":{primaryInfo.Location.Range.Start.Line + 1}:{primaryInfo.Location.Range.Start.Column + 1}");
+            this.buffer.WriteLine();
 
             // Write a single separator line
-            buffer.WriteLine($"{lineNumberPadding} │");
+            this.buffer.WriteLine($"{lineNumberPadding} │");
 
             // Now print all the line primitives
             foreach (var line in linePrimitives)
@@ -133,50 +133,50 @@ namespace Yoakke.Reporting.Present
                 switch (line)
                 {
                 case SourceLine sourceLine:
-                    buffer.ForegroundColor = Style.LineNumberColor;
-                    buffer.Write((sourceLine.Line + 1).ToString().PadLeft(lineNumberPadding.Length, Style.LineNumberPadding));
-                    buffer.ForegroundColor = Style.DefaultColor;
-                    buffer.Write(" │ ");
-                    WriteSourceLine(sourceLine);
-                    buffer.WriteLine();
+                    this.buffer.ForegroundColor = this.Style.LineNumberColor;
+                    this.buffer.Write((sourceLine.Line + 1).ToString().PadLeft(lineNumberPadding.Length, this.Style.LineNumberPadding));
+                    this.buffer.ForegroundColor = this.Style.DefaultColor;
+                    this.buffer.Write(" │ ");
+                    this.WriteSourceLine(sourceLine);
+                    this.buffer.WriteLine();
                     break;
 
                 case AnnotationLine annotation:
-                    WriteAnnotationLine(annotation, $"{lineNumberPadding} │ ");
+                    this.WriteAnnotationLine(annotation, $"{lineNumberPadding} │ ");
                     break;
 
                 case DotLine dotLine:
-                    buffer.ForegroundColor = Style.DefaultColor;
-                    buffer.WriteLine($"{lineNumberPadding} │ ...");
+                    this.buffer.ForegroundColor = this.Style.DefaultColor;
+                    this.buffer.WriteLine($"{lineNumberPadding} │ ...");
                     break;
                 }
             }
 
             // Write a single separator line
-            buffer.WriteLine($"{lineNumberPadding} │");
+            this.buffer.WriteLine($"{lineNumberPadding} │");
         }
 
         private void WriteFootnote(FootnoteDiagnosticInfo info)
         {
-            buffer.ForegroundColor = Style.DefaultColor;
-            if (info.Message != null) buffer.WriteLine(info.Message);
+            this.buffer.ForegroundColor = this.Style.DefaultColor;
+            if (info.Message != null) this.buffer.WriteLine(info.Message);
         }
 
         private void WriteSourceLine(SourceLine line)
         {
-            var xOffset = buffer.CursorX;
+            var xOffset = this.buffer.CursorX;
             // First print the source line with the default color
-            buffer.ForegroundColor = SyntaxHighlighter.Style.DefaultColor;
+            this.buffer.ForegroundColor = this.SyntaxHighlighter.Style.DefaultColor;
             var lineText = line.Source!.GetLine(line.Line);
             var lineCur = 0;
             foreach (var ch in lineText)
             {
                 if (ch == '\r' || ch == '\n') break;
-                if (AdvanceCursor(ref lineCur, ch)) buffer.Write(ch);
-                buffer.CursorX = xOffset + lineCur;
+                if (this.AdvanceCursor(ref lineCur, ch)) this.buffer.Write(ch);
+                this.buffer.CursorX = xOffset + lineCur;
             }
             // Get the syntax highlight info
-            var coloredTokens = SyntaxHighlighter.GetHighlightingForLine(line.Source, line.Line)
+            var coloredTokens = this.SyntaxHighlighter.GetHighlightingForLine(line.Source, line.Line)
                 .OrderBy(info => info.Start)
                 .ToList();
             if (coloredTokens.Count > 0)
@@ -187,14 +187,14 @@ namespace Yoakke.Reporting.Present
                 foreach (var token in coloredTokens)
                 {
                     // Walk there until the next token
-                    for (; charIndex < token.Start; AdvanceCursor(ref lineCur, lineText[charIndex++])) ;
+                    for (; charIndex < token.Start; this.AdvanceCursor(ref lineCur, lineText[charIndex++])) ;
                     // Go through the token
                     var tokenStart = lineCur;
-                    for (; charIndex < token.Start + token.Length; AdvanceCursor(ref lineCur, lineText[charIndex++])) ;
+                    for (; charIndex < token.Start + token.Length; this.AdvanceCursor(ref lineCur, lineText[charIndex++])) ;
                     var tokenEnd = lineCur;
                     // Recolor it
-                    buffer.ForegroundColor = SyntaxHighlighter.Style.GetTokenColor(token.Kind);
-                    buffer.Recolor(xOffset + tokenStart, buffer.CursorY, tokenEnd - tokenStart, 1);
+                    this.buffer.ForegroundColor = this.SyntaxHighlighter.Style.GetTokenColor(token.Kind);
+                    this.buffer.Recolor(xOffset + tokenStart, this.buffer.CursorY, tokenEnd - tokenStart, 1);
                 }
             }
         }
@@ -209,8 +209,8 @@ namespace Yoakke.Reporting.Present
             // Now we draw the arrows to their correct places under the annotated line
             // Also collect physical column positions to extend the arrows
             var arrowHeadColumns = new List<(int Column, SourceDiagnosticInfo Info)>();
-            buffer.ForegroundColor = Style.DefaultColor;
-            buffer.Write(prefix);
+            this.buffer.ForegroundColor = this.Style.DefaultColor;
+            this.buffer.Write(prefix);
             var lineCur = 0;
             var charIdx = 0;
             foreach (var annot in annotationsOrdered)
@@ -221,7 +221,7 @@ namespace Yoakke.Reporting.Present
                     if (charIdx < lineText.Length)
                     {
                         // Still in range of the line
-                        AdvanceCursor(ref lineCur, lineText[charIdx]);
+                        this.AdvanceCursor(ref lineCur, lineText[charIdx]);
                     }
                     else
                     {
@@ -229,64 +229,64 @@ namespace Yoakke.Reporting.Present
                         lineCur += 1;
                     }
                 }
-                buffer.CursorX = prefix.Length + lineCur;
+                this.buffer.CursorX = prefix.Length + lineCur;
                 // Now we are inside the span
                 var arrowHead = annot.Severity != null ? '^' : '-';
-                var startColumn = buffer.CursorX;
+                var startColumn = this.buffer.CursorX;
                 arrowHeadColumns.Add((startColumn, annot));
-                if (annot.Severity != null) buffer.ForegroundColor = Style.GetSeverityColor(annot.Severity.Value);
+                if (annot.Severity != null) this.buffer.ForegroundColor = this.Style.GetSeverityColor(annot.Severity.Value);
                 for (; charIdx < annot.Location.Range.End.Column; ++charIdx)
                 {
                     if (charIdx < lineText.Length)
                     {
                         // Still in range of the line
                         var oldOffset = lineCur;
-                        AdvanceCursor(ref lineCur, lineText[charIdx]);
+                        this.AdvanceCursor(ref lineCur, lineText[charIdx]);
                         // Fill with arrow head
-                        buffer.Fill(prefix.Length + oldOffset, buffer.CursorY, lineCur - oldOffset, 1, arrowHead);
-                        buffer.CursorX = prefix.Length + lineCur;
+                        this.buffer.Fill(prefix.Length + oldOffset, this.buffer.CursorY, lineCur - oldOffset, 1, arrowHead);
+                        this.buffer.CursorX = prefix.Length + lineCur;
                     }
                     else
                     {
                         // After the line
-                        buffer.Write(arrowHead);
+                        this.buffer.Write(arrowHead);
                     }
                 }
-                var endColumn = buffer.CursorX;
+                var endColumn = this.buffer.CursorX;
                 // Recolor the source line too
-                if (annot.Severity != null) buffer.Recolor(startColumn, buffer.CursorY - 1, endColumn - startColumn, 1);
+                if (annot.Severity != null) this.buffer.Recolor(startColumn, this.buffer.CursorY - 1, endColumn - startColumn, 1);
             }
             // Now we are done with arrows in the line, it's time to do the arrow bodies downwards
             // The first one will have N, the last 0 length bodies, decreasing by one
             // The last one just has the message inline
             {
                 var lastAnnot = annotationsOrdered.Last();
-                if (lastAnnot.Message != null) buffer.Write($" {lastAnnot.Message}");
-                buffer.WriteLine();
+                if (lastAnnot.Message != null) this.buffer.Write($" {lastAnnot.Message}");
+                this.buffer.WriteLine();
             }
             // From now on all previous ones will be one longer than the ones later
-            int arrowBaseLine = buffer.CursorY;
+            int arrowBaseLine = this.buffer.CursorY;
             int arrowBodyLength = 0;
             // We only consider annotations with messages
             foreach (var (col, annot) in arrowHeadColumns.SkipLast(1).Reverse().Where(a => a.Info.Message != null))
             {
-                if (annot.Severity != null) buffer.ForegroundColor = Style.GetSeverityColor(annot.Severity.Value);
+                if (annot.Severity != null) this.buffer.ForegroundColor = this.Style.GetSeverityColor(annot.Severity.Value);
                 // Draw the arrow
-                buffer.Fill(col, arrowBaseLine, 1, arrowBodyLength, '│');
-                buffer.Plot(col, arrowBaseLine + arrowBodyLength, '└');
+                this.buffer.Fill(col, arrowBaseLine, 1, arrowBodyLength, '│');
+                this.buffer.Plot(col, arrowBaseLine + arrowBodyLength, '└');
                 arrowBodyLength += 1;
                 // Append the message
-                buffer.Write($" {annot.Message}");
-                if (annot.Severity != null) buffer.ForegroundColor = Style.DefaultColor;
+                this.buffer.Write($" {annot.Message}");
+                if (annot.Severity != null) this.buffer.ForegroundColor = this.Style.DefaultColor;
             }
             // Fill the in between lines with the prefix
             for (int i = 0; i < arrowBodyLength; ++i)
             {
-                buffer.WriteAt(0, arrowBaseLine + i, prefix);
+                this.buffer.WriteAt(0, arrowBaseLine + i, prefix);
             }
             // Reset cursor position
-            buffer.CursorX = 0;
-            buffer.CursorY = arrowBaseLine + arrowBodyLength;
+            this.buffer.CursorX = 0;
+            this.buffer.CursorY = arrowBaseLine + arrowBodyLength;
         }
 
         private IEnumerable<LinePrimitive> CollectLinePrimitives(IEnumerable<SourceDiagnosticInfo> infos)
@@ -302,8 +302,8 @@ namespace Yoakke.Reporting.Present
                 var infoGroup = groupedInfos[j];
                 // First we determine the range we need to print for this info
                 var currentLineIndex = infoGroup.Key;
-                var minLineIndex = Math.Max(lastLineIndex ?? 0, currentLineIndex - Style.SurroundingLines);
-                var maxLineIndex = Math.Min(sourceFile.LineCount, currentLineIndex + Style.SurroundingLines + 1);
+                var minLineIndex = Math.Max(lastLineIndex ?? 0, currentLineIndex - this.Style.SurroundingLines);
+                var maxLineIndex = Math.Min(sourceFile.LineCount, currentLineIndex + this.Style.SurroundingLines + 1);
                 if (j < groupedInfos.Count - 1)
                 {
                     // There's a chance we step over to the next annotation
@@ -314,7 +314,7 @@ namespace Yoakke.Reporting.Present
                 if (lastLineIndex != null)
                 {
                     var difference = minLineIndex - lastLineIndex.Value;
-                    if (difference <= Style.ConnectUpLines)
+                    if (difference <= this.Style.ConnectUpLines)
                     {
                         // Difference is negligible, connect them up, no reason to dot it out
                         for (int i = 0; i < difference; ++i)
@@ -343,7 +343,7 @@ namespace Yoakke.Reporting.Present
         {
             if (ch == '\t')
             {
-                pos += Style.TabSize - pos % Style.TabSize;
+                pos += this.Style.TabSize - pos % this.Style.TabSize;
                 return false;
             }
             else if (!char.IsControl(ch))

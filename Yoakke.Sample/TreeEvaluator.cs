@@ -13,7 +13,7 @@ namespace Yoakke.Sample
 
             public Return(object? value)
             {
-                Value = value;
+                this.Value = value;
             }
         }
 
@@ -38,7 +38,7 @@ namespace Yoakke.Sample
 
         protected override void Visit(Statement.Var vars)
         {
-            var symbol = symbolResolution.Symbols[vars];
+            var symbol = this.symbolResolution.Symbols[vars];
             Bind(symbol, Visit(vars.Value));
         }
 
@@ -73,11 +73,11 @@ namespace Yoakke.Sample
                 }
                 // Push frame
                 var frame = new StackFrame();
-                callStack.Push(frame);
+                this.callStack.Push(frame);
                 // Bind arguments
                 foreach (var (name, value) in langFunc.Parameters.Zip(args))
                 {
-                    var symbol = symbolResolution.Symbols[(langFunc, name)];
+                    var symbol = this.symbolResolution.Symbols[(langFunc, name)];
                     frame.Values[symbol] = value;
                 }
                 // Evaluate, return value
@@ -91,7 +91,7 @@ namespace Yoakke.Sample
                     returnValue = ret.Value;
                 }
                 // Pop frame
-                callStack.Pop();
+                this.callStack.Pop();
                 return returnValue;
             }
             else if (func is Func<object[], object> nativeFunc)
@@ -142,12 +142,12 @@ namespace Yoakke.Sample
 
         protected override object? Visit(Expression.Ident ident)
         {
-            var symbol = symbolResolution.Symbols[ident];
+            var symbol = this.symbolResolution.Symbols[ident];
             if (symbol is VarSymbol)
             {
                 // Variable
-                if (callStack.TryPeek(out var top) && top.Values.TryGetValue(symbol, out var value)) return value;
-                return globalFrame.Values[symbol];
+                if (this.callStack.TryPeek(out var top) && top.Values.TryGetValue(symbol, out var value)) return value;
+                return this.globalFrame.Values[symbol];
             }
             else
             {
@@ -163,13 +163,13 @@ namespace Yoakke.Sample
 
         private object Bind(ISymbol symbol, object value)
         {
-            if (callStack.TryPeek(out var top))
+            if (this.callStack.TryPeek(out var top))
             {
                 return top.Values[symbol] = value;
             }
             else
             {
-                return globalFrame.Values[symbol] = value;
+                return this.globalFrame.Values[symbol] = value;
             }
         }
 

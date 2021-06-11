@@ -21,24 +21,24 @@ namespace Yoakke.Collections.RegEx
 
             public Alt(RegExAst first, RegExAst second)
             {
-                First = first;
-                Second = second;
+                this.First = first;
+                this.Second = second;
             }
 
             public override bool Equals(RegExAst other) => other is Alt alt
-                && First.Equals(alt.First)
-                && Second.Equals(alt.Second);
-            public override int GetHashCode() => HashCode.Combine(First, Second);
+                && this.First.Equals(alt.First)
+                && this.Second.Equals(alt.Second);
+            public override int GetHashCode() => HashCode.Combine(this.First, this.Second);
 
-            public override RegExAst Desugar() => new Alt(First.Desugar(), Second.Desugar());
+            public override RegExAst Desugar() => new Alt(this.First.Desugar(), this.Second.Desugar());
 
             public override (State Start, State End) ThompsonConstruct(DenseNfa<char> denseNfa)
             {
                 var newStart = denseNfa.NewState();
                 var newEnd = denseNfa.NewState();
 
-                var (firstStart, firstEnd) = First.ThompsonConstruct(denseNfa);
-                var (secondStart, secondEnd) = Second.ThompsonConstruct(denseNfa);
+                var (firstStart, firstEnd) = this.First.ThompsonConstruct(denseNfa);
+                var (secondStart, secondEnd) = this.Second.ThompsonConstruct(denseNfa);
 
                 denseNfa.AddTransition(newStart, Epsilon.Default, firstStart);
                 denseNfa.AddTransition(newStart, Epsilon.Default, secondStart);

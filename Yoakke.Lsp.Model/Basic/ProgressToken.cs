@@ -9,15 +9,15 @@ namespace Yoakke.Lsp.Model.Basic
     {
         public readonly object Value;
 
-        public bool IsString => Value is string;
-        public bool IsInt => Value is int;
+        public bool IsString => this.Value is string;
+        public bool IsInt => this.Value is int;
 
-        public string AsString => (string)Value;
-        public int AsInt => (int)Value;
+        public string AsString => (string)this.Value;
+        public int AsInt => (int)this.Value;
 
         private ProgressToken(object value)
         {
-            Value = value;
+            this.Value = value;
         }
 
         public ProgressToken(string value)
@@ -30,7 +30,7 @@ namespace Yoakke.Lsp.Model.Basic
         {
         }
 
-        public bool Equals(ProgressToken other) => Value.Equals(other.Value);
+        public bool Equals(ProgressToken other) => this.Value.Equals(other.Value);
 
         public static implicit operator ProgressToken(string value) => new ProgressToken(value);
         public static implicit operator ProgressToken(int value) => new ProgressToken(value);

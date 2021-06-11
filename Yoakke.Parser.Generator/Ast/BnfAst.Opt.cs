@@ -14,17 +14,17 @@
 
             public Opt(BnfAst subexpr)
             {
-                Subexpr = subexpr;
+                this.Subexpr = subexpr;
             }
 
             public override bool Equals(BnfAst other) => other is Opt opt
-                && Subexpr.Equals(opt.Subexpr);
-            public override int GetHashCode() => Subexpr.GetHashCode();
+                && this.Subexpr.Equals(opt.Subexpr);
+            public override int GetHashCode() => this.Subexpr.GetHashCode();
 
-            public override BnfAst Desugar() => new Opt(Subexpr.Desugar());
+            public override BnfAst Desugar() => new Opt(this.Subexpr.Desugar());
 
             public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens) =>
-                $"{Subexpr.GetParsedType(ruleSet, tokens)}?";
+                $"{this.Subexpr.GetParsedType(ruleSet, tokens)}?";
         }
     }
 }

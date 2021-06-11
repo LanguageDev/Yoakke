@@ -28,13 +28,13 @@ namespace Yoakke.Collections.FiniteAutomata
         }
 
         public State InitalState { get; set; } = State.Invalid;
-        IEnumerable<State> IFiniteAutomata<TSymbol>.AcceptingStates => AcceptingStates;
+        IEnumerable<State> IFiniteAutomata<TSymbol>.AcceptingStates => this.AcceptingStates;
         public ISet<State> AcceptingStates { get; } = new HashSet<State>();
-        public IEnumerable<State> States => transitions.Keys
-            .Concat(transitions.Values.SelectMany(t => t.Values.SelectMany(v => v)))
-            .Concat(epsilon.Keys)
-            .Concat(epsilon.Values.SelectMany(v => v))
-            .Append(InitalState)
+        public IEnumerable<State> States => this.transitions.Keys
+            .Concat(this.transitions.Values.SelectMany(t => t.Values.SelectMany(v => v)))
+            .Concat(this.epsilon.Keys)
+            .Concat(this.epsilon.Values.SelectMany(v => v))
+            .Append(this.InitalState)
             .Distinct();
 
         private readonly Dictionary<State, IntervalMap<TSymbol, ISet<State>>> transitions;
@@ -56,21 +56,21 @@ namespace Yoakke.Collections.FiniteAutomata
         /// <param name="comparer">The comparer to use.</param>
         public DenseNfa(IComparer<TSymbol> comparer)
         {
-            transitions = new Dictionary<State, IntervalMap<TSymbol, ISet<State>>>();
-            epsilon = new Dictionary<State, HashSet<State>>();
+            this.transitions = new Dictionary<State, IntervalMap<TSymbol, ISet<State>>>();
+            this.epsilon = new Dictionary<State, HashSet<State>>();
             this.comparer = comparer;
         }
 
-        public bool IsAccepting(State state) => AcceptingStates.Contains(state);
+        public bool IsAccepting(State state) => this.AcceptingStates.Contains(state);
 
         public IEnumerable<State> GetTransitions(State from, TSymbol on)
         {
-            var fromClosure = EpsilonClosure(from);
+            var fromClosure = this.EpsilonClosure(from);
             return fromClosure.SelectMany(f =>
             {
-                if (transitions.TryGetValue(f, out var map))
+                if (this.transitions.TryGetValue(f, out var map))
                 {
-                    if (map.TryGetValue(on, out var to)) return to.SelectMany(EpsilonClosure);
+                    if (map.TryGetValue(on, out var to)) return to.SelectMany(this.EpsilonClosure);
                 }
                 return Enumerable.Empty<State>();
             });
@@ -87,7 +87,7 @@ namespace Yoakke.Collections.FiniteAutomata
             {
                 yield return top!;
 
-                if (epsilon.TryGetValue(top!, out var states))
+                if (this.epsilon.TryGetValue(top!, out var states))
                 {
                     foreach (var s in states)
                     {
@@ -97,7 +97,7 @@ namespace Yoakke.Collections.FiniteAutomata
             }
         }
 
-        IDeterministicFiniteAutomata<TSymbol> INondeterministicFiniteAutomata<TSymbol>.Determinize() => Determinize();
+        IDeterministicFiniteAutomata<TSymbol> INondeterministicFiniteAutomata<TSymbol>.Determinize() => this.Determinize();
 
         public DenseDfa<TSymbol> Determinize()
         {
@@ -107,13 +107,13 @@ namespace Yoakke.Collections.FiniteAutomata
 
             // Deal with the initial state
             {
-                var initialStates = EpsilonClosure(InitalState);
+                var initialStates = this.EpsilonClosure(this.InitalState);
                 dfa.InitalState = new State(initialStates);
                 var nfaStates = new SortedSet<State>(initialStates);
                 stateMap.Add(nfaStates, dfa.InitalState);
                 stk.Push((nfaStates, dfa.InitalState));
                 // If is an accepting, register it as so
-                if (nfaStates.Any(IsAccepting)) dfa.AcceptingStates.Add(dfa.InitalState);
+                if (nfaStates.Any(this.IsAccepting)) dfa.AcceptingStates.Add(dfa.InitalState);
             }
             while (stk.TryPop(out var top))
             {
@@ -124,11 +124,11 @@ namespace Yoakke.Collections.FiniteAutomata
 
                 foreach (var nfaState in nfaStates)
                 {
-                    if (transitions.TryGetValue(nfaState, out var trs))
+                    if (this.transitions.TryGetValue(nfaState, out var trs))
                     {
                         foreach (var (iv, destStates) in trs)
                         {
-                            var ds = new SortedSet<State>(destStates.SelectMany(EpsilonClosure));
+                            var ds = new SortedSet<State>(destStates.SelectMany(this.EpsilonClosure));
                             resultingTransitions.AddAndUpdate(iv, ds, (existing, added) => new SortedSet<State>(existing.Concat(added)));
                         }
                     }
@@ -144,7 +144,7 @@ namespace Yoakke.Collections.FiniteAutomata
                         stateMap.Add(to, dfaTo);
                         stk.Push((to, dfaTo));
                         // If it's accepting, register it as so
-                        if (to.Any(IsAccepting)) dfa.AcceptingStates.Add(dfaTo);
+                        if (to.Any(this.IsAccepting)) dfa.AcceptingStates.Add(dfaTo);
                     }
                     dfa.AddTransition(dfaState, on, dfaTo);
                 }
@@ -158,14 +158,14 @@ namespace Yoakke.Collections.FiniteAutomata
             sb.AppendLine("digraph DenseNfa {");
             // Initial
             sb.AppendLine("    blank_node [label=\"\", shape=none, width=0, height=0];");
-            sb.AppendLine($"    blank_node -> {InitalState};");
+            sb.AppendLine($"    blank_node -> {this.InitalState};");
             // Accepting
-            foreach (var state in AcceptingStates)
+            foreach (var state in this.AcceptingStates)
             {
                 sb.AppendLine($"    {state} [peripheries=2];");
             }
             // Transitions
-            foreach (var (from, onMap) in transitions)
+            foreach (var (from, onMap) in this.transitions)
             {
                 foreach (var (iv, tos) in onMap)
                 {
@@ -173,7 +173,7 @@ namespace Yoakke.Collections.FiniteAutomata
                 }
             }
             // Epsilon-transitions
-            foreach (var (from, tos) in epsilon)
+            foreach (var (from, tos) in this.epsilon)
             {
                 foreach (var to in tos) sb.AppendLine($"    {from} -> {to} [label=\"\u03B5\"];");
             }
@@ -185,7 +185,7 @@ namespace Yoakke.Collections.FiniteAutomata
         /// Creates a new, unique state.
         /// </summary>
         /// <returns>The created state.</returns>
-        public State NewState() => new(stateCounter++);
+        public State NewState() => new(this.stateCounter++);
 
         /// <summary>
         /// Adds a transition to this nondeterministic finite automaton.
@@ -194,7 +194,7 @@ namespace Yoakke.Collections.FiniteAutomata
         /// <param name="on">The symbol to transition on.</param>
         /// <param name="to">The state to transition to.</param>
         public void AddTransition(State from, TSymbol on, State to) =>
-            AddTransition(from, Interval<TSymbol>.Singleton(on), to);
+            this.AddTransition(from, Interval<TSymbol>.Singleton(on), to);
 
         /// <summary>
         /// Adds a transition to this nondeterministic finite automaton.
@@ -204,10 +204,10 @@ namespace Yoakke.Collections.FiniteAutomata
         /// <param name="to">The state to transition to.</param>
         public void AddTransition(State from, Interval<TSymbol> on, State to)
         {
-            if (!transitions.TryGetValue(from, out var onMap))
+            if (!this.transitions.TryGetValue(from, out var onMap))
             {
-                onMap = new IntervalMap<TSymbol, ISet<State>>(comparer);
-                transitions.Add(from, onMap);
+                onMap = new IntervalMap<TSymbol, ISet<State>>(this.comparer);
+                this.transitions.Add(from, onMap);
             }
             onMap.AddAndUpdate(on, new HashSet<State> { to }, (existing, added) => existing.Concat(added).ToHashSet());
         }
@@ -220,10 +220,10 @@ namespace Yoakke.Collections.FiniteAutomata
         /// <param name="to">The state to transition to.</param>
         public void AddTransition(State from, Epsilon on, State to)
         {
-            if (!epsilon.TryGetValue(from, out var toSet))
+            if (!this.epsilon.TryGetValue(from, out var toSet))
             {
                 toSet = new HashSet<State>();
-                epsilon.Add(from, toSet);
+                this.epsilon.Add(from, toSet);
             }
             toSet.Add(to);
         }

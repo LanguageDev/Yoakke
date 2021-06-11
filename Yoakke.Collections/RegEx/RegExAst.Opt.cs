@@ -16,17 +16,17 @@ namespace Yoakke.Collections.RegEx
 
             public Opt(RegExAst subexpr)
             {
-                Subexpr = subexpr;
+                this.Subexpr = subexpr;
             }
 
-            public override bool Equals(RegExAst other) => other is Opt opt && Subexpr.Equals(opt.Subexpr);
-            public override int GetHashCode() => Subexpr.GetHashCode();
+            public override bool Equals(RegExAst other) => other is Opt opt && this.Subexpr.Equals(opt.Subexpr);
+            public override int GetHashCode() => this.Subexpr.GetHashCode();
 
-            public override RegExAst Desugar() => new Opt(Subexpr.Desugar());
+            public override RegExAst Desugar() => new Opt(this.Subexpr.Desugar());
 
             public override (State Start, State End) ThompsonConstruct(DenseNfa<char> denseNfa)
             {
-                var (start, end) = Subexpr.ThompsonConstruct(denseNfa);
+                var (start, end) = this.Subexpr.ThompsonConstruct(denseNfa);
                 denseNfa.AddTransition(start, Epsilon.Default, end);
                 return (start, end);
             }

@@ -19,26 +19,26 @@ namespace Yoakke.Parser.Generator.Ast
 
             public Alt(BnfAst first, BnfAst second)
             {
-                Elements = new BnfAst[] { first, second };
+                this.Elements = new BnfAst[] { first, second };
             }
 
             public Alt(IEnumerable<BnfAst> elements)
             {
-                Elements = elements.ToArray();
+                this.Elements = elements.ToArray();
             }
 
             public override bool Equals(BnfAst other) => other is Alt alt
-                && Elements.SequenceEqual(alt.Elements);
+                && this.Elements.SequenceEqual(alt.Elements);
             public override int GetHashCode()
             {
                 var hash = new HashCode();
-                foreach (var e in Elements) hash.Add(e);
+                foreach (var e in this.Elements) hash.Add(e);
                 return hash.ToHashCode();
             }
 
             public override BnfAst Desugar()
             {
-                if (Elements.Count == 1) return Elements[0].Desugar();
+                if (this.Elements.Count == 1) return this.Elements[0].Desugar();
 
                 var newElements = new List<BnfAst>();
                 void Add(Alt alt)
@@ -54,7 +54,7 @@ namespace Yoakke.Parser.Generator.Ast
             }
 
             public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens) =>
-                Elements[0].GetParsedType(ruleSet, tokens);
+                this.Elements[0].GetParsedType(ruleSet, tokens);
         }
     }
 }

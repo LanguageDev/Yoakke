@@ -32,6 +32,6 @@ namespace Yoakke.Reporting.Present
         public ConsoleColor DefaultColor { get; set; } = ConsoleColor.White;
 
         public ConsoleColor GetTokenColor(TokenKind kind) =>
-            TokenColors.TryGetValue(kind, out var col) ? col : DefaultColor;
+            this.TokenColors.TryGetValue(kind, out var col) ? col : this.DefaultColor;
     }
 }

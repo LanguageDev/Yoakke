@@ -31,8 +31,8 @@ namespace Yoakke.Parser
 
         private ParseError(IReadOnlyDictionary<string, ParseErrorElement> elements, IToken? got)
         {
-            Elements = elements;
-            Got = got;
+            this.Elements = elements;
+            this.Got = got;
         }
 
         /// <summary>

@@ -22,25 +22,25 @@ namespace Yoakke.Parser.Generator.Ast
 
             public Transform(BnfAst subexpr, IMethodSymbol method)
             {
-                Subexpr = subexpr;
-                Method = method;
+                this.Subexpr = subexpr;
+                this.Method = method;
             }
 
             public override bool Equals(BnfAst other) => other is Transform tr
-                && Subexpr.Equals(tr.Subexpr)
-                && SymbolEqualityComparer.Default.Equals(Method, tr.Method);
-            public override int GetHashCode() => HashCode.Combine(Subexpr, Method);
+                && this.Subexpr.Equals(tr.Subexpr)
+                && SymbolEqualityComparer.Default.Equals(this.Method, tr.Method);
+            public override int GetHashCode() => HashCode.Combine(this.Subexpr, this.Method);
 
             public override BnfAst Desugar()
             {
                 // We sink Transform under alternation
-                var sub = Subexpr.Desugar();
-                if (sub is Alt alt) return new Alt(alt.Elements.Select(e => new Transform(e, Method)));
-                return new Transform(sub, Method);
+                var sub = this.Subexpr.Desugar();
+                if (sub is Alt alt) return new Alt(alt.Elements.Select(e => new Transform(e, this.Method)));
+                return new Transform(sub, this.Method);
             }
 
             public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens) =>
-                Method.ReturnType.ToDisplayString();
+                this.Method.ReturnType.ToDisplayString();
         }
     }
 }

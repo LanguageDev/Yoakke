@@ -19,26 +19,26 @@ namespace Yoakke.Parser.Generator.Ast
 
             public Seq(BnfAst first, BnfAst second)
             {
-                Elements = new BnfAst[] { first, second };
+                this.Elements = new BnfAst[] { first, second };
             }
 
             public Seq(IEnumerable<BnfAst> elements)
             {
-                Elements = elements.ToArray();
+                this.Elements = elements.ToArray();
             }
 
             public override bool Equals(BnfAst other) => other is Seq seq
-                && Elements.SequenceEqual(seq.Elements);
+                && this.Elements.SequenceEqual(seq.Elements);
             public override int GetHashCode()
             {
                 var hash = new HashCode();
-                foreach (var e in Elements) hash.Add(e);
+                foreach (var e in this.Elements) hash.Add(e);
                 return hash.ToHashCode();
             }
 
             public override BnfAst Desugar()
             {
-                if (Elements.Count == 1) return Elements[0].Desugar();
+                if (this.Elements.Count == 1) return this.Elements[0].Desugar();
 
                 var newElements = new List<BnfAst>();
                 void Add(Seq seq)
@@ -72,8 +72,8 @@ namespace Yoakke.Parser.Generator.Ast
 
             public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens)
             {
-                if (Elements.Count == 1) return Elements[0].GetParsedType(ruleSet, tokens);
-                return $"({string.Join(", ", Elements.Select(e => e.GetParsedType(ruleSet, tokens)))})";
+                if (this.Elements.Count == 1) return this.Elements[0].GetParsedType(ruleSet, tokens);
+                return $"({string.Join(", ", this.Elements.Select(e => e.GetParsedType(ruleSet, tokens)))})";
             }
         }
     }

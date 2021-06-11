@@ -14,17 +14,17 @@
 
             public Rep0(BnfAst subexpr)
             {
-                Subexpr = subexpr;
+                this.Subexpr = subexpr;
             }
 
             public override bool Equals(BnfAst other) => other is Rep0 rep
-                && Subexpr.Equals(rep.Subexpr);
-            public override int GetHashCode() => Subexpr.GetHashCode();
+                && this.Subexpr.Equals(rep.Subexpr);
+            public override int GetHashCode() => this.Subexpr.GetHashCode();
 
-            public override BnfAst Desugar() => new Rep0(Subexpr.Desugar());
+            public override BnfAst Desugar() => new Rep0(this.Subexpr.Desugar());
 
             public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens) =>
-                $"{TypeNames.IReadOnlyList}<{Subexpr.GetParsedType(ruleSet, tokens)}>";
+                $"{TypeNames.IReadOnlyList}<{this.Subexpr.GetParsedType(ruleSet, tokens)}>";
         }
     }
 }

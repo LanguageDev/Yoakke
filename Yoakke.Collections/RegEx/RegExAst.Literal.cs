@@ -17,11 +17,11 @@ namespace Yoakke.Collections.RegEx
 
             public Literal(char @char)
             {
-                Char = @char;
+                this.Char = @char;
             }
 
-            public override bool Equals(RegExAst other) => other is Literal lit && Char == lit.Char;
-            public override int GetHashCode() => Char.GetHashCode();
+            public override bool Equals(RegExAst other) => other is Literal lit && this.Char == lit.Char;
+            public override int GetHashCode() => this.Char.GetHashCode();
 
             public override RegExAst Desugar() => this;
 
@@ -30,7 +30,7 @@ namespace Yoakke.Collections.RegEx
                 var start = denseNfa.NewState();
                 var end = denseNfa.NewState();
 
-                denseNfa.AddTransition(start, Char, end);
+                denseNfa.AddTransition(start, this.Char, end);
 
                 return (start, end);
             }

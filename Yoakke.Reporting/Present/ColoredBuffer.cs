@@ -22,54 +22,54 @@ namespace Yoakke.Reporting.Present
 
         public void Clear()
         {
-            CursorX = 0;
-            CursorY = 0;
-            ResetColor();
-            lines.Clear();
+            this.CursorX = 0;
+            this.CursorY = 0;
+            this.ResetColor();
+            this.lines.Clear();
         }
 
         public void ResetColor()
         {
-            ForegroundColor = Console.ForegroundColor;
-            BackgroundColor = Console.BackgroundColor;
+            this.ForegroundColor = Console.ForegroundColor;
+            this.BackgroundColor = Console.BackgroundColor;
         }
 
         public void Plot(int x, int y, char ch)
         {
-            EnsureBuffer(x, y);
-            var line = lines[y];
+            this.EnsureBuffer(x, y);
+            var line = this.lines[y];
             line.Text[x] = ch;
-            line.Color[x] = (ForegroundColor, BackgroundColor);
-            CursorX = x + 1;
-            CursorY = y;
+            line.Color[x] = (this.ForegroundColor, this.BackgroundColor);
+            this.CursorX = x + 1;
+            this.CursorY = y;
         }
 
         public void WriteAt(int left, int top, string str)
         {
-            EnsureBuffer(left + str.Length - 1, top);
-            var line = lines[top];
+            this.EnsureBuffer(left + str.Length - 1, top);
+            var line = this.lines[top];
             for (int i = 0; i < str.Length; ++i)
             {
                 line.Text[left + i] = str[i];
-                line.Color[left + i] = (ForegroundColor, BackgroundColor);
+                line.Color[left + i] = (this.ForegroundColor, this.BackgroundColor);
             }
-            CursorX = left + str.Length;
-            CursorY = top;
+            this.CursorX = left + str.Length;
+            this.CursorY = top;
         }
 
-        public void Write(char ch) => Plot(CursorX, CursorY, ch);
-        public void Write(string str) => WriteAt(CursorX, CursorY, str);
+        public void Write(char ch) => this.Plot(this.CursorX, this.CursorY, ch);
+        public void Write(string str) => this.WriteAt(this.CursorX, this.CursorY, str);
 
         public void WriteLine()
         {
-            CursorX = 0;
-            CursorY += 1;
+            this.CursorX = 0;
+            this.CursorY += 1;
         }
 
         public void WriteLine(string str)
         {
-            Write(str);
-            WriteLine();
+            this.Write(str);
+            this.WriteLine();
         }
 
         public void Fill(int left, int top, int width, int height, char ch)
@@ -77,24 +77,24 @@ namespace Yoakke.Reporting.Present
             for (int j = 0; j < height; ++j)
             {
                 int yp = top + j;
-                EnsureBuffer(left + width - 1, yp);
-                var line = lines[yp];
+                this.EnsureBuffer(left + width - 1, yp);
+                var line = this.lines[yp];
                 for (int i = 0; i < width; ++i)
                 {
                     int xp = left + i;
                     line.Text[xp] = ch;
-                    line.Color[xp] = (ForegroundColor, BackgroundColor);
+                    line.Color[xp] = (this.ForegroundColor, this.BackgroundColor);
                 }
             }
-            CursorX = left + width;
-            CursorY = top + height - 1;
+            this.CursorX = left + width;
+            this.CursorY = top + height - 1;
         }
 
         public void Recolor(int x, int y)
         {
-            EnsureBuffer(x, y);
-            var line = lines[y];
-            line.Color[x] = (ForegroundColor, BackgroundColor);
+            this.EnsureBuffer(x, y);
+            var line = this.lines[y];
+            line.Color[x] = (this.ForegroundColor, this.BackgroundColor);
         }
 
         public void Recolor(int left, int top, int width, int height)
@@ -102,12 +102,12 @@ namespace Yoakke.Reporting.Present
             for (int j = 0; j < height; ++j)
             {
                 int yp = top + j;
-                EnsureBuffer(left + width - 1, yp);
-                var line = lines[yp];
+                this.EnsureBuffer(left + width - 1, yp);
+                var line = this.lines[yp];
                 for (int i = 0; i < width; ++i)
                 {
                     int xp = left + i;
-                    line.Color[xp] = (ForegroundColor, BackgroundColor);
+                    line.Color[xp] = (this.ForegroundColor, this.BackgroundColor);
                 }
             }
         }
@@ -115,7 +115,7 @@ namespace Yoakke.Reporting.Present
         public void OutputTo(TextWriter writer)
         {
             var lastColor = (Console.ForegroundColor, Console.BackgroundColor);
-            foreach (var line in lines)
+            foreach (var line in this.lines)
             {
                 var lineStr = line.Text.ToString();
                 int i = 0;
@@ -143,15 +143,15 @@ namespace Yoakke.Reporting.Present
         private void EnsureBuffer(int x, int y)
         {
             // First we ensure y exists
-            for (; lines.Count <= y; lines.Add(new Line())) ;
+            for (; this.lines.Count <= y; this.lines.Add(new Line())) ;
             // Now ensure x character in line y
-            var line = lines[y];
+            var line = this.lines[y];
             int requiredChars = x - line.Text.Length + 1;
             if (requiredChars > 0)
             {
                 line.Text.Append(' ', requiredChars);
                 if (line.Color.Capacity < x + 1) line.Color.Capacity = x + 1;
-                for (int i = 0; i < requiredChars; ++i) line.Color.Add((ForegroundColor, BackgroundColor));
+                for (int i = 0; i < requiredChars; ++i) line.Color.Add((this.ForegroundColor, this.BackgroundColor));
             }
         }
     }

@@ -13,9 +13,9 @@ namespace Yoakke.LSP.Generator
 
         public InterfaceDef(string name, IReadOnlyList<string> bases, IReadOnlyList<InterfaceField> fields)
         {
-            Name = name;
-            Bases = bases;
-            Fields = fields;
+            this.Name = name;
+            this.Bases = bases;
+            this.Fields = fields;
         }
     }
 
@@ -27,8 +27,8 @@ namespace Yoakke.LSP.Generator
 
         public NamespaceDef(string name, IReadOnlyList<NamespaceField> fields)
         {
-            Name = name;
-            Fields = fields;
+            this.Name = name;
+            this.Fields = fields;
         }
     }
 
@@ -41,9 +41,9 @@ namespace Yoakke.LSP.Generator
 
         public InterfaceField(string name, bool optional, TypeNode type)
         {
-            Name = name;
-            Optional = optional;
-            Type = type;
+            this.Name = name;
+            this.Optional = optional;
+            this.Type = type;
         }
     }
 
@@ -55,8 +55,8 @@ namespace Yoakke.LSP.Generator
 
         public NamespaceField(string name, object value)
         {
-            Name = name;
-            Value = value;
+            this.Name = name;
+            this.Value = value;
         }
     }
 
@@ -68,7 +68,7 @@ namespace Yoakke.LSP.Generator
 
             public Ident(string name)
             {
-                Name = name;
+                this.Name = name;
             }
         }
 
@@ -78,7 +78,7 @@ namespace Yoakke.LSP.Generator
 
             public Array(TypeNode elementType)
             {
-                ElementType = elementType;
+                this.ElementType = elementType;
             }
         }
 
@@ -88,7 +88,7 @@ namespace Yoakke.LSP.Generator
 
             public Or(IReadOnlyList<TypeNode> alternatives)
             {
-                Alternatives = alternatives;
+                this.Alternatives = alternatives;
             }
         }
 
@@ -98,7 +98,7 @@ namespace Yoakke.LSP.Generator
 
             public Object(IReadOnlyList<InterfaceField> fields)
             {
-                Fields = fields;
+                this.Fields = fields;
             }
         }
     }

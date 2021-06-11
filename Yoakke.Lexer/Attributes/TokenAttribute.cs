@@ -19,7 +19,7 @@ namespace Yoakke.Lexer.Attributes
         /// <param name="text">The text to match.</param>
         public TokenAttribute(string text)
         {
-            Text = text;
+            this.Text = text;
         }
     }
 }

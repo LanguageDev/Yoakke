@@ -13,7 +13,7 @@ namespace Yoakke.Collections.RegEx
         private string? source;
         private int index;
 
-        private bool IsEnd => source is null || index >= source.Length;
+        private bool IsEnd => this.source is null || this.index >= this.source.Length;
 
         /// <summary>
         /// Parses a string into a regex AST.
@@ -23,39 +23,39 @@ namespace Yoakke.Collections.RegEx
         public RegExAst Parse(string source)
         {
             this.source = source;
-            index = 0;
-            return ParseAlt();
+            this.index = 0;
+            return this.ParseAlt();
         }
 
         private RegExAst ParseAlt()
         {
-            var seq = ParseSeq();
-            if (Match('|')) return new RegExAst.Alt(seq, ParseAlt());
+            var seq = this.ParseSeq();
+            if (this.Match('|')) return new RegExAst.Alt(seq, this.ParseAlt());
             return seq;
         }
 
         private RegExAst ParseSeq()
         {
-            var postfx = ParsePostfix();
-            if (!IsEnd && Peek() != '|' && Peek() != ')') return new RegExAst.Seq(postfx, ParseSeq());
+            var postfx = this.ParsePostfix();
+            if (!this.IsEnd && this.Peek() != '|' && this.Peek() != ')') return new RegExAst.Seq(postfx, this.ParseSeq());
             return postfx;
         }
 
         private RegExAst ParsePostfix()
         {
-            var atom = ParseAtom();
-            if (Match('?')) return new RegExAst.Opt(atom);
-            if (Match('*')) return new RegExAst.Rep0(atom);
-            if (Match('+')) return new RegExAst.Rep1(atom);
-            if (Match('{'))
+            var atom = this.ParseAtom();
+            if (this.Match('?')) return new RegExAst.Opt(atom);
+            if (this.Match('*')) return new RegExAst.Rep0(atom);
+            if (this.Match('+')) return new RegExAst.Rep1(atom);
+            if (this.Match('{'))
             {
-                var atLeast = ParseNumber();
-                if (Match('}')) return new RegExAst.Quantified(atom, atLeast, atLeast);
-                if (Match(','))
+                var atLeast = this.ParseNumber();
+                if (this.Match('}')) return new RegExAst.Quantified(atom, atLeast, atLeast);
+                if (this.Match(','))
                 {
-                    if (Match('}')) return new RegExAst.Quantified(atom, atLeast, null);
-                    var atMost = ParseNumber();
-                    Expect('}');
+                    if (this.Match('}')) return new RegExAst.Quantified(atom, atLeast, null);
+                    var atMost = this.ParseNumber();
+                    this.Expect('}');
                     return new RegExAst.Quantified(atom, atLeast, atMost);
                 }
             }
@@ -64,32 +64,32 @@ namespace Yoakke.Collections.RegEx
 
         private RegExAst ParseAtom()
         {
-            if (Match('('))
+            if (this.Match('('))
             {
-                var sub = ParseAlt();
-                Expect(')');
+                var sub = this.ParseAlt();
+                this.Expect(')');
                 return sub;
             }
-            if (Peek() == '[') return ParseLiteralRange();
-            return ParseLiteral();
+            if (this.Peek() == '[') return this.ParseLiteralRange();
+            return this.ParseLiteral();
         }
 
         private RegExAst ParseLiteralRange()
         {
-            Expect('[');
-            bool negate = Match('^');
+            this.Expect('[');
+            bool negate = this.Match('^');
             var ranges = new List<(char From, char To)>();
-            ranges.Add(ParseSingleLiteralRange());
-            while (!Match(']')) ranges.Add(ParseSingleLiteralRange());
+            ranges.Add(this.ParseSingleLiteralRange());
+            while (!this.Match(']')) ranges.Add(this.ParseSingleLiteralRange());
             return new RegExAst.LiteralRange(negate, ranges);
         }
 
         private (char From, char To) ParseSingleLiteralRange()
         {
-            var from = ParseLiteralRangeAtom();
-            if (Match('-'))
+            var from = this.ParseLiteralRangeAtom();
+            if (this.Match('-'))
             {
-                var to = ParseLiteralRangeAtom();
+                var to = this.ParseLiteralRangeAtom();
                 return (from, to);
             }
             return (from, from);
@@ -97,30 +97,30 @@ namespace Yoakke.Collections.RegEx
 
         private char ParseLiteralRangeAtom()
         {
-            if (Match('\\'))
+            if (this.Match('\\'))
             {
-                var ch = Consume();
+                var ch = this.Consume();
                 var escaped = Escape(ch);
-                if (escaped == null) throw new FormatException($"invalid escape \\{ch} in grouping (position {index - 2})");
+                if (escaped == null) throw new FormatException($"invalid escape \\{ch} in grouping (position {this.index - 2})");
                 return escaped.Value;
             }
-            return Consume();
+            return this.Consume();
         }
 
         private RegExAst ParseLiteral()
         {
-            if (Match('\\'))
+            if (this.Match('\\'))
             {
-                var ch = Consume();
+                var ch = this.Consume();
                 if (IsSpecial(ch)) return new RegExAst.Literal(ch);
                 var escaped = Escape(ch);
-                if (escaped == null) throw new FormatException($"invalid escape \\{ch} (position {index - 2})");
+                if (escaped == null) throw new FormatException($"invalid escape \\{ch} (position {this.index - 2})");
                 return new RegExAst.Literal(escaped.Value);
             }
             else
             {
-                var ch = Consume();
-                if (IsSpecial(ch)) throw new FormatException($"special character {ch} must be escaped (position {index - 1})");
+                var ch = this.Consume();
+                if (IsSpecial(ch)) throw new FormatException($"special character {ch} must be escaped (position {this.index - 1})");
                 return new RegExAst.Literal(ch);
             }
         }
@@ -128,28 +128,28 @@ namespace Yoakke.Collections.RegEx
         private int ParseNumber()
         {
             var result = new StringBuilder();
-            for (; char.IsDigit(Peek()); result.Append(Consume()));
-            if (result.Length == 0) throw new FormatException($"number expected (position {index})");
+            for (; char.IsDigit(this.Peek()); result.Append(this.Consume()));
+            if (result.Length == 0) throw new FormatException($"number expected (position {this.index})");
             return int.Parse(result.ToString());
         }
 
         private char Peek(int offset = 0, char @default = '\0') =>
-            index + offset >= source!.Length ? @default : source[index + offset];
+            this.index + offset >= this.source!.Length ? @default : this.source[this.index + offset];
 
         private char Consume()
         {
-            if (IsEnd) throw new FormatException("unexpected end of string");
+            if (this.IsEnd) throw new FormatException("unexpected end of string");
 
-            var ch = Peek();
-            ++index;
+            var ch = this.Peek();
+            ++this.index;
             return ch;
         }
 
         private bool Match(char ch)
         {
-            if (Peek() == ch)
+            if (this.Peek() == ch)
             {
-                Consume();
+                this.Consume();
                 return true;
             }
             return false;
@@ -157,7 +157,7 @@ namespace Yoakke.Collections.RegEx
 
         private void Expect(char ch)
         {
-            if (!Match(ch)) throw new FormatException($"{ch} expected (position {index})");
+            if (!this.Match(ch)) throw new FormatException($"{ch} expected (position {this.index})");
         }
 
         /// <summary>

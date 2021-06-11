@@ -33,8 +33,8 @@ namespace Yoakke.Parser
         /// <param name="context">The context in which the error occurred.</param>
         public ParseErrorElement(IReadOnlySet<object> expected, string context)
         {
-            Expected = expected;
-            Context = context;
+            this.Expected = expected;
+            this.Context = context;
         }
     }
 }

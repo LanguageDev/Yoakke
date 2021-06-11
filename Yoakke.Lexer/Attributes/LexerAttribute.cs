@@ -19,7 +19,7 @@ namespace Yoakke.Lexer.Attributes
         /// <param name="className">The lexer classes name to generate.</param>
         public LexerAttribute(string className)
         {
-            ClassName = className;
+            this.ClassName = className;
         }
     }
 }

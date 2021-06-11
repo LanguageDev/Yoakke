@@ -11,9 +11,9 @@ namespace Yoakke.Sample
 
         public VarSymbol(IReadOnlyScope scope, string name, Location? definition = null)
         {
-            Scope = scope;
-            Name = name;
-            Definition = definition;
+            this.Scope = scope;
+            this.Name = name;
+            this.Definition = definition;
         }
     }
 }

@@ -20,9 +20,9 @@
 
         public BnfToken(int index, string value, BnfTokenType type)
         {
-            Index = index;
-            Value = value;
-            Type = type;
+            this.Index = index;
+            this.Value = value;
+            this.Type = type;
         }
     }
 }

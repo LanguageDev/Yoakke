@@ -19,7 +19,7 @@ namespace Yoakke.Parser.Attributes
         /// <param name="separators">The separator elements that should be right-associative.</param>
         public RightAttribute(params object[] separators)
         {
-            Separators = separators;
+            this.Separators = separators;
         }
     }
 }

@@ -20,15 +20,15 @@ namespace Yoakke.Parser.Generator
 
         public TokenKindSet()
         {
-            Fields = new Dictionary<string, IFieldSymbol>();
+            this.Fields = new Dictionary<string, IFieldSymbol>();
         }
 
         public TokenKindSet(INamedTypeSymbol enumType)
         {
-            EnumType = enumType;
-            Fields = enumType.GetMembers().OfType<IFieldSymbol>().ToDictionary(s => s.Name);
+            this.EnumType = enumType;
+            this.Fields = enumType.GetMembers().OfType<IFieldSymbol>().ToDictionary(s => s.Name);
         }
 
-        public bool TryGetVariant(string name, out IFieldSymbol symbol) => Fields.TryGetValue(name, out symbol);
+        public bool TryGetVariant(string name, out IFieldSymbol symbol) => this.Fields.TryGetValue(name, out symbol);
     }
 }

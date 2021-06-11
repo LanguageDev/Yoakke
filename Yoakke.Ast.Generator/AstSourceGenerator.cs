@@ -21,7 +21,7 @@ namespace Yoakke.Ast.Generator
                 if (syntaxNode is ClassDeclarationSyntax classDeclSyntax
                     && classDeclSyntax.AttributeLists.Count > 0)
                 {
-                    CandidateClasses.Add(classDeclSyntax);
+                    this.CandidateClasses.Add(classDeclSyntax);
                 }
             }
         }
@@ -49,15 +49,15 @@ namespace Yoakke.Ast.Generator
         {
             var receiver = (SyntaxReceiver)syntaxReceiver;
 
-            RequireLibrary("Yoakke.Ast");
+            this.RequireLibrary("Yoakke.Ast");
 
-            BuildMetaNodes(receiver.CandidateClasses);
+            this.BuildMetaNodes(receiver.CandidateClasses);
 
             // Now generate each node source
-            foreach (var node in allNodes.Values) GenerateNodeSource(node);
+            foreach (var node in this.allNodes.Values) this.GenerateNodeSource(node);
 
             // Generate visitor contents
-            foreach (var node in rootNodes.Values) GenerateVisitorSource(node);
+            foreach (var node in this.rootNodes.Values) this.GenerateVisitorSource(node);
         }
 
         private void BuildMetaNodes(IList<ClassDeclarationSyntax> classDeclarations)
@@ -66,23 +66,23 @@ namespace Yoakke.Ast.Generator
             var astNodeSymbols = new HashSet<INamedTypeSymbol>();
             foreach (var syntax in classDeclarations)
             {
-                var model = Context.Compilation.GetSemanticModel(syntax.SyntaxTree);
+                var model = this.Context.Compilation.GetSemanticModel(syntax.SyntaxTree);
                 var symbol = model.GetDeclaredSymbol(syntax) as INamedTypeSymbol;
-                if (!HasAttribute(symbol!, TypeNames.AstAttribute)) continue;
-                if (!RequirePartial(syntax)) continue;
+                if (!this.HasAttribute(symbol!, TypeNames.AstAttribute)) continue;
+                if (!this.RequirePartial(syntax)) continue;
                 astNodeSymbols.Add(symbol!);
             }
 
             // Select all the root nodes
             // They are all the nodes without a base class or with a base class that's not an AST node
             var rootNodeSymbols = astNodeSymbols
-                .Where(sym => sym.BaseType == null || !HasAttribute(sym.BaseType, TypeNames.AstAttribute))
+                .Where(sym => sym.BaseType == null || !this.HasAttribute(sym.BaseType, TypeNames.AstAttribute))
                 .ToHashSet();
-            rootNodes = rootNodeSymbols
-                .Select(sym => MakeMetaNode(sym, null))
+            this.rootNodes = rootNodeSymbols
+                .Select(sym => this.MakeMetaNode(sym, null))
                 .ToDictionary(n => n.Name);
             // Clone them to all nodes
-            allNodes = rootNodes.ToDictionary(n => n.Key, n => n.Value);
+            this.allNodes = this.rootNodes.ToDictionary(n => n.Key, n => n.Value);
 
             // Remove them from all symbols
             astNodeSymbols = astNodeSymbols
@@ -95,10 +95,10 @@ namespace Yoakke.Ast.Generator
                 var toRemove = new HashSet<INamedTypeSymbol>();
                 foreach (var symbol in astNodeSymbols)
                 {
-                    if (!allNodes.TryGetValue(symbol.BaseType!.Name, out var parentNode)) continue;
+                    if (!this.allNodes.TryGetValue(symbol.BaseType!.Name, out var parentNode)) continue;
                     // We found this node's parent in out existing nodes
-                    var node = MakeMetaNode(symbol, parentNode);
-                    allNodes.Add(node.Name, node);
+                    var node = this.MakeMetaNode(symbol, parentNode);
+                    this.allNodes.Add(node.Name, node);
                     toRemove.Add(symbol);
                 }
                 // Remove all found nodes
@@ -119,7 +119,7 @@ namespace Yoakke.Ast.Generator
             var node = new MetaNode(symbol, parent);
             if (parent != null) parent.Children.Add(node.Name, node);
 
-            if (TryGetAttribute(symbol, TypeNames.ImplementEqualityAttribute, out var equalityAttr))
+            if (this.TryGetAttribute(symbol, TypeNames.ImplementEqualityAttribute, out var equalityAttr))
             {
                 node.ImplementEquality =
                     equalityAttr.ConstructorArguments.Length == 0 || (bool?)equalityAttr.ConstructorArguments[0].Value == true;
@@ -140,7 +140,7 @@ namespace Yoakke.Ast.Generator
                 if (node.ImplementEquality) interfacesToImplement.Add($"{TypeNames.IEquatable}<{node.Symbol.ToDisplayString()}>");
             }
 
-            var fields = CategorizeAllFields(node.Symbol);
+            var fields = this.CategorizeAllFields(node.Symbol);
 
             var extraDefinitions = new StringBuilder();
 
@@ -197,7 +197,7 @@ public {node.Name}({string.Join(", ", fields.Select(f => $"{f.Symbol.Type.ToDisp
                 {
                     // Override equality and hash
                     var lastEquality = LastParentThat(node, n => n.ImplementEquality)!.Symbol.ToDisplayString();
-                    var (eqCmp, hash) = GenerateEqualityElements(node.Symbol, fields);
+                    var (eqCmp, hash) = this.GenerateEqualityElements(node.Symbol, fields);
 
                     var comparisons = string.Join(" && ", eqCmp);
                     extraDefinitions.AppendLine($"public override bool Equals({lastEquality} o) =>");
@@ -235,12 +235,12 @@ namespace {surroundingNamespace} {{
     {nestClassSuffix}
 }}
 ";
-            AddSource($"{node.Symbol.ToDisplayString()}.Generated.cs", sourceCode);
+            this.AddSource($"{node.Symbol.ToDisplayString()}.Generated.cs", sourceCode);
         }
 
         private void GenerateVisitorSource(MetaNode node)
         {
-            var visitors = GenerateVisitors(node, new Dictionary<string, (INamedTypeSymbol Root, StringBuilder Content, INamedTypeSymbol ReturnType)>());
+            var visitors = this.GenerateVisitors(node, new Dictionary<string, (INamedTypeSymbol Root, StringBuilder Content, INamedTypeSymbol ReturnType)>());
             foreach (var visitor in visitors)
             {
                 // Surrounding crud
@@ -264,7 +264,7 @@ namespace {surroundingNamespace} {{
     {nestClassSuffix}
 }}
 ";
-                AddSource($"{node.Symbol.ToDisplayString()}.{visitor.Key}.Generated.cs", sourceCode);
+                this.AddSource($"{node.Symbol.ToDisplayString()}.{visitor.Key}.Generated.cs", sourceCode);
             }
         }
 
@@ -273,7 +273,7 @@ namespace {surroundingNamespace} {{
             IReadOnlyDictionary<string, (INamedTypeSymbol Root, StringBuilder Content, INamedTypeSymbol ReturnType)> visitors)
         {
             // Get all visitor attributes on this node
-            var visitorAttr = LoadSymbol(TypeNames.VisitorAttribute);
+            var visitorAttr = this.LoadSymbol(TypeNames.VisitorAttribute);
             var visitorAttrs = node.Symbol.GetAttributes()
                 .Where(attr => SymbolEquals(attr.AttributeClass, visitorAttr))
                 .ToDictionary(attr => attr.GetCtorValue(0)!.ToString(), attr => (INamedTypeSymbol)attr.GetCtorValue(1)!);
@@ -298,7 +298,7 @@ namespace {surroundingNamespace} {{
                 }
             }
 
-            var members = CategorizeAllFields(node.Symbol);
+            var members = this.CategorizeAllFields(node.Symbol);
             foreach (var visitor in newVisitors.Values)
             {
                 var content = visitor.Content;
@@ -359,7 +359,7 @@ namespace {surroundingNamespace} {{
             }
             foreach (var child in node.Children.Values)
             {
-                var childResult = GenerateVisitors(child, newVisitors);
+                var childResult = this.GenerateVisitors(child, newVisitors);
                 foreach (var cv in childResult) unified[cv.Key] = cv.Value;
             }
             return unified;
@@ -393,13 +393,13 @@ namespace {surroundingNamespace} {{
             .GetMembers()
             .Where(m => !m.IsStatic)
             .OfType<IFieldSymbol>()
-            .Select(f => (Symbol: f, Kind: CategorizeField(f)))
+            .Select(f => (Symbol: f, Kind: this.CategorizeField(f)))
             .ToList();
 
         private FieldKind CategorizeField(IFieldSymbol symbol)
         {
-            var readOnlyCollection = LoadSymbol(TypeNames.IReadOnlyCollectionG);
-            if (HasAttribute(symbol.Type, TypeNames.AstAttribute))
+            var readOnlyCollection = this.LoadSymbol(TypeNames.IReadOnlyCollectionG);
+            if (this.HasAttribute(symbol.Type, TypeNames.AstAttribute))
             {
                 // It's a subnode
                 return FieldKind.Subnode;
@@ -407,7 +407,7 @@ namespace {surroundingNamespace} {{
             else if (symbol.Type.ImplementsGenericInterface(readOnlyCollection, out var args))
             {
                 // It's a list of something
-                if (HasAttribute(args![0], TypeNames.AstAttribute))
+                if (this.HasAttribute(args![0], TypeNames.AstAttribute))
                 {
                     // It's a list of subnodes
                     return FieldKind.SubnodeList;

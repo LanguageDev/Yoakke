@@ -16,8 +16,8 @@ namespace Yoakke.Symbols
         public readonly TTag Tag;
 
         public IReadOnlyScope? ContainingScope { get; }
-        public bool IsGlobal => ContainingScope is null;
-        public IReadOnlyDictionary<string, ISymbol> Symbols => symbols;
+        public bool IsGlobal => this.ContainingScope is null;
+        public IReadOnlyDictionary<string, ISymbol> Symbols => this.symbols;
 
         private readonly Dictionary<string, ISymbol> symbols = new();
 
@@ -28,8 +28,8 @@ namespace Yoakke.Symbols
         /// <param name="tag">The tag of this scope.</param>
         public Scope(IReadOnlyScope? parent = null, TTag tag = default)
         {
-            ContainingScope = parent;
-            Tag = tag;
+            this.ContainingScope = parent;
+            this.Tag = tag;
         }
 
         /// <summary>
@@ -41,16 +41,16 @@ namespace Yoakke.Symbols
         {
         }
 
-        public IEnumerable<ISymbol> GetReachableSymbols() => ContainingScope is null
-            ? Symbols.Values
-            : Symbols.Values.Concat(ContainingScope.GetReachableSymbols());
+        public IEnumerable<ISymbol> GetReachableSymbols() => this.ContainingScope is null
+            ? this.Symbols.Values
+            : this.Symbols.Values.Concat(this.ContainingScope.GetReachableSymbols());
 
-        public ISymbol? ReferenceSymbol(string name) => ReferenceSymbol(name, _ => true);
+        public ISymbol? ReferenceSymbol(string name) => this.ReferenceSymbol(name, _ => true);
 
         public ISymbol? ReferenceSymbol(string name, Predicate<IReadOnlyScope> canCross)
         {
-            if (Symbols.TryGetValue(name, out var symbol)) return symbol;
-            if (canCross(this) && ContainingScope is not null) return ContainingScope.ReferenceSymbol(name, canCross);
+            if (this.Symbols.TryGetValue(name, out var symbol)) return symbol;
+            if (canCross(this) && this.ContainingScope is not null) return this.ContainingScope.ReferenceSymbol(name, canCross);
             return null;
         }
 
@@ -60,7 +60,7 @@ namespace Yoakke.Symbols
             {
                 throw new ArgumentException("the scope of the symbol is not set to this", nameof(symbol));
             }
-            symbols[symbol.Name] = symbol;
+            this.symbols[symbol.Name] = symbol;
         }
     }
 }

@@ -25,8 +25,8 @@ namespace Yoakke.Text
         {
             if (end < start) throw new ArgumentException("The end cannot be smaller than the start");
 
-            Start = start;
-            End = end;
+            this.Start = start;
+            this.End = end;
         }
 
         /// <summary>
@@ -49,23 +49,23 @@ namespace Yoakke.Text
         {
         }
 
-        public override bool Equals(object? obj) => obj is Range r && Equals(r);
-        public bool Equals(Range other) => Start == other.Start && End == other.End;
-        public override int GetHashCode() => HashCode.Combine(Start, End);
+        public override bool Equals(object? obj) => obj is Range r && this.Equals(r);
+        public bool Equals(Range other) => this.Start == other.Start && this.End == other.End;
+        public override int GetHashCode() => HashCode.Combine(this.Start, this.End);
 
         /// <summary>
         /// Checks if a given <see cref="Position"/> is within the bounds of this <see cref="Range"/>.
         /// </summary>
         /// <param name="position">The <see cref="Position"/> to check.</param>
         /// <returns>True, if the <see cref="Position"/> is contained in this <see cref="Range"/>.</returns>
-        public bool Contains(Position position) => Start <= position && position < End;
+        public bool Contains(Position position) => this.Start <= position && position < this.End;
 
         /// <summary>
         /// Checks if this <see cref="Range"/> intersects with another one.
         /// </summary>
         /// <param name="other">The other <see cref="Range"/> to check intersection with.</param>
         /// <returns>True, if the two <see cref="Range"/>s intersect.</returns>
-        public bool Intersects(Range other) => !(Start >= other.End || other.Start >= End);
+        public bool Intersects(Range other) => !(this.Start >= other.End || other.Start >= this.End);
 
         public static bool operator ==(Range r1, Range r2) => r1.Equals(r2);
         public static bool operator !=(Range r1, Range r2) => !r1.Equals(r2);

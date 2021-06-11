@@ -32,43 +32,43 @@ namespace Yoakke.Collections.Intervals
         /// <summary>
         /// The type of this bound.
         /// </summary>
-        public BoundType Type => bound.Type;
+        public BoundType Type => this.bound.Type;
         /// <summary>
         /// The associated value of this bound. Only valid when the bound is not unbounded.
         /// </summary>
-        public T Value => bound.Value;
+        public T Value => this.bound.Value;
 
         private readonly Bound<T> bound;
 
         private LowerBound(BoundType type, T? value)
         {
-            bound = new Bound<T>(type, value);
+            this.bound = new Bound<T>(type, value);
         }
 
         /// <summary>
         /// Checks, if this is an unbounded interval bound.
         /// </summary>
         /// <returns>True, if this is an unbounded interval bound, false otherwise.</returns>
-        public bool IsUnbounded() => bound.IsUnbounded();
+        public bool IsUnbounded() => this.bound.IsUnbounded();
         /// <summary>
         /// Checks, if this is an interval bound that includes it's associated value.
         /// </summary>
         /// <param name="value">The intervals associated value is written here, if this is an inclusive bound.</param>
         /// <returns>True, if this is an inclusive bound.</returns>
-        public bool IsInclusive([MaybeNullWhen(false)] out T? value) => bound.IsInclusive(out value);
+        public bool IsInclusive([MaybeNullWhen(false)] out T? value) => this.bound.IsInclusive(out value);
         /// <summary>
         /// Checks, if this is an interval bound that excludes it's associated value.
         /// </summary>
         /// <param name="value">The intervals associated value is written here, if this is an exclusive bound.</param>
         /// <returns>True, if this is an exclusive bound.</returns>
-        public bool IsExclusive([MaybeNullWhen(false)] out T? value) => bound.IsExclusive(out value);
+        public bool IsExclusive([MaybeNullWhen(false)] out T? value) => this.bound.IsExclusive(out value);
 
         /// <summary>
         /// Checks if this lower bound is touching an <see cref="UpperBound{T}"/>.
         /// </summary>
         /// <param name="other">The <see cref="UpperBound{T}"/> to check touch with.</param>
         /// <returns>True, if the bounds are touching.</returns>
-        public bool IsTouching(UpperBound<T> other) => IsTouching(other, Comparer<T>.Default);
+        public bool IsTouching(UpperBound<T> other) => this.IsTouching(other, Comparer<T>.Default);
 
         /// <summary>
         /// Checks if this lower bound is touching an <see cref="UpperBound{T}"/>.
@@ -76,10 +76,10 @@ namespace Yoakke.Collections.Intervals
         /// <param name="other">The <see cref="UpperBound{T}"/> to check touch with.</param>
         /// <param name="comparer">The comparer to use.</param>
         /// <returns>True, if the bounds are touching.</returns>
-        public bool IsTouching(UpperBound<T> other, IComparer<T> comparer) => (Type, other.Type) switch
+        public bool IsTouching(UpperBound<T> other, IComparer<T> comparer) => (this.Type, other.Type) switch
         {
             (BoundType.Exclusive, BoundType.Inclusive)
-         or (BoundType.Inclusive, BoundType.Exclusive) => comparer.Compare(Value, other.Value) == 0,
+         or (BoundType.Inclusive, BoundType.Exclusive) => comparer.Compare(this.Value, other.Value) == 0,
 
             _ => false,
         };
@@ -88,30 +88,30 @@ namespace Yoakke.Collections.Intervals
         /// Constructs an <see cref="UpperBound{T}"/> that is touching this one.
         /// </summary>
         /// <returns>The constructed <see cref="UpperBound{T}"/>.</returns>
-        public UpperBound<T>? GetTouching() => Type switch
+        public UpperBound<T>? GetTouching() => this.Type switch
         {
-            BoundType.Exclusive => UpperBound<T>.Inclusive(Value),
-            BoundType.Inclusive => UpperBound<T>.Exclusive(Value),
+            BoundType.Exclusive => UpperBound<T>.Inclusive(this.Value),
+            BoundType.Inclusive => UpperBound<T>.Exclusive(this.Value),
             _ => null,
         };
 
-        public override bool Equals(object obj) => obj is LowerBound<T> lb && Equals(lb);
-        public bool Equals(LowerBound<T> other) => CompareTo(other) == 0;
-        public override int GetHashCode() => HashCode.Combine(Type, Value);
+        public override bool Equals(object obj) => obj is LowerBound<T> lb && this.Equals(lb);
+        public bool Equals(LowerBound<T> other) => this.CompareTo(other) == 0;
+        public override int GetHashCode() => HashCode.Combine(this.Type, this.Value);
 
         /// <summary>
         /// Compares this bound to another one using the default comparer.
         /// </summary>
         /// <param name="other">The other bound to compare.</param>
         /// <returns>See the documentation for <see cref="IComparer{T}"/>.</returns>
-        public int CompareTo(LowerBound<T> other) => CompareTo(other, Comparer<T>.Default);
+        public int CompareTo(LowerBound<T> other) => this.CompareTo(other, Comparer<T>.Default);
 
         /// <summary>
         /// Compares this bound to another one using the default comparer.
         /// </summary>
         /// <param name="other">The other bound to compare.</param>
         /// <returns>See the documentation for <see cref="IComparer{T}"/>.</returns>
-        public int CompareTo(UpperBound<T> other) => CompareTo(other, Comparer<T>.Default);
+        public int CompareTo(UpperBound<T> other) => this.CompareTo(other, Comparer<T>.Default);
 
         /// <summary>
         /// Compares this bound to another one.
@@ -119,22 +119,22 @@ namespace Yoakke.Collections.Intervals
         /// <param name="other">The other bound to compare.</param>
         /// <param name="comparer">The comparer to use.</param>
         /// <returns>See the documentation for <see cref="IComparer{T}"/>.</returns>
-        public int CompareTo(LowerBound<T> other, IComparer<T> comparer) => (Type, other.Type) switch
+        public int CompareTo(LowerBound<T> other, IComparer<T> comparer) => (this.Type, other.Type) switch
         {
             (BoundType.Unbounded, BoundType.Unbounded) => 0,
             (BoundType.Unbounded, _) => -1,
             (_, BoundType.Unbounded) => 1,
 
             (BoundType.Exclusive, BoundType.Exclusive)
-         or (BoundType.Inclusive, BoundType.Inclusive) => comparer.Compare(Value, other.Value),
+         or (BoundType.Inclusive, BoundType.Inclusive) => comparer.Compare(this.Value, other.Value),
 
-            (BoundType.Inclusive, BoundType.Exclusive) => comparer.Compare(Value, other.Value) switch
+            (BoundType.Inclusive, BoundType.Exclusive) => comparer.Compare(this.Value, other.Value) switch
             {
                 0 => -1,
                 int o => o,
             },
 
-            (BoundType.Exclusive, BoundType.Inclusive) => comparer.Compare(Value, other.Value) switch
+            (BoundType.Exclusive, BoundType.Inclusive) => comparer.Compare(this.Value, other.Value) switch
             {
                 0 => 1,
                 int o => o,
@@ -149,7 +149,7 @@ namespace Yoakke.Collections.Intervals
         /// <param name="other">The other bound to compare.</param>
         /// <param name="comparer">The comparer to use.</param>
         /// <returns>See the documentation for <see cref="IComparer{T}"/>.</returns>
-        public int CompareTo(UpperBound<T> other, IComparer<T> comparer) => (Type, other.Type) switch
+        public int CompareTo(UpperBound<T> other, IComparer<T> comparer) => (this.Type, other.Type) switch
         {
             (BoundType.Unbounded, BoundType.Unbounded)
          or (BoundType.Unbounded, _)
@@ -157,13 +157,13 @@ namespace Yoakke.Collections.Intervals
 
             (BoundType.Exclusive, BoundType.Exclusive)
          or (BoundType.Exclusive, BoundType.Inclusive)
-         or (BoundType.Inclusive, BoundType.Exclusive) => comparer.Compare(Value, other.Value) switch
+         or (BoundType.Inclusive, BoundType.Exclusive) => comparer.Compare(this.Value, other.Value) switch
          {
              0 => 1,
              int o => o,
          },
 
-            (BoundType.Inclusive, BoundType.Inclusive) => comparer.Compare(Value, other.Value) switch
+            (BoundType.Inclusive, BoundType.Inclusive) => comparer.Compare(this.Value, other.Value) switch
             {
                 0 => -1,
                 int o => o,

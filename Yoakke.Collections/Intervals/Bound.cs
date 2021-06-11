@@ -21,8 +21,8 @@ namespace Yoakke.Collections.Intervals
         {
             get
             {
-                if (Type == BoundType.Unbounded) throw new InvalidOperationException();
-                return value!;
+                if (this.Type == BoundType.Unbounded) throw new InvalidOperationException();
+                return this.value!;
             }
         }
 
@@ -35,7 +35,7 @@ namespace Yoakke.Collections.Intervals
         /// <param name="value">The associated value of the bound, if any.</param>
         public Bound(BoundType type, T? value)
         {
-            Type = type;
+            this.Type = type;
             this.value = value;
         }
 
@@ -43,7 +43,7 @@ namespace Yoakke.Collections.Intervals
         /// Checks, if this is an unbounded interval bound.
         /// </summary>
         /// <returns>True, if this is an unbounded interval bound, false otherwise.</returns>
-        public bool IsUnbounded() => Type == BoundType.Unbounded;
+        public bool IsUnbounded() => this.Type == BoundType.Unbounded;
 
         /// <summary>
         /// Checks, if this is an interval bound that includes it's associated value.
@@ -52,7 +52,7 @@ namespace Yoakke.Collections.Intervals
         /// <returns>True, if this is an inclusive bound.</returns>
         public bool IsInclusive([MaybeNullWhen(false)] out T? value)
         {
-            if (Type == BoundType.Inclusive)
+            if (this.Type == BoundType.Inclusive)
             {
                 value = this.value;
                 return true;
@@ -71,7 +71,7 @@ namespace Yoakke.Collections.Intervals
         /// <returns>True, if this is an exclusive bound.</returns>
         public bool IsExclusive([MaybeNullWhen(false)] out T? value)
         {
-            if (Type == BoundType.Exclusive)
+            if (this.Type == BoundType.Exclusive)
             {
                 value = this.value;
                 return true;

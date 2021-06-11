@@ -20,16 +20,16 @@ namespace Yoakke.SourceGenerator.Common
         }
 
         public void Initialize(GeneratorInitializationContext context) =>
-            context.RegisterForSyntaxNotifications(() => CreateSyntaxReceiver(context));
+            context.RegisterForSyntaxNotifications(() => this.CreateSyntaxReceiver(context));
 
         public void Execute(GeneratorExecutionContext context)
         {
             if (context.SyntaxReceiver is null) return;
-            if (!IsOwnSyntaxReceiver(context.SyntaxReceiver)) return;
+            if (!this.IsOwnSyntaxReceiver(context.SyntaxReceiver)) return;
 
             this.Context = context;
 
-            GenerateCode(context.SyntaxReceiver);
+            this.GenerateCode(context.SyntaxReceiver);
         }
 
         protected abstract ISyntaxReceiver CreateSyntaxReceiver(GeneratorInitializationContext context);
@@ -37,25 +37,25 @@ namespace Yoakke.SourceGenerator.Common
         protected abstract void GenerateCode(ISyntaxReceiver syntaxReceiver);
 
         protected void Report(DiagnosticDescriptor descriptor, params object[] args) =>
-            Context.ReportDiagnostic(Diagnostic.Create(descriptor, null, args));
+            this.Context.ReportDiagnostic(Diagnostic.Create(descriptor, null, args));
 
         protected void Report(DiagnosticDescriptor descriptor, Location location, params object[] args) =>
-            Context.ReportDiagnostic(Diagnostic.Create(descriptor, location, args));
+            this.Context.ReportDiagnostic(Diagnostic.Create(descriptor, location, args));
 
         protected INamedTypeSymbol LoadSymbol(string name)
         {
-            if (!symbolCache.TryGetValue(name, out var value))
+            if (!this.symbolCache.TryGetValue(name, out var value))
             {
-                value = Context.Compilation.GetTypeByMetadataName(name);
+                value = this.Context.Compilation.GetTypeByMetadataName(name);
                 if (value is null) throw new ArgumentException("can't load symbol with name", nameof(name));
-                symbolCache.Add(name, value);
+                this.symbolCache.Add(name, value);
             }
             return value;
         }
 
         protected bool TryGetAttribute(ISymbol symbol, string attributeName, out AttributeData result)
         {
-            var attrSymbol = LoadSymbol(attributeName);
+            var attrSymbol = this.LoadSymbol(attributeName);
             result = symbol
                 .GetAttributes()
                 .Where(attr => SymbolEquals(attr.AttributeClass, attrSymbol))
@@ -64,21 +64,21 @@ namespace Yoakke.SourceGenerator.Common
         }
 
         protected bool HasAttribute(ISymbol symbol, string attributeName) =>
-            TryGetAttribute(symbol, attributeName, out var _);
+            this.TryGetAttribute(symbol, attributeName, out var _);
 
         protected AttributeData GetAttribute(ISymbol symbol, string attributeName)
         {
-            if (!TryGetAttribute(symbol, attributeName, out var attr)) throw new KeyNotFoundException();
+            if (!this.TryGetAttribute(symbol, attributeName, out var attr)) throw new KeyNotFoundException();
             return attr;
         }
 
-        protected void AddSource(string fileName, string text) => Context.AddSource(fileName, text);
+        protected void AddSource(string fileName, string text) => this.Context.AddSource(fileName, text);
 
         protected bool RequireLibrary(string name)
         {
-            if (!Context.Compilation.ReferencedAssemblyNames.Any(ai => ai.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
+            if (!this.Context.Compilation.ReferencedAssemblyNames.Any(ai => ai.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
             {
-                Report(Diagnostics.RequiredLibraryNotReferenced, name);
+                this.Report(Diagnostics.RequiredLibraryNotReferenced, name);
                 return false;
             }
             return true;
@@ -88,7 +88,7 @@ namespace Yoakke.SourceGenerator.Common
         {
             if (!syntax.IsPartial())
             {
-                Report(Diagnostics.TypeDefinitionIsNotPartial, syntax.GetLocation(), syntax.Identifier.ValueText);
+                this.Report(Diagnostics.TypeDefinitionIsNotPartial, syntax.GetLocation(), syntax.Identifier.ValueText);
                 return false;
             }
             return true;
@@ -98,7 +98,7 @@ namespace Yoakke.SourceGenerator.Common
         {
             if (symbol.IsNested())
             {
-                Report(Diagnostics.SymbolIsNested, symbol.Locations.First(), symbol.Name);
+                this.Report(Diagnostics.SymbolIsNested, symbol.Locations.First(), symbol.Name);
                 return false;
             }
             return true;

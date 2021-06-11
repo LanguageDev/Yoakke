@@ -27,9 +27,9 @@
         /// <param name="furthestError">The furthest <see cref="ParseError"/> found so far.</param>
         public ParseOk(T value, int offset, ParseError? furthestError = null)
         {
-            Value = value;
-            Offset = offset;
-            FurthestError = furthestError;
+            this.Value = value;
+            this.Offset = offset;
+            this.FurthestError = furthestError;
         }
 
         public static implicit operator T(ParseOk<T> ok) => ok.Value;

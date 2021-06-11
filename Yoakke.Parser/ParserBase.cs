@@ -31,8 +31,8 @@ namespace Yoakke.Parser
         protected ParserBase(IEnumerable<IToken> tokens)
         {
             // TODO: Make this lazy instead of loading it into the peek-buffer?
-            peek = new RingBuffer<IToken>();
-            foreach (var token in tokens) peek.AddBack(token);
+            this.peek = new RingBuffer<IToken>();
+            foreach (var token in tokens) this.peek.AddBack(token);
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace Yoakke.Parser
         /// <returns>True, if the given token ahead has the certain kind.</returns>
         protected bool TryMatchKind<T>(int offset, T kind, [MaybeNullWhen(false)] out Token<T>? token) where T : notnull
         {
-            if (TryPeek(offset, out var itoken) && itoken is Token<T> t && kind!.Equals(t.Kind))
+            if (this.TryPeek(offset, out var itoken) && itoken is Token<T> t && kind!.Equals(t.Kind))
             {
                 token = t;
                 return true;
@@ -62,7 +62,7 @@ namespace Yoakke.Parser
         /// <param name="token">The token, if it matched the kind.</param>
         /// <returns>True, if the given token ahead has the certain text.</returns>
         protected bool TryMatchText(int offset, string text, [MaybeNullWhen(false)] out IToken? token) =>
-            TryPeek(offset, out token) && token!.Text == text;
+            this.TryPeek(offset, out token) && token!.Text == text;
 
         /// <summary>
         /// Peeks forward in the input.
@@ -72,35 +72,35 @@ namespace Yoakke.Parser
         /// <returns>True, if there were enough tokens to peek ahead the amount.</returns>
         protected bool TryPeek(int offset, [MaybeNullWhen(false)] out IToken? token)
         {
-            if (lexer == null)
+            if (this.lexer == null)
             {
-                if (peek.Count <= offset)
+                if (this.peek.Count <= offset)
                 {
                     token = null;
                     return false;
                 }
-                token = peek[offset];
+                token = this.peek[offset];
                 return true;
             }
             else
             {
-                while (peek.Count <= offset)
+                while (this.peek.Count <= offset)
                 {
-                    if (lexer.IsEnd)
+                    if (this.lexer.IsEnd)
                     {
-                        if (pushedEnd)
+                        if (this.pushedEnd)
                         {
                             token = null;
                             return false;
                         }
                         else
                         {
-                            pushedEnd = true;
+                            this.pushedEnd = true;
                         }
                     }
-                    peek.AddBack(lexer.Next());
+                    this.peek.AddBack(this.lexer.Next());
                 }
-                token = peek[offset];
+                token = this.peek[offset];
                 return true;
             }
         }
@@ -112,7 +112,7 @@ namespace Yoakke.Parser
         /// <returns>True, if the token was successfully consumed.</returns>
         protected bool TryConsume([MaybeNullWhen(false)] out IToken? token)
         {
-            if (!TryPeek(0, out token)) return false;
+            if (!this.TryPeek(0, out token)) return false;
             this.peek.RemoveFront();
             return true;
         }
@@ -124,7 +124,7 @@ namespace Yoakke.Parser
         /// <returns>True, if the tokens were successfully consumed.</returns>
         protected bool TryConsume(int length)
         {
-            if (!TryPeek(length - 1, out var _)) return false;
+            if (!this.TryPeek(length - 1, out var _)) return false;
             for (int i = 0; i < length; ++i) this.peek.RemoveFront();
             return true;
         }

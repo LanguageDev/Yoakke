@@ -24,9 +24,9 @@ namespace Yoakke.Parser.Generator
 
         public PrecedenceEntry(bool left, ISet<object> operators, IMethodSymbol method)
         {
-            Left = left;
-            Operators = operators;
-            Method = method;
+            this.Left = left;
+            this.Operators = operators;
+            this.Method = method;
         }
     }
 }

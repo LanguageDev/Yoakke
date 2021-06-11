@@ -21,8 +21,8 @@
         /// <param name="range">The range in the file.</param>
         public Location(ISourceFile file, Range range)
         {
-            File = file;
-            Range = range;
+            this.File = file;
+            this.Range = range;
         }
     }
 }

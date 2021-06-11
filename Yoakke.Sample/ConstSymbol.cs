@@ -13,10 +13,10 @@ namespace Yoakke.Sample
 
         public ConstSymbol(IReadOnlyScope scope, string name, object? value, Location? definition = null)
         {
-            Scope = scope;
-            Name = name;
-            Value = value;
-            Definition = definition;
+            this.Scope = scope;
+            this.Name = name;
+            this.Value = value;
+            this.Definition = definition;
         }
     }
 }

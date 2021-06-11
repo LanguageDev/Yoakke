@@ -15,9 +15,9 @@ namespace Yoakke.Lsp.Model
 
         public SinceAttribute(int major = 1, int minor = 0, int patch = 0)
         {
-            Major = major;
-            Minor = minor;
-            Patch = patch;
+            this.Major = major;
+            this.Minor = minor;
+            this.Patch = patch;
         }
     }
 }

@@ -15,11 +15,11 @@ namespace Yoakke.Collections
         {
             get
             {
-                if (!readCurrent) throw new InvalidOperationException();
-                return buffer[0];
+                if (!this.readCurrent) throw new InvalidOperationException();
+                return this.buffer[0];
             }
         }
-        object IEnumerator.Current => Current!;
+        object IEnumerator.Current => this.Current!;
 
         private readonly IEnumerator<T> underlying;
         private RingBuffer<T> buffer;
@@ -34,50 +34,50 @@ namespace Yoakke.Collections
 
         public void Dispose()
         {
-            underlying.Dispose();
-            buffer.Clear();
-            buffer = null!;
+            this.underlying.Dispose();
+            this.buffer.Clear();
+            this.buffer = null!;
         }
 
         public void Reset()
         {
-            underlying.Reset();
-            buffer.Clear();
-            readCurrent = false;
+            this.underlying.Reset();
+            this.buffer.Clear();
+            this.readCurrent = false;
         }
 
         public bool MoveNext()
         {
-            if (readCurrent)
+            if (this.readCurrent)
             {
                 // Not the first read
                 // If the buffer is empty, means we have already passed the last element
-                if (buffer.Count == 0) return false;
+                if (this.buffer.Count == 0) return false;
                 // Otherwise we consume the current
-                buffer.RemoveFront();
+                this.buffer.RemoveFront();
             }
             else
             {
                 // This is the first read
-                readCurrent = true;
+                this.readCurrent = true;
             }
-            return TryPeek(0, out var _);
+            return this.TryPeek(0, out var _);
         }
 
         public bool TryPeek(int amount, [MaybeNullWhen(false)] out T? item)
         {
-            while (buffer.Count <= amount)
+            while (this.buffer.Count <= amount)
             {
-                if (underlying.MoveNext())
+                if (this.underlying.MoveNext())
                 {
-                    buffer.AddBack(underlying.Current);
+                    this.buffer.AddBack(this.underlying.Current);
                 }
                 else
                 {
-                    if (!readCurrent && amount == buffer.Count)
+                    if (!this.readCurrent && amount == this.buffer.Count)
                     {
                         // Before first MoveNext, amount == buffer.Count is fine here
-                        item = buffer[amount - 1];
+                        item = this.buffer[amount - 1];
                         return true;
                     }
                     // Not enough items remaining
@@ -85,13 +85,13 @@ namespace Yoakke.Collections
                     return false;
                 }
             }
-            item = buffer[amount];
+            item = this.buffer[amount];
             return true;
         }
 
         public T Peek(int amount)
         {
-            if (!TryPeek(amount, out var item)) throw new ArgumentOutOfRangeException(nameof(amount));
+            if (!this.TryPeek(amount, out var item)) throw new ArgumentOutOfRangeException(nameof(amount));
             return item!;
         }
     }

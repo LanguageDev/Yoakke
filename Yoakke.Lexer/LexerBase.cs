@@ -13,7 +13,7 @@ namespace Yoakke.Lexer
     public abstract class LexerBase<T> : ILexer where T : notnull
     {
         public Position Position { get; private set; }
-        public bool IsEnd => !TryPeek(out var _);
+        public bool IsEnd => !this.TryPeek(out var _);
 
         private readonly TextReader reader;
         private readonly RingBuffer<char> peek;
@@ -57,7 +57,7 @@ namespace Yoakke.Lexer
         {
             for (int i = 0; i < text.Length; ++i)
             {
-                if (!TryPeek(out var ch, offset + i)) return false;
+                if (!this.TryPeek(out var ch, offset + i)) return false;
                 if (ch != text[i]) return false;
             }
             return true;
@@ -71,7 +71,7 @@ namespace Yoakke.Lexer
         /// <returns><True, if there was a character to peek (the end has not been reached)./returns>
         protected bool TryPeek(out char result, int offset = 0)
         {
-            result = Peek(offset);
+            result = this.Peek(offset);
             return this.peek.Count > offset;
         }
 
@@ -98,10 +98,10 @@ namespace Yoakke.Lexer
         /// <returns>The skipped character.</returns>
         protected char Skip()
         {
-            Peek();
+            this.Peek();
             var current = this.peek.RemoveFront();
-            Position = NextPosition(Position, prevChar, current);
-            prevChar = current;
+            this.Position = NextPosition(this.Position, this.prevChar, current);
+            this.prevChar = current;
             return current;
         }
 
@@ -111,7 +111,7 @@ namespace Yoakke.Lexer
         /// <param name="length">The amount of characters to skip.</param>
         protected void Skip(int length)
         {
-            for (int i = 0; i < length; ++i) Skip();
+            for (int i = 0; i < length; ++i) this.Skip();
         }
 
         /// <summary>
@@ -122,7 +122,7 @@ namespace Yoakke.Lexer
         protected string Take(int length)
         {
             var result = new StringBuilder();
-            for (int i = 0; i < length; ++i) result.Append(Skip());
+            for (int i = 0; i < length; ++i) result.Append(this.Skip());
             return result.ToString();
         }
 
@@ -134,13 +134,13 @@ namespace Yoakke.Lexer
         /// <returns>The constructed <see cref="Token{T}"/>.</returns>
         protected Token<T> TakeToken(T kind, int length)
         {
-            var start = Position;
-            var text = length == 0 ? string.Empty : Take(length);
-            var range = new Range(start, Position);
+            var start = this.Position;
+            var text = length == 0 ? string.Empty : this.Take(length);
+            var range = new Range(start, this.Position);
             return new Token<T>(range, text, kind);
         }
 
-        IToken ILexer.Next() => Next();
+        IToken ILexer.Next() => this.Next();
 
         /// <summary>
         /// Lexes the next <see cref="Token{T}"/> in the input.

@@ -14,12 +14,12 @@
 
             public Literal(object value)
             {
-                Value = value;
+                this.Value = value;
             }
 
             public override bool Equals(BnfAst other) => other is Literal lit
-                && Value.Equals(lit.Value);
-            public override int GetHashCode() => Value.GetHashCode();
+                && this.Value.Equals(lit.Value);
+            public override int GetHashCode() => this.Value.GetHashCode();
 
             public override BnfAst Desugar() => this;
 

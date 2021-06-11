@@ -21,21 +21,21 @@ namespace Yoakke.Collections.RegEx
 
             public Seq(RegExAst first, RegExAst second)
             {
-                First = first;
-                Second = second;
+                this.First = first;
+                this.Second = second;
             }
 
             public override bool Equals(RegExAst other) => other is Seq seq
-                && First.Equals(seq.First)
-                && Second.Equals(seq.Second);
-            public override int GetHashCode() => HashCode.Combine(First, Second);
+                && this.First.Equals(seq.First)
+                && this.Second.Equals(seq.Second);
+            public override int GetHashCode() => HashCode.Combine(this.First, this.Second);
 
-            public override RegExAst Desugar() => new Seq(First.Desugar(), Second.Desugar());
+            public override RegExAst Desugar() => new Seq(this.First.Desugar(), this.Second.Desugar());
 
             public override (State Start, State End) ThompsonConstruct(DenseNfa<char> denseNfa)
             {
-                var (firstStart, firstEnd) = First.ThompsonConstruct(denseNfa);
-                var (secondStart, secondEnd) = Second.ThompsonConstruct(denseNfa);
+                var (firstStart, firstEnd) = this.First.ThompsonConstruct(denseNfa);
+                var (secondStart, secondEnd) = this.Second.ThompsonConstruct(denseNfa);
                 denseNfa.AddTransition(firstEnd, Epsilon.Default, secondStart);
                 return (firstStart, secondEnd);
             }

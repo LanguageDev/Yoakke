@@ -23,7 +23,7 @@ namespace Yoakke.Lexer.Generator
                 if (syntaxNode is EnumDeclarationSyntax enumDeclSyntax
                     && enumDeclSyntax.AttributeLists.Count > 0)
                 {
-                    CandidateEnums.Add(enumDeclSyntax);
+                    this.CandidateEnums.Add(enumDeclSyntax);
                 }
             }
         }
@@ -38,35 +38,35 @@ namespace Yoakke.Lexer.Generator
         {
             var receiver = (SyntaxReceiver)syntaxReceiver;
 
-            RequireLibrary("Yoakke.Lexer");
+            this.RequireLibrary("Yoakke.Lexer");
 
             foreach (var syntax in receiver.CandidateEnums)
             {
-                var model = Context.Compilation.GetSemanticModel(syntax.SyntaxTree);
+                var model = this.Context.Compilation.GetSemanticModel(syntax.SyntaxTree);
                 var symbol = model.GetDeclaredSymbol(syntax) as INamedTypeSymbol;
                 // Filter enums without the lexer attributes
-                if (!HasAttribute(symbol!, TypeNames.LexerAttribute)) continue;
+                if (!this.HasAttribute(symbol!, TypeNames.LexerAttribute)) continue;
                 // Generate code for it
-                var generated = GenerateImplementation(symbol!);
+                var generated = this.GenerateImplementation(symbol!);
                 if (generated == null) continue;
-                AddSource($"{symbol!.ToDisplayString()}.Generated.cs", generated);
+                this.AddSource($"{symbol!.ToDisplayString()}.Generated.cs", generated);
             }
         }
 
         private string? GenerateImplementation(INamedTypeSymbol symbol)
         {
             var accessibility = symbol.DeclaredAccessibility.ToString().ToLowerInvariant();
-            var lexerClassName = GetAttribute(symbol, TypeNames.LexerAttribute).GetCtorValue()?.ToString();
+            var lexerClassName = this.GetAttribute(symbol, TypeNames.LexerAttribute).GetCtorValue()?.ToString();
             var namespaceName = symbol.ContainingNamespace.ToDisplayString();
             var enumName = symbol.ToDisplayString();
             var tokenName = $"{TypeNames.Token}<{enumName}>";
 
             // Extract the lexer from the attributes
-            var description = ExtractLexerDescription(symbol);
+            var description = this.ExtractLexerDescription(symbol);
             if (description is null) return null;
 
             // Build the DFA and state -> token associations from the description
-            var dfaResult = BuildDfa(description);
+            var dfaResult = this.BuildDfa(description);
             if (dfaResult is null) return null;
             var (dfa, dfaStateToToken) = dfaResult.Value;
 
@@ -219,7 +219,7 @@ end_loop:
                 }
                 catch (Exception ex)
                 {
-                    Report(Diagnostics.FailedToParseRegularExpression, token.Symbol!.Locations.First(), ex.Message);
+                    this.Report(Diagnostics.FailedToParseRegularExpression, token.Symbol!.Locations.First(), ex.Message);
                     return null;
                 }
             }
@@ -245,14 +245,14 @@ end_loop:
 
         private LexerDescription? ExtractLexerDescription(INamedTypeSymbol symbol)
         {
-            var regexAttr = LoadSymbol(TypeNames.RegexAttribute);
-            var tokenAttr = LoadSymbol(TypeNames.TokenAttribute);
+            var regexAttr = this.LoadSymbol(TypeNames.RegexAttribute);
+            var tokenAttr = this.LoadSymbol(TypeNames.TokenAttribute);
 
             var result = new LexerDescription();
             foreach (var member in symbol.GetMembers().OfType<IFieldSymbol>())
             {
                 // End token
-                if (HasAttribute(member, TypeNames.EndAttribute))
+                if (this.HasAttribute(member, TypeNames.EndAttribute))
                 {
                     if (result.EndSymbol == null)
                     {
@@ -260,13 +260,13 @@ end_loop:
                     }
                     else
                     {
-                        Report(Diagnostics.FundamentalTokenTypeAlreadyDefined, member.Locations.First(), result.EndSymbol.Name, "end");
+                        this.Report(Diagnostics.FundamentalTokenTypeAlreadyDefined, member.Locations.First(), result.EndSymbol.Name, "end");
                         return null;
                     }
                     continue;
                 }
                 // Error token
-                if (HasAttribute(member, TypeNames.ErrorAttribute))
+                if (this.HasAttribute(member, TypeNames.ErrorAttribute))
                 {
                     if (result.ErrorSymbol == null)
                     {
@@ -274,13 +274,13 @@ end_loop:
                     }
                     else
                     {
-                        Report(Diagnostics.FundamentalTokenTypeAlreadyDefined, member.Locations.First(), result.ErrorSymbol.Name, "error");
+                        this.Report(Diagnostics.FundamentalTokenTypeAlreadyDefined, member.Locations.First(), result.ErrorSymbol.Name, "error");
                         return null;
                     }
                     continue;
                 }
                 // Regular token
-                var ignore = HasAttribute(member, TypeNames.IgnoreAttribute);
+                var ignore = this.HasAttribute(member, TypeNames.IgnoreAttribute);
                 // Ask for all regex and token attributes
                 var relevantAttribs = member.GetAttributes()
                     .Where(attr => SymbolEquals(attr.AttributeClass, regexAttr) || SymbolEquals(attr.AttributeClass, tokenAttr))
@@ -303,13 +303,13 @@ end_loop:
                 if (relevantAttribs.Count == 0)
                 {
                     // No attribute, warn
-                    Report(Diagnostics.NoAttributeForTokenType, member.Locations.First(), member.Name);
+                    this.Report(Diagnostics.NoAttributeForTokenType, member.Locations.First(), member.Name);
                 }
             }
             // Check if everything has been filled out
             if (result.EndSymbol == null || result.ErrorSymbol == null)
             {
-                Report(
+                this.Report(
                     Diagnostics.FundamentalTokenTypeNotDefined,
                     symbol.Locations.First(),
                     result.EndSymbol is null ? "end" : "error",

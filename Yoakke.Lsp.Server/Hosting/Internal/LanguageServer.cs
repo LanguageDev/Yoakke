@@ -15,14 +15,14 @@ namespace Yoakke.Lsp.Server.Hosting.Internal
             this.host = host;
         }
 
-        public void Dispose() => host.Dispose();
+        public void Dispose() => this.host.Dispose();
 
-        public void Start() => host.Start();
-        public Task StartAsync(CancellationToken cancellationToken) => host.StartAsync(cancellationToken);
+        public void Start() => this.host.Start();
+        public Task StartAsync(CancellationToken cancellationToken) => this.host.StartAsync(cancellationToken);
 
         public async Task<int> StopAsync(CancellationToken cancellationToken)
         {
-            var lspService = (LspService?)host.Services.GetService(typeof(LspService));
+            var lspService = (LspService?)this.host.Services.GetService(typeof(LspService));
             Debug.Assert(lspService is not null);
             await lspService.StopAsync(cancellationToken);
             return lspService.ExitCode;

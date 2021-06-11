@@ -26,7 +26,7 @@ namespace Yoakke.Parser.Attributes
         /// <param name="tokenType">The token kind type to use as a parser element.</param>
         public ParserAttribute(Type tokenType)
         {
-            TokenType = tokenType;
+            this.TokenType = tokenType;
         }
     }
 }

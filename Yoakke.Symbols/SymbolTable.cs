@@ -7,7 +7,7 @@ namespace Yoakke.Symbols
     /// </summary>
     public class SymbolTable : ISymbolTable
     {
-        IReadOnlyScope IReadOnlySymbolTable.GlobalScope => GlobalScope;
+        IReadOnlyScope IReadOnlySymbolTable.GlobalScope => this.GlobalScope;
         public IScope GlobalScope { get; }
         public IScope CurrentScope { get; set; }
 
@@ -17,29 +17,29 @@ namespace Yoakke.Symbols
         /// <param name="globalScope">The global scope to use.</param>
         public SymbolTable(IScope globalScope)
         {
-            GlobalScope = globalScope;
-            CurrentScope = globalScope;
+            this.GlobalScope = globalScope;
+            this.CurrentScope = globalScope;
         }
 
-        public void PushScope(Func<IScope, IScope> makeScope) => PushScope(makeScope(CurrentScope));
+        public void PushScope(Func<IScope, IScope> makeScope) => this.PushScope(makeScope(this.CurrentScope));
 
         public void PushScope(IScope scope)
         {
-            if (scope.ContainingScope != CurrentScope)
+            if (scope.ContainingScope != this.CurrentScope)
             {
                 throw new ArgumentException(
                     "the given scope does not have the containing scope specified as the current one", nameof(scope));
             }
-            CurrentScope = scope;
+            this.CurrentScope = scope;
         }
 
         public void PopScope()
         {
-            if (CurrentScope.ContainingScope is null)
+            if (this.CurrentScope.ContainingScope is null)
             {
                 throw new InvalidOperationException("parent of current scope was null, can't pop");
             }
-            CurrentScope = (IScope)CurrentScope.ContainingScope;
+            this.CurrentScope = (IScope)this.CurrentScope.ContainingScope;
         }
     }
 }

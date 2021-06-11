@@ -19,7 +19,7 @@ namespace Yoakke.Lexer.Attributes
         /// <param name="regex">The regular expression.</param>
         public RegexAttribute(string regex)
         {
-            Regex = regex;
+            this.Regex = regex;
         }
     }
 }

@@ -23,11 +23,11 @@ namespace Yoakke.Lsp.Server.Hosting.Internal
             this.settings = new();
         }
 
-        public ILanguageServer Build() => new LanguageServer(hostBuilder.Build());
+        public ILanguageServer Build() => new LanguageServer(this.hostBuilder.Build());
 
         public ILanguageServerBuilder ConfigureServices(Action<LanguageServerBuilderContext, IServiceCollection> configureServices)
         {
-            hostBuilder.ConfigureServices((_, serviceCollection) => configureServices(builderContext, serviceCollection));
+            this.hostBuilder.ConfigureServices((_, serviceCollection) => configureServices(this.builderContext, serviceCollection));
             return this;
         }
 
@@ -55,18 +55,18 @@ namespace Yoakke.Lsp.Server.Hosting.Internal
 
         public ILanguageServerBuilder UseSetting(string key, string? value)
         {
-            settings[key] = value;
+            this.settings[key] = value;
             return this;
         }
 
-        public string? GetSetting(string key) => settings[key];
+        public string? GetSetting(string key) => this.settings[key];
 
         internal Stream GetCommunicationStream()
         {
-            if (duplexStream is not null) return duplexStream;
-            if (inputStream is null) throw new InvalidOperationException("no input stream specified");
-            if (outputStream is null) throw new InvalidOperationException("no output stream specified");
-            return FullDuplexStream.Splice(inputStream, outputStream);
+            if (this.duplexStream is not null) return this.duplexStream;
+            if (this.inputStream is null) throw new InvalidOperationException("no input stream specified");
+            if (this.outputStream is null) throw new InvalidOperationException("no output stream specified");
+            return FullDuplexStream.Splice(this.inputStream, this.outputStream);
         }
     }
 }

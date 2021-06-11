@@ -14,18 +14,18 @@
 
             public Call(string name)
             {
-                Name = name;
+                this.Name = name;
             }
 
             public override bool Equals(BnfAst other) => other is Call call
-                && Name.Equals(call.Name);
-            public override int GetHashCode() => Name.GetHashCode();
+                && this.Name.Equals(call.Name);
+            public override int GetHashCode() => this.Name.GetHashCode();
 
             public override BnfAst Desugar() => this;
 
             public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens)
             {
-                var called = ruleSet.GetRule(Name);
+                var called = ruleSet.GetRule(this.Name);
                 return called.Ast.GetParsedType(ruleSet, tokens);
             }
         }

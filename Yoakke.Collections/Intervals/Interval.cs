@@ -37,12 +37,12 @@ namespace Yoakke.Collections.Intervals
         /// <param name="upper">The upper bound of the interval.</param>
         public Interval(LowerBound<T> lower, UpperBound<T> upper)
         {
-            Lower = lower;
-            Upper = upper;
+            this.Lower = lower;
+            this.Upper = upper;
         }
 
-        public override bool Equals(object obj) => obj is Interval<T> iv && Equals(iv);
-        public bool Equals(Interval<T> other) => Equals(other, Comparer<T>.Default);
+        public override bool Equals(object obj) => obj is Interval<T> iv && this.Equals(iv);
+        public bool Equals(Interval<T> other) => this.Equals(other, Comparer<T>.Default);
 
         /// <summary>
         /// Checks if this interval equals another one.
@@ -51,17 +51,17 @@ namespace Yoakke.Collections.Intervals
         /// <param name="comparer">The comparer to use.</param>
         /// <returns>True, if the two intervals are equal.</returns>
         public bool Equals(Interval<T> other, IComparer<T> comparer) =>
-               Lower.CompareTo(other.Lower, comparer) == 0
-            && Upper.CompareTo(other.Upper, comparer) == 0;
+               this.Lower.CompareTo(other.Lower, comparer) == 0
+            && this.Upper.CompareTo(other.Upper, comparer) == 0;
 
-        public override int GetHashCode() => HashCode.Combine(Lower, Upper);
+        public override int GetHashCode() => HashCode.Combine(this.Lower, this.Upper);
 
         /// <summary>
         /// Checks if a value is inside this interval.
         /// </summary>
         /// <param name="value">The value to check.</param>
         /// <returns>True, if the value is inside this interval, false otherwise.</returns>
-        public bool Contains(T value) => Contains(value, Comparer<T>.Default);
+        public bool Contains(T value) => this.Contains(value, Comparer<T>.Default);
 
         /// <summary>
         /// Checks if a value is inside this interval.
@@ -69,20 +69,20 @@ namespace Yoakke.Collections.Intervals
         /// <param name="value">The value to check.</param>
         /// <param name="comparer">The comparer to use.</param>
         /// <returns>True, if the value is inside this interval, false otherwise.</returns>
-        public bool Contains(T value, IComparer<T> comparer) => (Lower.Type, Upper.Type) switch
+        public bool Contains(T value, IComparer<T> comparer) => (this.Lower.Type, this.Upper.Type) switch
         {
             (BoundType.Unbounded, BoundType.Unbounded) => true,
 
-            (BoundType.Unbounded, BoundType.Exclusive) => comparer.Compare(value, Upper.Value) < 0,
-            (BoundType.Unbounded, BoundType.Inclusive) => comparer.Compare(value, Upper.Value) <= 0,
+            (BoundType.Unbounded, BoundType.Exclusive) => comparer.Compare(value, this.Upper.Value) < 0,
+            (BoundType.Unbounded, BoundType.Inclusive) => comparer.Compare(value, this.Upper.Value) <= 0,
 
-            (BoundType.Exclusive, BoundType.Unbounded) => comparer.Compare(Lower.Value, value) < 0,
-            (BoundType.Inclusive, BoundType.Unbounded) => comparer.Compare(Lower.Value, value) <= 0,
+            (BoundType.Exclusive, BoundType.Unbounded) => comparer.Compare(this.Lower.Value, value) < 0,
+            (BoundType.Inclusive, BoundType.Unbounded) => comparer.Compare(this.Lower.Value, value) <= 0,
 
-            (BoundType.Exclusive, BoundType.Exclusive) => comparer.Compare(Lower.Value, value) < 0 && comparer.Compare(value, Lower.Value) < 0,
-            (BoundType.Exclusive, BoundType.Inclusive) => comparer.Compare(Lower.Value, value) < 0 && comparer.Compare(value, Lower.Value) <= 0,
-            (BoundType.Inclusive, BoundType.Exclusive) => comparer.Compare(Lower.Value, value) <= 0 && comparer.Compare(value, Lower.Value) < 0,
-            (BoundType.Inclusive, BoundType.Inclusive) => comparer.Compare(Lower.Value, value) <= 0 && comparer.Compare(value, Lower.Value) <= 0,
+            (BoundType.Exclusive, BoundType.Exclusive) => comparer.Compare(this.Lower.Value, value) < 0 && comparer.Compare(value, this.Lower.Value) < 0,
+            (BoundType.Exclusive, BoundType.Inclusive) => comparer.Compare(this.Lower.Value, value) < 0 && comparer.Compare(value, this.Lower.Value) <= 0,
+            (BoundType.Inclusive, BoundType.Exclusive) => comparer.Compare(this.Lower.Value, value) <= 0 && comparer.Compare(value, this.Lower.Value) < 0,
+            (BoundType.Inclusive, BoundType.Inclusive) => comparer.Compare(this.Lower.Value, value) <= 0 && comparer.Compare(value, this.Lower.Value) <= 0,
 
             _ => throw new InvalidOperationException(),
         };
@@ -91,18 +91,18 @@ namespace Yoakke.Collections.Intervals
         /// Checks if this interval is empty, meaning that it cannot possibly contain any value.
         /// </summary>
         /// <returns>True, if the interval is empty, false otherwise.</returns>
-        public bool IsEmpty() => IsEmpty(Comparer<T>.Default);
+        public bool IsEmpty() => this.IsEmpty(Comparer<T>.Default);
 
         /// <summary>
         /// Checks if this interval is empty, meaning that it cannot possibly contain any value.
         /// </summary>
         /// <param name="comparer">The comparer to use.</param>
         /// <returns>True, if the interval is empty, false otherwise.</returns>
-        public bool IsEmpty(IComparer<T> comparer) => (Lower.Type, Upper.Type) switch
+        public bool IsEmpty(IComparer<T> comparer) => (this.Lower.Type, this.Upper.Type) switch
         {
             (BoundType.Inclusive, BoundType.Exclusive)
          or (BoundType.Exclusive, BoundType.Inclusive)
-         or (BoundType.Exclusive, BoundType.Exclusive) => comparer.Compare(Lower.Value, Upper.Value) >= 0,
+         or (BoundType.Exclusive, BoundType.Exclusive) => comparer.Compare(this.Lower.Value, this.Upper.Value) >= 0,
 
             _ => false,
         };
@@ -112,7 +112,7 @@ namespace Yoakke.Collections.Intervals
         /// </summary>
         /// <param name="other">The other interval.</param>
         /// <returns>True, if this interval is before the other one, false otherwise.</returns>
-        public bool IsBefore(Interval<T> other) => IsBefore(other, Comparer<T>.Default);
+        public bool IsBefore(Interval<T> other) => this.IsBefore(other, Comparer<T>.Default);
 
         /// <summary>
         /// Checks if this interval is before another one (no overlap).
@@ -120,14 +120,14 @@ namespace Yoakke.Collections.Intervals
         /// <param name="other">The other interval.</param>
         /// <param name="comparer">The comparer to use.</param>
         /// <returns>True, if this interval is before the other one, false otherwise.</returns>
-        public bool IsBefore(Interval<T> other, IComparer<T> comparer) => Upper.CompareTo(other.Lower, comparer) < 0;
+        public bool IsBefore(Interval<T> other, IComparer<T> comparer) => this.Upper.CompareTo(other.Lower, comparer) < 0;
 
         /// <summary>
         /// Checks if this interval is disjunct with another one.
         /// </summary>
         /// <param name="other">The other interval.</param>
         /// <returns>True, if this interval is disjunct with the other one, false otherwise.</returns>
-        public bool IsDisjunct(Interval<T> other) => IsDisjunct(other, Comparer<T>.Default);
+        public bool IsDisjunct(Interval<T> other) => this.IsDisjunct(other, Comparer<T>.Default);
 
         /// <summary>
         /// Checks if this interval is disjunct with another one.
@@ -135,14 +135,14 @@ namespace Yoakke.Collections.Intervals
         /// <param name="other">The other interval.</param>
         /// <param name="comparer">The comparer to use.</param>
         /// <returns>True, if this interval is disjunct with the other one, false otherwise.</returns>
-        public bool IsDisjunct(Interval<T> other, IComparer<T> comparer) => IsBefore(other, comparer) || other.IsBefore(this, comparer);
+        public bool IsDisjunct(Interval<T> other, IComparer<T> comparer) => this.IsBefore(other, comparer) || other.IsBefore(this, comparer);
 
         /// <summary>
         /// Calculates the relation between this and another interval.
         /// </summary>
         /// <param name="other">The other interval.</param>
         /// <returns>The object that describes the relation of the intervals.</returns>
-        public IntervalRelation<T> RelationTo(Interval<T> other) => RelationTo(other, Comparer<T>.Default);
+        public IntervalRelation<T> RelationTo(Interval<T> other) => this.RelationTo(other, Comparer<T>.Default);
 
         /// <summary>
         /// Calculates the relation between this and another interval.
@@ -152,7 +152,7 @@ namespace Yoakke.Collections.Intervals
         /// <returns>The object that describes the relation of the intervals.</returns>
         public IntervalRelation<T> RelationTo(Interval<T> other, IComparer<T> comparer)
         {
-            var (first, second) = Lower.CompareTo(other.Lower, comparer) < 0 ? (this, other) : (other, this);
+            var (first, second) = this.Lower.CompareTo(other.Lower, comparer) < 0 ? (this, other) : (other, this);
 
             if (first.Upper.IsTouching(second.Lower, comparer)) return new IntervalRelation<T>.Touching(first, second);
             if (first.Upper.CompareTo(second.Lower, comparer) < 0) return new IntervalRelation<T>.Disjunct(first, second);
@@ -183,18 +183,18 @@ namespace Yoakke.Collections.Intervals
 
         public override string ToString()
         {
-            var lower = Lower.Type switch
+            var lower = this.Lower.Type switch
             {
                 BoundType.Unbounded => "(-infty",
-                BoundType.Exclusive => $"({Lower.Value}",
-                BoundType.Inclusive => $"[{Lower.Value}",
+                BoundType.Exclusive => $"({this.Lower.Value}",
+                BoundType.Inclusive => $"[{this.Lower.Value}",
                 _ => throw new InvalidOperationException(),
             };
-            var upper = Upper.Type switch
+            var upper = this.Upper.Type switch
             {
                 BoundType.Unbounded => "+infty)",
-                BoundType.Exclusive => $"{Upper.Value})",
-                BoundType.Inclusive => $"{Upper.Value}]",
+                BoundType.Exclusive => $"{this.Upper.Value})",
+                BoundType.Inclusive => $"{this.Upper.Value}]",
                 _ => throw new InvalidOperationException(),
             };
             return $"{lower}; {upper}";

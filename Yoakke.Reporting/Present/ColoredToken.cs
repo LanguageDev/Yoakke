@@ -20,9 +20,9 @@
 
         public ColoredToken(int start, int length, TokenKind kind)
         {
-            Start = start;
-            Length = length;
-            Kind = kind;
+            this.Start = start;
+            this.Length = length;
+            this.Kind = kind;
         }
     }
 }

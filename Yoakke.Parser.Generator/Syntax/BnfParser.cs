@@ -27,51 +27,51 @@ namespace Yoakke.Parser.Generator.Syntax
 
         public (string Name, BnfAst? Ast) ParseRule()
         {
-            var name = Expect(BnfTokenType.Identifier);
+            var name = this.Expect(BnfTokenType.Identifier);
             BnfAst? ast = null;
-            if (TryMatch(BnfTokenType.Colon)) ast = ParseAlt();
-            Expect(BnfTokenType.End);
+            if (this.TryMatch(BnfTokenType.Colon)) ast = this.ParseAlt();
+            this.Expect(BnfTokenType.End);
             return (name.Value, ast);
         }
 
         private BnfAst ParseAlt()
         {
-            var first = ParseSeq();
-            if (TryMatch(BnfTokenType.Pipe)) return new BnfAst.Alt(first, ParseAlt());
+            var first = this.ParseSeq();
+            if (this.TryMatch(BnfTokenType.Pipe)) return new BnfAst.Alt(first, this.ParseAlt());
             return first;
         }
 
         private BnfAst ParseSeq()
         {
-            var first = ParsePostfix();
-            var ptype = Peek().Type;
+            var first = this.ParsePostfix();
+            var ptype = this.Peek().Type;
             if (ptype != BnfTokenType.End && ptype != BnfTokenType.CloseParen && ptype != BnfTokenType.Pipe)
             {
-                return new BnfAst.Seq(first, ParseSeq());
+                return new BnfAst.Seq(first, this.ParseSeq());
             }
             return first;
         }
 
         private BnfAst ParsePostfix()
         {
-            var atom = ParseAtom();
-            if (TryMatch(BnfTokenType.QuestionMark)) return new BnfAst.Opt(atom);
-            if (TryMatch(BnfTokenType.Star)) return new BnfAst.Rep0(atom);
-            if (TryMatch(BnfTokenType.Plus)) return new BnfAst.Rep1(atom);
+            var atom = this.ParseAtom();
+            if (this.TryMatch(BnfTokenType.QuestionMark)) return new BnfAst.Opt(atom);
+            if (this.TryMatch(BnfTokenType.Star)) return new BnfAst.Rep0(atom);
+            if (this.TryMatch(BnfTokenType.Plus)) return new BnfAst.Rep1(atom);
             return atom;
         }
 
         private BnfAst ParseAtom()
         {
-            if (TryMatch(BnfTokenType.OpenParen))
+            if (this.TryMatch(BnfTokenType.OpenParen))
             {
-                var sub = ParseAlt();
-                Expect(BnfTokenType.CloseParen);
+                var sub = this.ParseAlt();
+                this.Expect(BnfTokenType.CloseParen);
                 return new BnfAst.Group(sub);
             }
-            if (TryMatch(BnfTokenType.Identifier, out var ident))
+            if (this.TryMatch(BnfTokenType.Identifier, out var ident))
             {
-                if (tokenKinds.TryGetVariant(ident!.Value, out var kind))
+                if (this.tokenKinds.TryGetVariant(ident!.Value, out var kind))
                 {
                     // It's a literal match
                     return new BnfAst.Literal(kind);
@@ -82,29 +82,29 @@ namespace Yoakke.Parser.Generator.Syntax
                     return new BnfAst.Call(ident.Value);
                 }
             }
-            if (TryMatch(BnfTokenType.StringLiteral, out var str)) return new BnfAst.Literal(StrToString(str!));
+            if (this.TryMatch(BnfTokenType.StringLiteral, out var str)) return new BnfAst.Literal(this.StrToString(str!));
 
-            throw new FormatException($"Unexpected token {Peek().Type} (index {Peek().Index})");
+            throw new FormatException($"Unexpected token {this.Peek().Type} (index {this.Peek().Index})");
         }
 
         private string StrToString(BnfToken token) => token.Value.Substring(1, token.Value.Length - 2);
 
         private BnfToken Expect(BnfTokenType type)
         {
-            if (!TryMatch(type, out var token))
+            if (!this.TryMatch(type, out var token))
             {
-                throw new FormatException($"Expected token {type}, but got {Peek().Value} (index {Peek().Index})");
+                throw new FormatException($"Expected token {type}, but got {this.Peek().Value} (index {this.Peek().Index})");
             }
             return token!;
         }
 
-        private bool TryMatch(BnfTokenType type) => TryMatch(type, out var _);
+        private bool TryMatch(BnfTokenType type) => this.TryMatch(type, out var _);
 
         private bool TryMatch(BnfTokenType type, [MaybeNullWhen(false)] out BnfToken? token)
         {
-            if (Peek().Type == type)
+            if (this.Peek().Type == type)
             {
-                token = Consume();
+                token = this.Consume();
                 return true;
             }
             else
@@ -116,11 +116,11 @@ namespace Yoakke.Parser.Generator.Syntax
 
         private BnfToken Consume()
         {
-            var result = Peek();
-            ++index;
+            var result = this.Peek();
+            ++this.index;
             return result;
         }
 
-        private BnfToken Peek(int ahead = 0) => tokens[index + ahead];
+        private BnfToken Peek(int ahead = 0) => this.tokens[this.index + ahead];
     }
 }

@@ -19,7 +19,7 @@ namespace Yoakke.Parser.Attributes
         /// <param name="rule">The rule in grammar notation.</param>
         public RuleAttribute(string rule)
         {
-            Rule = rule;
+            this.Rule = rule;
         }
     }
 }

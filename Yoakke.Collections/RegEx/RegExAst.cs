@@ -21,7 +21,7 @@ namespace Yoakke.Collections.RegEx
         /// <returns>The starting and ending state of the NFA construct.</returns>
         public abstract (State Start, State End) ThompsonConstruct(DenseNfa<char> denseNfa);
 
-        public override bool Equals(object obj) => obj is RegExAst r && Equals(r);
+        public override bool Equals(object obj) => obj is RegExAst r && this.Equals(r);
         public abstract bool Equals(RegExAst other);
         public abstract override int GetHashCode();
     }

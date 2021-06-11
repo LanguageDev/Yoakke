@@ -26,19 +26,19 @@ namespace Yoakke.Lexer
         /// <param name="kind">The <see cref="TKind"/> of the <see cref="Token{TKind}"/>.</param>
         public Token(Range range, string text, TKind kind)
         {
-            Range = range;
-            Text = text;
-            Kind = kind;
+            this.Range = range;
+            this.Text = text;
+            this.Kind = kind;
         }
 
-        public override bool Equals(object? obj) => Equals(obj as Token<TKind>);
-        public bool Equals(IToken? other) => Equals(other as Token<TKind>);
+        public override bool Equals(object? obj) => this.Equals(obj as Token<TKind>);
+        public bool Equals(IToken? other) => this.Equals(other as Token<TKind>);
         public bool Equals(Token<TKind>? other) =>
                other is not null
-            && Range == other.Range
-            && Text == other.Text
-            && Kind.Equals(other.Kind);
+            && this.Range == other.Range
+            && this.Text == other.Text
+            && this.Kind.Equals(other.Kind);
 
-        public override int GetHashCode() => HashCode.Combine(Range, Text, Kind);
+        public override int GetHashCode() => HashCode.Combine(this.Range, this.Text, this.Kind);
     }
 }

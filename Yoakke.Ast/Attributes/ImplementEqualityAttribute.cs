@@ -19,7 +19,7 @@ namespace Yoakke.Ast.Attributes
         /// <param name="implement">True, if equality should be auto-implemented.</param>
         public ImplementEqualityAttribute(bool implement = true)
         {
-            Implement = implement;
+            this.Implement = implement;
         }
     }
 }

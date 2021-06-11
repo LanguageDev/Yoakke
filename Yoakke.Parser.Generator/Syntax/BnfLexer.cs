@@ -32,58 +32,58 @@ namespace Yoakke.Parser.Generator.Syntax
         public BnfToken Next()
         {
             begin:
-            if (index >= source.Length) return new BnfToken(index, string.Empty, BnfTokenType.End);
+            if (this.index >= this.source.Length) return new BnfToken(this.index, string.Empty, BnfTokenType.End);
 
-            var ch = source[index];
+            var ch = this.source[this.index];
             if (ch == ' ' || ch == '\t')
             {
-                ++index;
+                ++this.index;
                 goto begin;
             }
 
             switch (ch)
             {
-            case ':': return Make(1, BnfTokenType.Colon);
-            case '|': return Make(1, BnfTokenType.Pipe);
-            case '*': return Make(1, BnfTokenType.Star);
-            case '+': return Make(1, BnfTokenType.Plus);
-            case '?': return Make(1, BnfTokenType.QuestionMark);
-            case '(': return Make(1, BnfTokenType.OpenParen);
-            case ')': return Make(1, BnfTokenType.CloseParen);
+            case ':': return this.Make(1, BnfTokenType.Colon);
+            case '|': return this.Make(1, BnfTokenType.Pipe);
+            case '*': return this.Make(1, BnfTokenType.Star);
+            case '+': return this.Make(1, BnfTokenType.Plus);
+            case '?': return this.Make(1, BnfTokenType.QuestionMark);
+            case '(': return this.Make(1, BnfTokenType.OpenParen);
+            case ')': return this.Make(1, BnfTokenType.CloseParen);
             }
 
             // String literal
             if (ch == '\'')
             {
                 int length = 1;
-                for (; Peek(length, '\'') != '\''; ++length) ;
-                if (index + length >= source.Length) throw new FormatException($"Unclosed string literal starting at index {index}");
+                for (; this.Peek(length, '\'') != '\''; ++length) ;
+                if (this.index + length >= this.source.Length) throw new FormatException($"Unclosed string literal starting at index {this.index}");
                 // We consume the last ' too
                 ++length;
-                return Make(length, BnfTokenType.StringLiteral);
+                return this.Make(length, BnfTokenType.StringLiteral);
             }
 
             // Identifier
             if (IsIdent(ch))
             {
                 int length = 1;
-                for (; IsIdent(Peek(length)); ++length) ;
-                return Make(length, BnfTokenType.Identifier);
+                for (; IsIdent(this.Peek(length)); ++length) ;
+                return this.Make(length, BnfTokenType.Identifier);
             }
 
-            throw new FormatException($"Unknown character '{source[index]}' at index {index}");
+            throw new FormatException($"Unknown character '{this.source[this.index]}' at index {this.index}");
         }
 
         private BnfToken Make(int length, BnfTokenType type)
         {
-            var value = source.Substring(index, length);
-            var token = new BnfToken(index, value, type);
-            index += length;
+            var value = this.source.Substring(this.index, length);
+            var token = new BnfToken(this.index, value, type);
+            this.index += length;
             return token;
         }
 
         private char Peek(int offset = 0, char @default = '\0') =>
-            index + offset >= source.Length ? @default : source[index + offset];
+            this.index + offset >= this.source.Length ? @default : this.source[this.index + offset];
 
         private static bool IsIdent(char ch) => char.IsLetterOrDigit(ch) || ch == '_';
     }

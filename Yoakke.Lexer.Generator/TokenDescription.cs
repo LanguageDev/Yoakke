@@ -22,9 +22,9 @@ namespace Yoakke.Lexer.Generator
 
         public TokenDescription(IFieldSymbol symbol, string regex, bool ignore)
         {
-            Symbol = symbol;
-            Regex = regex;
-            Ignore = ignore;
+            this.Symbol = symbol;
+            this.Regex = regex;
+            this.Ignore = ignore;
         }
     }
 }

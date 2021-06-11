@@ -27,32 +27,32 @@ namespace Yoakke.Lexer.Tests
             public override Token<TokenType> Next()
             {
                 begin:
-                if (IsEnd) return TakeToken(TokenType.End, 0);
-                if (char.IsWhiteSpace(Peek()))
+                if (this.IsEnd) return this.TakeToken(TokenType.End, 0);
+                if (char.IsWhiteSpace(this.Peek()))
                 {
-                    Skip();
+                    this.Skip();
                     goto begin;
                 }
-                if (Matches("//"))
+                if (this.Matches("//"))
                 {
                     int i = 0;
-                    for (; Peek(i, '\n') != '\n'; ++i) ;
-                    Skip(i);
+                    for (; this.Peek(i, '\n') != '\n'; ++i) ;
+                    this.Skip(i);
                     goto begin;
                 }
-                if (Peek() == '+') return TakeToken(TokenType.Plus, 1);
-                if (Peek() == '-') return TakeToken(TokenType.Minus, 1);
-                if (char.IsDigit(Peek()))
+                if (this.Peek() == '+') return this.TakeToken(TokenType.Plus, 1);
+                if (this.Peek() == '-') return this.TakeToken(TokenType.Minus, 1);
+                if (char.IsDigit(this.Peek()))
                 {
                     int length = 1;
-                    for (; char.IsDigit(Peek(length)); ++length) ;
-                    return TakeToken(TokenType.Number, length);
+                    for (; char.IsDigit(this.Peek(length)); ++length) ;
+                    return this.TakeToken(TokenType.Number, length);
                 }
-                if (char.IsLetter(Peek()))
+                if (char.IsLetter(this.Peek()))
                 {
                     int length = 1;
-                    for (; char.IsLetterOrDigit(Peek(length)); ++length) ;
-                    var result = TakeToken(TokenType.Identifier, length);
+                    for (; char.IsLetterOrDigit(this.Peek(length)); ++length) ;
+                    var result = this.TakeToken(TokenType.Identifier, length);
                     return result.Text switch
                     {
                         "if" => new Token<TokenType>(result.Range, result.Text, TokenType.KwIf),
@@ -60,7 +60,7 @@ namespace Yoakke.Lexer.Tests
                         _ => result,
                     };
                 }
-                return TakeToken(TokenType.Error, 1);
+                return this.TakeToken(TokenType.Error, 1);
             }
         }
 

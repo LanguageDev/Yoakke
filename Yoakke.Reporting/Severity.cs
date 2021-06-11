@@ -30,14 +30,14 @@ namespace Yoakke.Reporting
         /// <param name="priority">The priority of the severity level.</param>
         public Severity(string name, int priority)
         {
-            Name = name;
-            Priority = priority;
+            this.Name = name;
+            this.Priority = priority;
         }
 
-        public override bool Equals(object? obj) => obj is Severity s && Equals(s);
-        public bool Equals(Severity other) => Priority == other.Priority;
-        public override int GetHashCode() => Priority.GetHashCode();
-        public int CompareTo(Severity other) => Priority - other.Priority;
+        public override bool Equals(object? obj) => obj is Severity s && this.Equals(s);
+        public bool Equals(Severity other) => this.Priority == other.Priority;
+        public override int GetHashCode() => this.Priority.GetHashCode();
+        public int CompareTo(Severity other) => this.Priority - other.Priority;
 
         public static bool operator ==(Severity left, Severity right) => left.Equals(right);
         public static bool operator !=(Severity left, Severity right) => !left.Equals(right);

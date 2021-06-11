@@ -17,15 +17,15 @@ namespace Yoakke.Collections.RegEx
 
             public Rep1(RegExAst subexpr)
             {
-                Subexpr = subexpr;
+                this.Subexpr = subexpr;
             }
 
-            public override bool Equals(RegExAst other) => other is Rep1 r && Subexpr.Equals(r.Subexpr);
-            public override int GetHashCode() => Subexpr.GetHashCode();
+            public override bool Equals(RegExAst other) => other is Rep1 r && this.Subexpr.Equals(r.Subexpr);
+            public override int GetHashCode() => this.Subexpr.GetHashCode();
 
             public override RegExAst Desugar()
             {
-                var sub = Subexpr.Desugar();
+                var sub = this.Subexpr.Desugar();
                 return new Seq(sub, new Rep0(sub));
             }
 

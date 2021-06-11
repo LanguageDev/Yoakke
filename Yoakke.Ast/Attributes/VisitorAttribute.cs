@@ -24,8 +24,8 @@ namespace Yoakke.Ast.Attributes
         /// <param name="type">The type to return from the visitor calls.</param>
         public VisitorAttribute(string name, Type type)
         {
-            Name = name;
-            Type = type;
+            this.Name = name;
+            this.Type = type;
         }
     }
 }

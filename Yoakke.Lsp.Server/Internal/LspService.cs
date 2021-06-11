@@ -53,25 +53,25 @@ namespace Yoakke.Lsp.Server.Internal
             this.state = ServerState.NotStarted;
             this.jsonRpc.AddLocalRpcTarget(this, JsonRpcTargetOptions);
             // Dependencies
-            textDocumentSyncHandler = serviceProvider.GetRequiredService<ITextDocumentSyncHandler>();
+            this.textDocumentSyncHandler = serviceProvider.GetRequiredService<ITextDocumentSyncHandler>();
         }
 
         // Lifecycle ///////////////////////////////////////////////////////////
 
         public void Dispose()
         {
-            jsonRpc.Dispose();
+            this.jsonRpc.Dispose();
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            SetServerState(ServerState.WaitingForInitializeRequest);
-            jsonRpc.StartListening();
+            this.SetServerState(ServerState.WaitingForInitializeRequest);
+            this.jsonRpc.StartListening();
             return Task.CompletedTask;
         }
 
         // TODO: Cancellation?
-        public Task StopAsync(CancellationToken cancellationToken) => jsonRpc.Completion;
+        public Task StopAsync(CancellationToken cancellationToken) => this.jsonRpc.Completion;
 
         // Messages ////////////////////////////////////////////////////////////
 
@@ -80,44 +80,44 @@ namespace Yoakke.Lsp.Server.Internal
         [JsonRpcMethod("initialize", UseSingleObjectParameterDeserialization = true)]
         private InitializeResult Initialize(InitializeParams initializeParams)
         {
-            AssertState(ServerState.WaitingForInitializeRequest, JsonRpcErrorCode.InvalidRequest);
+            this.AssertState(ServerState.WaitingForInitializeRequest, JsonRpcErrorCode.InvalidRequest);
             // We are waiting for an initialize request and just received one, answer with the proper result
             var result = new InitializeResult
             {
                 ServerInfo = new InitializeResult.ServerInformation
                 {
-                    Name = Name ?? "Language Server",
-                    Version = Version ?? "0.0.1",
+                    Name = this.Name ?? "Language Server",
+                    Version = this.Version ?? "0.0.1",
                 },
                 Capabilities = new ServerCapabilities
                 {
-                    TextDocumentSync = GetTextDocumentSyncCapability(),
+                    TextDocumentSync = this.GetTextDocumentSyncCapability(),
                 }
             };
             // Increment server state
-            SetServerState(ServerState.WaitingForInitializedNotification);
+            this.SetServerState(ServerState.WaitingForInitializedNotification);
             return result;
         }
 
         [JsonRpcMethod("initialized", UseSingleObjectParameterDeserialization = true)]
         private void Initialized(InitializedParams initializedParams)
         {
-            AssertState(ServerState.WaitingForInitializedNotification, JsonRpcErrorCode.InvalidRequest);
+            this.AssertState(ServerState.WaitingForInitializedNotification, JsonRpcErrorCode.InvalidRequest);
             // Client told us that they got our initialize response
             // TODO: Dynamically register capabilities
             // Increment server state
             // We can go into normal operation
-            SetServerState(ServerState.Operating);
+            this.SetServerState(ServerState.Operating);
         }
 
         [JsonRpcMethod("shutdown")]
         private object? Shutdown()
         {
-            AssertState(ServerState.Operating, JsonRpcErrorCode.InvalidRequest);
+            this.AssertState(ServerState.Operating, JsonRpcErrorCode.InvalidRequest);
             // Client has requested a shutdown
             // TODO: Any cleanup?
             // Increment server state
-            SetServerState(ServerState.ShutdownRequested);
+            this.SetServerState(ServerState.ShutdownRequested);
             return null;
         }
 
@@ -125,11 +125,11 @@ namespace Yoakke.Lsp.Server.Internal
         private void Exit()
         {
             // The client has notified to terminate process, set appropriate exit code
-            ExitCode = (state == ServerState.ShutdownRequested) ? 0 : 1;
+            this.ExitCode = (this.state == ServerState.ShutdownRequested) ? 0 : 1;
             // Increment server state
-            SetServerState(ServerState.Exited);
+            this.SetServerState(ServerState.Exited);
             // Kill the connection
-            if (jsonRpc != null) jsonRpc.Dispose();
+            if (this.jsonRpc != null) this.jsonRpc.Dispose();
         }
 
         // Text synchronization ////////
@@ -137,43 +137,43 @@ namespace Yoakke.Lsp.Server.Internal
         [JsonRpcMethod("textDocument/didOpen", UseSingleObjectParameterDeserialization = true)]
         private void TextDocument_DidOpen(DidOpenTextDocumentParams didOpenParams)
         {
-            AssertState(ServerState.Operating, JsonRpcErrorCode.InvalidRequest);
-            textDocumentSyncHandler.DidOpen(didOpenParams);
+            this.AssertState(ServerState.Operating, JsonRpcErrorCode.InvalidRequest);
+            this.textDocumentSyncHandler.DidOpen(didOpenParams);
         }
 
         [JsonRpcMethod("textDocument/didChange", UseSingleObjectParameterDeserialization = true)]
         private void TextDocument_DidChange(DidChangeTextDocumentParams didChangeParams)
         {
-            AssertState(ServerState.Operating, JsonRpcErrorCode.InvalidRequest);
-            textDocumentSyncHandler.DidChange(didChangeParams);
+            this.AssertState(ServerState.Operating, JsonRpcErrorCode.InvalidRequest);
+            this.textDocumentSyncHandler.DidChange(didChangeParams);
         }
 
         [JsonRpcMethod("textDocument/willSave", UseSingleObjectParameterDeserialization = true)]
         private void TextDocument_WillSave(WillSaveTextDocumentParams willSaveParams)
         {
-            AssertState(ServerState.Operating, JsonRpcErrorCode.InvalidRequest);
-            textDocumentSyncHandler.WillSave(willSaveParams);
+            this.AssertState(ServerState.Operating, JsonRpcErrorCode.InvalidRequest);
+            this.textDocumentSyncHandler.WillSave(willSaveParams);
         }
 
         [JsonRpcMethod("textDocument/willSaveWaitUntil", UseSingleObjectParameterDeserialization = true)]
         private IReadOnlyList<TextEdit>? TextDocument_WillSaveWaitUntil(WillSaveTextDocumentParams willSaveParams)
         {
-            AssertState(ServerState.Operating, JsonRpcErrorCode.InvalidRequest);
-            return textDocumentSyncHandler.WillSaveWaitUntil(willSaveParams);
+            this.AssertState(ServerState.Operating, JsonRpcErrorCode.InvalidRequest);
+            return this.textDocumentSyncHandler.WillSaveWaitUntil(willSaveParams);
         }
 
         [JsonRpcMethod("textDocument/didSave", UseSingleObjectParameterDeserialization = true)]
         private void TextDocument_DidSave(DidSaveTextDocumentParams didSaveParams)
         {
-            AssertState(ServerState.Operating, JsonRpcErrorCode.InvalidRequest);
-            textDocumentSyncHandler.DidSave(didSaveParams);
+            this.AssertState(ServerState.Operating, JsonRpcErrorCode.InvalidRequest);
+            this.textDocumentSyncHandler.DidSave(didSaveParams);
         }
 
         [JsonRpcMethod("textDocument/didClose", UseSingleObjectParameterDeserialization = true)]
         private void TextDocument_DidClose(DidCloseTextDocumentParams didCloseParams)
         {
-            AssertState(ServerState.Operating, JsonRpcErrorCode.InvalidRequest);
-            textDocumentSyncHandler.DidClose(didCloseParams);
+            this.AssertState(ServerState.Operating, JsonRpcErrorCode.InvalidRequest);
+            this.textDocumentSyncHandler.DidClose(didCloseParams);
         }
 
         // State modification //////////////////////////////////////////////////
@@ -191,7 +191,7 @@ namespace Yoakke.Lsp.Server.Internal
         }
 
         private void AssertState(ServerState expectedState, JsonRpcErrorCode errorCode) =>
-            AssertState(expectedState, (int)errorCode);
+            this.AssertState(expectedState, (int)errorCode);
 
         private void AssertState(ServerState expectedState, int errorCode)
         {
@@ -207,12 +207,12 @@ namespace Yoakke.Lsp.Server.Internal
         // Capability construction
 
         private Either<TextDocumentSyncOptions, TextDocumentSyncKind> GetTextDocumentSyncCapability() =>
-            textDocumentSyncHandler.SendOpenClose
+            this.textDocumentSyncHandler.SendOpenClose
                 ? new TextDocumentSyncOptions
                 {
                     OpenClose = true,
-                    Change = textDocumentSyncHandler.SyncKind,
+                    Change = this.textDocumentSyncHandler.SyncKind,
                 }
-                : textDocumentSyncHandler.SyncKind;
+                : this.textDocumentSyncHandler.SyncKind;
     }
 }

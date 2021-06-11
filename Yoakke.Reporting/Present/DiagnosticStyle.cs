@@ -50,6 +50,6 @@ namespace Yoakke.Reporting.Present
         public int ConnectUpLines { get; set; } = 1;
 
         public ConsoleColor GetSeverityColor(Severity severity) =>
-            SeverityColors.TryGetValue(severity, out var col) ? col : DefaultColor;
+            this.SeverityColors.TryGetValue(severity, out var col) ? col : this.DefaultColor;
     }
 }

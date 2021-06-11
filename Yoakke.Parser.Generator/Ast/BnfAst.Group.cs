@@ -14,19 +14,19 @@
 
             public Group(BnfAst subexpr)
             {
-                Subexpr = subexpr;
+                this.Subexpr = subexpr;
             }
 
             public override bool Equals(BnfAst other) => other is Group group
-               && Subexpr.Equals(group.Subexpr);
-            public override int GetHashCode() => Subexpr.GetHashCode();
+               && this.Subexpr.Equals(group.Subexpr);
+            public override int GetHashCode() => this.Subexpr.GetHashCode();
 
-            public override BnfAst Desugar() => Subexpr is Seq
-                ? new Group(Subexpr.Desugar())
-                : Subexpr.Desugar();
+            public override BnfAst Desugar() => this.Subexpr is Seq
+                ? new Group(this.Subexpr.Desugar())
+                : this.Subexpr.Desugar();
 
             public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens) =>
-                Subexpr.GetParsedType(ruleSet, tokens);
+                this.Subexpr.GetParsedType(ruleSet, tokens);
         }
     }
 }

@@ -25,18 +25,18 @@ namespace Yoakke.Collections.RegEx
 
             public LiteralRange(bool negate, IList<(char From, char To)> ranges)
             {
-                Negate = negate;
-                Ranges = ranges;
+                this.Negate = negate;
+                this.Ranges = ranges;
             }
 
             public override bool Equals(RegExAst other) => other is LiteralRange r
-                && Negate == r.Negate
-                && Ranges.SequenceEqual(r.Ranges);
+                && this.Negate == r.Negate
+                && this.Ranges.SequenceEqual(r.Ranges);
             public override int GetHashCode()
             {
                 var hash = new HashCode();
-                hash.Add(Negate);
-                foreach (var r in Ranges) hash.Add(r);
+                hash.Add(this.Negate);
+                foreach (var r in this.Ranges) hash.Add(r);
                 return hash.ToHashCode();
             }
 
@@ -46,11 +46,11 @@ namespace Yoakke.Collections.RegEx
             {
                 // Build the range
                 var range = new IntervalSet<char>();
-                foreach (var (from, to) in Ranges)
+                foreach (var (from, to) in this.Ranges)
                 {
                     range.Add(new Interval<char>(LowerBound<char>.Inclusive(from), UpperBound<char>.Inclusive(to)));
                 }
-                if (Negate) range.Invert();
+                if (this.Negate) range.Invert();
                 // Write the transitions
                 var start = denseNfa.NewState();
                 var end = denseNfa.NewState();

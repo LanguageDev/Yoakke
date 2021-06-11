@@ -23,8 +23,8 @@
         /// <param name="punctuation">The punctuation element that follows the punctuated one.</param>
         public PunctuatedValue(TValue element, TPunct? punctuation)
         {
-            Value = element;
-            Punctuation = punctuation;
+            this.Value = element;
+            this.Punctuation = punctuation;
         }
     }
 }

@@ -13,15 +13,15 @@ namespace Yoakke.Lsp.Model
     {
         public object Value { get; }
 
-        public bool IsFirst => Value is T1;
-        public bool IsSecond => Value is T2;
+        public bool IsFirst => this.Value is T1;
+        public bool IsSecond => this.Value is T2;
 
-        public T1 AsFirst => (T1)Value;
-        public T2 AsSecond => (T2)Value;
+        public T1 AsFirst => (T1)this.Value;
+        public T2 AsSecond => (T2)this.Value;
 
         protected Either(object value)
         {
-            Value = value;
+            this.Value = value;
         }
 
         public Either(T1 value)
@@ -43,17 +43,17 @@ namespace Yoakke.Lsp.Model
     {
         public object Value { get; }
 
-        public bool IsFirst => Value is T1;
-        public bool IsSecond => Value is T2;
-        public bool IsThird => Value is T3;
+        public bool IsFirst => this.Value is T1;
+        public bool IsSecond => this.Value is T2;
+        public bool IsThird => this.Value is T3;
 
-        public T1 AsFirst => (T1)Value;
-        public T2 AsSecond => (T2)Value;
-        public T3 AsThird => (T3)Value;
+        public T1 AsFirst => (T1)this.Value;
+        public T2 AsSecond => (T2)this.Value;
+        public T3 AsThird => (T3)this.Value;
 
         protected Either(object value)
         {
-            Value = value;
+            this.Value = value;
         }
 
         public Either(T1 value)

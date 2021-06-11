@@ -16,16 +16,16 @@ namespace Yoakke.Parser
         /// <summary>
         /// The punctuated values.
         /// </summary>
-        public IEnumerable<TValue> Values => underlying.Select(e => e.Value);
+        public IEnumerable<TValue> Values => this.underlying.Select(e => e.Value);
         /// <summary>
         /// The punctuations.
         /// </summary>
-        public IEnumerable<TPunct> Punctuations => underlying
+        public IEnumerable<TPunct> Punctuations => this.underlying
             .Select(e => e.Punctuation)
             .OfType<TPunct>();
 
-        public int Count => underlying.Count;
-        public PunctuatedValue<TValue, TPunct> this[int index] => underlying[index];
+        public int Count => this.underlying.Count;
+        public PunctuatedValue<TValue, TPunct> this[int index] => this.underlying[index];
 
         public Punctuated()
             : this(Enumerable.Empty<PunctuatedValue<TValue, TPunct>>())
@@ -34,16 +34,16 @@ namespace Yoakke.Parser
 
         public Punctuated(IReadOnlyList<PunctuatedValue<TValue, TPunct>> elements)
         {
-            underlying = elements;
+            this.underlying = elements;
         }
 
         public Punctuated(IEnumerable<PunctuatedValue<TValue, TPunct>> elements)
         {
-            underlying = elements.ToArray();
+            this.underlying = elements.ToArray();
         }
 
-        public IEnumerator<PunctuatedValue<TValue, TPunct>> GetEnumerator() => underlying.GetEnumerator();
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        public IEnumerator<PunctuatedValue<TValue, TPunct>> GetEnumerator() => this.underlying.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
         // 0 or more without trailing
         public static implicit operator Punctuated<TValue, TPunct>((TValue, IReadOnlyList<(TPunct, TValue)>)? elements)

@@ -13,8 +13,8 @@ namespace Yoakke.Collections.Intervals
         public abstract bool Equals(IntervalRelation<T> other, IComparer<T> comparer);
         public abstract override int GetHashCode();
 
-        public override bool Equals(object obj) => obj is IntervalRelation<T> ir && Equals(ir);
-        public bool Equals(IntervalRelation<T> other) => Equals(other, Comparer<T>.Default);
+        public override bool Equals(object obj) => obj is IntervalRelation<T> ir && this.Equals(ir);
+        public bool Equals(IntervalRelation<T> other) => this.Equals(other, Comparer<T>.Default);
 
         public static bool operator ==(IntervalRelation<T> a, IntervalRelation<T> b) => a.Equals(b);
         public static bool operator !=(IntervalRelation<T> a, IntervalRelation<T> b) => !a.Equals(b);
@@ -35,13 +35,13 @@ namespace Yoakke.Collections.Intervals
 
             public Disjunct(Interval<T> first, Interval<T> second)
             {
-                First = first;
-                Second = second;
+                this.First = first;
+                this.Second = second;
             }
 
             public override bool Equals(IntervalRelation<T> other, IComparer<T> comparer) =>
-                other is Disjunct d && First.Equals(d.First, comparer) && Second.Equals(d.Second, comparer);
-            public override int GetHashCode() => HashCode.Combine(First, Second);
+                other is Disjunct d && this.First.Equals(d.First, comparer) && this.Second.Equals(d.Second, comparer);
+            public override int GetHashCode() => HashCode.Combine(this.First, this.Second);
         }
 
         /// <summary>
@@ -60,13 +60,13 @@ namespace Yoakke.Collections.Intervals
 
             public Touching(Interval<T> first, Interval<T> second)
             {
-                First = first;
-                Second = second;
+                this.First = first;
+                this.Second = second;
             }
 
             public override bool Equals(IntervalRelation<T> other, IComparer<T> comparer) =>
-                other is Touching t && First.Equals(t.First, comparer) && Second.Equals(t.Second, comparer);
-            public override int GetHashCode() => HashCode.Combine(First, Second);
+                other is Touching t && this.First.Equals(t.First, comparer) && this.Second.Equals(t.Second, comparer);
+            public override int GetHashCode() => HashCode.Combine(this.First, this.Second);
         }
 
         /// <summary>
@@ -89,17 +89,17 @@ namespace Yoakke.Collections.Intervals
 
             public Overlapping(Interval<T> firstDisjunct, Interval<T> overlap, Interval<T> secondDisjunct)
             {
-                FirstDisjunct = firstDisjunct;
-                Overlap = overlap;
-                SecondDisjunct = secondDisjunct;
+                this.FirstDisjunct = firstDisjunct;
+                this.Overlap = overlap;
+                this.SecondDisjunct = secondDisjunct;
             }
 
             public override bool Equals(IntervalRelation<T> other, IComparer<T> comparer) =>
                    other is Overlapping o
-                && FirstDisjunct.Equals(o.FirstDisjunct, comparer)
-                && Overlap.Equals(o.Overlap, comparer)
-                && SecondDisjunct.Equals(o.SecondDisjunct, comparer);
-            public override int GetHashCode() => HashCode.Combine(FirstDisjunct, Overlap, SecondDisjunct);
+                && this.FirstDisjunct.Equals(o.FirstDisjunct, comparer)
+                && this.Overlap.Equals(o.Overlap, comparer)
+                && this.SecondDisjunct.Equals(o.SecondDisjunct, comparer);
+            public override int GetHashCode() => HashCode.Combine(this.FirstDisjunct, this.Overlap, this.SecondDisjunct);
         }
 
         /// <summary>
@@ -122,17 +122,17 @@ namespace Yoakke.Collections.Intervals
 
             public Containing(Interval<T> firstDisjunct, Interval<T> contained, Interval<T> secondDisjunct)
             {
-                FirstDisjunct = firstDisjunct;
-                Contained = contained;
-                SecondDisjunct = secondDisjunct;
+                this.FirstDisjunct = firstDisjunct;
+                this.Contained = contained;
+                this.SecondDisjunct = secondDisjunct;
             }
 
             public override bool Equals(IntervalRelation<T> other, IComparer<T> comparer) =>
                    other is Containing c
-                && FirstDisjunct.Equals(c.FirstDisjunct, comparer)
-                && Contained.Equals(c.Contained, comparer)
-                && SecondDisjunct.Equals(c.SecondDisjunct, comparer);
-            public override int GetHashCode() => HashCode.Combine(FirstDisjunct, Contained, SecondDisjunct);
+                && this.FirstDisjunct.Equals(c.FirstDisjunct, comparer)
+                && this.Contained.Equals(c.Contained, comparer)
+                && this.SecondDisjunct.Equals(c.SecondDisjunct, comparer);
+            public override int GetHashCode() => HashCode.Combine(this.FirstDisjunct, this.Contained, this.SecondDisjunct);
         }
 
         /// <summary>
@@ -151,13 +151,13 @@ namespace Yoakke.Collections.Intervals
 
             public Starting(Interval<T> overlap, Interval<T> disjunct)
             {
-                Overlap = overlap;
-                Disjunct = disjunct;
+                this.Overlap = overlap;
+                this.Disjunct = disjunct;
             }
 
             public override bool Equals(IntervalRelation<T> other, IComparer<T> comparer) =>
-                other is Starting s && Overlap.Equals(s.Overlap, comparer) && Disjunct.Equals(s.Disjunct, comparer);
-            public override int GetHashCode() => HashCode.Combine(Overlap, Disjunct);
+                other is Starting s && this.Overlap.Equals(s.Overlap, comparer) && this.Disjunct.Equals(s.Disjunct, comparer);
+            public override int GetHashCode() => HashCode.Combine(this.Overlap, this.Disjunct);
         }
 
         /// <summary>
@@ -176,13 +176,13 @@ namespace Yoakke.Collections.Intervals
 
             public Finishing(Interval<T> disjunct, Interval<T> overlap)
             {
-                Disjunct = disjunct;
-                Overlap = overlap;
+                this.Disjunct = disjunct;
+                this.Overlap = overlap;
             }
 
             public override bool Equals(IntervalRelation<T> other, IComparer<T> comparer) =>
-                other is Finishing f && Overlap.Equals(f.Overlap, comparer) && Disjunct.Equals(f.Disjunct, comparer);
-            public override int GetHashCode() => HashCode.Combine(Disjunct, Overlap);
+                other is Finishing f && this.Overlap.Equals(f.Overlap, comparer) && this.Disjunct.Equals(f.Disjunct, comparer);
+            public override int GetHashCode() => HashCode.Combine(this.Disjunct, this.Overlap);
         }
 
         /// <summary>
@@ -197,12 +197,12 @@ namespace Yoakke.Collections.Intervals
 
             public Equal(Interval<T> interval)
             {
-                Interval = interval;
+                this.Interval = interval;
             }
 
             public override bool Equals(IntervalRelation<T> other, IComparer<T> comparer) =>
-                other is Equal e && Interval.Equals(e.Interval, comparer);
-            public override int GetHashCode() => Interval.GetHashCode();
+                other is Equal e && this.Interval.Equals(e.Interval, comparer);
+            public override int GetHashCode() => this.Interval.GetHashCode();
         }
     }
 }
