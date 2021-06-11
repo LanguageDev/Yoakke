@@ -7,7 +7,7 @@ using Yoakke.Collections.FiniteAutomata;
 
 namespace Yoakke.Collections.RegEx
 {
-    partial class RegExAst
+    public partial class RegExAst
     {
         /// <summary>
         /// Represents a sequence of other regex constructs.

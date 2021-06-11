@@ -11,7 +11,7 @@ using Yoakke.Parser.Attributes;
 namespace Yoakke.LSP.Generator
 {
     [Parser(typeof(TokenType))]
-    partial class TsParser
+    internal partial class TsParser
     {
         [Rule("definition : namespace | interface")]
         private static DefBase Definition(DefBase db) => db;

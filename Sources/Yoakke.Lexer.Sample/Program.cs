@@ -30,9 +30,9 @@ namespace Yoakke.Lexer.Sample
         [Regex(Regex.IntLiteral)] IntLiteral,
     }
 
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             var lexer = new Lexer(Console.In);
             while (true)

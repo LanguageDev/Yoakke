@@ -12,7 +12,7 @@ using IgnoreAttribute = Yoakke.Lexer.Attributes.IgnoreAttribute;
 namespace Yoakke.Parser.Tests
 {
     [Parser(typeof(ExpressionParserTests.TokenType))]
-    partial class ExprParser
+    internal partial class ExprParser
     {
         [Rule("top_expression : expression End")]
         private static int TopLevel(int n, IToken _) => n;

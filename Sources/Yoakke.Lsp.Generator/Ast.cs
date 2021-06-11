@@ -6,9 +6,9 @@ using System.Collections.Generic;
 
 namespace Yoakke.LSP.Generator
 {
-    abstract class DefBase { }
+    internal abstract class DefBase { }
 
-    class InterfaceDef : DefBase
+    internal class InterfaceDef : DefBase
     {
         public readonly string Name;
         public readonly IReadOnlyList<string> Bases;
@@ -24,7 +24,7 @@ namespace Yoakke.LSP.Generator
         }
     }
 
-    class NamespaceDef : DefBase
+    internal class NamespaceDef : DefBase
     {
         public readonly string Name;
         public readonly IReadOnlyList<NamespaceField> Fields;
@@ -38,7 +38,7 @@ namespace Yoakke.LSP.Generator
         }
     }
 
-    class InterfaceField
+    internal class InterfaceField
     {
         public readonly string Name;
         public readonly bool Optional;
@@ -54,7 +54,7 @@ namespace Yoakke.LSP.Generator
         }
     }
 
-    class NamespaceField
+    internal class NamespaceField
     {
         public readonly string Name;
         public readonly object Value;
@@ -68,7 +68,7 @@ namespace Yoakke.LSP.Generator
         }
     }
 
-    abstract class TypeNode
+    internal abstract class TypeNode
     {
         public class Ident : TypeNode
         {

@@ -8,9 +8,9 @@ using Yoakke.Text;
 
 namespace Yoakke.Sample
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             var code = @"
 func fib(a) {

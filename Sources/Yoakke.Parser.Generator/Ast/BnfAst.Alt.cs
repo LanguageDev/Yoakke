@@ -9,7 +9,7 @@ using Yoakke.Collections.Compatibility;
 
 namespace Yoakke.Parser.Generator.Ast
 {
-    partial class BnfAst
+    internal partial class BnfAst
     {
         /// <summary>
         /// Represents alternative sub-rules to parse.

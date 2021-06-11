@@ -9,7 +9,7 @@ using Yoakke.Text;
 
 namespace Yoakke.Reporting.Sample
 {
-    class MyHighlighter : ISyntaxHighlighter
+    internal class MyHighlighter : ISyntaxHighlighter
     {
         public SyntaxHighlightStyle Style { get; set; } = SyntaxHighlightStyle.Default;
 
@@ -36,9 +36,9 @@ namespace Yoakke.Reporting.Sample
         }
     }
 
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             var src = new SourceFile("test.txt", @"
 func foo() {

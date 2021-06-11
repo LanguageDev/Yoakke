@@ -4,7 +4,7 @@
 
 namespace Yoakke.Parser.Generator.Ast
 {
-    partial class BnfAst
+    internal partial class BnfAst
     {
         /// <summary>
         /// Represents a sub-rule that can be repeated 0 or more times.

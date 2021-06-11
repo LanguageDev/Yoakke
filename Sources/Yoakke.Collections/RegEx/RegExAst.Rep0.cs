@@ -6,7 +6,7 @@ using Yoakke.Collections.FiniteAutomata;
 
 namespace Yoakke.Collections.RegEx
 {
-    partial class RegExAst
+    public partial class RegExAst
     {
         /// <summary>
         /// Represents that a construct should be repeated 0 or more times.

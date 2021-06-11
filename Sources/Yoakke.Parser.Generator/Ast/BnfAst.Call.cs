@@ -4,7 +4,7 @@
 
 namespace Yoakke.Parser.Generator.Ast
 {
-    partial class BnfAst
+    internal partial class BnfAst
     {
         /// <summary>
         /// Represents parsing a sub-rule that is referenced by name.

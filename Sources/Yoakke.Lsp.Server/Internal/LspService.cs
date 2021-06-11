@@ -38,7 +38,7 @@ namespace Yoakke.Lsp.Server.Internal
             Exited,
         }
 
-        private JsonRpc jsonRpc;
+        private readonly JsonRpc jsonRpc;
 
         // TODO: Interlocked anywhere? This is not thread-safe
 
@@ -50,7 +50,7 @@ namespace Yoakke.Lsp.Server.Internal
         public int ExitCode { get; private set; }
 
         private ServerState state;
-        private ITextDocumentSyncHandler textDocumentSyncHandler;
+        private readonly ITextDocumentSyncHandler textDocumentSyncHandler;
 
         public LspService(JsonRpc jsonRpc, IServiceProvider serviceProvider)
         {

@@ -65,9 +65,9 @@ namespace Yoakke.Parser.Sample
         }
     }
 
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             var lexer = new Lexer(Console.In);
             var parser = new Parser(lexer);

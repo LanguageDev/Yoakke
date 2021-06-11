@@ -4,7 +4,7 @@
 
 namespace Yoakke.Parser.Generator.Ast
 {
-    partial class BnfAst
+    internal partial class BnfAst
     {
         /// <summary>
         /// Represents a grouped sub-rule application that won't be unwrapped when transformed.

@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace Yoakke.LSP.Generator
 {
-    class DocComment
+    internal class DocComment
     {
         public string? Summary { get; set; }
 

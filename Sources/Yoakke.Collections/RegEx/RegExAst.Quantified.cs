@@ -8,7 +8,7 @@ using Yoakke.Collections.FiniteAutomata;
 
 namespace Yoakke.Collections.RegEx
 {
-    partial class RegExAst
+    public partial class RegExAst
     {
         /// <summary>
         /// Represents that a regex construct should be repeated in some way.

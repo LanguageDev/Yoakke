@@ -8,7 +8,7 @@ using Yoakke.Lexer.Attributes;
 namespace Yoakke.LSP.Generator
 {
     [Lexer("TsLexer")]
-    enum TokenType
+    internal enum TokenType
     {
         [Error] Error,
         [End] End,

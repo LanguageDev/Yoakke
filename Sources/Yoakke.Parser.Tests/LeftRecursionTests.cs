@@ -18,7 +18,7 @@ namespace Yoakke.Parser.Tests
      */
 
     [Parser(typeof(LeftRecursionTests.TokenType))]
-    partial class LeftRecursionParser
+    internal partial class LeftRecursionParser
     {
         [Rule("grouping : grouping Identifier")]
         private static string Group(string group, IToken next) => $"({group}, {next.Text})";

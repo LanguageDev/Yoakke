@@ -15,7 +15,7 @@ using Token = Yoakke.Lexer.Token<Yoakke.Parser.Tests.PunctuatedTests.TokenType>;
 namespace Yoakke.Parser.Tests
 {
     [Parser(typeof(PunctuatedTests.TokenType))]
-    partial class ListParser
+    internal partial class ListParser
     {
         [Rule("any0_no_trailing : Lparen (Identifier (',' Identifier)*)? Rparen")]
         private static List<string> ZeroOrMoreNoTrailing(IToken _lp, Punctuated<Token, Token> elements, IToken _rp) =>

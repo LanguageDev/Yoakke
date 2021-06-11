@@ -13,7 +13,7 @@ using Yoakke.Lsp.Server.Hosting;
 
 namespace Yoakke.Lsp.Sample
 {
-    class SyncHandler : ITextDocumentSyncHandler
+    internal class SyncHandler : ITextDocumentSyncHandler
     {
         public bool SendOpenClose => true;
 
@@ -50,9 +50,9 @@ namespace Yoakke.Lsp.Sample
         }
     }
 
-    class Program
+    internal class Program
     {
-        static async Task Main(string[] args) =>
+        private static async Task Main(string[] args) =>
             await CreateHostBuilder(args).Build().RunAsync();
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

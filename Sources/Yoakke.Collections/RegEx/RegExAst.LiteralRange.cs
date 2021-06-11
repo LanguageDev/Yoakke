@@ -11,7 +11,7 @@ using Yoakke.Collections.Intervals;
 
 namespace Yoakke.Collections.RegEx
 {
-    partial class RegExAst
+    public partial class RegExAst
     {
         /// <summary>
         /// Represents match on a range of character literals.

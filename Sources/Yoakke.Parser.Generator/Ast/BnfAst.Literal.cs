@@ -4,7 +4,7 @@
 
 namespace Yoakke.Parser.Generator.Ast
 {
-    partial class BnfAst
+    internal partial class BnfAst
     {
         /// <summary>
         /// A literal token match, either by text or by token kind.

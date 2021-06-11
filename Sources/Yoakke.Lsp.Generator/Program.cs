@@ -10,21 +10,19 @@ using System.Text;
 
 namespace Yoakke.LSP.Generator
 {
-    class Program
+    internal class Program
     {
         private const string JsonPropertyAttribute = "JsonProperty";
         private const string JsonEnumValueAttribute = "EnumMember";
-
-        static readonly string[] knownInterfaces = new string[]
+        private static readonly string[] knownInterfaces = new string[]
         {
             "WorkDoneProgressParams", "WorkDoneProgressOptions",
             "TextDocumentRegistrationOptions",
             "StaticRegistrationOptions",
         };
+        private static readonly List<string> typeDefinitions = new();
 
-        static List<string> typeDefinitions = new();
-
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             var lexer = new TsLexer(Console.In);
             var parser = new TsParser(lexer);
@@ -61,7 +59,7 @@ namespace Yoakke.LSP.Generator
             }
         }
 
-        static void Translate(DefBase def)
+        private static void Translate(DefBase def)
         {
             switch (def)
             {
@@ -75,7 +73,7 @@ namespace Yoakke.LSP.Generator
             }
         }
 
-        static void Translate(InterfaceDef interfaceDef)
+        private static void Translate(InterfaceDef interfaceDef)
         {
             var result = new StringBuilder();
             var interfaces = interfaceDef.Bases.Intersect(knownInterfaces).ToList();
@@ -92,7 +90,7 @@ namespace Yoakke.LSP.Generator
             typeDefinitions.Add(result.ToString());
         }
 
-        static void Translate(NamespaceDef namespaceDef)
+        private static void Translate(NamespaceDef namespaceDef)
         {
             var result = new StringBuilder();
             if (namespaceDef.Docs != null) result.AppendLine(TranslateDocComment("", namespaceDef.Docs));
@@ -103,7 +101,7 @@ namespace Yoakke.LSP.Generator
             typeDefinitions.Add(result.ToString());
         }
 
-        static string Translate(string? hintName, TypeNode type) => type switch
+        private static string Translate(string? hintName, TypeNode type) => type switch
         {
             TypeNode.Ident id => TranslateTypeName(id.Name),
             TypeNode.Array arr => $"IReadOnlyList<{Translate(null, arr.ElementType)}>",
@@ -112,7 +110,7 @@ namespace Yoakke.LSP.Generator
             _ => throw new InvalidOperationException(),
         };
 
-        static string TranslateOr(string? hintName, TypeNode.Or or)
+        private static string TranslateOr(string? hintName, TypeNode.Or or)
         {
             if (or.Alternatives.Count == 0) throw new InvalidOperationException();
 
@@ -138,7 +136,7 @@ namespace Yoakke.LSP.Generator
             throw new NotImplementedException();
         }
 
-        static string TranslateObject(string? hintName, TypeNode.Object obj)
+        private static string TranslateObject(string? hintName, TypeNode.Object obj)
         {
             if (hintName == null) throw new ArgumentNullException(nameof(hintName));
             var result = new StringBuilder();
@@ -151,7 +149,7 @@ namespace Yoakke.LSP.Generator
             return className;
         }
 
-        static string Translate(InterfaceField field)
+        private static string Translate(InterfaceField field)
         {
             var result = new StringBuilder();
             var fieldName = Capitalize(field.Name);
@@ -169,7 +167,7 @@ namespace Yoakke.LSP.Generator
             return result.ToString();
         }
 
-        static string Translate(NamespaceField field)
+        private static string Translate(NamespaceField field)
         {
             var result = new StringBuilder();
             var fieldName = Capitalize(field.Name);
@@ -189,7 +187,7 @@ namespace Yoakke.LSP.Generator
             return result.ToString();
         }
 
-        static string TranslateTypeName(string name)
+        private static string TranslateTypeName(string name)
         {
             if (knownInterfaces.Contains(name)) throw new InvalidOperationException();
             return name switch
@@ -202,7 +200,7 @@ namespace Yoakke.LSP.Generator
             };
         }
 
-        static string TranslateDocComment(string prefix, string docComment)
+        private static string TranslateDocComment(string prefix, string docComment)
         {
             var result = new StringBuilder();
             var doc = DocComment.FromComment(docComment);
@@ -241,10 +239,10 @@ namespace Yoakke.LSP.Generator
             return result.ToString().TrimEnd();
         }
 
-        static string Capitalize(string s) => string.IsNullOrEmpty(s)
+        private static string Capitalize(string s) => string.IsNullOrEmpty(s)
             ? s
             : char.ToUpper(s[0]) + s.Substring(1);
 
-        static string WithOptional(string type) => type.EndsWith('?') ? type : $"{type}?";
+        private static string WithOptional(string type) => type.EndsWith('?') ? type : $"{type}?";
     }
 }
