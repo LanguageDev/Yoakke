@@ -16,10 +16,12 @@ namespace Yoakke.Parser.Generator.Ast
             /// The sub-element to apply.
             /// </summary>
             public readonly BnfAst First;
+
             /// <summary>
             /// The element to apply repeatedly after.
             /// </summary>
             public readonly BnfAst Second;
+
             /// <summary>
             /// The transformation method that does the folding.
             /// </summary>

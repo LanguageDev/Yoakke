@@ -11,6 +11,7 @@
         /// The punctuated element.
         /// </summary>
         public readonly TValue Value;
+
         /// <summary>
         /// The punctuation that follows the element.
         /// </summary>

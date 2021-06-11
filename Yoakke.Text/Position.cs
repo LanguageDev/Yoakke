@@ -11,6 +11,7 @@ namespace Yoakke.Text
         /// The 0-based line index.
         /// </summary>
         public readonly int Line;
+
         /// <summary>
         /// The 0-based column index.
         /// </summary>

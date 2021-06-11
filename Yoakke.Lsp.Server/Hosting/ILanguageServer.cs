@@ -13,12 +13,14 @@ namespace Yoakke.Lsp.Server.Hosting
         /// Starts communication with the language client.
         /// </summary>
         public void Start();
+
         /// <summary>
         /// Starts communication with the language client.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token to abort start with.</param>
         /// <returns>A task that completes when the Language Server starts.</returns>
         public Task StartAsync(CancellationToken cancellationToken);
+
         /// <summary>
         /// Stops the language server gracefully.
         /// </summary>

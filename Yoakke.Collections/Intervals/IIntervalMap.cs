@@ -15,6 +15,7 @@ namespace Yoakke.Collections.Intervals
         /// The intervals that the values are associated to.
         /// </summary>
         public IEnumerable<Interval<TKey>> Intervals { get; }
+
         /// <summary>
         /// The associated values.
         /// </summary>
@@ -30,12 +31,14 @@ namespace Yoakke.Collections.Intervals
         /// Clears this interval map.
         /// </summary>
         public void Clear();
+
         /// <summary>
         /// Checks if the given key is covered by the intervals.
         /// </summary>
         /// <param name="key">The key to locate.</param>
         /// <returns>True, if an interval covers this key, false otherwise.</returns>
         public bool ContainsKey(TKey key);
+
         /// <summary>
         /// Gets the associated value at a given point in the intervals.
         /// </summary>
@@ -44,6 +47,7 @@ namespace Yoakke.Collections.Intervals
         /// Otherwise it gets filled with default.</param>
         /// <returns>True, if the key is covered by an interval.</returns>
         public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue? value);
+
         /// <summary>
         /// Inserts an interval with a given associated value.
         /// The intersecting intervals get sliced up and the intersections associated values get unified with the specified update function.
@@ -53,6 +57,7 @@ namespace Yoakke.Collections.Intervals
         /// <param name="updateFunc">The update function that receives the existing value and the newly inserted value and
         /// returns the new value to keep.</param>
         public void AddAndUpdate(Interval<TKey> interval, TValue value, Func<TValue, TValue, TValue> updateFunc);
+
         /// <summary>
         /// Merges the touching intervals with the same associated value.
         /// </summary>

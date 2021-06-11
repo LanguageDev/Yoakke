@@ -12,10 +12,12 @@ namespace Yoakke.Lexer.Generator
         /// The symbol used to define an error/unknown token type.
         /// </summary>
         public IFieldSymbol? ErrorSymbol { get; set; }
+
         /// <summary>
         /// The symbol used to define an end token type.
         /// </summary>
         public IFieldSymbol? EndSymbol { get; set; }
+
         /// <summary>
         /// The list of <see cref="TokenDescription"/>s.
         /// </summary>

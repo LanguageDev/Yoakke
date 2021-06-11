@@ -12,6 +12,7 @@ namespace Yoakke.Ast.Attributes
         /// The name of the visitor to generate.
         /// </summary>
         public string Name { get; set; }
+
         /// <summary>
         /// The type to return from the visitor calls.
         /// </summary>

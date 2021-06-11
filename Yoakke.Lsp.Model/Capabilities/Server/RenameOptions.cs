@@ -7,6 +7,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Server
     {
         [JsonProperty("workDoneProgress", NullValueHandling = NullValueHandling.Ignore)]
         public bool? WorkDoneProgress { get; set; }
+
         /// <summary>
         /// Renames should be checked and tested before being executed.
         /// </summary>

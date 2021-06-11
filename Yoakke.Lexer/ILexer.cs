@@ -12,10 +12,12 @@ namespace Yoakke.Lexer
         /// The current <see cref="Text.Position"/> the <see cref="ILexer"/> is at in the source.
         /// </summary>
         public Position Position { get; }
+
         /// <summary>
         /// True, if all of the input has been consumed.
         /// </summary>
         public bool IsEnd { get; }
+
         /// <summary>
         /// Lexes the next <see cref="IToken"/>. If the source text has been depleted, it should produce some default
         /// end-asignaling <see cref="IToken"/>.

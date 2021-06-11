@@ -10,6 +10,7 @@ namespace Yoakke.Lsp.Model.TextSynchronization
         /// </summary>
         [JsonProperty("openClose", NullValueHandling = NullValueHandling.Ignore)]
         public bool? OpenClose { get; set; }
+
         /// <summary>
         /// Change notifications are sent to the server. See
         /// TextDocumentSyncKind.None, TextDocumentSyncKind.Full and

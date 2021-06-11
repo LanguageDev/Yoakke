@@ -36,12 +36,14 @@ namespace Yoakke.Lsp.Model.Capabilities.Client
         /// </summary>
         [JsonProperty("dynamicRegistration", NullValueHandling = NullValueHandling.Ignore)]
         public bool? DynamicRegistration { get; set; }
+
         /// <summary>
         /// Specific capabilities for the `SymbolKind` in the `workspace/symbol`
         /// request.
         /// </summary>
         [JsonProperty("symbolKind", NullValueHandling = NullValueHandling.Ignore)]
         public SymbolKindCapabilities? SymbolKind { get; set; }
+
         /// <summary>
         /// The client supports tags on `SymbolInformation`.
         /// Clients supporting tags have to handle unknown tags gracefully.

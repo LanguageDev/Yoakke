@@ -12,11 +12,13 @@ namespace Yoakke.Lsp.Model.Basic
         /// </summary>
         [JsonProperty("originSelectionRange", NullValueHandling = NullValueHandling.Ignore)]
         public Range? OriginSelectionRange { get; set; }
+
         /// <summary>
         /// The target resource identifier of this link.
         /// </summary>
         [JsonProperty("targetUri")]
         public DocumentUri TargetUri { get; set; }
+
         /// <summary>
         /// The full target range of this link. If the target for example is a symbol
         /// then target range is the range enclosing this symbol not including
@@ -25,6 +27,7 @@ namespace Yoakke.Lsp.Model.Basic
         /// </summary>
         [JsonProperty("targetRange")]
         public Range TargetRange { get; set; }
+
         /// <summary>
         /// The range that should be selected and revealed when this link is being
         /// followed, e.g the name of a function. Must be contained by the the

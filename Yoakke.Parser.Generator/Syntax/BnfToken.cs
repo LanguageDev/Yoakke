@@ -9,10 +9,12 @@
         /// 0-based index in the BNF source.
         /// </summary>
         public readonly int Index;
+
         /// <summary>
         /// The textual value of this <see cref="BnfToken"/>.
         /// </summary>
         public readonly string Value;
+
         /// <summary>
         /// The kind of this <see cref="BnfToken"/>.
         /// </summary>

@@ -19,12 +19,14 @@ namespace Yoakke.Lsp.Model.TextSynchronization
             /// </summary>
             [JsonProperty("range")]
             public Range Range { get; set; }
+
             /// <summary>
             /// The optional length of the range that got replaced.
             /// </summary>
             [JsonProperty("rangeLength", NullValueHandling = NullValueHandling.Ignore)]
             [Obsolete("use range instead.")]
             public uint RangeLength { get; set; }
+
             /// <summary>
             /// The new text for the provided range.
             /// </summary>

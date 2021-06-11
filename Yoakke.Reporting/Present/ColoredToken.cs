@@ -9,10 +9,12 @@
         /// The start index of the token.
         /// </summary>
         public readonly int Start;
+
         /// <summary>
         /// The length of the token.
         /// </summary>
         public readonly int Length;
+
         /// <summary>
         /// The kind of the token.
         /// </summary>

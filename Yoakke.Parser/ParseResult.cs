@@ -12,6 +12,7 @@
         /// True, if the result is a success.
         /// </summary>
         public bool IsOk => this.value is ParseOk<T>;
+
         /// <summary>
         /// True, if the result is an error.
         /// </summary>
@@ -21,10 +22,12 @@
         /// Retrieves the parse as a success.
         /// </summary>
         public ParseOk<T> Ok => (ParseOk<T>)this.value;
+
         /// <summary>
         /// Retrieves the parse as an error.
         /// </summary>
         public ParseError Error => (ParseError)this.value;
+
         /// <summary>
         /// Retrieves the furthest error for this result.
         /// </summary>

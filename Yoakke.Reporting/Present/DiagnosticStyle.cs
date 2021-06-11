@@ -24,26 +24,32 @@ namespace Yoakke.Reporting.Present
             { Severity.Error        , ConsoleColor.Red     },
             { Severity.InternalError, ConsoleColor.Magenta },
         };
+
         /// <summary>
         /// The color of line numbers.
         /// </summary>
         public ConsoleColor LineNumberColor { get; set; } = ConsoleColor.White;
+
         /// <summary>
         /// The default color for anything not specified.
         /// </summary>
         public ConsoleColor DefaultColor { get; set; } = ConsoleColor.White;
+
         /// <summary>
         /// The padding character for line numbers.
         /// </summary>
         public char LineNumberPadding { get; set; } = ' ';
+
         /// <summary>
         /// The tab size to use in spaces.
         /// </summary>
         public int TabSize { get; set; } = 4;
+
         /// <summary>
         /// How many lines to print before and after the relevant lines.
         /// </summary>
         public int SurroundingLines { get; set; } = 1;
+
         /// <summary>
         /// How big of a gap can we connect up between annotated lines.
         /// </summary>

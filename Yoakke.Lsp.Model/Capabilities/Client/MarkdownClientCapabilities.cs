@@ -13,6 +13,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Client
         /// </summary>
         [JsonProperty("parser")]
         public string Parser { get; set; }
+
         /// <summary>
         /// The version of the parser.
         /// </summary>

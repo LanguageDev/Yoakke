@@ -9,6 +9,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Server
         /// </summary>
         [JsonProperty("supported", NullValueHandling = NullValueHandling.Ignore)]
         public bool? Supported { get; set; }
+
         /// <summary>
         /// Whether the server wants to receive workspace folder
         /// change notifications.

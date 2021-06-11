@@ -43,27 +43,32 @@ namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
             /// </summary>
             [JsonProperty("snippetSupport", NullValueHandling = NullValueHandling.Ignore)]
             public bool? SnippetSupport { get; set; }
+
             /// <summary>
             /// Client supports commit characters on a completion item.
             /// </summary>
             [JsonProperty("commitCharactersSupport", NullValueHandling = NullValueHandling.Ignore)]
             public bool? CommitCharactersSupport { get; set; }
+
             /// <summary>
             /// Client supports the follow content formats for the documentation
             /// property. The order describes the preferred format of the client.
             /// </summary>
             [JsonProperty("documentationFormat", NullValueHandling = NullValueHandling.Ignore)]
             public IReadOnlyList<MarkupKind>? DocumentationFormat { get; set; }
+
             /// <summary>
             /// Client supports the deprecated property on a completion item.
             /// </summary>
             [JsonProperty("deprecatedSupport", NullValueHandling = NullValueHandling.Ignore)]
             public bool? DeprecatedSupport { get; set; }
+
             /// <summary>
             /// Client supports the preselect property on a completion item.
             /// </summary>
             [JsonProperty("preselectSupport", NullValueHandling = NullValueHandling.Ignore)]
             public bool? PreselectSupport { get; set; }
+
             /// <summary>
             /// Client supports the tag property on a completion item. Clients
             /// supporting tags have to handle unknown tags gracefully. Clients
@@ -73,6 +78,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
             [Since(3, 15, 0)]
             [JsonProperty("tagSupport", NullValueHandling = NullValueHandling.Ignore)]
             public TagSupportCapabilities? TagSupport { get; set; }
+
             /// <summary>
             /// Client supports insert replace edit to control different behavior if
             /// a completion item is inserted in the text or should replace text.
@@ -80,6 +86,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
             [Since(3, 16, 0)]
             [JsonProperty("insertReplaceSupport", NullValueHandling = NullValueHandling.Ignore)]
             public bool? InsertReplaceSupport { get; set; }
+
             /// <summary>
             /// Indicates which properties a client can resolve lazily on a
             /// completion item. Before version 3.16.0 only the predefined properties
@@ -88,6 +95,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
             [Since(3, 16, 0)]
             [JsonProperty("resolveSupport", NullValueHandling = NullValueHandling.Ignore)]
             public ResolveSupportCapabilities? ResolveSupport { get; set; }
+
             /// <summary>
             /// The client supports the `insertTextMode` property on
             /// a completion item to override the whitespace handling mode
@@ -96,6 +104,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
             [Since(3, 16, 0)]
             [JsonProperty("insertTextModeSupport", NullValueHandling = NullValueHandling.Ignore)]
             public InsertTextModeSupportCapabilities? InsertTextModeSupport { get; set; }
+
             /// <summary>
             /// The client has support for completion item label
             /// details (see also `CompletionItemLabelDetails`).
@@ -126,6 +135,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
         /// </summary>
         [JsonProperty("dynamicRegistration", NullValueHandling = NullValueHandling.Ignore)]
         public bool? DynamicRegistration { get; set; }
+
         /// <summary>
         /// The client supports the following `CompletionItem` specific
         /// capabilities.
@@ -134,12 +144,14 @@ namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
         public CompletionItemCapabilities? CompletionItem { get; set; }
         [JsonProperty("completionItemKind", NullValueHandling = NullValueHandling.Ignore)]
         public CompletionItemKindCapabilities? CompletionItemKind { get; set; }
+
         /// <summary>
         /// The client supports to send additional context information for a
         /// `textDocument/completion` request.
         /// </summary>
         [JsonProperty("contextSupport", NullValueHandling = NullValueHandling.Ignore)]
         public bool? ContextSupport { get; set; }
+
         /// <summary>
         /// The client's default when the completion item doesn't provide a
         /// `insertTextMode` property.

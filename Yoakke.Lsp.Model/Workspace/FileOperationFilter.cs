@@ -14,6 +14,7 @@ namespace Yoakke.Lsp.Model.Workspace
         /// </summary>
         [JsonProperty("scheme", NullValueHandling = NullValueHandling.Ignore)]
         public string? Scheme { get; set; }
+
         /// <summary>
         /// The actual file operation pattern.
         /// </summary>

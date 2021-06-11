@@ -11,6 +11,7 @@ namespace Yoakke.Parser
         /// The expected possible inputs.
         /// </summary>
         public readonly IReadOnlySet<object> Expected;
+
         /// <summary>
         /// The context in which the error occurred.
         /// </summary>

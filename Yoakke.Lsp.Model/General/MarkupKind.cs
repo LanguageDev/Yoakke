@@ -16,6 +16,7 @@ namespace Yoakke.Lsp.Model.General
         /// </summary>
         [EnumMember(Value = "plaintext")]
         PlainText,
+
         /// <summary>
         /// Markdown is supported as a content format
         /// </summary>

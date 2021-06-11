@@ -11,12 +11,14 @@ namespace Yoakke.Lsp.Model.Workspace
         /// </summary>
         [EnumMember(Value = "abort")]
         Abort,
+
         /// <summary>
         /// All operations are executed transactional. That means they either all
         /// succeed or no changes at all are applied to the workspace.
         /// </summary>
         [EnumMember(Value = "transactional")]
         Transactional,
+
         /// <summary>
         /// If the workspace edit contains only textual file changes they are
         /// executed transactional. If resource changes (create, rename or delete
@@ -24,6 +26,7 @@ namespace Yoakke.Lsp.Model.Workspace
         /// </summary>
         [EnumMember(Value = "textOnlyTransactional")]
         TextOnlyTransactional,
+
         /// <summary>
         /// The client tries to undo the operations already executed. But there is no
         /// guarantee that this is succeeding.

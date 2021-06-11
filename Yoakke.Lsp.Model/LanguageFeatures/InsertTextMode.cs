@@ -15,6 +15,7 @@
         /// string.
         /// </summary>
         AsIs = 1,
+
         /// <summary>
         /// The editor adjusts leading whitespace of new lines so that
         /// they match the indentation up to the cursor of the line for

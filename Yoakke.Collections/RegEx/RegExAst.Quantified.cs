@@ -15,10 +15,12 @@ namespace Yoakke.Collections.RegEx
             /// The sub-construct to repeat.
             /// </summary>
             public readonly RegExAst Subexpr;
+
             /// <summary>
             /// The minimum number of repetitions. Can be zero.
             /// </summary>
             public readonly int AtLeast;
+
             /// <summary>
             /// The maximum number of repetitions, if any.
             /// </summary>

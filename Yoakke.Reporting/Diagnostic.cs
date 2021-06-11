@@ -12,14 +12,17 @@ namespace Yoakke.Reporting
         /// The severity of the diagnostic.
         /// </summary>
         public Severity? Severity { get; set; }
+
         /// <summary>
         /// A short identifier code of the diagnostic.
         /// </summary>
         public string? Code { get; set; }
+
         /// <summary>
         /// The summary message of the diagnostic.
         /// </summary>
         public string? Message { get; set; }
+
         /// <summary>
         /// The relevant information for the diagnostic.
         /// </summary>

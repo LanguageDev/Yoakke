@@ -42,6 +42,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
         /// </summary>
         [JsonProperty("dynamicRegistration", NullValueHandling = NullValueHandling.Ignore)]
         public bool? DynamicRegistration { get; set; }
+
         /// <summary>
         /// The client supports code action literals as a valid
         /// response of the `textDocument/codeAction` request.
@@ -49,18 +50,21 @@ namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
         [Since(3, 8, 0)]
         [JsonProperty("codeActionLiteralSupport", NullValueHandling = NullValueHandling.Ignore)]
         public CodeActionLiteralSupportCapabilities? CodeActionLiteralSupport { get; set; }
+
         /// <summary>
         /// Whether code action supports the `isPreferred` property.
         /// </summary>
         [Since(3, 15, 0)]
         [JsonProperty("isPreferredSupport", NullValueHandling = NullValueHandling.Ignore)]
         public bool? IsPreferredSupport { get; set; }
+
         /// <summary>
         /// Whether code action supports the `disabled` property.
         /// </summary>
         [Since(3, 16, 0)]
         [JsonProperty("disabledSupport", NullValueHandling = NullValueHandling.Ignore)]
         public bool? DisabledSupport { get; set; }
+
         /// <summary>
         /// Whether code action supports the `data` property which is
         /// preserved between a `textDocument/codeAction` and a
@@ -69,6 +73,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
         [Since(3, 16, 0)]
         [JsonProperty("dataSupport", NullValueHandling = NullValueHandling.Ignore)]
         public bool? DataSupport { get; set; }
+
         /// <summary>
         /// Whether the client supports resolving additional code action
         /// properties via a separate `codeAction/resolve` request.
@@ -76,6 +81,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
         [Since(3, 16, 0)]
         [JsonProperty("resolveSupport", NullValueHandling = NullValueHandling.Ignore)]
         public ResolveSupportCapabilities? ResolveSupport { get; set; }
+
         /// <summary>
         /// Whether th client honors the change annotations in
         /// text edits and resource operations returned via the

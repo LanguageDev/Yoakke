@@ -18,6 +18,7 @@ namespace Yoakke.Reporting
         /// The name of the severity level.
         /// </summary>
         public readonly string Name;
+
         /// <summary>
         /// The priority of the severity level.
         /// </summary>

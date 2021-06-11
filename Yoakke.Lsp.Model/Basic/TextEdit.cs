@@ -10,6 +10,7 @@ namespace Yoakke.Lsp.Model.Basic
         /// </summary>
         [JsonProperty("range")]
         public Range Range { get; set; }
+
         /// <summary>
         /// The string to be inserted. For delete operations use an
         /// empty string.

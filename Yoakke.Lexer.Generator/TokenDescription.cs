@@ -11,10 +11,12 @@ namespace Yoakke.Lexer.Generator
         /// The symbol that defines the token type.
         /// </summary>
         public readonly IFieldSymbol Symbol;
+
         /// <summary>
         /// The regex that matches the token.
         /// </summary>
         public readonly string Regex;
+
         /// <summary>
         /// True, if the token-type should be ignored while lexing.
         /// </summary>

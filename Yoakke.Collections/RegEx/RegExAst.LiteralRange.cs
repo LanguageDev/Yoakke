@@ -18,6 +18,7 @@ namespace Yoakke.Collections.RegEx
             /// True, if the range should be negated.
             /// </summary>
             public readonly bool Negate;
+
             /// <summary>
             /// The character ranges.
             /// </summary>

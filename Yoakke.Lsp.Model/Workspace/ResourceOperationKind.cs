@@ -12,11 +12,13 @@ namespace Yoakke.Lsp.Model.Workspace
         /// </summary>
         [EnumMember(Value = "create")]
         Create,
+
         /// <summary>
         /// Supports renaming existing files and folders.
         /// </summary>
         [EnumMember(Value = "rename")]
         Rename,
+
         /// <summary>
         /// Supports deleting existing files and folders.
         /// </summary>

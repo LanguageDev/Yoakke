@@ -11,6 +11,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
         /// </summary>
         [JsonProperty("dynamicRegistration", NullValueHandling = NullValueHandling.Ignore)]
         public bool? DynamicRegistration { get; set; }
+
         /// <summary>
         /// Client supports the follow content formats if the content
         /// property refers to a `literal of type MarkupContent`.

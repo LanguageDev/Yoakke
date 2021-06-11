@@ -16,12 +16,14 @@ namespace Yoakke.Collections.Intervals
         /// </summary>
         /// <returns>The instantiated bound.</returns>
         public static UpperBound<T> Unbounded() => new(BoundType.Unbounded, default);
+
         /// <summary>
         /// Instantiates a new inclusive upper bound.
         /// </summary>
         /// <param name="value">The value that is included.</param>
         /// <returns>The instantiated bound.</returns>
         public static UpperBound<T> Inclusive(T value) => new(BoundType.Inclusive, value);
+
         /// <summary>
         /// Instantiates a new exclusive upper bound.
         /// </summary>
@@ -33,6 +35,7 @@ namespace Yoakke.Collections.Intervals
         /// The type of this bound.
         /// </summary>
         public BoundType Type => this.bound.Type;
+
         /// <summary>
         /// The associated value of this bound. Only valid when the bound is not unbounded.
         /// </summary>
@@ -50,12 +53,14 @@ namespace Yoakke.Collections.Intervals
         /// </summary>
         /// <returns>True, if this is an unbounded interval bound, false otherwise.</returns>
         public bool IsUnbounded() => this.bound.IsUnbounded();
+
         /// <summary>
         /// Checks, if this is an interval bound that includes it's associated value.
         /// </summary>
         /// <param name="value">The intervals associated value is written here, if this is an inclusive bound.</param>
         /// <returns>True, if this is an inclusive bound.</returns>
         public bool IsInclusive([MaybeNullWhen(false)] out T? value) => this.bound.IsInclusive(out value);
+
         /// <summary>
         /// Checks, if this is an interval bound that excludes it's associated value.
         /// </summary>

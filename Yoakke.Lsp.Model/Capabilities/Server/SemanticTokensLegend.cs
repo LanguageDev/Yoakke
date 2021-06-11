@@ -10,6 +10,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Server
         /// </summary>
         [JsonProperty("tokenTypes")]
         public IReadOnlyList<string> TokenTypes { get; set; }
+
         /// <summary>
         /// The token modifiers a server uses.
         /// </summary>

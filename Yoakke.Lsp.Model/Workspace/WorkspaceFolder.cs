@@ -10,6 +10,7 @@ namespace Yoakke.Lsp.Model.Workspace
         /// </summary>
         [JsonProperty("uri")]
         public DocumentUri Uri { get; set; }
+
         /// <summary>
         /// The name of the workspace folder. Used to refer to this
         /// workspace folder in the user interface.

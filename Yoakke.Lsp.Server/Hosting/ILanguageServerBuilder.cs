@@ -14,30 +14,35 @@ namespace Yoakke.Lsp.Server.Hosting
         /// </summary>
         /// <returns>The built language server.</returns>
         public ILanguageServer Build();
+
         /// <summary>
         /// Configures services for the language server with a delegate.
         /// </summary>
         /// <param name="configureServices">The delegate to configure with.</param>
         /// <returns>This instance to chain calls.</returns>
         public ILanguageServerBuilder ConfigureServices(Action<LanguageServerBuilderContext, IServiceCollection> configureServices);
+
         /// <summary>
         /// Specifies to use the given stream as an input stream.
         /// </summary>
         /// <param name="stream">The stream to use as input.</param>
         /// <returns>This instance to chain calls.</returns>
         public ILanguageServerBuilder UseInputStream(Stream stream);
+
         /// <summary>
         /// Specifies to use the given stream as an output stream.
         /// </summary>
         /// <param name="stream">The stream to use as output.</param>
         /// <returns>This instance to chain calls.</returns>
         public ILanguageServerBuilder UseOutputStream(Stream stream);
+
         /// <summary>
         /// Specifies to use the given stream as IO.
         /// </summary>
         /// <param name="stream">The stream to use as both input and output.</param>
         /// <returns>This instance to chain calls.</returns>
         public ILanguageServerBuilder UseDuplexStream(Stream stream);
+
         /// <summary>
         /// Specifies to use a given key-value pair in the settings.
         /// </summary>
@@ -45,6 +50,7 @@ namespace Yoakke.Lsp.Server.Hosting
         /// <param name="value">The value to assign.</param>
         /// <returns>This instance to chain calls.</returns>
         public ILanguageServerBuilder UseSetting(string key, string? value);
+
         /// <summary>
         /// Retrieves a setting with the given key.
         /// </summary>

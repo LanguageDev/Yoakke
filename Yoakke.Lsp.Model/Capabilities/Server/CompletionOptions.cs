@@ -23,6 +23,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Server
 
         [JsonProperty("workDoneProgress", NullValueHandling = NullValueHandling.Ignore)]
         public bool? WorkDoneProgress { get; set; }
+
         /// <summary>
         /// Most tools trigger completion request automatically without explicitly
         /// requesting it using a keyboard shortcut (e.g. Ctrl+Space). Typically they
@@ -37,6 +38,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Server
         /// </summary>
         [JsonProperty("triggerCharacters", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyList<string>? TriggerCharacters { get; set; }
+
         /// <summary>
         /// The list of all possible characters that commit a completion. This field
         /// can be used if clients don't support individual commit characters per
@@ -49,12 +51,14 @@ namespace Yoakke.Lsp.Model.Capabilities.Server
         [Since(3, 2, 0)]
         [JsonProperty("allCommitCharacters", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyList<string>? AllCommitCharacters { get; set; }
+
         /// <summary>
         /// The server provides support to resolve additional
         /// information for a completion item.
         /// </summary>
         [JsonProperty("resolveProvider", NullValueHandling = NullValueHandling.Ignore)]
         public bool? ResolveProvider { get; set; }
+
         /// <summary>
         /// The server supports the following `CompletionItem` specific
         /// capabilities.

@@ -12,10 +12,12 @@ namespace Yoakke.Symbols
         /// The containing scope of this one.
         /// </summary>
         public IReadOnlyScope? ContainingScope { get; }
+
         /// <summary>
         /// True, if this is the global scope.
         /// </summary>
         public bool IsGlobal { get; }
+
         /// <summary>
         /// The symbols defined in this scope.
         /// </summary>

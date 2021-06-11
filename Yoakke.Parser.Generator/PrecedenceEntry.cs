@@ -13,10 +13,12 @@ namespace Yoakke.Parser.Generator
         /// If false, the precedence-level is considered to contain right-associative operands.
         /// </summary>
         public readonly bool Left;
+
         /// <summary>
         /// The set of operators on this precedence-level.
         /// </summary>
         public readonly ISet<object> Operators;
+
         /// <summary>
         /// The method that transforms the given precedence-level, when parsed.
         /// </summary>

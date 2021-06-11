@@ -9,6 +9,7 @@ namespace Yoakke.Lsp.Model.Basic
         /// </summary>
         [JsonProperty("line")]
         public uint Line { get; set; }
+
         /// <summary>
         /// Character offset on a line in a document (zero-based). Assuming that
         /// the line is represented as a string, the `character` value represents

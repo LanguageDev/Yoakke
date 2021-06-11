@@ -24,6 +24,7 @@ namespace Yoakke.Lsp.Model.Workspace
         /// </summary>
         [JsonProperty("glob")]
         public string Glob { get; set; }
+
         /// <summary>
         /// Whether to match files or folders with this pattern.
         ///
@@ -31,6 +32,7 @@ namespace Yoakke.Lsp.Model.Workspace
         /// </summary>
         [JsonProperty("matches", NullValueHandling = NullValueHandling.Ignore)]
         public FileOperationPatternKind? Matches { get; set; }
+
         /// <summary>
         /// Additional options used during matching.
         /// </summary>

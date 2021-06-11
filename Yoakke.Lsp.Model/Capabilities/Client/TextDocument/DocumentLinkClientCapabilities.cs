@@ -9,6 +9,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
         /// </summary>
         [JsonProperty("dynamicRegistration", NullValueHandling = NullValueHandling.Ignore)]
         public bool? DynamicRegistration { get; set; }
+
         /// <summary>
         /// Whether the client supports the `tooltip` property on `DocumentLink`.
         /// </summary>

@@ -12,6 +12,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Server.RegistrationOptions
     {
         [JsonProperty("documentSelector")]
         public IReadOnlyList<DocumentFilter>? DocumentSelector { get; set; }
+
         /// <summary>
         /// How documents are synced to the server. See TextDocumentSyncKind.Full
         /// and TextDocumentSyncKind.Incremental.

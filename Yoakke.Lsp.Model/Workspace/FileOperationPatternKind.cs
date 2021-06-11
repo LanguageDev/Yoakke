@@ -14,6 +14,7 @@ namespace Yoakke.Lsp.Model.Workspace
         /// </summary>
         [EnumMember(Value = "file")]
         File,
+
         /// <summary>
         /// The pattern matches a folder only.
         /// </summary>

@@ -9,6 +9,7 @@
         /// The style to use when presenting.
         /// </summary>
         public DiagnosticStyle Style { get; set; }
+
         /// <summary>
         /// The syntax highlighter to use for source code.
         /// </summary>

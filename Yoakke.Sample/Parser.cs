@@ -71,7 +71,7 @@ namespace Yoakke.Sample
             new Expression.Unary(ToUnaryOp(op.Kind), sub);
 
         [Rule("post_expr : post_expr '(' (expr (',' expr)*)? ')'")]
-        public static Expression Call(Expression func, Token _1, Punctuated<Expression, Token> args, IToken _2) =>
+        private static Expression Call(Expression func, Token _1, Punctuated<Expression, Token> args, IToken _2) =>
             new Expression.Call(func, args.Values.ToArray());
 
         [Rule("atom_expr : '(' expr ')'")]

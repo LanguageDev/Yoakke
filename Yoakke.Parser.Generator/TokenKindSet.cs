@@ -13,6 +13,7 @@ namespace Yoakke.Parser.Generator
         /// The enum that defines the token-kinds.
         /// </summary>
         public readonly INamedTypeSymbol? EnumType;
+
         /// <summary>
         /// The fields (token-kinds) defined in the kind-enum <see cref="EnumType"/>.
         /// </summary>

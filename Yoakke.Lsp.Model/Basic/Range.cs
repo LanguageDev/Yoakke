@@ -9,6 +9,7 @@ namespace Yoakke.Lsp.Model.Basic
         /// </summary>
         [JsonProperty("start")]
         public Position Start { get; set; }
+
         /// <summary>
         /// The range's end position.
         /// </summary>

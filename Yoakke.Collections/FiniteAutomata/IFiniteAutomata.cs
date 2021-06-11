@@ -12,10 +12,12 @@ namespace Yoakke.Collections.FiniteAutomata
         /// The initial state of the automata.
         /// </summary>
         public State InitalState { get; }
+
         /// <summary>
         /// The accepting states.
         /// </summary>
         public IEnumerable<State> AcceptingStates { get; }
+
         /// <summary>
         /// All states in the automata.
         /// </summary>

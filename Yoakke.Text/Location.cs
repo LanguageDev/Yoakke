@@ -9,6 +9,7 @@
         /// The source file.
         /// </summary>
         public readonly ISourceFile File;
+
         /// <summary>
         /// The range.
         /// </summary>

@@ -9,6 +9,7 @@
         /// The severity of the information.
         /// </summary>
         public Severity? Severity { get; }
+
         /// <summary>
         /// The information message.
         /// </summary>

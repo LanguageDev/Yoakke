@@ -8,6 +8,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Server.RegistrationOptions
     {
         [JsonProperty("documentSelector")]
         public IReadOnlyList<DocumentFilter>? DocumentSelector { get; set; }
+
         /// <summary>
         /// The client is supposed to include the content on save.
         /// </summary>

@@ -28,6 +28,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
             /// </summary>
             [JsonProperty("range", NullValueHandling = NullValueHandling.Ignore)]
             public Either<bool, RangeCapabilities>? Range { get; set; }
+
             /// <summary>
             /// The client will send the `textDocument/semanticTokens/full` request
             /// if the server provides a corresponding handler.
@@ -44,6 +45,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
         /// </summary>
         [JsonProperty("dynamicRegistration", NullValueHandling = NullValueHandling.Ignore)]
         public bool? DynamicRegistration { get; set; }
+
         /// <summary>
         /// Which requests the client supports and might send to the server
         /// depending on the server's capability. Please note that clients might not
@@ -56,26 +58,31 @@ namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
         /// </summary>
         [JsonProperty("requests")]
         public RequestsCapabilities Requests { get; set; }
+
         /// <summary>
         /// The token types that the client supports.
         /// </summary>
         [JsonProperty("tokenTypes")]
         public IReadOnlyList<string> TokenTypes { get; set; }
+
         /// <summary>
         /// The token modifiers that the client supports.
         /// </summary>
         [JsonProperty("tokenModifiers")]
         public IReadOnlyList<string> TokenModifiers { get; set; }
+
         /// <summary>
         /// The formats the clients supports.
         /// </summary>
         [JsonProperty("formats")]
         public IReadOnlyList<TokenFormat> Formats { get; set; }
+
         /// <summary>
         /// Whether the client supports tokens that can overlap each other.
         /// </summary>
         [JsonProperty("overlappingTokenSupport", NullValueHandling = NullValueHandling.Ignore)]
         public bool? OverlappingTokenSupport { get; set; }
+
         /// <summary>
         /// Whether the client supports tokens that can span multiple lines.
         /// </summary>

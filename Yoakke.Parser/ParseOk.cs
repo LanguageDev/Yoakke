@@ -10,10 +10,12 @@
         /// The resulted parse value.
         /// </summary>
         public readonly T Value;
+
         /// <summary>
         /// The offset in the number of tokens.
         /// </summary>
         public readonly int Offset;
+
         /// <summary>
         /// The furthest <see cref="ParseError"/> found so far.
         /// </summary>

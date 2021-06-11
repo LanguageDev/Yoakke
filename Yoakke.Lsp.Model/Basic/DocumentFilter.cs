@@ -9,11 +9,13 @@ namespace Yoakke.Lsp.Model.Basic
         /// </summary>
         [JsonProperty("language", NullValueHandling = NullValueHandling.Ignore)]
         public string? Language { get; set; }
+
         /// <summary>
         /// A Uri [scheme](#Uri.scheme), like `file` or `untitled`.
         /// </summary>
         [JsonProperty("scheme", NullValueHandling = NullValueHandling.Ignore)]
         public string? Scheme { get; set; }
+
         /// <summary>
         /// A glob pattern, like `*.{ts,js}`.
         ///

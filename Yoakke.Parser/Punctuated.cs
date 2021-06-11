@@ -17,6 +17,7 @@ namespace Yoakke.Parser
         /// The punctuated values.
         /// </summary>
         public IEnumerable<TValue> Values => this.underlying.Select(e => e.Value);
+
         /// <summary>
         /// The punctuations.
         /// </summary>

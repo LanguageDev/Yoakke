@@ -13,6 +13,7 @@ namespace Yoakke.Parser
         /// The error cases in different parse contexts.
         /// </summary>
         public readonly IReadOnlyDictionary<string, ParseErrorElement> Elements;
+
         /// <summary>
         /// The input that was found, if any.
         /// </summary>

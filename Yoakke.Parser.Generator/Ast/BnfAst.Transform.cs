@@ -15,6 +15,7 @@ namespace Yoakke.Parser.Generator.Ast
             /// The rule that needs its results transformed.
             /// </summary>
             public readonly BnfAst Subexpr;
+
             /// <summary>
             /// The transformation method.
             /// </summary>

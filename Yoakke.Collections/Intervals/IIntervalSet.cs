@@ -12,17 +12,20 @@ namespace Yoakke.Collections.Intervals
         /// Clears this interval set.
         /// </summary>
         public void Clear();
+
         /// <summary>
         /// Checks if the given value is covered by the intervals.
         /// </summary>
         /// <param name="value">The value to locate.</param>
         /// <returns>True, if an interval covers this value, false otherwise.</returns>
         public bool Contains(T value);
+
         /// <summary>
         /// Adds an interval to the set.
         /// </summary>
         /// <param name="interval">The interval to add.</param>
         public void Add(Interval<T> interval);
+
         /// <summary>
         /// Inverts this interval set, meaning that it will cover every value it didn't before,
         /// and it won't cover any value covered before.

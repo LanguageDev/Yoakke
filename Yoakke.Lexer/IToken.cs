@@ -13,6 +13,7 @@ namespace Yoakke.Lexer
         /// The <see cref="Text.Range"/> that the token can be found at in the source.
         /// </summary>
         public Range Range { get; }
+
         /// <summary>
         /// The text this token was parsed from.
         /// </summary>

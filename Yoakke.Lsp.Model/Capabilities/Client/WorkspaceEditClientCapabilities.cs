@@ -22,6 +22,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Client
         /// </summary>
         [JsonProperty("documentChanges", NullValueHandling = NullValueHandling.Ignore)]
         public bool? DocumentChanges { get; set; }
+
         /// <summary>
         /// The resource operations the client supports. Clients should at least
         /// support 'create', 'rename' and 'delete' files and folders.
@@ -29,6 +30,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Client
         [Since(3, 13, 0)]
         [JsonProperty("resourceOperations", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyList<ResourceOperationKind>? ResourceOperations { get; set; }
+
         /// <summary>
         /// The failure handling strategy of a client if applying the workspace edit
         /// fails.
@@ -36,6 +38,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Client
         [Since(3, 13, 0)]
         [JsonProperty("failureHandling", NullValueHandling = NullValueHandling.Ignore)]
         public FailureHandlingKind? FailureHandling { get; set; }
+
         /// <summary>
         /// Whether the client normalizes line endings to the client specific
         /// setting.
@@ -45,6 +48,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Client
         [Since(3, 16, 0)]
         [JsonProperty("normalizesLineEndings", NullValueHandling = NullValueHandling.Ignore)]
         public bool? NormalizesLineEndings { get; set; }
+
         /// <summary>
         /// Whether the client in general supports change annotations on text edits,
         /// create file, rename file and delete file changes.

@@ -13,6 +13,7 @@ namespace Yoakke.Lsp.Model.TextSynchronization
         /// </summary>
         [JsonProperty("textDocument")]
         public VersionedTextDocumentIdentifier TextDocument { get; set; }
+
         /// <summary>
         /// The actual content changes. The content changes describe single state
         /// changes to the document. So if there are two content changes c1 (at

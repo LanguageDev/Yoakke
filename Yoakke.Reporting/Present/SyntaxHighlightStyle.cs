@@ -26,6 +26,7 @@ namespace Yoakke.Reporting.Present
             { TokenKind.Punctuation, ConsoleColor.White     },
             { TokenKind.Other      , ConsoleColor.White     },
         };
+
         /// <summary>
         /// The default color to use.
         /// </summary>

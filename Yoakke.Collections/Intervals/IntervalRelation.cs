@@ -28,6 +28,7 @@ namespace Yoakke.Collections.Intervals
             /// The first interval of the disjunct pair.
             /// </summary>
             public readonly Interval<T> First;
+
             /// <summary>
             /// The second interval of the disjunct pair.
             /// </summary>
@@ -53,6 +54,7 @@ namespace Yoakke.Collections.Intervals
             /// The first interval of the touching pair.
             /// </summary>
             public readonly Interval<T> First;
+
             /// <summary>
             /// The second interval of the touching pair.
             /// </summary>
@@ -78,10 +80,12 @@ namespace Yoakke.Collections.Intervals
             /// The first disjunct part of the intervals (before the overlap).
             /// </summary>
             public readonly Interval<T> FirstDisjunct;
+
             /// <summary>
             /// The overlapping portion of the intervals.
             /// </summary>
             public readonly Interval<T> Overlap;
+
             /// <summary>
             /// The second disjunct part of the intervals (after the overlap).
             /// </summary>
@@ -111,10 +115,12 @@ namespace Yoakke.Collections.Intervals
             /// The first disjunct part of the intervals (before the containment).
             /// </summary>
             public readonly Interval<T> FirstDisjunct;
+
             /// <summary>
             /// The contained portion of the intervals.
             /// </summary>
             public readonly Interval<T> Contained;
+
             /// <summary>
             /// The second disjunct part of the intervals (after the containment).
             /// </summary>
@@ -144,6 +150,7 @@ namespace Yoakke.Collections.Intervals
             /// The overlapping portion of the intervals (start).
             /// </summary>
             public readonly Interval<T> Overlap;
+
             /// <summary>
             /// The disjunct part of the intervals (after the overlap).
             /// </summary>
@@ -169,6 +176,7 @@ namespace Yoakke.Collections.Intervals
             /// The disjunct part of the intervals (after the before).
             /// </summary>
             new public readonly Interval<T> Disjunct;
+
             /// <summary>
             /// The overlapping portion of the intervals (end).
             /// </summary>

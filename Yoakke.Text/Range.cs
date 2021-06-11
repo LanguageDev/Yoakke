@@ -11,6 +11,7 @@ namespace Yoakke.Text
         /// The first <see cref="Position"/> that's inside this <see cref="Range"/>.
         /// </summary>
         public readonly Position Start;
+
         /// <summary>
         /// The first <see cref="Position"/> after this <see cref="Range"/>.
         /// </summary>

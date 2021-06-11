@@ -8,6 +8,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Server
     {
         [JsonProperty("workDoneProgress", NullValueHandling = NullValueHandling.Ignore)]
         public bool? WorkDoneProgress { get; set; }
+
         /// <summary>
         /// The commands to be executed on the server
         /// </summary>

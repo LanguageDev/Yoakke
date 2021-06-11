@@ -8,12 +8,14 @@ namespace Yoakke.Lsp.Model.Capabilities.Server
     {
         [JsonProperty("workDoneProgress", NullValueHandling = NullValueHandling.Ignore)]
         public bool? WorkDoneProgress { get; set; }
+
         /// <summary>
         /// The characters that trigger signature help
         /// automatically.
         /// </summary>
         [JsonProperty("triggerCharacters", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyList<string>? TriggerCharacters { get; set; }
+
         /// <summary>
         /// List of characters that re-trigger signature help.
         ///

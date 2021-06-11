@@ -25,11 +25,13 @@ namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
             /// </summary>
             [JsonProperty("documentationFormat", NullValueHandling = NullValueHandling.Ignore)]
             public IReadOnlyList<MarkupKind>? DocumentationFormat { get; set; }
+
             /// <summary>
             /// Client capabilities specific to parameter information.
             /// </summary>
             [JsonProperty("parameterInformation", NullValueHandling = NullValueHandling.Ignore)]
             public ParameterInformationCapabilities? ParameterInformation { get; set; }
+
             /// <summary>
             /// The client supports the `activeParameter` property on
             /// `SignatureInformation` literal.
@@ -44,12 +46,14 @@ namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
         /// </summary>
         [JsonProperty("dynamicRegistration", NullValueHandling = NullValueHandling.Ignore)]
         public bool? DynamicRegistration { get; set; }
+
         /// <summary>
         /// The client supports the following `SignatureInformation`
         /// specific properties.
         /// </summary>
         [JsonProperty("signatureInformation", NullValueHandling = NullValueHandling.Ignore)]
         public SignatureInformationCapabilities? SignatureInformation { get; set; }
+
         /// <summary>
         /// The client supports to send additional context information for a
         /// `textDocument/signatureHelp` request. A client that opts into

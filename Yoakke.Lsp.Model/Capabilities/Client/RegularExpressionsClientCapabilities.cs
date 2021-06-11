@@ -12,6 +12,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Client
         /// </summary>
         [JsonProperty("engine")]
         public string Engine { get; set; }
+
         /// <summary>
         /// The engine's version.
         /// </summary>

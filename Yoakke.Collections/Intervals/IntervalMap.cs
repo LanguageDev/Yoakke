@@ -21,6 +21,7 @@ namespace Yoakke.Collections.Intervals
         /// The comparer used for sorting interval keys.
         /// </summary>
         public IComparer<TKey> Comparer { get; }
+
         /// <summary>
         /// The equality comparer used for merging values.
         /// </summary>

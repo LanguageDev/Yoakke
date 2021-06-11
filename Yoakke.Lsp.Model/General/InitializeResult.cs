@@ -12,6 +12,7 @@ namespace Yoakke.Lsp.Model.General
             /// </summary>
             [JsonProperty("name")]
             public string Name { get; set; }
+
             /// <summary>
             /// The server's version as defined by the server.
             /// </summary>
@@ -24,6 +25,7 @@ namespace Yoakke.Lsp.Model.General
         /// </summary>
         [JsonProperty("capabilities")]
         public ServerCapabilities Capabilities { get; set; }
+
         /// <summary>
         /// Information about the server.
         /// </summary>

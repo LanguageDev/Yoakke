@@ -7,6 +7,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Server
     {
         [JsonProperty("workDoneProgress", NullValueHandling = NullValueHandling.Ignore)]
         public bool? WorkDoneProgress { get; set; }
+
         /// <summary>
         /// A human-readable string that is shown when multiple outlines trees
         /// are shown for the same document.

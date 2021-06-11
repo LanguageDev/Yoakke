@@ -16,6 +16,7 @@ namespace Yoakke.Lsp.Model.General
             /// </summary>
             [JsonProperty("name")]
             public string Name { get; set; }
+
             /// <summary>
             /// The client's version as defined by the client.
             /// </summary>
@@ -28,6 +29,7 @@ namespace Yoakke.Lsp.Model.General
         /// </summary>
         [JsonProperty("workDoneToken", NullValueHandling = NullValueHandling.Ignore)]
         public ProgressToken? WorkDoneToken { get; set; }
+
         /// <summary>
         /// The process Id of the parent process that started the server. Is null if
         /// the process has not been started by another process. If the parent
@@ -36,12 +38,14 @@ namespace Yoakke.Lsp.Model.General
         /// </summary>
         [JsonProperty("processId")]
         public int? ProcessId { get; set; }
+
         /// <summary>
         /// Information about the client
         /// </summary>
         [Since(3, 15, 0)]
         [JsonProperty("clientInfo", NullValueHandling = NullValueHandling.Ignore)]
         public ClientInformation? ClientInfo { get; set; }
+
         /// <summary>
         /// The locale the client is currently showing the user interface
         /// in. This must not necessarily be the locale of the operating
@@ -53,6 +57,7 @@ namespace Yoakke.Lsp.Model.General
         [Since(3, 16, 0)]
         [JsonProperty("locale", NullValueHandling = NullValueHandling.Ignore)]
         public string? Locale { get; set; }
+
         /// <summary>
         /// The rootPath of the workspace. Is null
         /// if no folder is open.
@@ -60,6 +65,7 @@ namespace Yoakke.Lsp.Model.General
         [Obsolete("in favour of `rootUri`.")]
         [JsonProperty("rootPath", NullValueHandling = NullValueHandling.Ignore)]
         public string? RootPath { get; set; }
+
         /// <summary>
         /// The rootUri of the workspace. Is null if no
         /// folder is open. If both `rootPath` and `rootUri` are set
@@ -68,21 +74,25 @@ namespace Yoakke.Lsp.Model.General
         [Obsolete("in favour of `workspaceFolders`")]
         [JsonProperty("rootUri")]
         public DocumentUri? RootUri { get; set; }
+
         /// <summary>
         /// User provided initialization options.
         /// </summary>
         [JsonProperty("initializationOptions", NullValueHandling = NullValueHandling.Ignore)]
         public object? InitializationOptions { get; set; }
+
         /// <summary>
         /// The capabilities provided by the client (editor or tool)
         /// </summary>
         [JsonProperty("capabilities")]
         public ClientCapabilities Capabilities { get; set; }
+
         /// <summary>
         /// The initial trace setting. If omitted trace is disabled ('off').
         /// </summary>
         [JsonProperty("trace", NullValueHandling = NullValueHandling.Ignore)]
         public TraceValue? Trace { get; set; }
+
         /// <summary>
         /// The workspace folders configured in the client when the server starts.
         /// This property is only available if the client supports workspace folders.

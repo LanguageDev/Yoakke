@@ -14,6 +14,7 @@ namespace Yoakke.Collections.RegEx
             /// The first alternative construct.
             /// </summary>
             public readonly RegExAst First;
+
             /// <summary>
             /// The second alternative construct.
             /// </summary>

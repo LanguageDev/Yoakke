@@ -12,10 +12,12 @@ namespace Yoakke.Collections
         /// Gets or sets the total number of elements the internal data structure can hold without resizing.
         /// </summary>
         public int Capacity { get; set; }
+
         /// <summary>
         /// The current offset of the head index (index to the first element).
         /// </summary>
         public int Head { get; }
+
         /// <summary>
         /// The current offset of the tail index (index after the last element).
         /// </summary>
@@ -32,21 +34,25 @@ namespace Yoakke.Collections
         /// </summary>
         /// <param name="item">The item to add.</param>
         public void AddFront(T item);
+
         /// <summary>
         /// Adds an item to the back of the buffer.
         /// </summary>
         /// <param name="item">The item to add.</param>
         public void AddBack(T item);
+
         /// <summary>
         /// Removes an item from the front of the buffer.
         /// </summary>
         /// <returns>The removed item.</returns>
         public T RemoveFront();
+
         /// <summary>
         /// Removes an item from the back of the buffer.
         /// </summary>
         /// <returns>The removed item.</returns>
         public T RemoveBack();
+
         /// <summary>
         /// Removes all items from the ring buffer.
         /// </summary>

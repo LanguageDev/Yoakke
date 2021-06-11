@@ -36,17 +36,20 @@ namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
         /// </summary>
         [JsonProperty("dynamicRegistration", NullValueHandling = NullValueHandling.Ignore)]
         public bool? DynamicRegistration { get; set; }
+
         /// <summary>
         /// Specific capabilities for the `SymbolKind` in the
         /// `textDocument/documentSymbol` request.
         /// </summary>
         [JsonProperty("symbolKind", NullValueHandling = NullValueHandling.Ignore)]
         public SymbolKindCapabilities? SymbolKind { get; set; }
+
         /// <summary>
         /// The client supports hierarchical document symbols.
         /// </summary>
         [JsonProperty("hierarchicalDocumentSymbolSupport", NullValueHandling = NullValueHandling.Ignore)]
         public bool? HierarchicalDocumentSymbolSupport { get; set; }
+
         /// <summary>
         /// The client supports tags on `SymbolInformation`. Tags are supported on
         /// `DocumentSymbol` if `hierarchicalDocumentSymbolSupport` is set to true.
@@ -55,6 +58,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
         [Since(3, 16, 0)]
         [JsonProperty("tagSupport", NullValueHandling = NullValueHandling.Ignore)]
         public TagSupportCapabilities? TagSupport { get; set; }
+
         /// <summary>
         /// The client supports an additional label presented in the UI when
         /// registering a document symbol provider.

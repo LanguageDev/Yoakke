@@ -20,17 +20,20 @@ namespace Yoakke.Lsp.Model.Capabilities.Server
 
         [JsonProperty("workDoneProgress", NullValueHandling = NullValueHandling.Ignore)]
         public bool? WorkDoneProgress { get; set; }
+
         /// <summary>
         /// The legend used by the server
         /// </summary>
         [JsonProperty("legend")]
         public SemanticTokensLegend Legend { get; set; }
+
         /// <summary>
         /// Server supports providing semantic tokens for a specific range
         /// of a document.
         /// </summary>
         [JsonProperty("range", NullValueHandling = NullValueHandling.Ignore)]
         public Either<bool, RangeOptions>? Range { get; set; }
+
         /// <summary>
         /// Server supports providing semantic tokens for a full document.
         /// </summary>

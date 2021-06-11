@@ -12,16 +12,19 @@ namespace Yoakke.Lsp.Model.LanguageFeatures
         /// </summary>
         [EnumMember(Value = "")]
         Empty,
+
         /// <summary>
         /// Base kind for quickfix actions: 'quickfix'.
         /// </summary>
         [EnumMember(Value = "quickfix")]
         QuickFix,
+
         /// <summary>
         /// Base kind for refactoring actions: 'refactor'.
         /// </summary>
         [EnumMember(Value = "refactor")]
         Refactor,
+
         /// <summary>
         /// Base kind for refactoring extraction actions: 'refactor.extract'.
         ///
@@ -35,6 +38,7 @@ namespace Yoakke.Lsp.Model.LanguageFeatures
         /// </summary>
         [EnumMember(Value = "refactor.extract")]
         RefactorExtract,
+
         /// <summary>
         /// Base kind for refactoring inline actions: 'refactor.inline'.
         ///
@@ -47,6 +51,7 @@ namespace Yoakke.Lsp.Model.LanguageFeatures
         /// </summary>
         [EnumMember(Value = "refactor.inline")]
         RefactorInline,
+
         /// <summary>
         /// Base kind for refactoring rewrite actions: 'refactor.rewrite'.
         ///
@@ -61,6 +66,7 @@ namespace Yoakke.Lsp.Model.LanguageFeatures
         /// </summary>
         [EnumMember(Value = "refactor.rewrite")]
         RefactorRewrite,
+
         /// <summary>
         /// Base kind for source actions: `source`.
         ///
@@ -68,6 +74,7 @@ namespace Yoakke.Lsp.Model.LanguageFeatures
         /// </summary>
         [EnumMember(Value = "source")]
         Source,
+
         /// <summary>
         /// Base kind for an organize imports source action:
         /// `source.organizeImports`.

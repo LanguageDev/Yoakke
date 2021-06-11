@@ -10,6 +10,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
         /// </summary>
         [JsonProperty("dynamicRegistration", NullValueHandling = NullValueHandling.Ignore)]
         public bool? DynamicRegistration { get; set; }
+
         /// <summary>
         /// Client supports testing for validity of rename operations
         /// before execution.
@@ -17,6 +18,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
         [Since(3, 12, 0)]
         [JsonProperty("prepareSupport", NullValueHandling = NullValueHandling.Ignore)]
         public bool? PrepareSupport { get; set; }
+
         /// <summary>
         /// Client supports the default behavior result
         /// (`{ defaultBehavior: boolean }`).
@@ -27,6 +29,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
         [Since(3, 16, 0)]
         [JsonProperty("prepareSupportDefaultBehavior", NullValueHandling = NullValueHandling.Ignore)]
         public PrepareSupportDefaultBehavior? PrepareSupportDefaultBehavior { get; set; }
+
         /// <summary>
         /// Whether th client honors the change annotations in
         /// text edits and resource operations returned via the

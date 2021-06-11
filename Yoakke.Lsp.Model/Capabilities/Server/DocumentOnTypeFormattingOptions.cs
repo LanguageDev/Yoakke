@@ -10,6 +10,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Server
         /// </summary>
         [JsonProperty("firstTriggerCharacter")]
         public string FirstTriggerCharacter { get; set; }
+
         /// <summary>
         /// More trigger characters.
         /// </summary>

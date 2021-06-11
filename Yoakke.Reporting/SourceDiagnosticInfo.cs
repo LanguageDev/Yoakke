@@ -9,6 +9,7 @@ namespace Yoakke.Reporting
     {
         public Severity? Severity { get; set; }
         public string? Message { get; set; }
+
         /// <summary>
         /// The location the diagnostic information refers to.
         /// </summary>

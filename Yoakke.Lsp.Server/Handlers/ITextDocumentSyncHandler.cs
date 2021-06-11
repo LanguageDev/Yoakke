@@ -15,6 +15,7 @@ namespace Yoakke.Lsp.Server.Handlers
         /// True, if open and close events should be sent.
         /// </summary>
         public bool SendOpenClose { get; }
+
         /// <summary>
         /// The synchronization kind.
         /// </summary>

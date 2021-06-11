@@ -15,6 +15,7 @@ namespace Yoakke.Collections.Intervals
         /// </summary>
         /// <returns>The constructed interval.</returns>
         public static Interval<T> Full() => new Interval<T>(LowerBound<T>.Unbounded(), UpperBound<T>.Unbounded());
+
         /// <summary>
         /// Constructs a new interval that contains the single value that was passed.
         /// </summary>
@@ -25,6 +26,7 @@ namespace Yoakke.Collections.Intervals
         /// The lower bound of the interval.
         /// </summary>
         public readonly LowerBound<T> Lower;
+
         /// <summary>
         /// The upper bound of the interval.
         /// </summary>

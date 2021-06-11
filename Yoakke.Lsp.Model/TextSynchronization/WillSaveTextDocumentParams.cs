@@ -13,6 +13,7 @@ namespace Yoakke.Lsp.Model.TextSynchronization
         /// </summary>
         [JsonProperty("textDocument")]
         public TextDocumentIdentifier TextDocument { get; set; }
+
         /// <summary>
         /// The 'TextDocumentSaveReason'.
         /// </summary>

@@ -9,6 +9,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Server
     {
         [JsonProperty("workDoneProgress", NullValueHandling = NullValueHandling.Ignore)]
         public bool? WorkDoneProgress { get; set; }
+
         /// <summary>
         /// CodeActionKinds that this server may return.
         ///
@@ -17,6 +18,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Server
         /// </summary>
         [JsonProperty("codeActionKinds", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyList<CodeActionKind>? CodeActionKinds { get; set; }
+
         /// <summary>
         /// The server provides support to resolve additional
         /// information for a code action.
