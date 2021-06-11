@@ -16,7 +16,7 @@ namespace Yoakke.Collections.Intervals
     {
         public abstract bool Equals(IntervalRelation<T> other, IComparer<T> comparer);
 
-        public abstract override int GetHashCode();
+        public override abstract int GetHashCode();
 
         public override bool Equals(object obj) => obj is IntervalRelation<T> ir && this.Equals(ir);
 
@@ -165,7 +165,7 @@ namespace Yoakke.Collections.Intervals
             /// <summary>
             /// The disjunct part of the intervals (after the overlap).
             /// </summary>
-            public new readonly Interval<T> Disjunct;
+            public readonly new Interval<T> Disjunct;
 
             public Starting(Interval<T> overlap, Interval<T> disjunct)
             {
@@ -187,7 +187,7 @@ namespace Yoakke.Collections.Intervals
             /// <summary>
             /// The disjunct part of the intervals (after the before).
             /// </summary>
-            public new readonly Interval<T> Disjunct;
+            public readonly new Interval<T> Disjunct;
 
             /// <summary>
             /// The overlapping portion of the intervals (end).

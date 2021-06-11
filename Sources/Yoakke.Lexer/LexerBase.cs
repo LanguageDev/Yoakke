@@ -14,7 +14,8 @@ namespace Yoakke.Lexer
     /// Base-class to provide common functionality for lexers, if a custom solution is needed.
     /// </summary>
     /// <typeparam name="T">The token-kind of the <see cref="Token{T}"/>s this <see cref="LexerBase{T}"/> produces.</typeparam>
-    public abstract class LexerBase<T> : ILexer where T : notnull
+    public abstract class LexerBase<T> : ILexer
+        where T : notnull
     {
         public Position Position { get; private set; }
 

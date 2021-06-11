@@ -15,7 +15,7 @@ namespace Yoakke.Parser.Generator.Ast
 
         public abstract bool Equals(BnfAst other);
 
-        public abstract override int GetHashCode();
+        public override abstract int GetHashCode();
 
         /// <summary>
         /// Desugars the AST into simpler elements.

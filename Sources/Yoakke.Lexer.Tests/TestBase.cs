@@ -6,7 +6,8 @@ using Yoakke.Text;
 
 namespace Yoakke.Lexer.Tests
 {
-    public abstract class TestBase<TKind> where TKind : notnull
+    public abstract class TestBase<TKind>
+        where TKind : notnull
     {
         protected static Token<TKind> Token(string value, TKind tt, Range r) => new(r, value, tt);
 

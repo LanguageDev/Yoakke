@@ -29,6 +29,6 @@ namespace Yoakke.Collections.RegEx
 
         public abstract bool Equals(RegExAst other);
 
-        public abstract override int GetHashCode();
+        public override abstract int GetHashCode();
     }
 }

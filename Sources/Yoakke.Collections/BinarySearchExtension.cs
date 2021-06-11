@@ -14,18 +14,19 @@ namespace Yoakke.Collections
         ///
         /// This is a specialized version if binary search that can compare different key-types.
         /// </summary>
-        /// <typeparam name="TValue"></typeparam>
-        /// <typeparam name="KSearch"></typeparam>
-        /// <typeparam name="KValue"></typeparam>
+        /// <typeparam name="TItem">The element type to search in.</typeparam>
+        /// <typeparam name="TKeyBy">The key type to search by.</typeparam>
+        /// <typeparam name="TKeyFind">The selected key type.</typeparam>
         /// <param name="list">The list to search in.</param>
         /// <param name="searchedKey">The key to search for.</param>
         /// <param name="keySelector">The key selector function that selects the key for each element in the list.</param>
         /// <returns>A pair of the resulting index to insert the searched key to keep the ordering and a bool indicating if
         /// it's an exact match.</returns>
-        public static (int Index, bool Exact) BinarySearch<TValue, KSearch, KValue>(
-            this IReadOnlyList<TValue> list,
-            KSearch searchedKey,
-            Func<TValue, KValue> keySelector) where KSearch : IComparable<KValue> =>
+        public static (int Index, bool Exact) BinarySearch<TItem, TKeyBy, TKeyFind>(
+            this IReadOnlyList<TItem> list,
+            TKeyBy searchedKey,
+            Func<TItem, TKeyFind> keySelector)
+            where TKeyBy : IComparable<TKeyFind> =>
             list.BinarySearch(0, searchedKey, keySelector, (k1, k2) => k1.CompareTo(k2));
 
         /// <summary>
@@ -33,20 +34,20 @@ namespace Yoakke.Collections
         ///
         /// This is a specialized version if binary search that can compare different key-types.
         /// </summary>
-        /// <typeparam name="TValue">The element type to search in.</typeparam>
-        /// <typeparam name="KSearch">The key type to search by.</typeparam>
-        /// <typeparam name="KValue">The selected key type.</typeparam>
+        /// <typeparam name="TItem">The element type to search in.</typeparam>
+        /// <typeparam name="TKeyBy">The key type to search by.</typeparam>
+        /// <typeparam name="TKeyFind">The selected key type.</typeparam>
         /// <param name="list">The list to search in.</param>
         /// <param name="searchedKey">The key to search for.</param>
         /// <param name="keySelector">The key selector function that selects the key for each element in the list.</param>
         /// <param name="keyComparer">The comparer to use.</param>
         /// <returns>A pair of the resulting index to insert the searched key to keep the ordering and a bool indicating if
         /// it's an exact match.</returns>
-        public static (int Index, bool Exact) BinarySearch<TValue, KSearch, KValue>(
-            this IReadOnlyList<TValue> list,
-            KSearch searchedKey,
-            Func<TValue, KValue> keySelector,
-            Func<KSearch, KValue, int> keyComparer) =>
+        public static (int Index, bool Exact) BinarySearch<TItem, TKeyBy, TKeyFind>(
+            this IReadOnlyList<TItem> list,
+            TKeyBy searchedKey,
+            Func<TItem, TKeyFind> keySelector,
+            Func<TKeyBy, TKeyFind, int> keyComparer) =>
             list.BinarySearch(0, list.Count, searchedKey, keySelector, keyComparer);
 
         /// <summary>
@@ -54,9 +55,9 @@ namespace Yoakke.Collections
         ///
         /// This is a specialized version if binary search that can compare different key-types.
         /// </summary>
-        /// <typeparam name="TValue">The element type to search in.</typeparam>
-        /// <typeparam name="KSearch">The key type to search by.</typeparam>
-        /// <typeparam name="KValue">The selected key type.</typeparam>
+        /// <typeparam name="TItem">The element type to search in.</typeparam>
+        /// <typeparam name="TKeyBy">The key type to search by.</typeparam>
+        /// <typeparam name="TKeyFind">The selected key type.</typeparam>
         /// <param name="list">The list to search in.</param>
         /// <param name="start">The start index of the search.</param>
         /// <param name="searchedKey">The key to search for.</param>
@@ -64,12 +65,12 @@ namespace Yoakke.Collections
         /// <param name="keyComparer">The comparer to use.</param>
         /// <returns>A pair of the resulting index to insert the searched key to keep the ordering and a bool indicating if
         /// it's an exact match.</returns>
-        public static (int Index, bool Exact) BinarySearch<TValue, KSearch, KValue>(
-            this IReadOnlyList<TValue> list,
+        public static (int Index, bool Exact) BinarySearch<TItem, TKeyBy, TKeyFind>(
+            this IReadOnlyList<TItem> list,
             int start,
-            KSearch searchedKey,
-            Func<TValue, KValue> keySelector,
-            Func<KSearch, KValue, int> keyComparer) =>
+            TKeyBy searchedKey,
+            Func<TItem, TKeyFind> keySelector,
+            Func<TKeyBy, TKeyFind, int> keyComparer) =>
             list.BinarySearch(start, list.Count - start, searchedKey, keySelector, keyComparer);
 
         /// <summary>

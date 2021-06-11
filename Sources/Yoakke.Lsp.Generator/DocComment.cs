@@ -54,7 +54,10 @@ namespace Yoakke.LSP.Generator
                     var (name, tlines) = ParseTag(lines, i);
                     result.Add(name, tlines);
                 }
-                else ++i;
+                else
+                {
+                    ++i;
+                }
             }
             return result;
         }

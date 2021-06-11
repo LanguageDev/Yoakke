@@ -46,8 +46,10 @@ func foo() {
 }
 ");
 
-            var presenter = new TextDiagnosticPresenter(Console.Error);
-            presenter.SyntaxHighlighter = new MyHighlighter();
+            var presenter = new TextDiagnosticPresenter(Console.Error)
+            {
+                SyntaxHighlighter = new MyHighlighter()
+            };
 
             var diag = new Diagnostic()
                 .WithCode("E001")

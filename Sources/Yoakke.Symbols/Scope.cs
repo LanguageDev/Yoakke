@@ -12,7 +12,8 @@ namespace Yoakke.Symbols
     /// A simple scope implementation with a tag type.
     /// </summary>
     /// <typeparam name="TTag">The tag type associated with the scope.</typeparam>
-    public class Scope<TTag> : IScope where TTag : struct
+    public class Scope<TTag> : IScope
+        where TTag : struct
     {
         /// <summary>
         /// The tag associated with the scope.

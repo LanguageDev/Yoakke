@@ -47,7 +47,8 @@ namespace Yoakke.Parser
         /// <param name="kind">The token kind to check for.</param>
         /// <param name="token">The token, if it matched the kind.</param>
         /// <returns>True, if the given token ahead has the certain kind.</returns>
-        protected bool TryMatchKind<T>(int offset, T kind, [MaybeNullWhen(false)] out Token<T>? token) where T : notnull
+        protected bool TryMatchKind<T>(int offset, T kind, [MaybeNullWhen(false)] out Token<T>? token)
+            where T : notnull
         {
             if (this.TryPeek(offset, out var itoken) && itoken is Token<T> t && kind!.Equals(t.Kind))
             {

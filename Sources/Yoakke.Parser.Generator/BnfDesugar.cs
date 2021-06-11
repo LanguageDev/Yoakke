@@ -114,7 +114,10 @@ namespace Yoakke.Parser.Generator
                     }
                     alphas.Add(alpha!);
                 }
-                else betas.Add(child);
+                else
+                {
+                    betas.Add(child);
+                }
             }
             if (alphas.Count == 0 || betas.Count == 0) return alt;
             // We have left-recursion
