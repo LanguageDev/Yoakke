@@ -156,7 +156,7 @@ namespace Yoakke.LSP.Generator
             var result = new StringBuilder();
             var fieldName = Capitalize(field.Name);
             if (field.Docs != null) result.AppendLine(TranslateDocComment("    ", field.Docs));
-            string propExtra = "";
+            var propExtra = "";
             if (field.Optional) propExtra += ", NullValueHandling = NullValueHandling.Ignore";
             result.AppendLine($"    [{JsonPropertyAttribute}(\"{field.Name}\"{propExtra})]");
             result.Append("    public ");

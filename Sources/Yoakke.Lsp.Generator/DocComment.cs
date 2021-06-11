@@ -21,7 +21,7 @@ namespace Yoakke.LSP.Generator
         {
             var lines = DocCommentToLines(docComment);
             var tags = ParseTags(lines);
-            string? summary = lines.Count == 0 ? null : string.Join('\n', lines);
+            var summary = lines.Count == 0 ? null : string.Join('\n', lines);
             string? deprecation = null;
             string? since = null;
             if (tags.Remove("deprecated", out var deprecationLines))
@@ -47,7 +47,7 @@ namespace Yoakke.LSP.Generator
         private static Dictionary<string, List<string>> ParseTags(List<string> lines)
         {
             var result = new Dictionary<string, List<string>>();
-            for (int i = 0; i < lines.Count;)
+            for (var i = 0; i < lines.Count;)
             {
                 if (lines[i].StartsWith('@'))
                 {
@@ -92,7 +92,7 @@ namespace Yoakke.LSP.Generator
                 lines.Add(line);
             }
             // Now remove any prefix that is spaces and a star after
-            for (int i = 0; i < lines.Count; ++i)
+            for (var i = 0; i < lines.Count; ++i)
             {
                 var lineChars = lines[i].ToCharArray()
                     .SkipWhile(char.IsWhiteSpace)

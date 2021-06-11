@@ -36,7 +36,7 @@ namespace Yoakke.Parser.Generator.Ast
 
             public override int GetHashCode()
             {
-                var hash = new HashCode();
+                var hash = default(HashCode);
                 foreach (var e in this.Elements) hash.Add(e);
                 return hash.ToHashCode();
             }
@@ -56,7 +56,7 @@ namespace Yoakke.Parser.Generator.Ast
                 }
                 Add(this);
 
-                for (int i = 0; i < newElements.Count; ++i)
+                for (var i = 0; i < newElements.Count; ++i)
                 {
                     if (newElements[i] is Alt alt)
                     {

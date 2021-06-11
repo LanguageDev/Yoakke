@@ -77,9 +77,9 @@ namespace Yoakke.Collections
         ///
         /// This is a specialized version if binary search that can compare different key-types.
         /// </summary>
-        /// <typeparam name="TValue">The element type to search in.</typeparam>
-        /// <typeparam name="KSearch">The key type to search by.</typeparam>
-        /// <typeparam name="KValue">The selected key type.</typeparam>
+        /// <typeparam name="TItem">The element type to search in.</typeparam>
+        /// <typeparam name="TKeyBy">The key type to search by.</typeparam>
+        /// <typeparam name="TKeyFind">The selected key type.</typeparam>
         /// <param name="list">The list to search in.</param>
         /// <param name="start">The start index of the search.</param>
         /// <param name="length">The length of the range to search.</param>
@@ -88,13 +88,13 @@ namespace Yoakke.Collections
         /// <param name="keyComparer">The comparer to use.</param>
         /// <returns>A pair of the resulting index to insert the searched key to keep the ordering and a bool indicating if
         /// it's an exact match.</returns>
-        public static (int Index, bool Exact) BinarySearch<TValue, KSearch, KValue>(
-            this IReadOnlyList<TValue> list,
+        public static (int Index, bool Exact) BinarySearch<TItem, TKeyBy, TKeyFind>(
+            this IReadOnlyList<TItem> list,
             int start,
             int length,
-            KSearch searchedKey,
-            Func<TValue, KValue> keySelector,
-            Func<KSearch, KValue, int> keyComparer)
+            TKeyBy searchedKey,
+            Func<TItem, TKeyFind> keySelector,
+            Func<TKeyBy, TKeyFind, int> keyComparer)
         {
             var size = length;
             if (size == 0) return (start, false);

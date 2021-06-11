@@ -165,7 +165,7 @@ namespace Yoakke.Collections.Intervals
             /// <summary>
             /// The disjunct part of the intervals (after the overlap).
             /// </summary>
-            new public readonly Interval<T> Disjunct;
+            public new readonly Interval<T> Disjunct;
 
             public Starting(Interval<T> overlap, Interval<T> disjunct)
             {
@@ -187,7 +187,7 @@ namespace Yoakke.Collections.Intervals
             /// <summary>
             /// The disjunct part of the intervals (after the before).
             /// </summary>
-            new public readonly Interval<T> Disjunct;
+            public new readonly Interval<T> Disjunct;
 
             /// <summary>
             /// The overlapping portion of the intervals (end).

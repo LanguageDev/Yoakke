@@ -129,7 +129,7 @@ namespace Yoakke.Parser
         protected bool TryConsume(int length)
         {
             if (!this.TryPeek(length - 1, out var _)) return false;
-            for (int i = 0; i < length; ++i) this.peek.RemoveFront();
+            for (var i = 0; i < length; ++i) this.peek.RemoveFront();
             return true;
         }
 

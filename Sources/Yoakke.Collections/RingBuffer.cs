@@ -103,8 +103,8 @@ namespace Yoakke.Collections
         public void Clear()
         {
             var ((hstart, hlen), (tstart, tlen)) = this.GetSlices();
-            for (int i = hstart; i < hstart + hlen; ++i) this.storage![i] = default;
-            for (int i = tstart; i < tstart + tlen; ++i) this.storage![i] = default;
+            for (var i = hstart; i < hstart + hlen; ++i) this.storage![i] = default;
+            for (var i = tstart; i < tstart + tlen; ++i) this.storage![i] = default;
             this.Head = 0;
             this.Count = 0;
         }
@@ -112,8 +112,8 @@ namespace Yoakke.Collections
         public IEnumerator<T> GetEnumerator()
         {
             var ((hstart, hlen), (tstart, tlen)) = this.GetSlices();
-            for (int i = hstart; i < hstart + hlen; ++i) yield return this.storage![i]!;
-            for (int i = tstart; i < tstart + tlen; ++i) yield return this.storage![i]!;
+            for (var i = hstart; i < hstart + hlen; ++i) yield return this.storage![i]!;
+            for (var i = tstart; i < tstart + tlen; ++i) yield return this.storage![i]!;
         }
 
         IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
@@ -178,7 +178,7 @@ namespace Yoakke.Collections
 
         private static int Mod(int a, int b)
         {
-            int r = a % b;
+            var r = a % b;
             return r < 0 ? r + b : r;
         }
     }

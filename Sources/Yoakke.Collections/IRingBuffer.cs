@@ -31,7 +31,7 @@ namespace Yoakke.Collections
         /// Gets or sets the element at the specified index.
         /// </summary>
         /// <param name="index">he zero-based index of the element to get or set relative to the head.</param>
-        new public T this[int index] { get; set; }
+        public new T this[int index] { get; set; }
 
         /// <summary>
         /// Adds an item to the front of the buffer.

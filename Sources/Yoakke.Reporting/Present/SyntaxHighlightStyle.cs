@@ -22,13 +22,13 @@ namespace Yoakke.Reporting.Present
         /// </summary>
         public IDictionary<TokenKind, ConsoleColor> TokenColors { get; set; } = new Dictionary<TokenKind, ConsoleColor>
         {
-            { TokenKind.Comment    , ConsoleColor.DarkGreen },
-            { TokenKind.Keyword    , ConsoleColor.Magenta   },
-            { TokenKind.Literal    , ConsoleColor.Blue      },
-            { TokenKind.Name       , ConsoleColor.Cyan      },
-            { TokenKind.Operator   , ConsoleColor.DarkCyan  },
-            { TokenKind.Punctuation, ConsoleColor.White     },
-            { TokenKind.Other      , ConsoleColor.White     },
+            { TokenKind.Comment, ConsoleColor.DarkGreen },
+            { TokenKind.Keyword, ConsoleColor.Magenta },
+            { TokenKind.Literal, ConsoleColor.Blue },
+            { TokenKind.Name, ConsoleColor.Cyan },
+            { TokenKind.Operator, ConsoleColor.DarkCyan },
+            { TokenKind.Punctuation, ConsoleColor.White },
+            { TokenKind.Other, ConsoleColor.White },
         };
 
         /// <summary>

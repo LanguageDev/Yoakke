@@ -40,7 +40,7 @@ namespace Yoakke.Collections.RegEx
 
             public override int GetHashCode()
             {
-                var hash = new HashCode();
+                var hash = default(HashCode);
                 hash.Add(this.Negate);
                 foreach (var r in this.Ranges) hash.Add(r);
                 return hash.ToHashCode();

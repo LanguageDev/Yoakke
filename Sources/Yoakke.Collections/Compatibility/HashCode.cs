@@ -8,7 +8,7 @@ namespace Yoakke.Collections.Compatibility
     {
         public static int Combine(params object?[] values)
         {
-            var h = new HashCode();
+            var h = default(HashCode);
             foreach (var item in values) h.Add(item);
             return h.ToHashCode();
         }
@@ -31,9 +31,9 @@ namespace Yoakke.Collections.Compatibility
         {
             unchecked
             {
-                int hash = 17;
-                hash = hash * 31 + code1;
-                hash = hash * 31 + code2;
+                var hash = 17;
+                hash = (hash * 31) + code1;
+                hash = (hash * 31) + code2;
                 return hash;
             }
         }

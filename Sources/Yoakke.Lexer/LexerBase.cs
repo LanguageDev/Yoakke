@@ -60,7 +60,7 @@ namespace Yoakke.Lexer
         /// <returns>True, if there is a full match.</returns>
         protected bool Matches(string text, int offset = 0)
         {
-            for (int i = 0; i < text.Length; ++i)
+            for (var i = 0; i < text.Length; ++i)
             {
                 if (!this.TryPeek(out var ch, offset + i)) return false;
                 if (ch != text[i]) return false;
@@ -116,7 +116,7 @@ namespace Yoakke.Lexer
         /// <param name="length">The amount of characters to skip.</param>
         protected void Skip(int length)
         {
-            for (int i = 0; i < length; ++i) this.Skip();
+            for (var i = 0; i < length; ++i) this.Skip();
         }
 
         /// <summary>
@@ -127,7 +127,7 @@ namespace Yoakke.Lexer
         protected string Take(int length)
         {
             var result = new StringBuilder();
-            for (int i = 0; i < length; ++i) result.Append(this.Skip());
+            for (var i = 0; i < length; ++i) result.Append(this.Skip());
             return result.ToString();
         }
 

@@ -36,7 +36,7 @@ namespace Yoakke.Parser.Generator.Ast
 
             public override int GetHashCode()
             {
-                var hash = new HashCode();
+                var hash = default(HashCode);
                 foreach (var e in this.Elements) hash.Add(e);
                 return hash.ToHashCode();
             }

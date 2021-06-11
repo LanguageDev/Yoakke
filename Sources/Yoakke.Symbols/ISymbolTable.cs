@@ -14,7 +14,7 @@ namespace Yoakke.Symbols
         /// <summary>
         /// The global scope in the symbol hierarchy.
         /// </summary>
-        new public IScope GlobalScope { get; }
+        public new IScope GlobalScope { get; }
 
         /// <summary>
         /// The current scope that we are adding symbols to.

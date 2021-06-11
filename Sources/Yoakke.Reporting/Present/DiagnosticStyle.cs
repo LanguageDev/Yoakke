@@ -22,10 +22,10 @@ namespace Yoakke.Reporting.Present
         /// </summary>
         public IDictionary<Severity, ConsoleColor> SeverityColors { get; set; } = new Dictionary<Severity, ConsoleColor>
         {
-            { Severity.Note         , ConsoleColor.White   },
-            { Severity.Help         , ConsoleColor.Blue    },
-            { Severity.Warning      , ConsoleColor.Yellow  },
-            { Severity.Error        , ConsoleColor.Red     },
+            { Severity.Note, ConsoleColor.White },
+            { Severity.Help, ConsoleColor.Blue },
+            { Severity.Warning, ConsoleColor.Yellow },
+            { Severity.Error, ConsoleColor.Red },
             { Severity.InternalError, ConsoleColor.Magenta },
         };
 

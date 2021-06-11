@@ -25,7 +25,7 @@ namespace Yoakke.Collections.FiniteAutomata
 
             public int GetHashCode(SortedSet<State> obj)
             {
-                var hash = new HashCode();
+                var hash = default(HashCode);
                 foreach (var s in obj) hash.Add(s);
                 return hash.ToHashCode();
             }

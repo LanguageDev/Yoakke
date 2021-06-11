@@ -34,14 +34,14 @@ namespace Yoakke.Collections.FiniteAutomata
 
         public override int GetHashCode()
         {
-            var hash = new HashCode();
+            var hash = default(HashCode);
             foreach (var e in this.indices) hash.Add(e);
             return hash.ToHashCode();
         }
 
         public int CompareTo(State other)
         {
-            for (int i = 0; i < Math.Min(this.indices.Length, other.indices.Length); ++i)
+            for (var i = 0; i < Math.Min(this.indices.Length, other.indices.Length); ++i)
             {
                 var diff = this.indices[i] - other.indices[i];
                 if (diff != 0) return diff;

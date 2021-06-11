@@ -137,8 +137,10 @@ namespace Yoakke.Ast.Generator
         {
             var isRoot = node.Parent == null;
             // Generate this node
-            var interfacesToImplement = new List<string>();
-            interfacesToImplement.Add(TypeNames.IAstNode);
+            var interfacesToImplement = new List<string>
+            {
+                TypeNames.IAstNode,
+            };
             if (isRoot)
             {
                 // There are potentially things to implement
@@ -156,7 +158,7 @@ namespace Yoakke.Ast.Generator
                 var typeName = $"{TypeNames.IEnumerable}<{kvType}>";
                 extraDefinitions!.AppendLine($"{typeName} {TypeNames.IAstNode}.{propName}");
                 extraDefinitions.AppendLine("{ get {");
-                bool hasAny = false;
+                var hasAny = false;
                 foreach (var symbol in symbols)
                 {
                     hasAny = true;

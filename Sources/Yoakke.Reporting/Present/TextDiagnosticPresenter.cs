@@ -275,8 +275,8 @@ namespace Yoakke.Reporting.Present
                 this.buffer.WriteLine();
             }
             // From now on all previous ones will be one longer than the ones later
-            int arrowBaseLine = this.buffer.CursorY;
-            int arrowBodyLength = 0;
+            var arrowBaseLine = this.buffer.CursorY;
+            var arrowBodyLength = 0;
             // We only consider annotations with messages
             foreach (var (col, annot) in arrowHeadColumns.SkipLast(1).Reverse().Where(a => a.Info.Message != null))
             {
@@ -290,7 +290,7 @@ namespace Yoakke.Reporting.Present
                 if (annot.Severity != null) this.buffer.ForegroundColor = this.Style.DefaultColor;
             }
             // Fill the in between lines with the prefix
-            for (int i = 0; i < arrowBodyLength; ++i)
+            for (var i = 0; i < arrowBodyLength; ++i)
             {
                 this.buffer.WriteAt(0, arrowBaseLine + i, prefix);
             }
@@ -307,7 +307,7 @@ namespace Yoakke.Reporting.Present
 
             // Now we collect each line primitive
             int? lastLineIndex = null;
-            for (int j = 0; j < groupedInfos.Count; ++j)
+            for (var j = 0; j < groupedInfos.Count; ++j)
             {
                 var infoGroup = groupedInfos[j];
                 // First we determine the range we need to print for this info
@@ -327,7 +327,7 @@ namespace Yoakke.Reporting.Present
                     if (difference <= this.Style.ConnectUpLines)
                     {
                         // Difference is negligible, connect them up, no reason to dot it out
-                        for (int i = 0; i < difference; ++i)
+                        for (var i = 0; i < difference; ++i)
                         {
                             yield return new SourceLine { Source = sourceFile, Line = lastLineIndex.Value + i };
                         }
@@ -340,7 +340,7 @@ namespace Yoakke.Reporting.Present
                 }
                 lastLineIndex = maxLineIndex;
                 // Now we need to print all the relevant lines
-                for (int i = minLineIndex; i < maxLineIndex; ++i)
+                for (var i = minLineIndex; i < maxLineIndex; ++i)
                 {
                     yield return new SourceLine { Source = sourceFile, Line = i };
                     // If this was an annotated line, yield the annotation
@@ -353,7 +353,7 @@ namespace Yoakke.Reporting.Present
         {
             if (ch == '\t')
             {
-                pos += this.Style.TabSize - pos % this.Style.TabSize;
+                pos += this.Style.TabSize - (pos % this.Style.TabSize);
                 return false;
             }
             else if (!char.IsControl(ch))

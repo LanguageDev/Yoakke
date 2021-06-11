@@ -56,7 +56,7 @@ namespace Yoakke.Reporting.Present
         {
             this.EnsureBuffer(left + str.Length - 1, top);
             var line = this.lines[top];
-            for (int i = 0; i < str.Length; ++i)
+            for (var i = 0; i < str.Length; ++i)
             {
                 line.Text[left + i] = str[i];
                 line.Color[left + i] = (this.ForegroundColor, this.BackgroundColor);
@@ -83,14 +83,14 @@ namespace Yoakke.Reporting.Present
 
         public void Fill(int left, int top, int width, int height, char ch)
         {
-            for (int j = 0; j < height; ++j)
+            for (var j = 0; j < height; ++j)
             {
-                int yp = top + j;
+                var yp = top + j;
                 this.EnsureBuffer(left + width - 1, yp);
                 var line = this.lines[yp];
-                for (int i = 0; i < width; ++i)
+                for (var i = 0; i < width; ++i)
                 {
-                    int xp = left + i;
+                    var xp = left + i;
                     line.Text[xp] = ch;
                     line.Color[xp] = (this.ForegroundColor, this.BackgroundColor);
                 }
@@ -108,14 +108,14 @@ namespace Yoakke.Reporting.Present
 
         public void Recolor(int left, int top, int width, int height)
         {
-            for (int j = 0; j < height; ++j)
+            for (var j = 0; j < height; ++j)
             {
-                int yp = top + j;
+                var yp = top + j;
                 this.EnsureBuffer(left + width - 1, yp);
                 var line = this.lines[yp];
-                for (int i = 0; i < width; ++i)
+                for (var i = 0; i < width; ++i)
                 {
-                    int xp = left + i;
+                    var xp = left + i;
                     line.Color[xp] = (this.ForegroundColor, this.BackgroundColor);
                 }
             }
@@ -127,10 +127,10 @@ namespace Yoakke.Reporting.Present
             foreach (var line in this.lines)
             {
                 var lineStr = line.Text.ToString();
-                int i = 0;
+                var i = 0;
                 while (i < line.Text.Length)
                 {
-                    int start = i;
+                    var start = i;
                     for (; i < line.Text.Length && line.Color[i] == lastColor; ++i) ;
                     // Print portion
                     writer.Write(lineStr.AsSpan(start, i - start));
@@ -155,12 +155,12 @@ namespace Yoakke.Reporting.Present
             for (; this.lines.Count <= y; this.lines.Add(new Line())) ;
             // Now ensure x character in line y
             var line = this.lines[y];
-            int requiredChars = x - line.Text.Length + 1;
+            var requiredChars = x - line.Text.Length + 1;
             if (requiredChars > 0)
             {
                 line.Text.Append(' ', requiredChars);
                 if (line.Color.Capacity < x + 1) line.Color.Capacity = x + 1;
-                for (int i = 0; i < requiredChars; ++i) line.Color.Add((this.ForegroundColor, this.BackgroundColor));
+                for (var i = 0; i < requiredChars; ++i) line.Color.Add((this.ForegroundColor, this.BackgroundColor));
             }
         }
     }

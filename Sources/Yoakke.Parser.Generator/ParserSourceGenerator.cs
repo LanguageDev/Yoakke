@@ -147,7 +147,9 @@ namespace {namespaceName}
         {{
         }}
 
+#pragma warning disable CS8632
         {parserMethods}
+#pragma warning restore CS8632
     }}
 }}
 ";
@@ -249,7 +251,7 @@ namespace {namespaceName}
 
             case BnfAst.Alt alt:
             {
-                bool first = true;
+                var first = true;
                 foreach (var element in alt.Elements)
                 {
                     var altVar = this.GenerateBnf(code, rule, element, lastIndex);
@@ -274,7 +276,7 @@ namespace {namespaceName}
                 var prevVar = this.GenerateBnf(code, rule, seq.Elements[0], lastIndex);
                 varStack.Push(prevVar);
                 var resultSeq = new StringBuilder($"{prevVar}.Ok.Value");
-                for (int i = 1; i < seq.Elements.Count; ++i)
+                for (var i = 1; i < seq.Elements.Count; ++i)
                 {
                     code.AppendLine($"if ({prevVar}.IsOk) {{");
                     var nextVar = this.GenerateBnf(code, rule, seq.Elements[i], $"{prevVar}.Ok.Offset");
@@ -476,8 +478,8 @@ namespace {namespaceName}
         private static string ToPascalCase(string str)
         {
             var result = new StringBuilder();
-            bool prevUnderscore = true;
-            for (int i = 0; i < str.Length; ++i)
+            var prevUnderscore = true;
+            for (var i = 0; i < str.Length; ++i)
             {
                 if (str[i] == '_')
                 {

@@ -81,7 +81,7 @@ namespace Yoakke.Collections.RegEx
         private RegExAst ParseLiteralRange()
         {
             this.Expect('[');
-            bool negate = this.Match('^');
+            var negate = this.Match('^');
             var ranges = new List<(char From, char To)>();
             ranges.Add(this.ParseSingleLiteralRange());
             while (!this.Match(']')) ranges.Add(this.ParseSingleLiteralRange());

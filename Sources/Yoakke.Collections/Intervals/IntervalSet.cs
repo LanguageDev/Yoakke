@@ -100,7 +100,7 @@ namespace Yoakke.Collections.Intervals
             if (lowerUnbounded && upperUnbounded)
             {
                 var nIntervals = this.intervals.Count - 1;
-                for (int i = 0; i < nIntervals; ++i)
+                for (var i = 0; i < nIntervals; ++i)
                 {
                     var lower = this.intervals[i].Upper.GetTouching()!.Value;
                     var upper = this.intervals[i + 1].Lower.GetTouching()!.Value;
@@ -119,7 +119,7 @@ namespace Yoakke.Collections.Intervals
                     var lastLower = this.intervals[nIntervals - 1].Upper.GetTouching()!.Value;
                     this.intervals[nIntervals - 1] = new Interval<T>(lastLower, UpperBound<T>.Unbounded());
 
-                    for (int i = nIntervals - 2; i > 0; --i)
+                    for (var i = nIntervals - 2; i > 0; --i)
                     {
                         var loTouch = prevTouch;
                         var hiTouch = this.intervals[i].Upper.GetTouching()!.Value;
@@ -149,7 +149,7 @@ namespace Yoakke.Collections.Intervals
                     var firstUpper = this.intervals[0].Lower.GetTouching()!.Value;
                     this.intervals[0] = new Interval<T>(LowerBound<T>.Unbounded(), firstUpper);
 
-                    for (int i = 1; i < nIntervals - 1; ++i)
+                    for (var i = 1; i < nIntervals - 1; ++i)
                     {
                         var loTouch = this.intervals[i].Lower.GetTouching()!.Value;
                         var hiTouch = prevTouch;
@@ -182,7 +182,7 @@ namespace Yoakke.Collections.Intervals
                 var firstUpper = this.intervals[0].Lower.GetTouching()!.Value;
                 this.intervals[0] = new Interval<T>(LowerBound<T>.Unbounded(), firstUpper);
 
-                for (int i = 1; i < nIntervals; ++i)
+                for (var i = 1; i < nIntervals; ++i)
                 {
                     var loTouch = this.intervals[i].Lower.GetTouching()!.Value;
                     var upper = prevTouch;

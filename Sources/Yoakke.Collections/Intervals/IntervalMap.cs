@@ -143,7 +143,7 @@ namespace Yoakke.Collections.Intervals
 
         public void MergeTouching()
         {
-            for (int i = 0; i < this.values.Count - 1; )
+            for (var i = 0; i < this.values.Count - 1; )
             {
                 var v1 = this.values[i];
                 var v2 = this.values[i + 1];

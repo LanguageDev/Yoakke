@@ -47,7 +47,7 @@ namespace Yoakke.Parser.Generator
             var result = new List<Rule>();
             var atom = new Rule($"{rule.Name}_atomic", rule.Ast, false);
             result.Add(atom);
-            for (int i = 0; i < precedenceTable.Count; ++i)
+            for (var i = 0; i < precedenceTable.Count; ++i)
             {
                 var prec = precedenceTable[i];
                 var currentCall = new BnfAst.Call(i == 0 ? rule.Name : $"{rule.Name}_level{i}");

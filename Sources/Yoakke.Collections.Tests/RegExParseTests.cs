@@ -14,14 +14,14 @@ namespace Yoakke.Collections.Tests
         private static RegExAst Alt(params RegExAst[] nodes)
         {
             var result = nodes[nodes.Length - 1];
-            for (int i = nodes.Length - 2; i >= 0; --i) result = new RegExAst.Alt(nodes[i], result);
+            for (var i = nodes.Length - 2; i >= 0; --i) result = new RegExAst.Alt(nodes[i], result);
             return result;
         }
 
         private static RegExAst Seq(params RegExAst[] nodes)
         {
             var result = nodes[nodes.Length - 1];
-            for (int i = nodes.Length - 2; i >= 0; --i) result = new RegExAst.Seq(nodes[i], result);
+            for (var i = nodes.Length - 2; i >= 0; --i) result = new RegExAst.Seq(nodes[i], result);
             return result;
         }
 

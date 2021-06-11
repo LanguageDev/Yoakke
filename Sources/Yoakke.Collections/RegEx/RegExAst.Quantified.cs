@@ -64,7 +64,7 @@ namespace Yoakke.Collections.RegEx
                     // 0..AtMost repeat
                     var sub = this.Subexpr.Desugar();
                     var result = sub;
-                    for (int i = 0; i < this.AtMost.Value; ++i) result = new Seq(result, sub);
+                    for (var i = 0; i < this.AtMost.Value; ++i) result = new Seq(result, sub);
                     return result;
                 }
                 else
@@ -72,14 +72,14 @@ namespace Yoakke.Collections.RegEx
                     // Create the prefix
                     var sub = this.Subexpr.Desugar();
                     var result = sub;
-                    for (int i = 0; i < this.AtLeast; ++i) result = new Seq(result, sub);
+                    for (var i = 0; i < this.AtLeast; ++i) result = new Seq(result, sub);
                     // Rep0 after the prefix
                     if (this.AtMost == null) return new Seq(result, new Rep0(sub));
                     // Just these
                     if (this.AtMost == this.AtLeast) return result;
                     // We need a sequence of optional constructs
                     RegExAst after = new Opt(sub);
-                    for (int i = this.AtLeast + 1; i < this.AtMost.Value; ++i) after = new Seq(after, new Opt(sub));
+                    for (var i = this.AtLeast + 1; i < this.AtMost.Value; ++i) after = new Seq(after, new Opt(sub));
                     return new Seq(result, after);
                 }
             }

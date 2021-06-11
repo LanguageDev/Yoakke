@@ -39,7 +39,7 @@ namespace Yoakke.Lexer.Tests
                 }
                 if (this.Matches("//"))
                 {
-                    int i = 0;
+                    var i = 0;
                     for (; this.Peek(i, '\n') != '\n'; ++i) ;
                     this.Skip(i);
                     goto begin;
@@ -48,13 +48,13 @@ namespace Yoakke.Lexer.Tests
                 if (this.Peek() == '-') return this.TakeToken(TokenType.Minus, 1);
                 if (char.IsDigit(this.Peek()))
                 {
-                    int length = 1;
+                    var length = 1;
                     for (; char.IsDigit(this.Peek(length)); ++length) ;
                     return this.TakeToken(TokenType.Number, length);
                 }
                 if (char.IsLetter(this.Peek()))
                 {
-                    int length = 1;
+                    var length = 1;
                     for (; char.IsLetterOrDigit(this.Peek(length)); ++length) ;
                     var result = this.TakeToken(TokenType.Identifier, length);
                     return result.Text switch

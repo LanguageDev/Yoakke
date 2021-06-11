@@ -90,7 +90,7 @@ namespace Yoakke.Text
         {
             this.EnsureLength(this.index + buffer.Length);
             var readUntil = Math.Min(this.index + buffer.Length, this.sourceText.Length);
-            int count = readUntil - this.index;
+            var count = readUntil - this.index;
             this.sourceText.CopyTo(this.index, buffer, count);
             this.index += count;
             return count;
