@@ -1,9 +1,9 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Nerdbank.Streams;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Nerdbank.Streams;
 
 namespace Yoakke.Lsp.Server.Hosting.Internal
 {

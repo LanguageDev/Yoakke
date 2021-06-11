@@ -1,7 +1,7 @@
-﻿using Microsoft.CodeAnalysis;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.CodeAnalysis;
 using Yoakke.Parser.Generator.Ast;
 
 namespace Yoakke.Parser.Generator
@@ -19,6 +19,7 @@ namespace Yoakke.Parser.Generator
         private readonly Dictionary<string, IList<PrecedenceEntry>> precedences = new();
 
         public bool TryGetRule(string name, out Rule rule) => this.Rules.TryGetValue(name, out rule);
+
         public Rule GetRule(string name) => this.Rules[name];
 
         public void Add(Rule rule)

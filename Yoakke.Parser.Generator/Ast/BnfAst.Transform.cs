@@ -1,5 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
-using System.Linq;
+﻿using System.Linq;
+using Microsoft.CodeAnalysis;
 using Yoakke.Collections.Compatibility;
 
 namespace Yoakke.Parser.Generator.Ast
@@ -30,6 +30,7 @@ namespace Yoakke.Parser.Generator.Ast
             public override bool Equals(BnfAst other) => other is Transform tr
                 && this.Subexpr.Equals(tr.Subexpr)
                 && SymbolEqualityComparer.Default.Equals(this.Method, tr.Method);
+
             public override int GetHashCode() => HashCode.Combine(this.Subexpr, this.Method);
 
             public override BnfAst Desugar()

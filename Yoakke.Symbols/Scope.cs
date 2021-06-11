@@ -16,7 +16,9 @@ namespace Yoakke.Symbols
         public readonly TTag Tag;
 
         public IReadOnlyScope? ContainingScope { get; }
+
         public bool IsGlobal => this.ContainingScope is null;
+
         public IReadOnlyDictionary<string, ISymbol> Symbols => this.symbols;
 
         private readonly Dictionary<string, ISymbol> symbols = new();

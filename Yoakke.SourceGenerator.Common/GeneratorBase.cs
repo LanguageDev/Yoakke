@@ -1,8 +1,8 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Yoakke.SourceGenerator.Common
 {
@@ -33,7 +33,9 @@ namespace Yoakke.SourceGenerator.Common
         }
 
         protected abstract ISyntaxReceiver CreateSyntaxReceiver(GeneratorInitializationContext context);
+
         protected abstract bool IsOwnSyntaxReceiver(ISyntaxReceiver syntaxReceiver);
+
         protected abstract void GenerateCode(ISyntaxReceiver syntaxReceiver);
 
         protected void Report(DiagnosticDescriptor descriptor, params object[] args) =>

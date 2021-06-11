@@ -25,7 +25,9 @@ namespace Yoakke.Collections.FiniteAutomata
         }
 
         public override bool Equals(object obj) => obj is State s && this.Equals(s);
+
         public bool Equals(State other) => this.indices.SequenceEqual(other.indices);
+
         public override int GetHashCode()
         {
             var hash = new HashCode();
@@ -48,6 +50,7 @@ namespace Yoakke.Collections.FiniteAutomata
         public override string ToString() => this.indices.Length == 0 ? "INVALID STATE" : $"q{string.Join("_", this.indices)}";
 
         public static bool operator ==(State s1, State s2) => s1.Equals(s2);
+
         public static bool operator !=(State s1, State s2) => !s1.Equals(s2);
 
         public bool IsSubstateOf(State other) => this.indices.All(i => other.indices.Contains(i));

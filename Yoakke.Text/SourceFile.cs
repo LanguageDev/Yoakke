@@ -13,7 +13,9 @@ namespace Yoakke.Text
     public class SourceFile : TextReader, ISourceFile
     {
         public string Path { get; }
+
         public TextReader Reader => this;
+
         public int LineCount => this.lineStarts.Count;
 
         // The reader we read from
@@ -51,6 +53,7 @@ namespace Yoakke.Text
         }
 
         public override void Close() => this.underlying.Close();
+
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
@@ -98,6 +101,7 @@ namespace Yoakke.Text
             Task.FromResult(this.Read(buffer, index, count));
 
         public override int ReadBlock(Span<char> buffer) => this.Read(buffer);
+
         public override int ReadBlock(char[] buffer, int index, int count) => this.Read(buffer, index, count);
 
         public override ValueTask<int> ReadBlockAsync(Memory<char> buffer, CancellationToken cancellationToken = default) =>

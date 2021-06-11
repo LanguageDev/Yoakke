@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 using Yoakke.Lsp.Model.General;
 using Yoakke.Lsp.Model.LanguageFeatures;
 
@@ -142,6 +142,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
         /// </summary>
         [JsonProperty("completionItem", NullValueHandling = NullValueHandling.Ignore)]
         public CompletionItemCapabilities? CompletionItem { get; set; }
+
         [JsonProperty("completionItemKind", NullValueHandling = NullValueHandling.Ignore)]
         public CompletionItemKindCapabilities? CompletionItemKind { get; set; }
 

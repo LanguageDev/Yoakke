@@ -51,7 +51,9 @@ namespace Yoakke.Text
         }
 
         public override bool Equals(object? obj) => obj is Range r && this.Equals(r);
+
         public bool Equals(Range other) => this.Start == other.Start && this.End == other.End;
+
         public override int GetHashCode() => HashCode.Combine(this.Start, this.End);
 
         /// <summary>
@@ -69,6 +71,7 @@ namespace Yoakke.Text
         public bool Intersects(Range other) => !(this.Start >= other.End || other.Start >= this.End);
 
         public static bool operator ==(Range r1, Range r2) => r1.Equals(r2);
+
         public static bool operator !=(Range r1, Range r2) => !r1.Equals(r2);
     }
 }

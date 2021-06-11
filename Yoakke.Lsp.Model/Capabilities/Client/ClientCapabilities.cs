@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 using Yoakke.Lsp.Model.Capabilities.Client.TextDocument;
 
 namespace Yoakke.Lsp.Model.Capabilities.Client

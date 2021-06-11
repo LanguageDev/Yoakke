@@ -1,5 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.IO;
+﻿using System.IO;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Yoakke.Reporting.Present;
 using Yoakke.Text;
 

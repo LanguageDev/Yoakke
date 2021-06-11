@@ -21,6 +21,7 @@ namespace Yoakke.Collections.RegEx
             }
 
             public override bool Equals(RegExAst other) => other is Literal lit && this.Char == lit.Char;
+
             public override int GetHashCode() => this.Char.GetHashCode();
 
             public override RegExAst Desugar() => this;

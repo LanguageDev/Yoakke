@@ -1,9 +1,9 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Yoakke.Collections.Compatibility;
 using Yoakke.Parser.Generator.Ast;
 using Yoakke.Parser.Generator.Syntax;
@@ -37,6 +37,7 @@ namespace Yoakke.Parser.Generator
             : base("Yoakke.Parser.Generator") { }
 
         protected override ISyntaxReceiver CreateSyntaxReceiver(GeneratorInitializationContext context) => new SyntaxReceiver();
+
         protected override bool IsOwnSyntaxReceiver(ISyntaxReceiver syntaxReceiver) => syntaxReceiver is SyntaxReceiver;
 
         protected override void GenerateCode(ISyntaxReceiver syntaxReceiver)
@@ -151,6 +152,7 @@ namespace {namespaceName}
         // Sanity-checks ///////////////////////////////////////////////////////
 
         private bool CheckRuleSet() => this.ruleSet!.Rules.Values.All(this.CheckRule);
+
         private bool CheckRule(Rule rule) => this.CheckBnfAst(rule.Ast);
 
         // For now we only check if all references are valid (referencing existing rules) or not
@@ -487,6 +489,7 @@ namespace {namespaceName}
         }
 
         private static string GetReturnType(string okType) => $"{TypeNames.ParseResult}<{okType}>";
+
         private static string FlattenBind(string bind) => bind.Replace("(", string.Empty).Replace(")", string.Empty);
     }
 }

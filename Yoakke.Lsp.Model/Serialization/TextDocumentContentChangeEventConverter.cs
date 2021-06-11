@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
 using Yoakke.Lsp.Model.TextSynchronization;
 
 namespace Yoakke.Lsp.Model.Serialization

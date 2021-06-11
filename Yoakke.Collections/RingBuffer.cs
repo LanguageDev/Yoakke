@@ -17,9 +17,13 @@ namespace Yoakke.Collections
             get => this.storage == null ? 0 : this.storage.Length;
             set => this.SetCapacity(value);
         }
+
         public int Count { get; private set; }
+
         public int Head { get; private set; }
+
         public int Tail => this.ToStorageIndex(this.Head + this.Count);
+
         public T this[int index]
         {
             get
@@ -27,12 +31,14 @@ namespace Yoakke.Collections
                 this.CheckIndexBounds(index);
                 return this.storage![this.ToStorageIndex(this.Head + index)]!;
             }
+
             set
             {
                 this.CheckIndexBounds(index);
                 this.storage![this.ToStorageIndex(this.Head + index)] = value;
             }
         }
+
         T IReadOnlyList<T>.this[int index] => this[index];
 
         private T?[]? storage;

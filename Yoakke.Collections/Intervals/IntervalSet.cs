@@ -61,7 +61,8 @@ namespace Yoakke.Collections.Intervals
                 var newUpper = interval.Upper.CompareTo(this.intervals[start].Upper, this.comparer) > 0 ? interval.Upper : this.intervals[start].Upper;
                 this.intervals[start] = new Interval<T>(newLower, newUpper);
             }
-            else {
+            else
+            {
                 // Intersecting with multiple intervals, we need to unify them
                 var newLower = interval.Lower.CompareTo(this.intervals[start].Lower, this.comparer) < 0 ? interval.Lower : this.intervals[start].Lower;
                 var newUpper = interval.Upper.CompareTo(this.intervals[end - 1].Upper, this.comparer) > 0 ? interval.Upper : this.intervals[end - 1].Upper;
@@ -84,11 +85,11 @@ namespace Yoakke.Collections.Intervals
                 this.intervals.Clear();
                 return;
             }
+
             // Out interval set is neither empty, nor full, there are 3 cases:
             //  - Both ends are unbounded: for N intervals this creates N - 1 intervals when inverted
             //  - One end is unbounded: for N intervals this creates N intervals when inverted
             //  - Both ends are bounded: for N intervals this creates N + 1 intervals when inverted
-
             var lowerUnbounded = this.intervals[0].Lower.Type == BoundType.Unbounded;
             var upperUnbounded = this.intervals[this.intervals.Count - 1].Upper.Type == BoundType.Unbounded;
 
@@ -188,6 +189,7 @@ namespace Yoakke.Collections.Intervals
         }
 
         public IEnumerator<Interval<T>> GetEnumerator() => this.intervals.GetEnumerator();
+
         IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
         private (int, int) IntersectingIndexRange(Interval<T> interval)

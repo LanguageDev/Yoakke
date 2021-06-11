@@ -14,8 +14,11 @@ namespace Yoakke.Collections.FiniteAutomata
     public class DenseDfa<TSymbol> : IDeterministicFiniteAutomata<TSymbol>
     {
         public State InitalState { get; set; } = State.Invalid;
+
         IEnumerable<State> IFiniteAutomata<TSymbol>.AcceptingStates => this.AcceptingStates;
+
         public ISet<State> AcceptingStates { get; } = new HashSet<State>();
+
         public IEnumerable<State> States =>
             this.transitions.Keys.Concat(this.transitions.Values.SelectMany(t => t.Values)).Append(this.InitalState).Distinct();
 

@@ -29,7 +29,9 @@ namespace Yoakke.Text
         }
 
         public override bool Equals(object? obj) => obj is Position position && this.Equals(position);
+
         public bool Equals(Position other) => this.CompareTo(other) == 0;
+
         public override int GetHashCode() => HashCode.Combine(this.Line, this.Column);
 
         public int CompareTo(Position other)
@@ -39,10 +41,15 @@ namespace Yoakke.Text
         }
 
         public static bool operator ==(Position p1, Position p2) => p1.CompareTo(p2) == 0;
+
         public static bool operator !=(Position p1, Position p2) => p1.CompareTo(p2) != 0;
+
         public static bool operator <(Position p1, Position p2) => p1.CompareTo(p2) < 0;
+
         public static bool operator >(Position p1, Position p2) => p1.CompareTo(p2) > 0;
+
         public static bool operator <=(Position p1, Position p2) => p1.CompareTo(p2) <= 0;
+
         public static bool operator >=(Position p1, Position p2) => p1.CompareTo(p2) >= 0;
 
         public override string ToString() => $"line {this.Line + 1}, column {this.Column + 1}";

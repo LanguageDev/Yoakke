@@ -101,7 +101,9 @@ namespace Yoakke.Collections.Intervals
         };
 
         public override bool Equals(object obj) => obj is LowerBound<T> lb && this.Equals(lb);
+
         public bool Equals(LowerBound<T> other) => this.CompareTo(other) == 0;
+
         public override int GetHashCode() => HashCode.Combine(this.Type, this.Value);
 
         /// <summary>
@@ -178,13 +180,19 @@ namespace Yoakke.Collections.Intervals
         };
 
         public static bool operator <(LowerBound<T> a, LowerBound<T> b) => a.CompareTo(b) < 0;
+
         public static bool operator >(LowerBound<T> a, LowerBound<T> b) => a.CompareTo(b) > 0;
+
         public static bool operator <=(LowerBound<T> a, LowerBound<T> b) => a.CompareTo(b) <= 0;
+
         public static bool operator >=(LowerBound<T> a, LowerBound<T> b) => a.CompareTo(b) >= 0;
+
         public static bool operator ==(LowerBound<T> a, LowerBound<T> b) => a.CompareTo(b) == 0;
+
         public static bool operator !=(LowerBound<T> a, LowerBound<T> b) => a.CompareTo(b) != 0;
 
         public static bool operator <(LowerBound<T> a, UpperBound<T> b) => a.CompareTo(b) < 0;
+
         public static bool operator >(LowerBound<T> a, UpperBound<T> b) => a.CompareTo(b) > 0;
     }
 }

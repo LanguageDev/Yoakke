@@ -76,10 +76,13 @@ namespace Yoakke.Sample
 
         [Rule("atom_expr : '(' expr ')'")]
         private static Expression Ident(Token _1, Expression e, Token _2) => e;
+
         [Rule("atom_expr : Ident")]
         private static Expression Ident(Token t) => new Expression.Ident(t.Text);
+
         [Rule("atom_expr : IntLit")]
         private static Expression IntLit(Token t) => new Expression.IntLit(int.Parse(t.Text));
+
         [Rule("atom_expr : StrLit")]
         private static Expression StrLit(Token t) => new Expression.StringLit(EscapeString(t.Text));
 

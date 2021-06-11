@@ -1,9 +1,9 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Yoakke.Collections.FiniteAutomata;
 using Yoakke.Collections.Intervals;
 using Yoakke.Collections.RegEx;
@@ -32,6 +32,7 @@ namespace Yoakke.Lexer.Generator
             : base("Yoakke.Lexer.Generator") { }
 
         protected override ISyntaxReceiver CreateSyntaxReceiver(GeneratorInitializationContext context) => new SyntaxReceiver();
+
         protected override bool IsOwnSyntaxReceiver(ISyntaxReceiver syntaxReceiver) => syntaxReceiver is SyntaxReceiver;
 
         protected override void GenerateCode(ISyntaxReceiver syntaxReceiver)

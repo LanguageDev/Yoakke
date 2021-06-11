@@ -26,6 +26,7 @@ namespace Yoakke.Parser
             .OfType<TPunct>();
 
         public int Count => this.underlying.Count;
+
         public PunctuatedValue<TValue, TPunct> this[int index] => this.underlying[index];
 
         public Punctuated()
@@ -44,6 +45,7 @@ namespace Yoakke.Parser
         }
 
         public IEnumerator<PunctuatedValue<TValue, TPunct>> GetEnumerator() => this.underlying.GetEnumerator();
+
         IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
         // 0 or more without trailing

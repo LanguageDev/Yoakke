@@ -1,9 +1,9 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Yoakke.Collections.Compatibility;
 using Yoakke.SourceGenerator.Common;
 
@@ -43,6 +43,7 @@ namespace Yoakke.Ast.Generator
         }
 
         protected override ISyntaxReceiver CreateSyntaxReceiver(GeneratorInitializationContext context) => new SyntaxReceiver();
+
         protected override bool IsOwnSyntaxReceiver(ISyntaxReceiver syntaxReceiver) => syntaxReceiver is SyntaxReceiver;
 
         protected override void GenerateCode(ISyntaxReceiver syntaxReceiver)

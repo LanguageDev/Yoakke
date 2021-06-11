@@ -1,5 +1,5 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Yoakke.Lexer;
 using Yoakke.Lexer.Attributes;
 using Yoakke.Parser.Attributes;

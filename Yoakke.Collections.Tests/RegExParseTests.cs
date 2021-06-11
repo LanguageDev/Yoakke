@@ -1,5 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Linq;
+﻿using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Yoakke.Collections.RegEx;
 
 namespace Yoakke.Collections.Tests
@@ -31,8 +31,11 @@ namespace Yoakke.Collections.Tests
         }
 
         private static RegExAst Opt(RegExAst node) => new RegExAst.Opt(node);
+
         private static RegExAst Rep0(RegExAst node) => new RegExAst.Rep0(node);
+
         private static RegExAst Rep1(RegExAst node) => new RegExAst.Rep1(node);
+
         private static RegExAst Ch(char ch) => new RegExAst.Literal(ch);
 
         [TestMethod]

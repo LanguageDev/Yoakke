@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 using Yoakke.Lsp.Model.Basic;
 
 namespace Yoakke.Lsp.Model.Capabilities.Server.RegistrationOptions
@@ -8,6 +8,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Server.RegistrationOptions
     {
         [JsonProperty("documentSelector")]
         public IReadOnlyList<DocumentFilter>? DocumentSelector { get; set; }
+
         [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
         public string? Id { get; set; }
     }

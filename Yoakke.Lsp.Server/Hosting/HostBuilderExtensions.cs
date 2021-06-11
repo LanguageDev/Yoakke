@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using StreamJsonRpc;
-using System;
 using Yoakke.Lsp.Server.Hosting.Internal;
 using Yoakke.Lsp.Server.Internal;
 

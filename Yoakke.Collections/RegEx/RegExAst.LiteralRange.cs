@@ -33,6 +33,7 @@ namespace Yoakke.Collections.RegEx
             public override bool Equals(RegExAst other) => other is LiteralRange r
                 && this.Negate == r.Negate
                 && this.Ranges.SequenceEqual(r.Ranges);
+
             public override int GetHashCode()
             {
                 var hash = new HashCode();

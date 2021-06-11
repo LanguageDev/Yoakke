@@ -29,6 +29,7 @@ namespace Yoakke.Parser.Generator.Ast
 
             public override bool Equals(BnfAst other) => other is Alt alt
                 && this.Elements.SequenceEqual(alt.Elements);
+
             public override int GetHashCode()
             {
                 var hash = new HashCode();

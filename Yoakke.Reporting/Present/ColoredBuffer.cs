@@ -10,12 +10,16 @@ namespace Yoakke.Reporting.Present
         private class Line
         {
             public StringBuilder Text { get; set; } = new StringBuilder();
+
             public List<(ConsoleColor Foreground, ConsoleColor Background)> Color { get; set; } = new List<(ConsoleColor Foreground, ConsoleColor Background)>();
         }
 
         public ConsoleColor ForegroundColor { get; set; }
+
         public ConsoleColor BackgroundColor { get; set; }
+
         public int CursorX { get; set; }
+
         public int CursorY { get; set; }
 
         private readonly List<Line> lines = new List<Line>();
@@ -58,6 +62,7 @@ namespace Yoakke.Reporting.Present
         }
 
         public void Write(char ch) => this.Plot(this.CursorX, this.CursorY, ch);
+
         public void Write(string str) => this.WriteAt(this.CursorX, this.CursorY, str);
 
         public void WriteLine()

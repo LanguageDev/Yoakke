@@ -19,6 +19,7 @@
 
             public override bool Equals(BnfAst other) => other is Opt opt
                 && this.Subexpr.Equals(opt.Subexpr);
+
             public override int GetHashCode() => this.Subexpr.GetHashCode();
 
             public override BnfAst Desugar() => new Opt(this.Subexpr.Desugar());

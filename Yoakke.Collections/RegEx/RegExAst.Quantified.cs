@@ -40,6 +40,7 @@ namespace Yoakke.Collections.RegEx
                 && this.Subexpr.Equals(q.Subexpr)
                 && this.AtLeast == q.AtLeast
                 && this.AtMost == q.AtMost;
+
             public override int GetHashCode() => HashCode.Combine(this.Subexpr, this.AtLeast, this.AtMost);
 
             public override RegExAst Desugar()

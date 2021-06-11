@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿using System;
 using System.IO;
+using Microsoft.Extensions.DependencyInjection;
 using Yoakke.Lsp.Server.Handlers;
 
 namespace Yoakke.Lsp.Server.Hosting

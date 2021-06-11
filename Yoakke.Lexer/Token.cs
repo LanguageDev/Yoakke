@@ -11,6 +11,7 @@ namespace Yoakke.Lexer
     public sealed class Token<TKind> : IToken, IEquatable<Token<TKind>> where TKind : notnull
     {
         public Range Range { get; }
+
         public string Text { get; }
 
         /// <summary>
@@ -32,7 +33,9 @@ namespace Yoakke.Lexer
         }
 
         public override bool Equals(object? obj) => this.Equals(obj as Token<TKind>);
+
         public bool Equals(IToken? other) => this.Equals(other as Token<TKind>);
+
         public bool Equals(Token<TKind>? other) =>
                other is not null
             && this.Range == other.Range

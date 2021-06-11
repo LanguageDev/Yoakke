@@ -29,6 +29,7 @@ namespace Yoakke.Collections.RegEx
             public override bool Equals(RegExAst other) => other is Alt alt
                 && this.First.Equals(alt.First)
                 && this.Second.Equals(alt.Second);
+
             public override int GetHashCode() => HashCode.Combine(this.First, this.Second);
 
             public override RegExAst Desugar() => new Alt(this.First.Desugar(), this.Second.Desugar());

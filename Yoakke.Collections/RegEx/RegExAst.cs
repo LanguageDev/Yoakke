@@ -22,7 +22,9 @@ namespace Yoakke.Collections.RegEx
         public abstract (State Start, State End) ThompsonConstruct(DenseNfa<char> denseNfa);
 
         public override bool Equals(object obj) => obj is RegExAst r && this.Equals(r);
+
         public abstract bool Equals(RegExAst other);
+
         public abstract override int GetHashCode();
     }
 }

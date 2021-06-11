@@ -29,6 +29,7 @@ namespace Yoakke.Parser.Generator.Ast
 
             public override bool Equals(BnfAst other) => other is Seq seq
                 && this.Elements.SequenceEqual(seq.Elements);
+
             public override int GetHashCode()
             {
                 var hash = new HashCode();

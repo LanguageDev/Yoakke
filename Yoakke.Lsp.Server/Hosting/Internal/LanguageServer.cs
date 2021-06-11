@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.Hosting;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
 using Yoakke.Lsp.Server.Internal;
 
 namespace Yoakke.Lsp.Server.Hosting.Internal
@@ -18,6 +18,7 @@ namespace Yoakke.Lsp.Server.Hosting.Internal
         public void Dispose() => this.host.Dispose();
 
         public void Start() => this.host.Start();
+
         public Task StartAsync(CancellationToken cancellationToken) => this.host.StartAsync(cancellationToken);
 
         public async Task<int> StopAsync(CancellationToken cancellationToken)

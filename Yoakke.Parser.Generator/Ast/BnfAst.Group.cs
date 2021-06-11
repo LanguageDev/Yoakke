@@ -19,6 +19,7 @@
 
             public override bool Equals(BnfAst other) => other is Group group
                && this.Subexpr.Equals(group.Subexpr);
+
             public override int GetHashCode() => this.Subexpr.GetHashCode();
 
             public override BnfAst Desugar() => this.Subexpr is Seq

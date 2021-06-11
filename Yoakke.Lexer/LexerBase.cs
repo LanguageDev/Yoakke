@@ -13,6 +13,7 @@ namespace Yoakke.Lexer
     public abstract class LexerBase<T> : ILexer where T : notnull
     {
         public Position Position { get; private set; }
+
         public bool IsEnd => !this.TryPeek(out var _);
 
         private readonly TextReader reader;

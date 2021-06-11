@@ -9,6 +9,7 @@ namespace Yoakke.LSP.Generator
         public readonly string Name;
         public readonly IReadOnlyList<string> Bases;
         public readonly IReadOnlyList<InterfaceField> Fields;
+
         public string? Docs { get; set; }
 
         public InterfaceDef(string name, IReadOnlyList<string> bases, IReadOnlyList<InterfaceField> fields)
@@ -23,6 +24,7 @@ namespace Yoakke.LSP.Generator
     {
         public readonly string Name;
         public readonly IReadOnlyList<NamespaceField> Fields;
+
         public string? Docs { get; set; }
 
         public NamespaceDef(string name, IReadOnlyList<NamespaceField> fields)
@@ -37,6 +39,7 @@ namespace Yoakke.LSP.Generator
         public readonly string Name;
         public readonly bool Optional;
         public readonly TypeNode Type;
+
         public string? Docs { get; set; }
 
         public InterfaceField(string name, bool optional, TypeNode type)
@@ -51,6 +54,7 @@ namespace Yoakke.LSP.Generator
     {
         public readonly string Name;
         public readonly object Value;
+
         public string? Docs { get; set; }
 
         public NamespaceField(string name, object value)

@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.Hosting;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
 using Yoakke.Lsp.Model.Basic;
 using Yoakke.Lsp.Model.TextSynchronization;
 using Yoakke.Lsp.Server.Handlers;
@@ -12,6 +12,7 @@ namespace Yoakke.Lsp.Sample
     class SyncHandler : ITextDocumentSyncHandler
     {
         public bool SendOpenClose => true;
+
         public TextDocumentSyncKind SyncKind => TextDocumentSyncKind.Incremental;
 
         public void DidChange(DidChangeTextDocumentParams changeParams)

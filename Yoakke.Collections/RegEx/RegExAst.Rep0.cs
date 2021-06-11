@@ -20,6 +20,7 @@ namespace Yoakke.Collections.RegEx
             }
 
             public override bool Equals(RegExAst other) => other is Rep0 r && this.Subexpr.Equals(r.Subexpr);
+
             public override int GetHashCode() => this.Subexpr.GetHashCode();
 
             public override RegExAst Desugar() => new Rep0(this.Subexpr.Desugar());

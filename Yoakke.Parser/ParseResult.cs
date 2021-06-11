@@ -52,6 +52,7 @@
         }
 
         public static implicit operator ParseResult<T>(ParseOk<T> ok) => new(ok);
+
         public static implicit operator ParseResult<T>(ParseError error) => new(error);
     }
 }

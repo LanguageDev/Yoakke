@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 using Yoakke.Lsp.Model.Basic;
 
 namespace Yoakke.Lsp.Model.TextSynchronization

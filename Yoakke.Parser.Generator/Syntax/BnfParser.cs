@@ -12,6 +12,7 @@ namespace Yoakke.Parser.Generator.Syntax
     {
         public static (string Name, BnfAst? Ast) Parse(string source, TokenKindSet tokenKinds) =>
             Parse(BnfLexer.Lex(source), tokenKinds);
+
         public static (string Name, BnfAst? Ast) Parse(IList<BnfToken> tokens, TokenKindSet tokenKinds) =>
             new BnfParser(tokens, tokenKinds).ParseRule();
 

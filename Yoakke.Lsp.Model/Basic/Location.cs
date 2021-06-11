@@ -6,6 +6,7 @@ namespace Yoakke.Lsp.Model.Basic
     {
         [JsonProperty("uri")]
         public DocumentUri Uri { get; set; }
+
         [JsonProperty("range")]
         public Range Range { get; set; }
     }

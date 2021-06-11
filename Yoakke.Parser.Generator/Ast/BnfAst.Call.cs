@@ -19,6 +19,7 @@
 
             public override bool Equals(BnfAst other) => other is Call call
                 && this.Name.Equals(call.Name);
+
             public override int GetHashCode() => this.Name.GetHashCode();
 
             public override BnfAst Desugar() => this;

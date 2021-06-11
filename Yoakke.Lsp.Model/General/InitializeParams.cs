@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using Yoakke.Lsp.Model.Basic;
 using Yoakke.Lsp.Model.Capabilities.Client;
 using Yoakke.Lsp.Model.Workspace;

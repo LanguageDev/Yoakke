@@ -8,7 +8,9 @@ namespace Yoakke.Symbols
     public class SymbolTable : ISymbolTable
     {
         IReadOnlyScope IReadOnlySymbolTable.GlobalScope => this.GlobalScope;
+
         public IScope GlobalScope { get; }
+
         public IScope CurrentScope { get; set; }
 
         /// <summary>

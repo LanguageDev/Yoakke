@@ -19,6 +19,7 @@ namespace Yoakke.Collections
                 return this.buffer[0];
             }
         }
+
         object IEnumerator.Current => this.Current!;
 
         private readonly IEnumerator<T> underlying;

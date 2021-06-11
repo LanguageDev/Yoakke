@@ -36,16 +36,23 @@ namespace Yoakke.Reporting
         }
 
         public override bool Equals(object? obj) => obj is Severity s && this.Equals(s);
+
         public bool Equals(Severity other) => this.Priority == other.Priority;
+
         public override int GetHashCode() => this.Priority.GetHashCode();
+
         public int CompareTo(Severity other) => this.Priority - other.Priority;
 
         public static bool operator ==(Severity left, Severity right) => left.Equals(right);
+
         public static bool operator !=(Severity left, Severity right) => !left.Equals(right);
 
         public static bool operator <(Severity left, Severity right) => left.CompareTo(right) < 0;
+
         public static bool operator <=(Severity left, Severity right) => left.CompareTo(right) <= 0;
+
         public static bool operator >(Severity left, Severity right) => left.CompareTo(right) > 0;
+
         public static bool operator >=(Severity left, Severity right) => left.CompareTo(right) >= 0;
     }
 }

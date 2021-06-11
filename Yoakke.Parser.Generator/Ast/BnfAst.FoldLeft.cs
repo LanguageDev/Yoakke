@@ -1,5 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
-using System;
+﻿using System;
+using Microsoft.CodeAnalysis;
 using Yoakke.Collections.Compatibility;
 
 namespace Yoakke.Parser.Generator.Ast
@@ -38,6 +38,7 @@ namespace Yoakke.Parser.Generator.Ast
                 && this.First.Equals(fl.First)
                 && this.Second.Equals(fl.Second)
                 && SymbolEqualityComparer.Default.Equals(this.Method, fl.Method);
+
             public override int GetHashCode() => HashCode.Combine(this.First, this.Second, this.Method);
 
             public override BnfAst Desugar() => new FoldLeft(this.First.Desugar(), this.Second.Desugar(), this.Method);

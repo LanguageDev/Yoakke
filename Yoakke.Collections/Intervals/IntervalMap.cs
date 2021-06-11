@@ -14,7 +14,9 @@ namespace Yoakke.Collections.Intervals
     public class IntervalMap<TKey, TValue> : IIntervalMap<TKey, TValue>
     {
         public int Count => this.values.Count;
+
         public IEnumerable<Interval<TKey>> Intervals => this.values.Select(p => p.Key);
+
         public IEnumerable<TValue> Values => this.values.Select(p => p.Value);
 
         /// <summary>
@@ -67,6 +69,7 @@ namespace Yoakke.Collections.Intervals
         }
 
         public void Clear() => this.values.Clear();
+
         public bool ContainsKey(TKey key) => this.TryGetValue(key, out var _);
 
         public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue? value)
@@ -156,6 +159,7 @@ namespace Yoakke.Collections.Intervals
         }
 
         public IEnumerator<KeyValuePair<Interval<TKey>, TValue>> GetEnumerator() => this.values.GetEnumerator();
+
         IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
         private void AddAndUpdateSingle(int idx, Interval<TKey> interval, TValue value, Func<TValue, TValue, TValue> updateFunc)

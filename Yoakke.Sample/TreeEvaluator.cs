@@ -32,6 +32,7 @@ namespace Yoakke.Sample
         }
 
         public void Execute(Statement stmt) => Visit(stmt);
+
         public object Evaluate(Expression expr) => Visit(expr);
 
         // Statement related ///////////////////////////////////////////////////
@@ -157,6 +158,7 @@ namespace Yoakke.Sample
         }
 
         protected override object Visit(Expression.StringLit strLit) => strLit.Value;
+
         protected override object Visit(Expression.IntLit intLit) => intLit.Value;
 
         // Runtime drivers /////////////////////////////////////////////////////

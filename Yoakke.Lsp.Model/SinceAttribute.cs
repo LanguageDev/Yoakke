@@ -10,7 +10,9 @@ namespace Yoakke.Lsp.Model
     public class SinceAttribute : Attribute
     {
         public int Major { get; set; }
+
         public int Minor { get; set; }
+
         public int Patch { get; set; }
 
         public SinceAttribute(int major = 1, int minor = 0, int patch = 0)

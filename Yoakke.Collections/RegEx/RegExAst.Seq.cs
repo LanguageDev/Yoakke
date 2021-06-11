@@ -29,6 +29,7 @@ namespace Yoakke.Collections.RegEx
             public override bool Equals(RegExAst other) => other is Seq seq
                 && this.First.Equals(seq.First)
                 && this.Second.Equals(seq.Second);
+
             public override int GetHashCode() => HashCode.Combine(this.First, this.Second);
 
             public override RegExAst Desugar() => new Seq(this.First.Desugar(), this.Second.Desugar());

@@ -1,8 +1,8 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Yoakke.Collections.Intervals;
 
 namespace Yoakke.Collections.Tests

@@ -1,7 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Yoakke.Lexer;
 using Yoakke.Lexer.Attributes;
 using Yoakke.Parser.Attributes;
@@ -39,6 +39,7 @@ namespace Yoakke.Parser.Tests
         }
 
         private static List<string> Any0NoTrailing(string source) => new ListParser(new ListLexer(source)).ParseAny0NoTrailing().Ok.Value;
+
         private static List<string> Any1NoTrailing(string source) => new ListParser(new ListLexer(source)).ParseAny1NoTrailing().Ok.Value;
 
         [TestMethod]

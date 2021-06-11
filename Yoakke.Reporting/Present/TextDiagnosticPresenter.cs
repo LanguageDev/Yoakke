@@ -12,15 +12,20 @@ namespace Yoakke.Reporting.Present
     public class TextDiagnosticPresenter : IDiagnosticPresenter
     {
         private abstract class LinePrimitive { }
+
         private class SourceLine : LinePrimitive
         {
             public ISourceFile? Source { get; set; }
+
             public int Line { get; set; }
         }
+
         private class DotLine : LinePrimitive { }
+
         private class AnnotationLine : LinePrimitive
         {
             public int AnnotatedLine { get; set; }
+
             public IEnumerable<SourceDiagnosticInfo>? Annotations { get; set; }
         }
 
@@ -30,6 +35,7 @@ namespace Yoakke.Reporting.Present
         public static readonly TextDiagnosticPresenter Default = new(Console.Error);
 
         public DiagnosticStyle Style { get; set; } = DiagnosticStyle.Default;
+
         public ISyntaxHighlighter SyntaxHighlighter { get; set; } = ISyntaxHighlighter.Null;
 
         /// <summary>

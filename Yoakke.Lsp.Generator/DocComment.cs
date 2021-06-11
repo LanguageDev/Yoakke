@@ -8,7 +8,9 @@ namespace Yoakke.LSP.Generator
     class DocComment
     {
         public string? Summary { get; set; }
+
         public string? Deprecation { get; set; }
+
         public string? Since { get; set; }
 
         public static DocComment FromComment(string docComment)

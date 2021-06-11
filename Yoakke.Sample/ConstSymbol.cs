@@ -6,7 +6,9 @@ namespace Yoakke.Sample
     public class ConstSymbol : ISymbol
     {
         public IReadOnlyScope Scope { get; }
+
         public string Name { get; }
+
         public Location? Definition { get; }
 
         public readonly object? Value;

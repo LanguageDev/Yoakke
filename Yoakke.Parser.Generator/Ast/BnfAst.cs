@@ -10,6 +10,7 @@ namespace Yoakke.Parser.Generator.Ast
         public override bool Equals(object obj) => obj is BnfAst bnf && this.Equals(bnf);
 
         public abstract bool Equals(BnfAst other);
+
         public abstract override int GetHashCode();
 
         /// <summary>

@@ -44,6 +44,7 @@ namespace Yoakke.Collections.Intervals
         }
 
         public override bool Equals(object obj) => obj is Interval<T> iv && this.Equals(iv);
+
         public bool Equals(Interval<T> other) => this.Equals(other, Comparer<T>.Default);
 
         /// <summary>
@@ -203,6 +204,7 @@ namespace Yoakke.Collections.Intervals
         }
 
         public static bool operator ==(Interval<T> a, Interval<T> b) => a.Equals(b);
+
         public static bool operator !=(Interval<T> a, Interval<T> b) => !a.Equals(b);
     }
 }

@@ -133,7 +133,9 @@ namespace Yoakke.Sample
         }
 
         public SymbolTable SymbolTable { get; private set; } = new SymbolTable(new Scope<ScopeKind>(ScopeKind.Global));
+
         public IReadOnlyDictionary<AstNode, IReadOnlyScope> Scopes => this.scopes;
+
         public IReadOnlyDictionary<object, ISymbol> Symbols => this.symbols;
 
         private readonly Dictionary<AstNode, IReadOnlyScope> scopes = new();
