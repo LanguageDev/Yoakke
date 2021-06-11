@@ -33,7 +33,9 @@ namespace Yoakke.Lexer.Generator
         }
 
         public LexerSourceGenerator()
-            : base("Yoakke.Lexer.Generator") { }
+            : base("Yoakke.Lexer.Generator")
+        {
+        }
 
         protected override ISyntaxReceiver CreateSyntaxReceiver(GeneratorInitializationContext context) => new SyntaxReceiver();
 

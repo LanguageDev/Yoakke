@@ -132,7 +132,9 @@ namespace Yoakke.Collections.RegEx
         private int ParseNumber()
         {
             var result = new StringBuilder();
-            for (; char.IsDigit(this.Peek()); result.Append(this.Consume()));
+            for (; char.IsDigit(this.Peek()); result.Append(this.Consume()))
+            {
+            }
             if (result.Length == 0) throw new FormatException($"number expected (position {this.index})");
             return int.Parse(result.ToString());
         }
@@ -177,7 +179,7 @@ namespace Yoakke.Collections.RegEx
         /// <param name="str">The string to escape.</param>
         /// <returns>The escaped string.</returns>
         public static string Escape(string str) =>
-            string.Join("", str.Select(ch => IsSpecial(ch) ? $"\\{ch}" : ch.ToString()));
+            string.Join(string.Empty, str.Select(ch => IsSpecial(ch) ? $"\\{ch}" : ch.ToString()));
 
         private static char? Escape(char ch) => ch switch
         {

@@ -19,35 +19,17 @@ namespace Yoakke.Lsp.Sample
 
         public TextDocumentSyncKind SyncKind => TextDocumentSyncKind.Incremental;
 
-        public void DidChange(DidChangeTextDocumentParams changeParams)
-        {
-            throw new NotImplementedException();
-        }
+        public void DidChange(DidChangeTextDocumentParams changeParams) => throw new NotImplementedException();
 
-        public void DidClose(DidCloseTextDocumentParams closeParams)
-        {
-            throw new NotImplementedException();
-        }
+        public void DidClose(DidCloseTextDocumentParams closeParams) => throw new NotImplementedException();
 
-        public void DidOpen(DidOpenTextDocumentParams openParams)
-        {
-            throw new NotImplementedException();
-        }
+        public void DidOpen(DidOpenTextDocumentParams openParams) => throw new NotImplementedException();
 
-        public void DidSave(DidSaveTextDocumentParams saveParams)
-        {
-            throw new NotImplementedException();
-        }
+        public void DidSave(DidSaveTextDocumentParams saveParams) => throw new NotImplementedException();
 
-        public void WillSave(WillSaveTextDocumentParams saveParams)
-        {
-            throw new NotImplementedException();
-        }
+        public void WillSave(WillSaveTextDocumentParams saveParams) => throw new NotImplementedException();
 
-        public IReadOnlyList<TextEdit>? WillSaveWaitUntil(WillSaveTextDocumentParams saveParams)
-        {
-            throw new NotImplementedException();
-        }
+        public IReadOnlyList<TextEdit>? WillSaveWaitUntil(WillSaveTextDocumentParams saveParams) => throw new NotImplementedException();
     }
 
     internal class Program

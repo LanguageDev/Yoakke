@@ -32,7 +32,7 @@ namespace Yoakke.Reporting.Sample
                 new ColoredToken(12, 1, TokenKind.Punctuation),
                 };
             }
-            return new ColoredToken[] { };
+            return Array.Empty<ColoredToken>();
         }
     }
 
@@ -48,7 +48,7 @@ func foo() {
 
             var presenter = new TextDiagnosticPresenter(Console.Error)
             {
-                SyntaxHighlighter = new MyHighlighter()
+                SyntaxHighlighter = new MyHighlighter(),
             };
 
             var diag = new Diagnostic()

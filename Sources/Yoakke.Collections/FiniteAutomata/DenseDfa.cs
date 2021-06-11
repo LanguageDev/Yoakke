@@ -65,11 +65,9 @@ namespace Yoakke.Collections.FiniteAutomata
             return null;
         }
 
-        public IDeterministicFiniteAutomata<TSymbol> Minify()
-        {
+        public IDeterministicFiniteAutomata<TSymbol> Minify() =>
             // TODO
             throw new NotImplementedException();
-        }
 
         public string ToDebugDOT()
         {

@@ -23,9 +23,6 @@ namespace Yoakke.Text.Tests
 
         [DataTestMethod]
         [DynamicData(nameof(InvalidPositionPairs))]
-        public void InvalidConstruction(Position start, Position end)
-        {
-            Assert.ThrowsException<ArgumentException>(() => new Range(start, end));
-        }
+        public void InvalidConstruction(Position start, Position end) => Assert.ThrowsException<ArgumentException>(() => new Range(start, end));
     }
 }

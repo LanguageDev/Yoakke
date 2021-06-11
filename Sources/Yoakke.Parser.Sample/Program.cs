@@ -60,7 +60,9 @@ namespace Yoakke.Parser.Sample
 
         public void Synchronize()
         {
-            for (; TryPeek(0, out var t) && t.Text != ";"; TryConsume(1)) ;
+            for (; TryPeek(0, out var t) && t!.Text != ";"; TryConsume(1))
+            {
+            }
             TryConsume(1);
         }
     }

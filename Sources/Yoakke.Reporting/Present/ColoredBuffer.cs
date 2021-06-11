@@ -131,7 +131,9 @@ namespace Yoakke.Reporting.Present
                 while (i < line.Text.Length)
                 {
                     var start = i;
-                    for (; i < line.Text.Length && line.Color[i] == lastColor; ++i) ;
+                    for (; i < line.Text.Length && line.Color[i] == lastColor; ++i)
+                    {
+                    }
                     // Print portion
                     writer.Write(lineStr.AsSpan(start, i - start));
                     // If the line has not ended, we must have changed color
@@ -152,7 +154,9 @@ namespace Yoakke.Reporting.Present
         private void EnsureBuffer(int x, int y)
         {
             // First we ensure y exists
-            for (; this.lines.Count <= y; this.lines.Add(new Line())) ;
+            for (; this.lines.Count <= y; this.lines.Add(new Line()))
+            {
+            }
             // Now ensure x character in line y
             var line = this.lines[y];
             var requiredChars = x - line.Text.Length + 1;

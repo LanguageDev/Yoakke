@@ -30,15 +30,15 @@ namespace Yoakke.Lexer.Tests
         [TestMethod]
         public void Empty()
         {
-            var lexer = new Lexer("");
-            Assert.AreEqual(Token("", TokenType.End, Range((0, 0), 0)), lexer.Next());
+            var lexer = new Lexer(string.Empty);
+            Assert.AreEqual(Token(string.Empty, TokenType.End, Range((0, 0), 0)), lexer.Next());
         }
 
         [TestMethod]
         public void EmptySpaces()
         {
             var lexer = new Lexer("   ");
-            Assert.AreEqual(Token("", TokenType.End, Range((0, 3), 0)), lexer.Next());
+            Assert.AreEqual(Token(string.Empty, TokenType.End, Range((0, 3), 0)), lexer.Next());
         }
 
         [TestMethod]
@@ -50,7 +50,7 @@ namespace Yoakke.Lexer.Tests
             Assert.AreEqual(Token("+", TokenType.Plus, Range((0, 9), 1)), lexer.Next());
             Assert.AreEqual(Token("b", TokenType.Identifier, Range((0, 10), 1)), lexer.Next());
             Assert.AreEqual(Token("123", TokenType.Number, Range((0, 12), 3)), lexer.Next());
-            Assert.AreEqual(Token("", TokenType.End, Range((0, 15), 0)), lexer.Next());
+            Assert.AreEqual(Token(string.Empty, TokenType.End, Range((0, 15), 0)), lexer.Next());
         }
 
         [TestMethod]
@@ -63,7 +63,7 @@ namespace Yoakke.Lexer.Tests
             Assert.AreEqual(Token("b", TokenType.Identifier, Range((0, 10), 1)), lexer.Next());
             Assert.AreEqual(Token("123", TokenType.Number, Range((0, 12), 3)), lexer.Next());
             Assert.AreEqual(Token("IF", TokenType.KwIf, Range((0, 16), 2)), lexer.Next());
-            Assert.AreEqual(Token("", TokenType.End, Range((0, 18), 0)), lexer.Next());
+            Assert.AreEqual(Token(string.Empty, TokenType.End, Range((0, 18), 0)), lexer.Next());
         }
 
         [TestMethod]
@@ -80,7 +80,7 @@ asd+b 123
             Assert.AreEqual(Token("-", TokenType.Minus, Range((2, 0), 1)), lexer.Next());
             Assert.AreEqual(Token("2", TokenType.Number, Range((2, 1), 1)), lexer.Next());
             Assert.AreEqual(Token("b5", TokenType.Identifier, Range((2, 3), 2)), lexer.Next());
-            Assert.AreEqual(Token("", TokenType.End, Range((2, 5), 0)), lexer.Next());
+            Assert.AreEqual(Token(string.Empty, TokenType.End, Range((2, 5), 0)), lexer.Next());
         }
 
         [TestMethod]
@@ -98,7 +98,7 @@ asd+b 123
             Assert.AreEqual(Token("-", TokenType.Minus, Range((2, 0), 1)), lexer.Next());
             Assert.AreEqual(Token("2", TokenType.Number, Range((2, 1), 1)), lexer.Next());
             Assert.AreEqual(Token("b5", TokenType.Identifier, Range((2, 3), 2)), lexer.Next());
-            Assert.AreEqual(Token("", TokenType.End, Range((3, 0), 0)), lexer.Next());
+            Assert.AreEqual(Token(string.Empty, TokenType.End, Range((3, 0), 0)), lexer.Next());
         }
 
         [TestMethod]
@@ -107,7 +107,7 @@ asd+b 123
             var lexer = new Lexer(@"if $");
             Assert.AreEqual(Token("if", TokenType.KwIf, Range((0, 0), 2)), lexer.Next());
             Assert.AreEqual(Token("$", TokenType.Error, Range((0, 3), 1)), lexer.Next());
-            Assert.AreEqual(Token("", TokenType.End, Range((0, 4), 0)), lexer.Next());
+            Assert.AreEqual(Token(string.Empty, TokenType.End, Range((0, 4), 0)), lexer.Next());
         }
     }
 }

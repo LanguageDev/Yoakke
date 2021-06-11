@@ -6,7 +6,9 @@ using System.Collections.Generic;
 
 namespace Yoakke.LSP.Generator
 {
-    internal abstract class DefBase { }
+    internal abstract class DefBase
+    {
+    }
 
     internal class InterfaceDef : DefBase
     {

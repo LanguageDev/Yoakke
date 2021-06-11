@@ -78,7 +78,7 @@ namespace Yoakke.LSP.Generator
             var result = new StringBuilder();
             var interfaces = interfaceDef.Bases.Intersect(knownInterfaces).ToList();
             var baseClasses = interfaceDef.Bases.Except(interfaces).ToList();
-            if (interfaceDef.Docs != null) result.AppendLine(TranslateDocComment("", interfaceDef.Docs));
+            if (interfaceDef.Docs != null) result.AppendLine(TranslateDocComment(string.Empty, interfaceDef.Docs));
             result.Append($"public class {interfaceDef.Name}");
             if (baseClasses.Count > 1) throw new NotSupportedException();
             var toExtend = baseClasses.Concat(interfaces.Select(i => $"I{i}")).ToList();
@@ -93,7 +93,7 @@ namespace Yoakke.LSP.Generator
         private static void Translate(NamespaceDef namespaceDef)
         {
             var result = new StringBuilder();
-            if (namespaceDef.Docs != null) result.AppendLine(TranslateDocComment("", namespaceDef.Docs));
+            if (namespaceDef.Docs != null) result.AppendLine(TranslateDocComment(string.Empty, namespaceDef.Docs));
             result.AppendLine($"public enum {namespaceDef.Name}");
             result.AppendLine("{");
             foreach (var field in namespaceDef.Fields) result.AppendLine(Translate(field));
@@ -154,7 +154,7 @@ namespace Yoakke.LSP.Generator
             var result = new StringBuilder();
             var fieldName = Capitalize(field.Name);
             if (field.Docs != null) result.AppendLine(TranslateDocComment("    ", field.Docs));
-            var propExtra = "";
+            var propExtra = string.Empty;
             if (field.Optional) propExtra += ", NullValueHandling = NullValueHandling.Ignore";
             result.AppendLine($"    [{JsonPropertyAttribute}(\"{field.Name}\"{propExtra})]");
             result.Append("    public ");

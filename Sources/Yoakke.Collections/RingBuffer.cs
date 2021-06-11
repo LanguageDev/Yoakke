@@ -122,7 +122,9 @@ namespace Yoakke.Collections
         {
             if (this.Count + amount <= this.Capacity) return;
             var nextCapacity = this.Capacity == 0 ? DefaultCapacity : this.Capacity * 2;
-            for (; nextCapacity < this.Count + amount; nextCapacity *= 2) ;
+            for (; nextCapacity < this.Count + amount; nextCapacity *= 2)
+            {
+            }
             this.SetCapacity(nextCapacity);
         }
 

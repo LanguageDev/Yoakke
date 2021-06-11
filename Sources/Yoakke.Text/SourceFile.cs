@@ -44,7 +44,9 @@ namespace Yoakke.Text
         public SourceFile(string path, string source)
             : this(path, new StringReader(source))
         {
-            while (this.ReadNextLine()) ;
+            while (this.ReadNextLine())
+            {
+            }
             this.index = 0;
         }
 
@@ -131,7 +133,9 @@ namespace Yoakke.Text
         public override string ReadToEnd()
         {
             var wasAt = this.index;
-            while (this.ReadNextLine()) ;
+            while (this.ReadNextLine())
+            {
+            }
             this.index = this.sourceText.Length;
             return this.sourceText.ToString(wasAt, this.index - wasAt);
         }

@@ -21,10 +21,7 @@ namespace Yoakke.Collections.Tests
             public bool Equals(KeyValuePair<Interval<int>, List<int>> x, KeyValuePair<Interval<int>, List<int>> y) =>
                 x.Key.Equals(y.Key) && x.Value.SequenceEqual(y.Value);
 
-            public int GetHashCode([DisallowNull] KeyValuePair<Interval<int>, List<int>> obj)
-            {
-                throw new NotImplementedException();
-            }
+            public int GetHashCode([DisallowNull] KeyValuePair<Interval<int>, List<int>> obj) => throw new NotImplementedException();
         }
 
         private static List<int> UnifyLists(List<int> l1, List<int> l2) => l1.Concat(l2).ToList();
@@ -50,232 +47,248 @@ namespace Yoakke.Collections.Tests
         [TestMethod]
         public void InsertIntoMapDisjunctBefore()
         {
-            var map = IvMap(UnifyLists,
+            var map = IvMap(
+                UnifyLists,
                 ("5..7", VList(1)),
                 ("12..15", VList(1)));
 
             map.AddAndUpdate(Iv("2..3"), new List<int> { 2 }, UnifyLists);
 
-            Assert.IsTrue(map.SequenceEqual(KvList(
+            Assert.IsTrue(map.SequenceEqual(
+                KvList(
                 Kv("2..3", 2),
                 Kv("5..7", 1),
-                Kv("12..15", 1)
-                ), TestEqualityComparer.Default));
+                Kv("12..15", 1)), TestEqualityComparer.Default));
         }
 
         [TestMethod]
         public void InsertIntoMapDisjunctBeforeTouch()
         {
-            var map = IvMap(UnifyLists,
+            var map = IvMap(
+                UnifyLists,
                 ("5..7", VList(1)),
                 ("12..15", VList(1)));
 
             map.AddAndUpdate(Iv("2..5"), new List<int> { 2 }, UnifyLists);
 
-            Assert.IsTrue(map.SequenceEqual(KvList(
+            Assert.IsTrue(map.SequenceEqual(
+                KvList(
                 Kv("2..5", 2),
                 Kv("5..7", 1),
-                Kv("12..15", 1)
-                ), TestEqualityComparer.Default));
+                Kv("12..15", 1)), TestEqualityComparer.Default));
         }
 
         [TestMethod]
         public void InsertIntoMapDisjunctBetween()
         {
-            var map = IvMap(UnifyLists,
+            var map = IvMap(
+                UnifyLists,
                 ("5..7", VList(1)),
                 ("12..15", VList(1)));
 
             map.AddAndUpdate(Iv("9..11"), new List<int> { 2 }, UnifyLists);
 
-            Assert.IsTrue(map.SequenceEqual(KvList(
+            Assert.IsTrue(map.SequenceEqual(
+                KvList(
                 Kv("5..7", 1),
                 Kv("9..11", 2),
-                Kv("12..15", 1)
-                ), TestEqualityComparer.Default));
+                Kv("12..15", 1)), TestEqualityComparer.Default));
         }
 
         [TestMethod]
         public void InsertIntoMapDisjunctBetweenTouch()
         {
-            var map = IvMap(UnifyLists,
+            var map = IvMap(
+                UnifyLists,
                 ("5..7", VList(1)),
                 ("12..15", VList(1)));
 
             map.AddAndUpdate(Iv("7..12"), new List<int> { 2 }, UnifyLists);
 
-            Assert.IsTrue(map.SequenceEqual(KvList(
+            Assert.IsTrue(map.SequenceEqual(
+                KvList(
                 Kv("5..7", 1),
                 Kv("7..12", 2),
-                Kv("12..15", 1)
-                ), TestEqualityComparer.Default));
+                Kv("12..15", 1)), TestEqualityComparer.Default));
         }
 
         [TestMethod]
         public void InsertIntoMapDisjunctAfter()
         {
-            var map = IvMap(UnifyLists,
+            var map = IvMap(
+                UnifyLists,
                 ("5..7", VList(1)),
                 ("12..15", VList(1)));
 
             map.AddAndUpdate(Iv("17..19"), new List<int> { 2 }, UnifyLists);
 
-            Assert.IsTrue(map.SequenceEqual(KvList(
+            Assert.IsTrue(map.SequenceEqual(
+                KvList(
                 Kv("5..7", 1),
                 Kv("12..15", 1),
-                Kv("17..19", 2)
-                ), TestEqualityComparer.Default));
+                Kv("17..19", 2)), TestEqualityComparer.Default));
         }
 
         [TestMethod]
         public void InsertIntoMapDisjunctAfterTouch()
         {
-            var map = IvMap(UnifyLists,
+            var map = IvMap(
+                UnifyLists,
                 ("5..7", VList(1)),
                 ("12..15", VList(1)));
 
             map.AddAndUpdate(Iv("15..19"), new List<int> { 2 }, UnifyLists);
 
-            Assert.IsTrue(map.SequenceEqual(KvList(
+            Assert.IsTrue(map.SequenceEqual(
+                KvList(
                 Kv("5..7", 1),
                 Kv("12..15", 1),
-                Kv("15..19", 2)
-                ), TestEqualityComparer.Default));
+                Kv("15..19", 2)), TestEqualityComparer.Default));
         }
 
         [TestMethod]
         public void InsertIntoMapSingleEqual()
         {
-            var map = IvMap(UnifyLists,
+            var map = IvMap(
+                UnifyLists,
                 ("5..7", VList(1)));
 
             map.AddAndUpdate(Iv("5..7"), new List<int> { 2 }, UnifyLists);
 
-            Assert.IsTrue(map.SequenceEqual(KvList(
-                Kv("5..7", 1, 2)
-                ), TestEqualityComparer.Default));
+            Assert.IsTrue(map.SequenceEqual(
+                KvList(
+                Kv("5..7", 1, 2)), TestEqualityComparer.Default));
         }
 
         [TestMethod]
         public void InsertIntoMapSingleContainingInserted()
         {
-            var map = IvMap(UnifyLists,
+            var map = IvMap(
+                UnifyLists,
                 ("3..9", VList(1)));
 
             map.AddAndUpdate(Iv("5..7"), new List<int> { 2 }, UnifyLists);
 
-            Assert.IsTrue(map.SequenceEqual(KvList(
+            Assert.IsTrue(map.SequenceEqual(
+                KvList(
                 Kv("3..5", 1),
                 Kv("5..7", 1, 2),
-                Kv("7..9", 1)
-                ), TestEqualityComparer.Default));
+                Kv("7..9", 1)), TestEqualityComparer.Default));
         }
 
         [TestMethod]
         public void InsertIntoMapSingleContainingExisting()
         {
-            var map = IvMap(UnifyLists,
+            var map = IvMap(
+                UnifyLists,
                 ("5..7", VList(1)));
 
             map.AddAndUpdate(Iv("3..9"), new List<int> { 2 }, UnifyLists);
 
-            Assert.IsTrue(map.SequenceEqual(KvList(
+            Assert.IsTrue(map.SequenceEqual(
+                KvList(
                 Kv("3..5", 2),
                 Kv("5..7", 1, 2),
-                Kv("7..9", 2)
-                ), TestEqualityComparer.Default));
+                Kv("7..9", 2)), TestEqualityComparer.Default));
         }
 
         [TestMethod]
         public void InsertIntoMapSingleOverlappingLeft()
         {
-            var map = IvMap(UnifyLists,
+            var map = IvMap(
+                UnifyLists,
                 ("5..9", VList(1)));
 
             map.AddAndUpdate(Iv("2..7"), new List<int> { 2 }, UnifyLists);
 
-            Assert.IsTrue(map.SequenceEqual(KvList(
+            Assert.IsTrue(map.SequenceEqual(
+                KvList(
                 Kv("2..5", 2),
                 Kv("5..7", 1, 2),
-                Kv("7..9", 1)
-                ), TestEqualityComparer.Default));
+                Kv("7..9", 1)), TestEqualityComparer.Default));
         }
 
         [TestMethod]
         public void InsertIntoMapSingleOverlappingRight()
         {
-            var map = IvMap(UnifyLists,
+            var map = IvMap(
+                UnifyLists,
                 ("5..9", VList(1)));
 
             map.AddAndUpdate(Iv("7..12"), new List<int> { 2 }, UnifyLists);
 
-            Assert.IsTrue(map.SequenceEqual(KvList(
+            Assert.IsTrue(map.SequenceEqual(
+                KvList(
                 Kv("5..7", 1),
                 Kv("7..9", 1, 2),
-                Kv("9..12", 2)
-                ), TestEqualityComparer.Default));
+                Kv("9..12", 2)), TestEqualityComparer.Default));
         }
 
         [TestMethod]
         public void InsertIntoMapSingleStartingContainingInserted()
         {
-            var map = IvMap(UnifyLists,
+            var map = IvMap(
+                UnifyLists,
                 ("5..11", VList(1)));
 
             map.AddAndUpdate(Iv("5..7"), new List<int> { 2 }, UnifyLists);
 
-            Assert.IsTrue(map.SequenceEqual(KvList(
+            Assert.IsTrue(map.SequenceEqual(
+                KvList(
                 Kv("5..7", 1, 2),
-                Kv("7..11", 1)
-                ), TestEqualityComparer.Default));
+                Kv("7..11", 1)), TestEqualityComparer.Default));
         }
 
         [TestMethod]
         public void InsertIntoMapSingleStartingContainingExisting()
         {
-            var map = IvMap(UnifyLists,
+            var map = IvMap(
+                UnifyLists,
                 ("5..7", VList(1)));
 
             map.AddAndUpdate(Iv("5..11"), new List<int> { 2 }, UnifyLists);
 
-            Assert.IsTrue(map.SequenceEqual(KvList(
+            Assert.IsTrue(map.SequenceEqual(
+                KvList(
                 Kv("5..7", 1, 2),
-                Kv("7..11", 2)
-                ), TestEqualityComparer.Default));
+                Kv("7..11", 2)), TestEqualityComparer.Default));
         }
 
         [TestMethod]
         public void InsertIntoMapSingleFinishingContainingInserted()
         {
-            var map = IvMap(UnifyLists,
+            var map = IvMap(
+                UnifyLists,
                 ("5..11", VList(1)));
 
             map.AddAndUpdate(Iv("8..11"), new List<int> { 2 }, UnifyLists);
 
-            Assert.IsTrue(map.SequenceEqual(KvList(
+            Assert.IsTrue(map.SequenceEqual(
+                KvList(
                 Kv("5..8", 1),
-                Kv("8..11", 1, 2)
-                ), TestEqualityComparer.Default));
+                Kv("8..11", 1, 2)), TestEqualityComparer.Default));
         }
 
         [TestMethod]
         public void InsertIntoMapSingleFinishingContainingExisting()
         {
-            var map = IvMap(UnifyLists,
+            var map = IvMap(
+                UnifyLists,
                 ("8..11", VList(1)));
 
             map.AddAndUpdate(Iv("5..11"), new List<int> { 2 }, UnifyLists);
 
-            Assert.IsTrue(map.SequenceEqual(KvList(
+            Assert.IsTrue(map.SequenceEqual(
+                KvList(
                 Kv("5..8", 2),
-                Kv("8..11", 1, 2)
-                ), TestEqualityComparer.Default));
+                Kv("8..11", 1, 2)), TestEqualityComparer.Default));
         }
 
         [TestMethod]
         public void InsertIntoMapCoverTwoExactly()
         {
-            var map = IvMap(UnifyLists,
+            var map = IvMap(
+                UnifyLists,
                 ("1..3", VList(1)),
                 ("5..7", VList(1)),
                 ("9..12", VList(1)),
@@ -283,19 +296,20 @@ namespace Yoakke.Collections.Tests
 
             map.AddAndUpdate(Iv("5..12"), new List<int> { 2 }, UnifyLists);
 
-            Assert.IsTrue(map.SequenceEqual(KvList(
+            Assert.IsTrue(map.SequenceEqual(
+                KvList(
                 Kv("1..3", 1),
                 Kv("5..7", 1, 2),
                 Kv("7..9", 2),
                 Kv("9..12", 1, 2),
-                Kv("14..15", 1)
-                ), TestEqualityComparer.Default));
+                Kv("14..15", 1)), TestEqualityComparer.Default));
         }
 
         [TestMethod]
         public void InsertIntoMapCoverManyEvenExactly()
         {
-            var map = IvMap(UnifyLists,
+            var map = IvMap(
+                UnifyLists,
                 ("1..3", VList(1)),
                 ("5..7", VList(1)),
                 ("9..12", VList(1)),
@@ -305,7 +319,8 @@ namespace Yoakke.Collections.Tests
 
             map.AddAndUpdate(Iv("5..17"), new List<int> { 2 }, UnifyLists);
 
-            Assert.IsTrue(map.SequenceEqual(KvList(
+            Assert.IsTrue(map.SequenceEqual(
+                KvList(
                 Kv("1..3", 1),
                 Kv("5..7", 1, 2),
                 Kv("7..9", 2),
@@ -313,14 +328,14 @@ namespace Yoakke.Collections.Tests
                 Kv("12..14", 2),
                 Kv("14..15", 1, 2),
                 Kv("15..17", 1, 2),
-                Kv("18..19", 1)
-                ), TestEqualityComparer.Default));
+                Kv("18..19", 1)), TestEqualityComparer.Default));
         }
 
         [TestMethod]
         public void InsertIntoMapCoverManyOddExactly()
         {
-            var map = IvMap(UnifyLists,
+            var map = IvMap(
+                UnifyLists,
                 ("1..3", VList(1)),
                 ("5..7", VList(1)),
                 ("9..12", VList(1)),
@@ -331,7 +346,8 @@ namespace Yoakke.Collections.Tests
 
             map.AddAndUpdate(Iv("5..19"), new List<int> { 2 }, UnifyLists);
 
-            Assert.IsTrue(map.SequenceEqual(KvList(
+            Assert.IsTrue(map.SequenceEqual(
+                KvList(
                 Kv("1..3", 1),
                 Kv("5..7", 1, 2),
                 Kv("7..9", 2),
@@ -341,14 +357,14 @@ namespace Yoakke.Collections.Tests
                 Kv("15..17", 1, 2),
                 Kv("17..18", 2),
                 Kv("18..19", 1, 2),
-                Kv("21..24", 1)
-                ), TestEqualityComparer.Default));
+                Kv("21..24", 1)), TestEqualityComparer.Default));
         }
 
         [TestMethod]
         public void InsertIntoMapCoverManyTouchingExactly()
         {
-            var map = IvMap(UnifyLists,
+            var map = IvMap(
+                UnifyLists,
                 ("1..3", VList(1)),
                 ("5..7", VList(1)),
                 ("7..9", VList(1)),
@@ -360,7 +376,8 @@ namespace Yoakke.Collections.Tests
 
             map.AddAndUpdate(Iv("5..17"), new List<int> { 2 }, UnifyLists);
 
-            Assert.IsTrue(map.SequenceEqual(KvList(
+            Assert.IsTrue(map.SequenceEqual(
+                KvList(
                 Kv("1..3", 1),
                 Kv("5..7", 1, 2),
                 Kv("7..9", 1, 2),
@@ -368,14 +385,14 @@ namespace Yoakke.Collections.Tests
                 Kv("12..14", 1, 2),
                 Kv("14..15", 1, 2),
                 Kv("15..17", 1, 2),
-                Kv("18..19", 1)
-                ), TestEqualityComparer.Default));
+                Kv("18..19", 1)), TestEqualityComparer.Default));
         }
 
         [TestMethod]
         public void InsertIntoMapTwoStartIntersect()
         {
-            var map = IvMap(UnifyLists,
+            var map = IvMap(
+                UnifyLists,
                 ("1..3", VList(1)),
                 ("5..7", VList(1)),
                 ("9..12", VList(1)),
@@ -383,20 +400,21 @@ namespace Yoakke.Collections.Tests
 
             map.AddAndUpdate(Iv("5..10"), new List<int> { 2 }, UnifyLists);
 
-            Assert.IsTrue(map.SequenceEqual(KvList(
+            Assert.IsTrue(map.SequenceEqual(
+                KvList(
                 Kv("1..3", 1),
                 Kv("5..7", 1, 2),
                 Kv("7..9", 2),
                 Kv("9..10", 1, 2),
                 Kv("10..12", 1),
-                Kv("14..15", 1)
-                ), TestEqualityComparer.Default));
+                Kv("14..15", 1)), TestEqualityComparer.Default));
         }
 
         [TestMethod]
         public void InsertIntoMapTwoIntersectFinish()
         {
-            var map = IvMap(UnifyLists,
+            var map = IvMap(
+                UnifyLists,
                 ("1..3", VList(1)),
                 ("5..7", VList(1)),
                 ("9..12", VList(1)),
@@ -404,20 +422,21 @@ namespace Yoakke.Collections.Tests
 
             map.AddAndUpdate(Iv("6..12"), new List<int> { 2 }, UnifyLists);
 
-            Assert.IsTrue(map.SequenceEqual(KvList(
+            Assert.IsTrue(map.SequenceEqual(
+                KvList(
                 Kv("1..3", 1),
                 Kv("5..6", 1),
                 Kv("6..7", 1, 2),
                 Kv("7..9", 2),
                 Kv("9..12", 1, 2),
-                Kv("14..15", 1)
-                ), TestEqualityComparer.Default));
+                Kv("14..15", 1)), TestEqualityComparer.Default));
         }
 
         [TestMethod]
         public void InsertIntoMapTwoIntersectIntersect()
         {
-            var map = IvMap(UnifyLists,
+            var map = IvMap(
+                UnifyLists,
                 ("1..3", VList(1)),
                 ("5..7", VList(1)),
                 ("9..12", VList(1)),
@@ -425,15 +444,15 @@ namespace Yoakke.Collections.Tests
 
             map.AddAndUpdate(Iv("6..10"), new List<int> { 2 }, UnifyLists);
 
-            Assert.IsTrue(map.SequenceEqual(KvList(
+            Assert.IsTrue(map.SequenceEqual(
+                KvList(
                 Kv("1..3", 1),
                 Kv("5..6", 1),
                 Kv("6..7", 1, 2),
                 Kv("7..9", 2),
                 Kv("9..10", 1, 2),
                 Kv("10..12", 1),
-                Kv("14..15", 1)
-                ), TestEqualityComparer.Default));
+                Kv("14..15", 1)), TestEqualityComparer.Default));
         }
     }
 }

@@ -44,27 +44,15 @@ namespace Yoakke.Parser.Tests
             new LeftRecursionParser(new LeftRecursionLexer(source)).ParseGrouping().Ok.Value;
 
         [TestMethod]
-        public void TestOne()
-        {
-            Assert.AreEqual("a", Parse("a"));
-        }
+        public void TestOne() => Assert.AreEqual("a", Parse("a"));
 
         [TestMethod]
-        public void TestTwo()
-        {
-            Assert.AreEqual("(a, b)", Parse("a b"));
-        }
+        public void TestTwo() => Assert.AreEqual("(a, b)", Parse("a b"));
 
         [TestMethod]
-        public void TestThree()
-        {
-            Assert.AreEqual("((a, b), c)", Parse("a b c"));
-        }
+        public void TestThree() => Assert.AreEqual("((a, b), c)", Parse("a b c"));
 
         [TestMethod]
-        public void TestFour()
-        {
-            Assert.AreEqual("(((a, b), c), d)", Parse("a b c d"));
-        }
+        public void TestFour() => Assert.AreEqual("(((a, b), c), d)", Parse("a b c d"));
     }
 }

@@ -60,7 +60,9 @@ namespace Yoakke.Parser.Generator.Syntax
             if (ch == '\'')
             {
                 var length = 1;
-                for (; this.Peek(length, '\'') != '\''; ++length) ;
+                for (; this.Peek(length, '\'') != '\''; ++length)
+                {
+                }
                 if (this.index + length >= this.source.Length) throw new FormatException($"Unclosed string literal starting at index {this.index}");
                 // We consume the last ' too
                 ++length;
@@ -71,7 +73,9 @@ namespace Yoakke.Parser.Generator.Syntax
             if (IsIdent(ch))
             {
                 var length = 1;
-                for (; IsIdent(this.Peek(length)); ++length) ;
+                for (; IsIdent(this.Peek(length)); ++length)
+                {
+                }
                 return this.Make(length, BnfTokenType.Identifier);
             }
 

@@ -82,9 +82,19 @@ namespace Yoakke.Sample
     public enum BinOp
     {
         Assign,
-        Add, Sub, Mul, Div, Mod,
-        Eq, Neq, Greater, Less, GreaterEq, LessEq,
-        And, Or,
+        Add,
+        Sub,
+        Mul,
+        Div,
+        Mod,
+        Eq,
+        Neq,
+        Greater,
+        Less,
+        GreaterEq,
+        LessEq,
+        And,
+        Or,
     }
 
     [Ast]

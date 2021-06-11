@@ -15,7 +15,9 @@ namespace Yoakke.Reporting.Present
     /// </summary>
     public class TextDiagnosticPresenter : IDiagnosticPresenter
     {
-        private abstract class LinePrimitive { }
+        private abstract class LinePrimitive
+        {
+        }
 
         private class SourceLine : LinePrimitive
         {
@@ -24,7 +26,9 @@ namespace Yoakke.Reporting.Present
             public int Line { get; set; }
         }
 
-        private class DotLine : LinePrimitive { }
+        private class DotLine : LinePrimitive
+        {
+        }
 
         private class AnnotationLine : LinePrimitive
         {
@@ -197,10 +201,14 @@ namespace Yoakke.Reporting.Present
                 foreach (var token in coloredTokens)
                 {
                     // Walk there until the next token
-                    for (; charIndex < token.Start; this.AdvanceCursor(ref lineCur, lineText[charIndex++])) ;
+                    for (; charIndex < token.Start; this.AdvanceCursor(ref lineCur, lineText[charIndex++]))
+                    {
+                    }
                     // Go through the token
                     var tokenStart = lineCur;
-                    for (; charIndex < token.Start + token.Length; this.AdvanceCursor(ref lineCur, lineText[charIndex++])) ;
+                    for (; charIndex < token.Start + token.Length; this.AdvanceCursor(ref lineCur, lineText[charIndex++]))
+                    {
+                    }
                     var tokenEnd = lineCur;
                     // Recolor it
                     this.buffer.ForegroundColor = this.SyntaxHighlighter.Style.GetTokenColor(token.Kind);

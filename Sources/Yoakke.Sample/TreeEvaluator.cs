@@ -47,7 +47,9 @@ namespace Yoakke.Sample
             Bind(symbol, Visit(vars.Value));
         }
 
-        protected override void Visit(Statement.Func func) { /* no-op */ }
+        protected override void Visit(Statement.Func func)
+        { /* no-op */
+        }
 
         protected override void Visit(Statement.Return ret) =>
             throw new Return(ret.Value == null ? null : Visit(ret.Value));

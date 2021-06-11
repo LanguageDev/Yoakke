@@ -18,7 +18,8 @@ namespace Yoakke.Reporting.Tests
         [TestMethod]
         public void BasicSingleAnnotation()
         {
-            var src = new SourceFile("simple.txt",
+            var src = new SourceFile(
+                "simple.txt",
 @"line 1
 prev line
 this is a line of text
@@ -32,7 +33,8 @@ some other line");
             var result = new StringWriter();
             var renderer = new TextDiagnosticPresenter(result);
             renderer.Present(diag);
-            Assert.AreEqual(@"error[E0001]: Some error message
+            Assert.AreEqual(
+                @"error[E0001]: Some error message
   ┌─ simple.txt:3:11
   │
 2 │ prev line
@@ -46,7 +48,8 @@ some other line");
         [TestMethod]
         public void TwoAnnotationsRightUnderEachother()
         {
-            var src = new SourceFile("simple.txt",
+            var src = new SourceFile(
+                "simple.txt",
 @"line 1
 prev line
 this is a line of text
@@ -61,7 +64,8 @@ last line");
             var result = new StringWriter();
             var renderer = new TextDiagnosticPresenter(result);
             renderer.Present(diag);
-            Assert.AreEqual(@"error[E0001]: Some error message
+            Assert.AreEqual(
+                @"error[E0001]: Some error message
   ┌─ simple.txt:3:11
   │
 2 │ prev line
@@ -77,7 +81,8 @@ last line");
         [TestMethod]
         public void TwoAnnotationsClose()
         {
-            var src = new SourceFile("simple.txt",
+            var src = new SourceFile(
+                "simple.txt",
 @"line 1
 prev line
 this is a line of text
@@ -93,7 +98,8 @@ last line");
             var result = new StringWriter();
             var renderer = new TextDiagnosticPresenter(result);
             renderer.Present(diag);
-            Assert.AreEqual(@"error[E0001]: Some error message
+            Assert.AreEqual(
+                @"error[E0001]: Some error message
   ┌─ simple.txt:3:11
   │
 2 │ prev line
@@ -110,7 +116,8 @@ last line");
         [TestMethod]
         public void TwoAnnotationsTouching()
         {
-            var src = new SourceFile("simple.txt",
+            var src = new SourceFile(
+                "simple.txt",
 @"line 1
 prev line
 this is a line of text
@@ -127,7 +134,8 @@ last line");
             var result = new StringWriter();
             var renderer = new TextDiagnosticPresenter(result);
             renderer.Present(diag);
-            Assert.AreEqual(@"error[E0001]: Some error message
+            Assert.AreEqual(
+                @"error[E0001]: Some error message
   ┌─ simple.txt:3:11
   │
 2 │ prev line
@@ -145,7 +153,8 @@ last line");
         [TestMethod]
         public void TwoAnnotationsAlmostDotted()
         {
-            var src = new SourceFile("simple.txt",
+            var src = new SourceFile(
+                "simple.txt",
 @"line 1
 prev line
 this is a line of text
@@ -163,7 +172,8 @@ last line");
             var result = new StringWriter();
             var renderer = new TextDiagnosticPresenter(result);
             renderer.Present(diag);
-            Assert.AreEqual(@"error[E0001]: Some error message
+            Assert.AreEqual(
+                @"error[E0001]: Some error message
   ┌─ simple.txt:3:11
   │
 2 │ prev line
@@ -182,7 +192,8 @@ last line");
         [TestMethod]
         public void TwoAnnotationsDotted()
         {
-            var src = new SourceFile("simple.txt",
+            var src = new SourceFile(
+                "simple.txt",
 @"line 1
 prev line
 this is a line of text
@@ -201,7 +212,8 @@ last line");
             var result = new StringWriter();
             var renderer = new TextDiagnosticPresenter(result);
             renderer.Present(diag);
-            Assert.AreEqual(@"error[E0001]: Some error message
+            Assert.AreEqual(
+                @"error[E0001]: Some error message
   ┌─ simple.txt:3:11
   │
 2 │ prev line

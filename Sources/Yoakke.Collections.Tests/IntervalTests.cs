@@ -67,8 +67,7 @@ namespace Yoakke.Collections.Tests
                 new IntervalRelation<int>.Overlapping(
                     Iv("4..6"),
                     Iv("6..=6"),
-                    new Interval<int>(LowerBound<int>.Exclusive(6), UpperBound<int>.Exclusive(8))
-                ),
+                    new Interval<int>(LowerBound<int>.Exclusive(6), UpperBound<int>.Exclusive(8))),
                 Rel("6..8", "4..=6"));
         }
 

@@ -27,8 +27,7 @@ namespace Yoakke.Lsp.Server.Hosting.Internal
 
         public async Task<int> StopAsync(CancellationToken cancellationToken)
         {
-            var lspService = (LspService?)this.host.Services.GetService(typeof(LspService));
-            Debug.Assert(lspService is not null);
+            var lspService = (LspService?)this.host.Services.GetService(typeof(LspService))!;
             await lspService.StopAsync(cancellationToken);
             return lspService.ExitCode;
         }

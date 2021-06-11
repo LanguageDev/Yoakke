@@ -63,10 +63,7 @@ namespace Yoakke.Lsp.Server.Internal
 
         // Lifecycle ///////////////////////////////////////////////////////////
 
-        public void Dispose()
-        {
-            this.jsonRpc.Dispose();
-        }
+        public void Dispose() => this.jsonRpc.Dispose();
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
@@ -97,7 +94,7 @@ namespace Yoakke.Lsp.Server.Internal
                 Capabilities = new ServerCapabilities
                 {
                     TextDocumentSync = this.GetTextDocumentSyncCapability(),
-                }
+                },
             };
             // Increment server state
             this.SetServerState(ServerState.WaitingForInitializedNotification);

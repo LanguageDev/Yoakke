@@ -38,7 +38,9 @@ namespace Yoakke.Parser.Generator
         private INamedTypeSymbol? parserType;
 
         public ParserSourceGenerator()
-            : base("Yoakke.Parser.Generator") { }
+            : base("Yoakke.Parser.Generator")
+        {
+        }
 
         protected override ISyntaxReceiver CreateSyntaxReceiver(GeneratorInitializationContext context) => new SyntaxReceiver();
 
@@ -147,9 +149,11 @@ namespace {namespaceName}
         {{
         }}
 
+#nullable enable
 #pragma warning disable CS8632
         {parserMethods}
 #pragma warning restore CS8632
+#nullable restore
     }}
 }}
 ";
