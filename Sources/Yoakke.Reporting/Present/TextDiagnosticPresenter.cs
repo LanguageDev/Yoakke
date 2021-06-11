@@ -50,7 +50,7 @@ namespace Yoakke.Reporting.Present
         private readonly ColoredBuffer buffer;
 
         /// <summary>
-        /// Initializes a new <see cref="TextDiagnosticPresenter"/>.
+        /// Initializes a new instance of the <see cref="TextDiagnosticPresenter"/> class.
         /// </summary>
         /// <param name="writer">The writer to write to.</param>
         public TextDiagnosticPresenter(TextWriter writer)

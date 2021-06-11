@@ -18,7 +18,7 @@ namespace Yoakke.Parser.Attributes
         public string Rule { get; set; }
 
         /// <summary>
-        /// Initializes a new <see cref="RuleAttribute"/>.
+        /// Initializes a new instance of the <see cref="RuleAttribute"/> class.
         /// </summary>
         /// <param name="rule">The rule in grammar notation.</param>
         public RuleAttribute(string rule)

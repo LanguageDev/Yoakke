@@ -22,7 +22,7 @@ namespace Yoakke.Parser
         public readonly string Context;
 
         /// <summary>
-        /// Initializes a new <see cref="ParseErrorElement"/>.
+        /// Initializes a new instance of the <see cref="ParseErrorElement"/> class.
         /// </summary>
         /// <param name="expected">The expected input.</param>
         /// <param name="context">The context in which the error occurred.</param>
@@ -32,7 +32,7 @@ namespace Yoakke.Parser
         }
 
         /// <summary>
-        /// Initializes a new <see cref="ParseErrorElement"/>.
+        /// Initializes a new instance of the <see cref="ParseErrorElement"/> class.
         /// </summary>
         /// <param name="expected">The expected possible inputs.</param>
         /// <param name="context">The context in which the error occurred.</param>

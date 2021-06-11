@@ -22,7 +22,7 @@ namespace Yoakke.Text
         public readonly Position End;
 
         /// <summary>
-        /// Initializes a new <see cref="Range"/>.
+        /// Initializes a new instance of the <see cref="Range"/> struct.
         /// </summary>
         /// <param name="start">The first <see cref="Position"/> that's inside this range.</param>
         /// <param name="end">The first <see cref="Position"/> after this range.</param>
@@ -35,7 +35,7 @@ namespace Yoakke.Text
         }
 
         /// <summary>
-        /// Initializes a new <see cref="Range"/>.
+        /// Initializes a new instance of the <see cref="Range"/> struct.
         /// </summary>
         /// <param name="start">The first <see cref="Position"/> that's inside this range.</param>
         /// <param name="length">The length of this range.</param>
@@ -45,7 +45,7 @@ namespace Yoakke.Text
         }
 
         /// <summary>
-        /// Initializes a new <see cref="Range"/> by arching over two others.
+        /// Initializes a new instance of the <see cref="Range"/> struct.
         /// </summary>
         /// <param name="from">The starting range.</param>
         /// <param name="to">The ending range.</param>

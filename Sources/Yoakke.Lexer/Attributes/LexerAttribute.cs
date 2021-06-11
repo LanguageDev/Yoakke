@@ -18,7 +18,7 @@ namespace Yoakke.Lexer.Attributes
         public string ClassName { get; set; }
 
         /// <summary>
-        /// Initializes a new <see cref="LexerAttribute"/>.
+        /// Initializes a new instance of the <see cref="LexerAttribute"/> class.
         /// </summary>
         /// <param name="className">The lexer classes name to generate.</param>
         public LexerAttribute(string className)

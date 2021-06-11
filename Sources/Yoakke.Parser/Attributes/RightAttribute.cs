@@ -18,7 +18,7 @@ namespace Yoakke.Parser.Attributes
         public object[] Separators { get; set; }
 
         /// <summary>
-        /// Initializes a new <see cref="RightAttribute"/>.
+        /// Initializes a new instance of the <see cref="RightAttribute"/> class.
         /// </summary>
         /// <param name="separators">The separator elements that should be right-associative.</param>
         public RightAttribute(params object[] separators)

@@ -26,7 +26,7 @@ namespace Yoakke.Parser
         public readonly ParseError? FurthestError;
 
         /// <summary>
-        /// Initializes a new <see cref="ParseOk{T}"/>.
+        /// Initializes a new instance of the <see cref="ParseOk{T}"/> struct.
         /// </summary>
         /// <param name="value">The parsed value.</param>
         /// <param name="offset">The offset in the number of tokens.</param>

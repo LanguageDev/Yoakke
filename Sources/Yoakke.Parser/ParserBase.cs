@@ -19,7 +19,7 @@ namespace Yoakke.Parser
         private bool pushedEnd;
 
         /// <summary>
-        /// Initializes a new <see cref="ParserBase"/>.
+        /// Initializes a new instance of the <see cref="ParserBase"/> class.
         /// </summary>
         /// <param name="lexer">The underlying lexer to use.</param>
         protected ParserBase(ILexer lexer)
@@ -29,7 +29,7 @@ namespace Yoakke.Parser
         }
 
         /// <summary>
-        /// Initializes a new <see cref="ParserBase"/>.
+        /// Initializes a new instance of the <see cref="ParserBase"/> class.
         /// </summary>
         /// <param name="tokens">The tokens to lex.</param>
         protected ParserBase(IEnumerable<IToken> tokens)

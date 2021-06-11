@@ -24,7 +24,7 @@ namespace Yoakke.Lexer
         public readonly TKind Kind;
 
         /// <summary>
-        /// Initializes a new <see cref="Token{TKind}"/>.
+        /// Initializes a new instance of the <see cref="Token{TKind}"/> class.
         /// </summary>
         /// <param name="range">The <see cref="Text.Range"/> of the <see cref="Token{TKind}"/> in the source.</param>
         /// <param name="text">The text the <see cref="Token{TKind}"/> was parsed from.</param>

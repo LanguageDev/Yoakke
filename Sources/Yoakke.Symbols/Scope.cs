@@ -28,7 +28,7 @@ namespace Yoakke.Symbols
         private readonly Dictionary<string, ISymbol> symbols = new();
 
         /// <summary>
-        /// Initializes a new <see cref="Scope{TTag}"/>.
+        /// Initializes a new instance of the <see cref="Scope{TTag}"/> class.
         /// </summary>
         /// <param name="parent">The parent (containing) scope of this one.</param>
         /// <param name="tag">The tag of this scope.</param>
@@ -39,7 +39,7 @@ namespace Yoakke.Symbols
         }
 
         /// <summary>
-        /// Initializes a new <see cref="Scope{TTag}"/> without a containing scope.
+        /// Initializes a new instance of the <see cref="Scope{TTag}"/> class.
         /// </summary>
         /// <param name="tag">The tag of this scope.</param>
         public Scope(TTag tag)

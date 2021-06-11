@@ -23,7 +23,7 @@ namespace Yoakke.Ast.Attributes
         public Type Type { get; set; }
 
         /// <summary>
-        /// Initializes a new <see cref="VisitorAttribute"/>.
+        /// Initializes a new instance of the <see cref="VisitorAttribute"/> class.
         /// </summary>
         /// <param name="name">The name of the visitor to generate.</param>
         /// <param name="type">The type to return from the visitor calls.</param>

@@ -24,7 +24,7 @@ namespace Yoakke.Parser
         public readonly IToken? Got;
 
         /// <summary>
-        /// Initializes a new <see cref="ParseError"/>.
+        /// Initializes a new instance of the <see cref="ParseError"/> class.
         /// </summary>
         /// <param name="expected">The expected input.</param>
         /// <param name="got">The input that was found.</param>

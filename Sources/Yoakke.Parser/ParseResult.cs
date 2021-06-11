@@ -38,7 +38,7 @@ namespace Yoakke.Parser
         public ParseError? FurthestError => this.value is ParseOk<T> ok ? ok.FurthestError : (ParseError)this.value;
 
         /// <summary>
-        /// Initializes a new <see cref="ParseResult{T}"/> as a successful parse.
+        /// Initializes a new instance of the <see cref="ParseResult{T}"/> struct.
         /// </summary>
         /// <param name="ok">The successful parse description.</param>
         public ParseResult(ParseOk<T> ok)
@@ -47,7 +47,7 @@ namespace Yoakke.Parser
         }
 
         /// <summary>
-        /// Initializes a new <see cref="ParseResult{T}"/> as a failing parse.
+        /// Initializes a new instance of the <see cref="ParseResult{T}"/> struct.
         /// </summary>
         /// <param name="error">The error description.</param>
         public ParseResult(ParseError error)

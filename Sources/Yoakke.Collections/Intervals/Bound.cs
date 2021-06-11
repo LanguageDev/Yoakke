@@ -33,7 +33,7 @@ namespace Yoakke.Collections.Intervals
         private readonly T? value;
 
         /// <summary>
-        /// Initializes a new <see cref="Bound{T}"/>.
+        /// Initializes a new instance of the <see cref="Bound{T}"/> struct.
         /// </summary>
         /// <param name="type">The type of the bound.</param>
         /// <param name="value">The associated value of the bound, if any.</param>

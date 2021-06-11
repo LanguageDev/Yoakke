@@ -18,7 +18,7 @@ namespace Yoakke.Ast.Attributes
         public bool Implement { get; set; }
 
         /// <summary>
-        /// Initializes a new <see cref="ImplementEqualityAttribute"/>.
+        /// Initializes a new instance of the <see cref="ImplementEqualityAttribute"/> class.
         /// </summary>
         /// <param name="implement">True, if equality should be auto-implemented.</param>
         public ImplementEqualityAttribute(bool implement = true)

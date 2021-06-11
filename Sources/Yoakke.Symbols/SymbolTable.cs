@@ -18,7 +18,7 @@ namespace Yoakke.Symbols
         public IScope CurrentScope { get; set; }
 
         /// <summary>
-        /// Initializes a new <see cref="SymbolTable{TKey}"/>.
+        /// Initializes a new instance of the <see cref="SymbolTable"/> class.
         /// </summary>
         /// <param name="globalScope">The global scope to use.</param>
         public SymbolTable(IScope globalScope)

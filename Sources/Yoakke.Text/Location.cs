@@ -20,7 +20,7 @@ namespace Yoakke.Text
         public readonly Range Range;
 
         /// <summary>
-        /// Initializes a new <see cref="Location"/>.
+        /// Initializes a new instance of the <see cref="Location"/> struct.
         /// </summary>
         /// <param name="file">The source file.</param>
         /// <param name="range">The range in the file.</param>

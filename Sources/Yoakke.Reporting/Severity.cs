@@ -29,7 +29,7 @@ namespace Yoakke.Reporting
         public readonly int Priority;
 
         /// <summary>
-        /// Initializes a new <see cref="Severity"/>.
+        /// Initializes a new instance of the <see cref="Severity"/> struct.
         /// </summary>
         /// <param name="name">The name of the severity level.</param>
         /// <param name="priority">The priority of the severity level.</param>

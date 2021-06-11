@@ -18,7 +18,7 @@ namespace Yoakke.Lexer.Attributes
         public string Text { get; set; }
 
         /// <summary>
-        /// Initializes a new <see cref="TokenAttribute"/>.
+        /// Initializes a new instance of the <see cref="TokenAttribute"/> class.
         /// </summary>
         /// <param name="text">The text to match.</param>
         public TokenAttribute(string text)

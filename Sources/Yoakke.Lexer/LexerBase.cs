@@ -25,7 +25,7 @@ namespace Yoakke.Lexer
         private char prevChar;
 
         /// <summary>
-        /// Initializes a new <see cref="LexerBase{T}"/> with the given source reader.
+        /// Initializes a new instance of the <see cref="LexerBase{T}"/> class.
         /// </summary>
         /// <param name="reader">The <see cref="TextReader"/> that reads the source text.</param>
         protected LexerBase(TextReader reader)
@@ -35,7 +35,7 @@ namespace Yoakke.Lexer
         }
 
         /// <summary>
-        /// Initializes a new <see cref="LexerBase{T}"/> with the given source text.
+        /// Initializes a new instance of the <see cref="LexerBase{T}"/> class.
         /// </summary>
         /// <param name="source">The string to lex.</param>
         protected LexerBase(string source)

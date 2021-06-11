@@ -37,7 +37,7 @@ namespace Yoakke.Collections.Intervals
         public readonly UpperBound<T> Upper;
 
         /// <summary>
-        /// Initializes a new <see cref="Interval{T}"/>.
+        /// Initializes a new instance of the <see cref="Interval{T}"/> struct.
         /// </summary>
         /// <param name="lower">The lower bound of the interval.</param>
         /// <param name="upper">The upper bound of the interval.</param>

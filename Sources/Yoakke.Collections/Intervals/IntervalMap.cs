@@ -45,7 +45,7 @@ namespace Yoakke.Collections.Intervals
         private readonly List<KeyValuePair<Interval<TKey>, TValue>> values = new();
 
         /// <summary>
-        /// Initializes an empty <see cref="IntervalMap{TKey, TValue}"/> with the default comparers.
+        /// Initializes a new instance of the <see cref="IntervalMap{TKey, TValue}"/> class.
         /// </summary>
         public IntervalMap()
             : this(Comparer<TKey>.Default, EqualityComparer<TValue>.Default)
@@ -53,7 +53,7 @@ namespace Yoakke.Collections.Intervals
         }
 
         /// <summary>
-        /// Initializes an empty <see cref="IntervalMap{TKey, TValue}"/> with a given key comparer.
+        /// Initializes a new instance of the <see cref="IntervalMap{TKey, TValue}"/> class.
         /// </summary>
         /// <param name="comparer">The key comparer to use.</param>
         public IntervalMap(IComparer<TKey> comparer)
@@ -62,7 +62,7 @@ namespace Yoakke.Collections.Intervals
         }
 
         /// <summary>
-        /// Initializes an empty <see cref="IntervalMap{TKey, TValue}"/> with a given comparers.
+        /// Initializes a new instance of the <see cref="IntervalMap{TKey, TValue}"/> class.
         /// </summary>
         /// <param name="comparer">The key comparer to use.</param>
         /// <param name="valueComparer">The value equality comparer to use.</param>

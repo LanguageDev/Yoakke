@@ -19,7 +19,7 @@ namespace Yoakke.Collections.Intervals
         private readonly IComparer<T> comparer;
 
         /// <summary>
-        /// Initializes an empty <see cref="IntervalSet{T}"/> with the default comparer.
+        /// Initializes a new instance of the <see cref="IntervalSet{T}"/> class.
         /// </summary>
         public IntervalSet()
             : this(Comparer<T>.Default)
@@ -27,7 +27,7 @@ namespace Yoakke.Collections.Intervals
         }
 
         /// <summary>
-        /// Initializes an empty <see cref="IntervalSet{T}"/> with the given comparer.
+        /// Initializes a new instance of the <see cref="IntervalSet{T}"/> class.
         /// </summary>
         /// <param name="comparer">The comparer to use.</param>
         public IntervalSet(IComparer<T> comparer)

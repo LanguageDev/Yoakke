@@ -18,7 +18,7 @@ namespace Yoakke.Lexer.Attributes
         public string Regex { get; set; }
 
         /// <summary>
-        /// Initializes a new <see cref="RegexAttribute"/>.
+        /// Initializes a new instance of the <see cref="RegexAttribute"/> class.
         /// </summary>
         /// <param name="regex">The regular expression.</param>
         public RegexAttribute(string regex)

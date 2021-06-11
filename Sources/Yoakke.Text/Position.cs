@@ -22,7 +22,7 @@ namespace Yoakke.Text
         public readonly int Column;
 
         /// <summary>
-        /// Initializes a new <see cref="Position"/>.
+        /// Initializes a new instance of the <see cref="Position"/> struct.
         /// </summary>
         /// <param name="line">The 0-based line index.</param>
         /// <param name="column">The 0-based column index.</param>

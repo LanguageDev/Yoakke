@@ -31,7 +31,7 @@ namespace Yoakke.Collections.FiniteAutomata
         private int stateCounter;
 
         /// <summary>
-        /// Initializes a new <see cref="DenseDfa{TSymbol}"/> with the default comparer.
+        /// Initializes a new instance of the <see cref="DenseDfa{TSymbol}"/> class.
         /// </summary>
         public DenseDfa()
             : this(Comparer<TSymbol>.Default)
@@ -39,7 +39,7 @@ namespace Yoakke.Collections.FiniteAutomata
         }
 
         /// <summary>
-        /// Initializes a new <see cref="DenseDfa{TSymbol}"/> with the given comparer.
+        /// Initializes a new instance of the <see cref="DenseDfa{TSymbol}"/> class.
         /// </summary>
         /// <param name="comparer">The comparer to use.</param>
         public DenseDfa(IComparer<TSymbol> comparer)

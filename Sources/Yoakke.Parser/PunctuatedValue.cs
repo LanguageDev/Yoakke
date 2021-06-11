@@ -22,7 +22,7 @@ namespace Yoakke.Parser
         public readonly TPunct? Punctuation;
 
         /// <summary>
-        /// Initializes a new <see cref="PunctuatedValue{TElement, TPunctuation}"/>.
+        /// Initializes a new instance of the <see cref="PunctuatedValue{TValue, TPunct}"/> struct.
         /// </summary>
         /// <param name="element">The element that is punctuated.</param>
         /// <param name="punctuation">The punctuation element that follows the punctuated one.</param>
