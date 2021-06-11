@@ -3,11 +3,12 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>preview</LangVersion>
-    <Nullable>enable</Nullable>
 
     <IncludeBuildOutput>false</IncludeBuildOutput>
   </PropertyGroup>
-  
+
+  <Import Project="$(SolutionDir)/ProjectBase.props" />
+
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.8.0-3.final" PrivateAssets="all" />
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.0" PrivateAssets="all" />

@@ -59,7 +59,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lsp.Server", "Yoakke
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lsp.Model", "Yoakke.Lsp.Model\Yoakke.Lsp.Model.csproj", "{7F60E2A0-832A-4FA5-AB69-2B8D6916FAE9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yoakke.Text.Tests", "Yoakke.Text.Tests\Yoakke.Text.Tests.csproj", "{6702EF78-791C-42B5-9775-A39966009150}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Text.Tests", "Yoakke.Text.Tests\Yoakke.Text.Tests.csproj", "{6702EF78-791C-42B5-9775-A39966009150}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BADE4D16-62B1-41F1-9BD7-31901BE84E33}"
+	ProjectSection(SolutionItems) = preProject
+		ProjectBase.props = ProjectBase.props
+		Yoakke.ruleset = Yoakke.ruleset
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

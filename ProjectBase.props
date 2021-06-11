@@ -1,0 +1,19 @@
+﻿<Project>
+  <PropertyGroup>
+    <!-- Language-level settings -->
+    <LangVersion>9.0</LangVersion>
+    <Nullable>enable</Nullable>
+    
+    <!-- Analysis -->
+    <CodeAnalysisRuleSet>$(SolutionDir)/Yoakke.ruleset</CodeAnalysisRuleSet>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <WarningLevel>5</WarningLevel>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+</Project>
