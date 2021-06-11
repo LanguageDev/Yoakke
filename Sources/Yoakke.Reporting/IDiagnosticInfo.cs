@@ -1,4 +1,8 @@
-﻿namespace Yoakke.Reporting
+﻿// Copyright (c) 2021 Yoakke.
+// Licensed under the Apache License, Version 2.0.
+// Source repository: https://github.com/LanguageDev/Yoakke
+
+namespace Yoakke.Reporting
 {
     /// <summary>
     /// A single piece of information for a <see cref="Diagnostic"/>.

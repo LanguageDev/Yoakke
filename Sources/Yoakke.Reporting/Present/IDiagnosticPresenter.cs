@@ -1,4 +1,8 @@
-﻿namespace Yoakke.Reporting.Present
+﻿// Copyright (c) 2021 Yoakke.
+// Licensed under the Apache License, Version 2.0.
+// Source repository: https://github.com/LanguageDev/Yoakke
+
+namespace Yoakke.Reporting.Present
 {
     /// <summary>
     /// Interface for objects that can present a <see cref="Diagnostic"/> for the user in some way.

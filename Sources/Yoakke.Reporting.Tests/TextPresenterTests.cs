@@ -1,4 +1,8 @@
-﻿using System.IO;
+﻿// Copyright (c) 2021 Yoakke.
+// Licensed under the Apache License, Version 2.0.
+// Source repository: https://github.com/LanguageDev/Yoakke
+
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Yoakke.Reporting.Present;
 using Yoakke.Text;

@@ -1,4 +1,8 @@
-﻿namespace Yoakke.Parser
+﻿// Copyright (c) 2021 Yoakke.
+// Licensed under the Apache License, Version 2.0.
+// Source repository: https://github.com/LanguageDev/Yoakke
+
+namespace Yoakke.Parser
 {
     /// <summary>
     /// The result of a parse.

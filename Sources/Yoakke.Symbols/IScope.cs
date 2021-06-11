@@ -1,4 +1,8 @@
-﻿namespace Yoakke.Symbols
+﻿// Copyright (c) 2021 Yoakke.
+// Licensed under the Apache License, Version 2.0.
+// Source repository: https://github.com/LanguageDev/Yoakke
+
+namespace Yoakke.Symbols
 {
     /// <summary>
     /// A scope that can be modified by defining symbols inside them.

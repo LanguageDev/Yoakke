@@ -1,4 +1,8 @@
-﻿namespace Yoakke.Parser.Generator
+﻿// Copyright (c) 2021 Yoakke.
+// Licensed under the Apache License, Version 2.0.
+// Source repository: https://github.com/LanguageDev/Yoakke
+
+namespace Yoakke.Parser.Generator
 {
     /// <summary>
     /// Common type-names so we don't have hardcoded strings in the source-generator.

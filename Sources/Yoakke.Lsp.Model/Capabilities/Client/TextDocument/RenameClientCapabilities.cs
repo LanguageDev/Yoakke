@@ -1,4 +1,8 @@
-﻿using Newtonsoft.Json;
+﻿// Copyright (c) 2021 Yoakke.
+// Licensed under the Apache License, Version 2.0.
+// Source repository: https://github.com/LanguageDev/Yoakke
+
+using Newtonsoft.Json;
 using Yoakke.Lsp.Model.LanguageFeatures;
 
 namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument

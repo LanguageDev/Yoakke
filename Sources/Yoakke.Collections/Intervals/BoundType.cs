@@ -1,4 +1,8 @@
-﻿namespace Yoakke.Collections.Intervals
+﻿// Copyright (c) 2021 Yoakke.
+// Licensed under the Apache License, Version 2.0.
+// Source repository: https://github.com/LanguageDev/Yoakke
+
+namespace Yoakke.Collections.Intervals
 {
     /// <summary>
     /// The different bound types an interval bound can have.

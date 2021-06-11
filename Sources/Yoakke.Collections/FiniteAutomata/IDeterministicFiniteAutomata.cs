@@ -1,4 +1,8 @@
-﻿namespace Yoakke.Collections.FiniteAutomata
+﻿// Copyright (c) 2021 Yoakke.
+// Licensed under the Apache License, Version 2.0.
+// Source repository: https://github.com/LanguageDev/Yoakke
+
+namespace Yoakke.Collections.FiniteAutomata
 {
     /// <summary>
     /// Represents a deterministic finite automata that has only one way to step on a symbol.
