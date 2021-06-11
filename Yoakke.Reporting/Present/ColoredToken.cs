@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Yoakke.Reporting.Present
+﻿namespace Yoakke.Reporting.Present
 {
     /// <summary>
     /// A single, colored token in the source code.

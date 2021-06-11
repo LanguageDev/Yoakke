@@ -54,7 +54,7 @@ namespace Yoakke.Parser.Generator
                 {
                     var opNode = new BnfAst.Literal(op);
                     var seq = prec.Left
-                        ? new BnfAst[] { currentCall, opNode, nextCall } 
+                        ? new BnfAst[] { currentCall, opNode, nextCall }
                         : new BnfAst[] { nextCall, opNode, currentCall };
                     var alt = new BnfAst.Transform(new BnfAst.Seq(seq), prec.Method);
                     if (toAdd == null) toAdd = alt;

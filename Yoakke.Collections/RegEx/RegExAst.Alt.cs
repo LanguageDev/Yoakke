@@ -39,7 +39,7 @@ namespace Yoakke.Collections.RegEx
 
                 var (firstStart, firstEnd) = First.ThompsonConstruct(denseNfa);
                 var (secondStart, secondEnd) = Second.ThompsonConstruct(denseNfa);
-                
+
                 denseNfa.AddTransition(newStart, Epsilon.Default, firstStart);
                 denseNfa.AddTransition(newStart, Epsilon.Default, secondStart);
 

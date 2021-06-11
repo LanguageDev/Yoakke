@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Yoakke.Text;
 
 namespace Yoakke.Reporting.Present
@@ -27,7 +23,7 @@ namespace Yoakke.Reporting.Present
         /// </summary>
         /// <param name="sourceFile">The source that contains the line.</param>
         /// <param name="line">The index of the line in the source.</param>
-        /// <returns>A list of <see cref="ColoredToken"/>s. Their order does not matter and not all characters have to 
+        /// <returns>A list of <see cref="ColoredToken"/>s. Their order does not matter and not all characters have to
         /// belong to a token.</returns>
         public IReadOnlyList<ColoredToken> GetHighlightingForLine(ISourceFile sourceFile, int line);
     }

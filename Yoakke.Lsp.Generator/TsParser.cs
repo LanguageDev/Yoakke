@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Yoakke.Lexer;
 using Yoakke.Parser.Attributes;
 
@@ -50,11 +48,11 @@ namespace Yoakke.LSP.Generator
         [Rule("interface : DocComment? 'export'? 'interface' Ident ('extends' Ident (',' Ident)*)? '{' i_field* '}'")]
         private static InterfaceDef Interface(
             IToken? doc,
-            IToken _1, IToken _2, 
-            IToken name, (IToken, IToken, IReadOnlyList<(Token<TokenType>, Token<TokenType>)>)? extend, 
+            IToken _1, IToken _2,
+            IToken name, (IToken, IToken, IReadOnlyList<(Token<TokenType>, Token<TokenType>)>)? extend,
             IToken _3, IReadOnlyList<InterfaceField> fields, IToken _4) =>
             new InterfaceDef(name.Text, extend?.Item3?.Select(t => t.Item2.Text).Prepend(extend.Value.Item2.Text).ToArray() ?? Array.Empty<string>(), fields)
-            { 
+            {
                 Docs = doc?.Text,
             };
 

@@ -39,7 +39,7 @@ namespace Yoakke.Parser.Generator.Ast
                 return new Transform(sub, Method);
             }
 
-            public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens) => 
+            public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens) =>
                 Method.ReturnType.ToDisplayString();
         }
     }

@@ -7,7 +7,7 @@ namespace Yoakke.Collections
     {
         /// <summary>
         /// Performs a binary search on a sequence of values.
-        /// 
+        ///
         /// This is a specialized version if binary search that can compare different key-types.
         /// </summary>
         /// <typeparam name="TValue"></typeparam>
@@ -26,7 +26,7 @@ namespace Yoakke.Collections
 
         /// <summary>
         /// Performs a binary search on a sequence of values.
-        /// 
+        ///
         /// This is a specialized version if binary search that can compare different key-types.
         /// </summary>
         /// <typeparam name="TValue">The element type to search in.</typeparam>
@@ -47,7 +47,7 @@ namespace Yoakke.Collections
 
         /// <summary>
         /// Performs a binary search on a sequence of values.
-        /// 
+        ///
         /// This is a specialized version if binary search that can compare different key-types.
         /// </summary>
         /// <typeparam name="TValue">The element type to search in.</typeparam>
@@ -65,12 +65,12 @@ namespace Yoakke.Collections
             int start,
             KSearch searchedKey,
             Func<TValue, KValue> keySelector,
-            Func<KSearch, KValue, int> keyComparer) => 
+            Func<KSearch, KValue, int> keyComparer) =>
             list.BinarySearch(start, list.Count - start, searchedKey, keySelector, keyComparer);
 
         /// <summary>
         /// Performs a binary search on a sequence of values.
-        /// 
+        ///
         /// This is a specialized version if binary search that can compare different key-types.
         /// </summary>
         /// <typeparam name="TValue">The element type to search in.</typeparam>

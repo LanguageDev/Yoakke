@@ -451,12 +451,12 @@ namespace {namespaceName}
         }
 
         // Returns the nested binder expression like ((a, b), (c, (d, e)))
-        private string GetTopLevelPattern(BnfAst ast) => ast switch 
+        private string GetTopLevelPattern(BnfAst ast) => ast switch
         {
             BnfAst.Alt alt => $"{GetTopLevelPattern(alt.Elements[0])}",
             BnfAst.Seq seq => $"({string.Join(", ", seq.Elements.Select(GetTopLevelPattern))})",
                BnfAst.Transform
-            or BnfAst.Call 
+            or BnfAst.Call
             or BnfAst.Opt
             or BnfAst.Group
             or BnfAst.Rep0

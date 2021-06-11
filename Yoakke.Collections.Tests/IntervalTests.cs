@@ -1,9 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Yoakke.Collections.Intervals;
 
 namespace Yoakke.Collections.Tests
@@ -15,7 +10,7 @@ namespace Yoakke.Collections.Tests
         public void FirstBeforeSecondRelation()
         {
             Assert.AreEqual(
-                new IntervalRelation<int>.Disjunct(Iv("1..4"), Iv("5..7")), 
+                new IntervalRelation<int>.Disjunct(Iv("1..4"), Iv("5..7")),
                 Rel("1..4", "5..7"));
             Assert.AreEqual(
                 new IntervalRelation<int>.Disjunct(Iv("1..4"), Iv("5..7")),
@@ -60,8 +55,8 @@ namespace Yoakke.Collections.Tests
         {
             Assert.AreEqual(
                 new IntervalRelation<int>.Overlapping(
-                    Iv("4..6"), 
-                    Iv("6..=6"), 
+                    Iv("4..6"),
+                    Iv("6..=6"),
                     new Interval<int>(LowerBound<int>.Exclusive(6), UpperBound<int>.Exclusive(8))),
                 Rel("4..=6", "6..8"));
             Assert.AreEqual(

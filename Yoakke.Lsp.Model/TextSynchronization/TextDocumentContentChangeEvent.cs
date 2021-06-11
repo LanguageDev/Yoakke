@@ -31,7 +31,7 @@ namespace Yoakke.Lsp.Model.TextSynchronization
             [JsonProperty("text")]
             public string Text { get; set; }
         }
-        
+
         public class Full : TextDocumentContentChangeEvent
         {
             /// <summary>

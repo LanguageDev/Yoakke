@@ -27,7 +27,7 @@ namespace Yoakke.Parser.Generator.Ast
                 Elements = elements.ToArray();
             }
 
-            public override bool Equals(BnfAst other) => other is Alt alt 
+            public override bool Equals(BnfAst other) => other is Alt alt
                 && Elements.SequenceEqual(alt.Elements);
             public override int GetHashCode()
             {
@@ -53,7 +53,7 @@ namespace Yoakke.Parser.Generator.Ast
                 return new Alt(newElements);
             }
 
-            public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens) => 
+            public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens) =>
                 Elements[0].GetParsedType(ruleSet, tokens);
         }
     }

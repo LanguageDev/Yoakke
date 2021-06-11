@@ -82,7 +82,7 @@ namespace Yoakke.Parser.Generator.Syntax
             return token;
         }
 
-        private char Peek(int offset = 0, char @default = '\0') => 
+        private char Peek(int offset = 0, char @default = '\0') =>
             index + offset >= source.Length ? @default : source[index + offset];
 
         private static bool IsIdent(char ch) => char.IsLetterOrDigit(ch) || ch == '_';

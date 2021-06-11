@@ -253,7 +253,7 @@ end_loop:
             {
                 // End token
                 if (HasAttribute(member, TypeNames.EndAttribute))
-                { 
+                {
                     if (result.EndSymbol == null)
                     {
                         result.EndSymbol = member;

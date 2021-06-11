@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Yoakke.Lexer;
 using Yoakke.Parser;
 using Yoakke.Parser.Attributes;
@@ -14,7 +12,7 @@ namespace Yoakke.Sample
     public partial class Parser
     {
         // Statements
-        
+
         [Rule("program : stmt*")]
         private static Statement Program(IReadOnlyList<Statement> statements) => new Statement.Program(statements);
 
@@ -40,11 +38,11 @@ namespace Yoakke.Sample
         private static Statement Ret(Token _1, Expression? expr, Token _2) => new Statement.Return(expr);
 
         [Rule("stmt : 'var' Ident '=' expr ';'")]
-        private static Statement Ret(Token _1, Token name, Token _2, Expression value, Token _3) => 
+        private static Statement Ret(Token _1, Token name, Token _2, Expression value, Token _3) =>
             new Statement.Var(name.Text, value);
 
         [Rule("block_stmt : '{' stmt* '}'")]
-        private static Statement Block(Token _1, IReadOnlyList<Statement> statements, Token _2) => 
+        private static Statement Block(Token _1, IReadOnlyList<Statement> statements, Token _2) =>
             new Statement.List(statements);
 
         [Rule("stmt: expr ';'")]
@@ -69,7 +67,7 @@ namespace Yoakke.Sample
         private static Expression Identity(Expression e) => e;
 
         [Rule("pre_expr : ('+' | '-' | 'not') pre_expr")]
-        private static Expression Unary(Token<TokenType> op, Expression sub) => 
+        private static Expression Unary(Token<TokenType> op, Expression sub) =>
             new Expression.Unary(ToUnaryOp(op.Kind), sub);
 
         [Rule("post_expr : post_expr '(' (expr (',' expr)*)? ')'")]

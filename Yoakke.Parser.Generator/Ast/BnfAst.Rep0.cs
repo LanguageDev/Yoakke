@@ -23,7 +23,7 @@
 
             public override BnfAst Desugar() => new Rep0(Subexpr.Desugar());
 
-            public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens) => 
+            public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens) =>
                 $"{TypeNames.IReadOnlyList}<{Subexpr.GetParsedType(ruleSet, tokens)}>";
         }
     }

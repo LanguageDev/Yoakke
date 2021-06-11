@@ -18,7 +18,7 @@ namespace Yoakke.Parser.Tests
         [Left("+", "-")]
         [Rule("expression")]
         private static int Op(int left, IToken op, int right) => op.Text switch
-        { 
+        {
             "+" => left + right,
             "-" => left - right,
             "*" => left * right,

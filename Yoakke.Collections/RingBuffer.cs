@@ -13,14 +13,14 @@ namespace Yoakke.Collections
         private const int DefaultCapacity = 16;
 
         public int Capacity
-        { 
+        {
             get => storage == null ? 0 : storage.Length;
             set => SetCapacity(value);
         }
         public int Count { get; private set; }
         public int Head { get; private set; }
         public int Tail => ToStorageIndex(Head + Count);
-        public T this[int index] 
+        public T this[int index]
         {
             get
             {
@@ -119,7 +119,7 @@ namespace Yoakke.Collections
         private void SetCapacity(int capacity)
         {
             if (capacity < Count) throw new ArgumentOutOfRangeException(nameof(capacity));
-            
+
             if (storage == null)
             {
                 // There was nothing to copy over

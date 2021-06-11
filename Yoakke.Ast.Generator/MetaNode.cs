@@ -1,9 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Yoakke.Ast.Generator
 {
@@ -23,7 +20,7 @@ namespace Yoakke.Ast.Generator
         public bool ImplementEquality
         {
             get => implementEquality ?? Parent?.ImplementEquality ?? false;
-            set => implementEquality = value; 
+            set => implementEquality = value;
         }
 
         public MetaNode(INamedTypeSymbol symbol, MetaNode? parent)

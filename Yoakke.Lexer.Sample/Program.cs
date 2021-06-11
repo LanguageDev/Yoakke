@@ -14,7 +14,7 @@ namespace Yoakke.Lexer.Sample
         [Token("else")] KwElse,
         [Token("func")] KwFunc,
         [Regex(Regex.Identifier)] Ident,
-        
+
         [Token("{")] OpenBrace,
         [Token("}")] CloseBrace,
         [Token("(")] OpenParen,

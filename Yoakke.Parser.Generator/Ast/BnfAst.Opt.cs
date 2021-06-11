@@ -23,7 +23,7 @@
 
             public override BnfAst Desugar() => new Opt(Subexpr.Desugar());
 
-            public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens) => 
+            public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens) =>
                 $"{Subexpr.GetParsedType(ruleSet, tokens)}?";
         }
     }

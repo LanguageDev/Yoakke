@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Yoakke.Symbols
+﻿namespace Yoakke.Symbols
 {
     /// <summary>
     /// A symbol table that contains scopes and symbol associations.

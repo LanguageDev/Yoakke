@@ -36,7 +36,7 @@ namespace Yoakke.Parser.Tests
             [Regex(Regex.Identifier)] Identifier,
         }
 
-        private static string Parse(string source) => 
+        private static string Parse(string source) =>
             new LeftRecursionParser(new LeftRecursionLexer(source)).ParseGrouping().Ok.Value;
 
         [TestMethod]

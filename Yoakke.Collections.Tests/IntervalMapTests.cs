@@ -3,8 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Yoakke.Collections.Intervals;
 
 namespace Yoakke.Collections.Tests
@@ -49,14 +47,14 @@ namespace Yoakke.Collections.Tests
         public void InsertIntoMapDisjunctBefore()
         {
             var map = IvMap(UnifyLists,
-                ("5..7", VList(1)), 
+                ("5..7", VList(1)),
                 ("12..15", VList(1)));
 
             map.AddAndUpdate(Iv("2..3"), new List<int> { 2 }, UnifyLists);
 
             Assert.IsTrue(map.SequenceEqual(KvList(
-                Kv("2..3", 2), 
-                Kv("5..7", 1), 
+                Kv("2..3", 2),
+                Kv("5..7", 1),
                 Kv("12..15", 1)
                 ), TestEqualityComparer.Default));
         }
@@ -71,8 +69,8 @@ namespace Yoakke.Collections.Tests
             map.AddAndUpdate(Iv("2..5"), new List<int> { 2 }, UnifyLists);
 
             Assert.IsTrue(map.SequenceEqual(KvList(
-                Kv("2..5", 2), 
-                Kv("5..7", 1), 
+                Kv("2..5", 2),
+                Kv("5..7", 1),
                 Kv("12..15", 1)
                 ), TestEqualityComparer.Default));
         }
@@ -274,9 +272,9 @@ namespace Yoakke.Collections.Tests
         public void InsertIntoMapCoverTwoExactly()
         {
             var map = IvMap(UnifyLists,
-                ("1..3", VList(1)), 
-                ("5..7", VList(1)), 
-                ("9..12", VList(1)), 
+                ("1..3", VList(1)),
+                ("5..7", VList(1)),
+                ("9..12", VList(1)),
                 ("14..15", VList(1)));
 
             map.AddAndUpdate(Iv("5..12"), new List<int> { 2 }, UnifyLists);

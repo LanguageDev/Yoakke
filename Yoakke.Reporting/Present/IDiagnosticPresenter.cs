@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Yoakke.Reporting.Present
+﻿namespace Yoakke.Reporting.Present
 {
     /// <summary>
     /// Interface for objects that can present a <see cref="Diagnostic"/> for the user in some way.

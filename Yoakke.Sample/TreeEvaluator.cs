@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Yoakke.Symbols;
 
 namespace Yoakke.Sample
@@ -46,7 +44,7 @@ namespace Yoakke.Sample
 
         protected override void Visit(Statement.Func func) { /* no-op */ }
 
-        protected override void Visit(Statement.Return ret) => 
+        protected override void Visit(Statement.Return ret) =>
             throw new Return(ret.Value == null ? null : Visit(ret.Value));
 
         protected override void Visit(Statement.If iff)

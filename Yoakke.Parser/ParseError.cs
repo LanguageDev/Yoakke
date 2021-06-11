@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Yoakke.Lexer;
 
@@ -73,7 +72,7 @@ namespace Yoakke.Parser
                 }
             }
             return new ParseError(
-                elements.ToDictionary(kv => kv.Key, kv => new ParseErrorElement(kv.Value, kv.Key)), 
+                elements.ToDictionary(kv => kv.Key, kv => new ParseErrorElement(kv.Value, kv.Key)),
                 first.Got);
         }
     }

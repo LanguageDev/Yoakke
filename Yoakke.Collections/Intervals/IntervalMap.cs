@@ -177,7 +177,7 @@ namespace Yoakke.Collections.Intervals
                 {
                     // The new interval completely covers the existing one
                     Update(
-                        (containment.FirstDisjunct, value), 
+                        (containment.FirstDisjunct, value),
                         (containment.Contained, updateFunc(existing.Value, value)),
                         (containment.SecondDisjunct, value));
                 }

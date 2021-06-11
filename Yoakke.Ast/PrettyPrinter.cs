@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace Yoakke.Ast
@@ -48,7 +44,7 @@ namespace Yoakke.Ast
                 PrintXml(node, writer);
                 break;
 
-            default: 
+            default:
                 throw new ArgumentException("unknown pretty-print format", nameof(format));
             }
         }

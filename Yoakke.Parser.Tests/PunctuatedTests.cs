@@ -14,7 +14,7 @@ namespace Yoakke.Parser.Tests
     partial class ListParser
     {
         [Rule("any0_no_trailing : Lparen (Identifier (',' Identifier)*)? Rparen")]
-        private static List<string> ZeroOrMoreNoTrailing(IToken _lp, Punctuated<Token, Token> elements, IToken _rp) => 
+        private static List<string> ZeroOrMoreNoTrailing(IToken _lp, Punctuated<Token, Token> elements, IToken _rp) =>
             elements.Values.Select(t => t.Text).ToList();
 
         [Rule("any1_no_trailing : Lparen (Identifier (',' Identifier)*) Rparen")]

@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Yoakke.Symbols
 {
@@ -32,7 +29,7 @@ namespace Yoakke.Symbols
 
         /// <summary>
         /// Tries to reference a symbol in this or any parent scope.
-        /// 
+        ///
         /// The predicate is useful for enforcing function-local scoping for example.
         /// </summary>
         /// <param name="name">The name of the symbol to reference.</param>

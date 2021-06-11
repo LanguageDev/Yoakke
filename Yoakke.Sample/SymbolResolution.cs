@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Yoakke.Symbols;
 
 namespace Yoakke.Sample
@@ -91,7 +88,7 @@ namespace Yoakke.Sample
             }
 
             public void Pass(Statement statement) => Visit(statement);
-            
+
             protected override void Visit(Statement.Var var)
             {
                 var scope = scopes[var];

@@ -3,7 +3,7 @@
 namespace Yoakke.Lsp.Model
 {
     [AttributeUsage(
-        AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Enum | 
+        AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Enum |
         AttributeTargets.Property | AttributeTargets.Field,
         AllowMultiple = false,
         Inherited = true)]

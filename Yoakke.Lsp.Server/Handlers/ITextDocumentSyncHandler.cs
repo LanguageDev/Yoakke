@@ -39,7 +39,7 @@ namespace Yoakke.Lsp.Server.Handlers
         public void WillSave(WillSaveTextDocumentParams saveParams);
 
         /// <summary>
-        /// Signals that a text document is about to be saved, but allows modifications to be made 
+        /// Signals that a text document is about to be saved, but allows modifications to be made
         /// before the save.
         /// </summary>
         /// <param name="saveParams">The save parameters.</param>

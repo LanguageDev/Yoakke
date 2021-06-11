@@ -17,8 +17,8 @@ namespace Yoakke.SourceGenerator.Common
             ImplementsGenericInterface(symbol, interf, out var _);
 
         public static bool ImplementsGenericInterface(
-            this ITypeSymbol symbol, 
-            INamedTypeSymbol interf, 
+            this ITypeSymbol symbol,
+            INamedTypeSymbol interf,
             [MaybeNullWhen(false)] out IReadOnlyList<ITypeSymbol>? genericArgs)
         {
             if (SymbolEqualityComparer.Default.Equals(symbol.OriginalDefinition, interf))

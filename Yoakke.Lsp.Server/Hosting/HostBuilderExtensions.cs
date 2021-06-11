@@ -19,11 +19,11 @@ namespace Yoakke.Lsp.Server.Hosting
         /// <param name="configure">The configuration delegate.</param>
         /// <returns>The host builder to chain method calls.</returns>
         public static IHostBuilder ConfigureLanguageServer(
-            this IHostBuilder hostBuilder, 
+            this IHostBuilder hostBuilder,
             Action<ILanguageServerBuilder> configure)
         {
             var builder = new LanguageServerBuilder(hostBuilder);
-            hostBuilder.ConfigureServices((_, services) => 
+            hostBuilder.ConfigureServices((_, services) =>
             {
                 services.AddSingleton(_ => new JsonRpc(builder.GetCommunicationStream()));
                 services.AddHostedService<LspService>();

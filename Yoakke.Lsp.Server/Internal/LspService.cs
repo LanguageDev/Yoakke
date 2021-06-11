@@ -206,7 +206,7 @@ namespace Yoakke.Lsp.Server.Internal
 
         // Capability construction
 
-        private Either<TextDocumentSyncOptions, TextDocumentSyncKind> GetTextDocumentSyncCapability() => 
+        private Either<TextDocumentSyncOptions, TextDocumentSyncKind> GetTextDocumentSyncCapability() =>
             textDocumentSyncHandler.SendOpenClose
                 ? new TextDocumentSyncOptions
                 {

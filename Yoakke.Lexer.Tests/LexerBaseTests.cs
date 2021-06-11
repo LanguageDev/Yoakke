@@ -19,7 +19,7 @@ namespace Yoakke.Lexer.Tests
 
         public class Lexer : LexerBase<TokenType>
         {
-            public Lexer(string source) 
+            public Lexer(string source)
                 : base(source)
             {
             }

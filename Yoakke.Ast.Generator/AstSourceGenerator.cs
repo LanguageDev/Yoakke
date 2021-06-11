@@ -2,7 +2,6 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Yoakke.Collections.Compatibility;
@@ -27,8 +26,8 @@ namespace Yoakke.Ast.Generator
             }
         }
 
-        private enum FieldKind 
-        { 
+        private enum FieldKind
+        {
             Leaf,
             Subnode,
             LeafList,
@@ -38,7 +37,7 @@ namespace Yoakke.Ast.Generator
         private Dictionary<string, MetaNode> rootNodes = new();
         private Dictionary<string, MetaNode> allNodes = new();
 
-        public AstSourceGenerator() 
+        public AstSourceGenerator()
             : base("Yoakke.Ast.Generator")
         {
         }
@@ -199,7 +198,7 @@ public {node.Name}({string.Join(", ", fields.Select(f => $"{f.Symbol.Type.ToDisp
                     // Override equality and hash
                     var lastEquality = LastParentThat(node, n => n.ImplementEquality)!.Symbol.ToDisplayString();
                     var (eqCmp, hash) = GenerateEqualityElements(node.Symbol, fields);
-                    
+
                     var comparisons = string.Join(" && ", eqCmp);
                     extraDefinitions.AppendLine($"public override bool Equals({lastEquality} o) =>");
                     extraDefinitions.AppendLine($"    o is {node.Name} other && {comparisons};");
@@ -270,7 +269,7 @@ namespace {surroundingNamespace} {{
         }
 
         private Dictionary<string, (INamedTypeSymbol Root, StringBuilder Content)> GenerateVisitors(
-            MetaNode node, 
+            MetaNode node,
             IReadOnlyDictionary<string, (INamedTypeSymbol Root, StringBuilder Content, INamedTypeSymbol ReturnType)> visitors)
         {
             // Get all visitor attributes on this node
@@ -367,7 +366,7 @@ namespace {surroundingNamespace} {{
         }
 
         private (List<string> Equality, List<string> Hash) GenerateEqualityElements(
-            ISymbol symbol, 
+            ISymbol symbol,
             List<(IFieldSymbol Symbol, FieldKind Kind)> fields)
         {
             var equality = new List<string>();

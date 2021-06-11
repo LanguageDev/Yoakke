@@ -146,7 +146,7 @@ namespace Yoakke.Parser
         /// <param name="got">The token encountered instead.</param>
         /// <param name="context">The rule context the error occurred in.</param>
         /// <returns>The created <see cref="ParseError"/>.</returns>
-        protected static ParseError Error(object expected, IToken got, string context) => 
+        protected static ParseError Error(object expected, IToken got, string context) =>
             new(expected, got, context);
 
         // TODO: Doc

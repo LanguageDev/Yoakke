@@ -34,7 +34,7 @@ namespace Yoakke.Collections.RegEx
                 AtMost = atMost;
             }
 
-            public override bool Equals(RegExAst other) => other is Quantified q 
+            public override bool Equals(RegExAst other) => other is Quantified q
                 && Subexpr.Equals(q.Subexpr)
                 && AtLeast == q.AtLeast
                 && AtMost == q.AtMost;

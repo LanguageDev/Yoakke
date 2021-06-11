@@ -47,7 +47,7 @@ namespace Yoakke.Lsp.Sample
 
     class Program
     {
-        static async Task Main(string[] args) => 
+        static async Task Main(string[] args) =>
             await CreateHostBuilder(args).Build().RunAsync();
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
