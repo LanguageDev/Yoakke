@@ -33,15 +33,15 @@ jobs:
         id: cache-sonar-scanner
         uses: actions/cache@v1
         with:
-          path: .\.sonar\scanner
+          path: Sources\.sonar\scanner
           key: ${{ runner.os }}-sonar-scanner
           restore-keys: ${{ runner.os }}-sonar-scanner
       - name: Install SonarCloud scanner
         if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
         shell: powershell
         run: |
-          New-Item -Path .\.sonar\scanner -ItemType Directory
-          dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
+          New-Item -Path Sources\.sonar\scanner -ItemType Directory
+          dotnet tool update dotnet-sonarscanner --tool-path Sources\.sonar\scanner
       - name: Build and analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
@@ -49,7 +49,7 @@ jobs:
         shell: cmd
         run: |
           cd Sources
-          ..\.sonar\scanner\dotnet-sonarscanner begin /k:"LanguageDev_Yoakke" /o:"languagedev" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="CoverageResults/coverage.opencover.xml" /d:sonar.coverage.exclusions="*.Generator/**,*.Sample/**"
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"LanguageDev_Yoakke" /o:"languagedev" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="CoverageResults/coverage.opencover.xml" /d:sonar.coverage.exclusions="*.Generator/**,*.Sample/**"
           dotnet build
           dotnet test /p:CollectCoverage=true /p:CoverletOutput="../CoverageResults/" /p:MergeWith="../CoverageResults/coverage.json" /p:CoverletOutputFormat=\"opencover,json\" /maxcpucount:1
-          ..\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+          .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
