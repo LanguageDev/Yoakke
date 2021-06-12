@@ -1,0 +1,41 @@
+﻿// Copyright (c) 2021 Yoakke.
+// Licensed under the Apache License, Version 2.0.
+// Source repository: https://github.com/LanguageDev/Yoakke
+
+using System;
+
+namespace Yoakke.Symbols
+{
+    /// <summary>
+    /// A symbol table that can be used to build the dymbol tree.
+    /// </summary>
+    public interface ISymbolTable : IReadOnlySymbolTable
+    {
+        /// <summary>
+        /// The global scope in the symbol hierarchy.
+        /// </summary>
+        public new IScope GlobalScope { get; }
+
+        /// <summary>
+        /// The current scope that we are adding symbols to.
+        /// </summary>
+        public IScope CurrentScope { get; set; }
+
+        /// <summary>
+        /// Pushes a new scope as the current scope.
+        /// </summary>
+        /// <param name="makeScope">The function that receives the current scope and constructs the new one.</param>
+        public void PushScope(Func<IScope, IScope> makeScope);
+
+        /// <summary>
+        /// Pushes a new scope as the current scope.
+        /// </summary>
+        /// <param name="scope">The scope to push.</param>
+        public void PushScope(IScope scope);
+
+        /// <summary>
+        /// Pops off the current scope to be the parent of the current one.
+        /// </summary>
+        public void PopScope();
+    }
+}

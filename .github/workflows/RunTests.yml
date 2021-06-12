@@ -23,4 +23,5 @@ jobs:
         dotnet-version: '5.0.202'
     - name: Test
       run: |
+        cd Sources
         dotnet test
