@@ -48,7 +48,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: cmd
         run: |
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:"LanguageDev_Yoakke" /o:"languagedev" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="Sources/CoverageResults/coverage.opencover.xml"
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"LanguageDev_Yoakke" /o:"languagedev" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="CoverageResults/coverage.opencover.xml" /d:sonar.coverage.exclusions="*.Generator/**,*.Sample/**"
           dotnet build Sources
-          dotnet test Sources /p:CollectCoverage=true /p:CoverletOutput="../CoverageResults/" /p:MergeWith="../CoverageResults/coverage.json" /p:CoverletOutputFormat=\"opencover,json\" /maxcpucount:1
+          dotnet test Sources /p:CollectCoverage=true /p:CoverletOutput="../../CoverageResults/" /p:MergeWith="../../CoverageResults/coverage.json" /p:CoverletOutputFormat=\"opencover,json\" /maxcpucount:1
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
