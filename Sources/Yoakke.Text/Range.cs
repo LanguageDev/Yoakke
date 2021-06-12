@@ -60,6 +60,8 @@ namespace Yoakke.Text
 
         public override int GetHashCode() => HashCode.Combine(this.Start, this.End);
 
+        public override string ToString() => $"from {this.Start} to {this.End}";
+
         /// <summary>
         /// Checks if a given <see cref="Position"/> is within the bounds of this <see cref="Range"/>.
         /// </summary>

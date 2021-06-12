@@ -34,6 +34,7 @@ namespace Yoakke.Text.Tests
             Assert.AreEqual(p1, p2);
             Assert.AreEqual(p1, (object)p2);
             Assert.IsTrue(p1 == p2);
+            Assert.IsFalse(p1 != p2);
             Assert.IsTrue(p1 >= p2);
             Assert.IsTrue(p1 <= p2);
             Assert.IsFalse(p1 > p2);
@@ -47,6 +48,7 @@ namespace Yoakke.Text.Tests
         {
             Assert.AreNotEqual(p1, p2);
             Assert.AreNotEqual(p1, (object)p2);
+            Assert.IsFalse(p1 == p2);
             Assert.IsTrue(p1 != p2);
             Assert.IsTrue(p1 > p2 || p1 < p2);
             Assert.IsTrue(p1 >= p2 || p1 <= p2);
