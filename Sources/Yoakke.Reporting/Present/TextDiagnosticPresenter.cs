@@ -321,7 +321,7 @@ namespace Yoakke.Reporting.Present
                 // First we determine the range we need to print for this info
                 var currentLineIndex = infoGroup.Key;
                 var minLineIndex = Math.Max(lastLineIndex ?? 0, currentLineIndex - this.Style.SurroundingLines);
-                var maxLineIndex = Math.Min(sourceFile.LineCount, currentLineIndex + this.Style.SurroundingLines + 1);
+                var maxLineIndex = Math.Min(sourceFile.AvailableLines, currentLineIndex + this.Style.SurroundingLines + 1);
                 if (j < groupedInfos.Count - 1)
                 {
                     // There's a chance we step over to the next annotation

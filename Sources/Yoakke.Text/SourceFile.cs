@@ -20,7 +20,7 @@ namespace Yoakke.Text
 
         public TextReader Reader => this;
 
-        public int LineCount => this.lineStarts.Count;
+        public int AvailableLines => this.lineStarts.Count;
 
         // The reader we read from
         private readonly TextReader underlying;

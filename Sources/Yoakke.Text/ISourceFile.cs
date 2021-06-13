@@ -12,22 +12,23 @@ namespace Yoakke.Text
     public interface ISourceFile
     {
         /// <summary>
-        /// Retrieves a path that uniquely identifies this source file.
+        /// Retrieves a path that uniquely identifies this <see cref="ISourceFile"/>.
         /// </summary>
         public string Path { get; }
 
         /// <summary>
-        /// Retrieves the available amount of lines in the source file.
+        /// Retrieves the currently available amount of lines in the <see cref="ISourceFile"/>.
+        /// This means the file might has more, but it has not been read yet.
         /// </summary>
-        public int LineCount { get; }
+        public int AvailableLines { get; }
 
         /// <summary>
-        /// The reader for the contents of the file.
+        /// The <see cref="TextReader"/> for the contents of the <see cref="ISourceFile"/>.
         /// </summary>
         public TextReader Reader { get; }
 
         /// <summary>
-        /// Retrieves a given line from the source file.
+        /// Retrieves a given line from the <see cref="ISourceFile"/>.
         /// </summary>
         /// <param name="index">The index of the line to retrieve.</param>
         /// <returns>The line with the given index.</returns>
