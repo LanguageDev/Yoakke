@@ -1,5 +1,5 @@
 # Using the Lexer libraries
-There are 2 libraries for Lexing:
+There are 2 libraries for lexing:
 -   `Yoakke.Lexer`: Basic structures for lexing, abstraction for a hand-written lexer.
 -   `Yoakke.Lexer.Generator`: A source generator that can generate a lexer from attribute annotations on token-types.
 
@@ -93,7 +93,7 @@ Fortunately, you can define as many rules for a token-type, as you wish. Present
 ```
 
 #### Supported regex constructs
-Only those regular expressions are supported, that keep their expression power at the regular language level. The constructs are the usual, you would find in a modern engine - just less of them:
+Only those regular expressions are supported, that keep their expression power at the regular language level. The constructs are the usual, what you would find in a modern engine - just less of them:
 
  * `abc`: Match the literals `a`, `b` and `c` in sequence
  * `a|b`: Match either `a` or `b`
@@ -115,7 +115,7 @@ If, for some reason you'd like to roll your own lexer - either because your lexe
  * `Matches(string, int)`: Checks, if the input text matches a given string in some offset
  * `TryPeek(out char, int)`: Peeks ahead some characters in the input without consuming it
  * `Peek(int, char)`: Peeks ahead some characters in the input, returning a default one, if the offset points past the end of source
- * `Skip`: Skips (consumes) a single character in the input
+ * `Skip()`: Skips (consumes) a single character in the input
  * `Skip(int)`: Skips (consumes) a given amount of characters in the input
  * `Take(int)`: Consumes a given amount of characters in the input and constructs a string from them
  * `TakeToken(T, int)`: Consumes a given amount of characters in the input and constructs a token from them
@@ -210,4 +210,4 @@ public class MyLexer : LexerBase<TokenType>
 }
 ```
 
-Just like with the generated lexer, text position tracking is taken care for for you.
+Just like with the generated lexer, text position tracking is taken care of for you.

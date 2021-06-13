@@ -6,7 +6,7 @@ The parser library is constructed very similarly to the lexer, consisting of 2 l
 Check out the [basic structures](#basic-structures), then [using the parser generator](#using-the-parser-generator). Since parsing is a lot more diverse then lexing, the library does not provide an as-complete abstraction for a handwritten version as the `LexerBase`. Still, if you want to, you can utilize the very basic functionalities of [`ParserBase`](#the-parserbase-abstraction).
 
 ## Basic structures
-Parsing something can be succeed, or it can fail. Since both are likely outcomes - errors are not exceptional -, the outcome is modeled as a `ParseResult<T>` type, where the type-parameter `T` is the parsed value, given that it succeeded.
+Parsing something can succeed, or it can fail. Since both are likely outcomes - errors are not exceptional -, the outcome is modeled as a `ParseResult<T>` type, where the type-parameter `T` is the parsed value, given that it succeeded.
 
 The succeeding variant is `ParseOk<T>`, that contains the actual parsed value alongside other parsing-related information. The error variant is `ParseError`.
 
@@ -41,7 +41,7 @@ public partial class Parser
     private static Expression MakeBool(Token<TokenType> t) => new BoolExpression(t);
 }
 ```
-The attribute `Parser(typeof(TokenType))` tells the source generator that the annotated class is a parser with rules inside it and the kind of the tokens will be the passed in type - `TokenType` in this case. You can choose not to pass in a token kind, in that case all tokens will be assumed to be `IToken`. **Note, that it is important to qualify the parser class as `partial`.** The generator has to generate code for the class, that can be only achieved through partial classes because of source generator limitations.
+The attribute `Parser(typeof(TokenType))` tells the source generator that the annotated class is a parser with rules inside it. Also, the kind of the tokens will be the specified type inside the attribute - `TokenType` in this case. You can choose not to pass in a token kind, in that case all tokens will be assumed to be `IToken`. **Note, that it is important to qualify the parser class as `partial`.** The generator has to generate code for the class, that can be only achieved through partial classes because of source generator limitations.
 
 Everything else inside the class is normal, except the methods marked with one or more `Rule` attributes. Those are methods that transform the resulting elements of the parse into a structure - like a Parse-Tree or AST. The attributes themselves contain the rules name, along with how it looks. It uses a custom, regex-like extension to BNF, you can find a reference for the supported constructs later in this document.
 
@@ -67,7 +67,7 @@ else
 }
 ```
 
-The passed in lexer has to conform the `ILexer` interface defined in the `Yoakke.Lexer` library.
+The passed in lexer has to implement the `ILexer` interface defined in the `Yoakke.Lexer` library.
 
 ### Matching terminals
 As you can see in the above sample, terminals can be matched two ways: by value and by kind.
@@ -135,14 +135,14 @@ public static int Grouping(IToken _1, int n, IToken _2) => n;
 public static int IntLit(IToken token) => int.Parse(token.Text);
 ```
 
-The above implements a calculator, that that properly handles 6 arithmetic operations (addition, subtraction, multiplication, division, modulo and exponentiation) with their precedence and associativity. It also handles grouping using parenthesis.
+The above implements a calculator, that properly handles 6 arithmetic operations (addition, subtraction, multiplication, division, modulo and exponentiation) with their precedence and associativity. It also handles grouping using parenthesis.
 
-The precedence-table starts with the first `Left` or `Right` attribute on the top, each describing a level of precedence. The topmost attribute has the highest precedence - `[Right("^")]` in this case. `Left` defines a left-associative precedence lever, `Right` defines a right-associative one.
+The precedence-table starts with the first `Left` or `Right` attribute on the top, each describing a level of precedence. The topmost attribute has the highest precedence - `[Right("^")]` in this case. `Left` defines a left-associative precedence level, `Right` defines a right-associative one.
 
 After the precedence-table, a dummy `Rule` has to be added, that defines the operands of the operators. In this case it is said to be `expression`, so the `ParseExpression` method will first walk through the precedence table, and treat all other definitions - like grouping - as the lowest level elements.
 
 ### The supported BNF flavor
-The notation supported for the grammar is extended with some constructs from regular expressions to make writing common constructs easier. Below is a table summarizing the available constructs.
+The notation supported for the grammar is extended, some regular expression operators can be used to make writing common constructs simpler. Below is a table summarizing the available constructs.
 
 | Name | Syntax | Value type |
 | --- | --- | --- |
@@ -172,7 +172,7 @@ This would be how C# handles it's brace-initialization. 0 or more initializers, 
 Similar to the previous case, but at least one element is mandatory: `(initializer (',' initializer)* ','?)`. The type of this is `(Initializer, IReadOnlyList<(Token<T>, Expression)>, Token<T>?)`.
 
 #### The solution
-Since these are very common patterns, the parser library provides a `Punctuated<TValue, TPunct>` type. `TValue` is the punctuated element type - like an `Expression` -, `TPunct` is the punctuation type - like a `Token<T>`. The above complex types are implicitly convertible to `Punctuated<TValue, TPunct>`, which provides simpler access to it's elements.
+Since these are very common patterns, the parser library provides a `Punctuated<TValue, TPunct>` type. `TValue` is the punctuated element type - like an `Expression` -, `TPunct` is the punctuation type - like a `Token<T>`. The above complex types are implicitly convertible to `Punctuated<TValue, TPunct>`, which provides simpler access to its elements.
 
 Let's see an example usage:
 ```csharp
