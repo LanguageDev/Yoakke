@@ -51,7 +51,7 @@ func foo() {
                 SyntaxHighlighter = new MyHighlighter(),
             };
 
-            var diag = new Diagnostic()
+            var diag = new Diagnostics()
                 .WithCode("E001")
                 .WithSeverity(Severity.Error)
                 .WithMessage("you made a mistake")

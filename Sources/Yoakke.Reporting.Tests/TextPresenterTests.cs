@@ -25,7 +25,7 @@ prev line
 this is a line of text
 next line
 some other line");
-            var diag = new Diagnostic()
+            var diag = new Diagnostics()
                 .WithSeverity(Severity.Error)
                 .WithCode("E0001")
                 .WithMessage("Some error message")
@@ -55,7 +55,7 @@ prev line
 this is a line of text
 some other line
 last line");
-            var diag = new Diagnostic()
+            var diag = new Diagnostics()
                 .WithSeverity(Severity.Error)
                 .WithCode("E0001")
                 .WithMessage("Some error message")
@@ -89,7 +89,7 @@ this is a line of text
 next line
 some other line
 last line");
-            var diag = new Diagnostic()
+            var diag = new Diagnostics()
                 .WithSeverity(Severity.Error)
                 .WithCode("E0001")
                 .WithMessage("Some error message")
@@ -125,7 +125,7 @@ next line
 next line2
 some other line
 last line");
-            var diag = new Diagnostic()
+            var diag = new Diagnostics()
                 .WithSeverity(Severity.Error)
                 .WithCode("E0001")
                 .WithMessage("Some error message")
@@ -163,7 +163,7 @@ line between
 next line2
 some other line
 last line");
-            var diag = new Diagnostic()
+            var diag = new Diagnostics()
                 .WithSeverity(Severity.Error)
                 .WithCode("E0001")
                 .WithMessage("Some error message")
@@ -203,7 +203,7 @@ line between2
 next line2
 some other line
 last line");
-            var diag = new Diagnostic()
+            var diag = new Diagnostics()
                 .WithSeverity(Severity.Error)
                 .WithCode("E0001")
                 .WithMessage("Some error message")

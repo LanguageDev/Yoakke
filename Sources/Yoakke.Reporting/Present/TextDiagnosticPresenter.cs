@@ -63,7 +63,7 @@ namespace Yoakke.Reporting.Present
             this.buffer = new ColoredBuffer();
         }
 
-        public void Present(Diagnostic diagnostic)
+        public void Present(Diagnostics diagnostic)
         {
             // Clear the buffer
             this.buffer.Clear();
@@ -90,7 +90,7 @@ namespace Yoakke.Reporting.Present
 
         // Format is
         // error[CS123]: Some message
-        private void WriteDiagnosticHead(Diagnostic diagnostic)
+        private void WriteDiagnosticHead(Diagnostics diagnostic)
         {
             if (diagnostic.Severity != null)
             {

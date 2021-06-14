@@ -10,7 +10,7 @@ namespace Yoakke.Reporting
     /// <summary>
     /// A single diagnostic information with all relevant things.
     /// </summary>
-    public class Diagnostic
+    public class Diagnostics
     {
         /// <summary>
         /// The severity of the diagnostic.
@@ -32,46 +32,46 @@ namespace Yoakke.Reporting
         /// </summary>
         public IList<IDiagnosticInfo> Information { get; set; } = new List<IDiagnosticInfo>();
 
-        public Diagnostic WithSeverity(Severity severity)
+        public Diagnostics WithSeverity(Severity severity)
         {
             this.Severity = severity;
             return this;
         }
 
-        public Diagnostic WithCode(string code)
+        public Diagnostics WithCode(string code)
         {
             this.Code = code;
             return this;
         }
 
-        public Diagnostic WithMessage(string message)
+        public Diagnostics WithMessage(string message)
         {
             this.Message = message;
             return this;
         }
 
-        public Diagnostic WithInfo(IDiagnosticInfo info)
+        public Diagnostics WithInfo(IDiagnosticInfo info)
         {
             this.Information.Add(info);
             return this;
         }
 
-        public Diagnostic WithSourceInfo(Location location, Severity severity, string message) =>
+        public Diagnostics WithSourceInfo(Location location, Severity severity, string message) =>
             this.WithInfo(new SourceDiagnosticInfo { Location = location, Severity = severity, Message = message });
 
-        public Diagnostic WithSourceInfo(Location location, Severity severity) =>
+        public Diagnostics WithSourceInfo(Location location, Severity severity) =>
             this.WithInfo(new SourceDiagnosticInfo { Location = location, Severity = severity });
 
-        public Diagnostic WithSourceInfo(Location location, string message) =>
+        public Diagnostics WithSourceInfo(Location location, string message) =>
             this.WithInfo(new SourceDiagnosticInfo { Location = location, Message = message });
 
-        public Diagnostic WithSourceInfo(Location location) =>
+        public Diagnostics WithSourceInfo(Location location) =>
             this.WithInfo(new SourceDiagnosticInfo { Location = location });
 
-        public Diagnostic WithFootnoteInfo(Severity severity, string footnote) =>
+        public Diagnostics WithFootnoteInfo(Severity severity, string footnote) =>
             this.WithInfo(new FootnoteDiagnosticInfo { Severity = severity, Message = footnote });
 
-        public Diagnostic WithFootnoteInfo(string footnote) =>
+        public Diagnostics WithFootnoteInfo(string footnote) =>
             this.WithInfo(new FootnoteDiagnosticInfo { Message = footnote });
     }
 }

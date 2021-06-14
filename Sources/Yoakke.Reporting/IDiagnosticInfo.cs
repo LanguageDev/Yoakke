@@ -5,7 +5,7 @@
 namespace Yoakke.Reporting
 {
     /// <summary>
-    /// A single piece of information for a <see cref="Diagnostic"/>.
+    /// A single piece of information for a <see cref="Diagnostics"/>.
     /// </summary>
     public interface IDiagnosticInfo
     {
