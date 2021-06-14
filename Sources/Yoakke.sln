@@ -3,63 +3,63 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Collections", "Yoakke.Collections\Yoakke.Collections.csproj", "{4896B9FB-A0F2-4886-850C-4943BC374EAF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Collections", "Core\Yoakke.Collections\Yoakke.Collections.csproj", "{4896B9FB-A0F2-4886-850C-4943BC374EAF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Collections.Tests", "Yoakke.Collections.Tests\Yoakke.Collections.Tests.csproj", "{8251D600-353B-4CDA-853E-51ABCAF94735}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Collections.Tests", "Tests\Yoakke.Collections.Tests\Yoakke.Collections.Tests.csproj", "{8251D600-353B-4CDA-853E-51ABCAF94735}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lexer", "Yoakke.Lexer\Yoakke.Lexer.csproj", "{36D85E41-4CB1-4198-8248-05A30082F0F2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lexer", "Core\Yoakke.Lexer\Yoakke.Lexer.csproj", "{36D85E41-4CB1-4198-8248-05A30082F0F2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lexer.Generator", "Yoakke.Lexer.Generator\Yoakke.Lexer.Generator.csproj", "{CB252735-C1B6-4F6E-8299-A552069FDBE6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lexer.Generator", "Core\Yoakke.Lexer.Generator\Yoakke.Lexer.Generator.csproj", "{CB252735-C1B6-4F6E-8299-A552069FDBE6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lexer.Tests", "Yoakke.Lexer.Tests\Yoakke.Lexer.Tests.csproj", "{A76E877C-B326-4B66-A9CF-53515538773A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lexer.Tests", "Tests\Yoakke.Lexer.Tests\Yoakke.Lexer.Tests.csproj", "{A76E877C-B326-4B66-A9CF-53515538773A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Text", "Yoakke.Text\Yoakke.Text.csproj", "{1B5BA09D-B866-4C63-A1B2-54FE7F409CCE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Text", "Core\Yoakke.Text\Yoakke.Text.csproj", "{1B5BA09D-B866-4C63-A1B2-54FE7F409CCE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Parser", "Yoakke.Parser\Yoakke.Parser.csproj", "{4E6DC779-3A18-4360-B289-02E68757F6EB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Parser", "Core\Yoakke.Parser\Yoakke.Parser.csproj", "{4E6DC779-3A18-4360-B289-02E68757F6EB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Parser.Generator", "Yoakke.Parser.Generator\Yoakke.Parser.Generator.csproj", "{7E7BC74B-EB71-45F1-92B0-AA53F546EB18}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Parser.Generator", "Core\Yoakke.Parser.Generator\Yoakke.Parser.Generator.csproj", "{7E7BC74B-EB71-45F1-92B0-AA53F546EB18}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Parser.Tests", "Yoakke.Parser.Tests\Yoakke.Parser.Tests.csproj", "{266FD9F8-E6E6-4D4D-A2C8-BA250E480E0E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Parser.Tests", "Tests\Yoakke.Parser.Tests\Yoakke.Parser.Tests.csproj", "{266FD9F8-E6E6-4D4D-A2C8-BA250E480E0E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.SourceGenerator.Common", "Yoakke.SourceGenerator.Common\Yoakke.SourceGenerator.Common.csproj", "{BEFA414D-D649-402A-8DD1-4F9A1F9558F2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.SourceGenerator.Common", "Core\Yoakke.SourceGenerator.Common\Yoakke.SourceGenerator.Common.csproj", "{BEFA414D-D649-402A-8DD1-4F9A1F9558F2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lexer.Sample", "Yoakke.Lexer.Sample\Yoakke.Lexer.Sample.csproj", "{F48F5B87-9918-48BF-A0DF-09D4B168E596}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lexer.Sample", "Examples\Yoakke.Lexer.Sample\Yoakke.Lexer.Sample.csproj", "{F48F5B87-9918-48BF-A0DF-09D4B168E596}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lexer", "Lexer", "{A6B22275-5966-47BB-87EE-22E0DDE44A0E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Parser", "Parser", "{99830BF4-010D-4B26-88D9-1C9633853E30}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Parser.Sample", "Yoakke.Parser.Sample\Yoakke.Parser.Sample.csproj", "{CE858304-DC1C-4A7B-AD49-81E8F3CB6F7D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Parser.Sample", "Examples\Yoakke.Parser.Sample\Yoakke.Parser.Sample.csproj", "{CE858304-DC1C-4A7B-AD49-81E8F3CB6F7D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Reporting", "Reporting", "{26655C0F-CFB1-4CEC-91BE-AEC1BFF6DC21}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Reporting", "Yoakke.Reporting\Yoakke.Reporting.csproj", "{4B505051-7CE0-4264-B0F4-C5F0ADE14AB4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Reporting", "Core\Yoakke.Reporting\Yoakke.Reporting.csproj", "{4B505051-7CE0-4264-B0F4-C5F0ADE14AB4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Reporting.Tests", "Yoakke.Reporting.Tests\Yoakke.Reporting.Tests.csproj", "{0E8166B6-8855-4B9B-B4D9-95C1890D850B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Reporting.Tests", "Tests\Yoakke.Reporting.Tests\Yoakke.Reporting.Tests.csproj", "{0E8166B6-8855-4B9B-B4D9-95C1890D850B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Reporting.Sample", "Yoakke.Reporting.Sample\Yoakke.Reporting.Sample.csproj", "{094A2608-9A68-45D2-B2CF-1BBCEE88086A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Reporting.Sample", "Examples\Yoakke.Reporting.Sample\Yoakke.Reporting.Sample.csproj", "{094A2608-9A68-45D2-B2CF-1BBCEE88086A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Sample", "Yoakke.Sample\Yoakke.Sample.csproj", "{94C26FC8-A4E7-435D-91B4-57F75719DC45}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Sample", "Examples\Yoakke.Sample\Yoakke.Sample.csproj", "{94C26FC8-A4E7-435D-91B4-57F75719DC45}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ast", "Ast", "{58417641-179E-4F53-9528-234B4E87944E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Ast", "Yoakke.Ast\Yoakke.Ast.csproj", "{384A70A8-96CE-4C1C-BC5C-BF3341B522E5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Ast", "Core\Yoakke.Ast\Yoakke.Ast.csproj", "{384A70A8-96CE-4C1C-BC5C-BF3341B522E5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Ast.Generator", "Yoakke.Ast.Generator\Yoakke.Ast.Generator.csproj", "{C3B90E58-A8C7-4F79-B8C7-140D0E6687E6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Ast.Generator", "Core\Yoakke.Ast.Generator\Yoakke.Ast.Generator.csproj", "{C3B90E58-A8C7-4F79-B8C7-140D0E6687E6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Symbols", "Yoakke.Symbols\Yoakke.Symbols.csproj", "{80BDC869-2344-4EEC-BB01-A3AC72CA26ED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Symbols", "Core\Yoakke.Symbols\Yoakke.Symbols.csproj", "{80BDC869-2344-4EEC-BB01-A3AC72CA26ED}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LanguageServerProtocol", "LanguageServerProtocol", "{C32F06FE-A533-4BD3-B361-2D9BECCDFBDF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lsp.Generator", "Yoakke.Lsp.Generator\Yoakke.Lsp.Generator.csproj", "{14BA531F-4D06-4507-A3C5-027FB097E970}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lsp.Generator", "Core\Yoakke.Lsp.Generator\Yoakke.Lsp.Generator.csproj", "{14BA531F-4D06-4507-A3C5-027FB097E970}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lsp.Server.Sample", "Yoakke.Lsp.Server.Sample\Yoakke.Lsp.Server.Sample.csproj", "{A4D7FE59-C1D4-47AC-9822-A51BC09045BC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lsp.Server.Sample", "Examples\Yoakke.Lsp.Server.Sample\Yoakke.Lsp.Server.Sample.csproj", "{A4D7FE59-C1D4-47AC-9822-A51BC09045BC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lsp.Server", "Yoakke.Lsp.Server\Yoakke.Lsp.Server.csproj", "{01035D94-6005-47DB-BC9B-0925F98CFA1F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lsp.Server", "Core\Yoakke.Lsp.Server\Yoakke.Lsp.Server.csproj", "{01035D94-6005-47DB-BC9B-0925F98CFA1F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lsp.Model", "Yoakke.Lsp.Model\Yoakke.Lsp.Model.csproj", "{7F60E2A0-832A-4FA5-AB69-2B8D6916FAE9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lsp.Model", "Core\Yoakke.Lsp.Model\Yoakke.Lsp.Model.csproj", "{7F60E2A0-832A-4FA5-AB69-2B8D6916FAE9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Text.Tests", "Yoakke.Text.Tests\Yoakke.Text.Tests.csproj", "{6702EF78-791C-42B5-9775-A39966009150}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Text.Tests", "Tests\Yoakke.Text.Tests\Yoakke.Text.Tests.csproj", "{6702EF78-791C-42B5-9775-A39966009150}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BADE4D16-62B1-41F1-9BD7-31901BE84E33}"
 	ProjectSection(SolutionItems) = preProject

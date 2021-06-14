@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <Import Project="$(SolutionDir)/ProjectBase.props" />
+
+  <ItemGroup>
+    <ProjectReference Include="$(SolutionDir)\Core\Yoakke.Lsp.Server\Yoakke.Lsp.Server.csproj" />
+  </ItemGroup>
+
+</Project>

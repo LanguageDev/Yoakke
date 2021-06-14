@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>preview</LangVersion>
+
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+  </PropertyGroup>
+
+  <Import Project="$(SolutionDir)/ProjectBase.props" />
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.8.0-3.final" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.0" PrivateAssets="all" />
+
+    <PackageReference Include="Nullable" Version="1.3.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="$(SolutionDir)/Core/Yoakke.Collections/**/*.cs" Link="Yoakke.Collections" />
+    <Compile Remove="$(SolutionDir)/Core/Yoakke.Collections/obj/**/*.cs" />
+
+    <Compile Include="$(SolutionDir)/Core/Yoakke.SourceGenerator.Common/**/*.cs" Link="Yoakke.SourceGenerator.Common" />
+    <Compile Remove="$(SolutionDir)/Core/Yoakke.SourceGenerator.Common/obj/**/*.cs" />
+  </ItemGroup>
+
+</Project>

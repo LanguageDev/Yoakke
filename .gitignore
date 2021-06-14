@@ -3,4 +3,6 @@ bin
 .vs
 .vscode
 *.filters
+*.user
 TestResults
+CoverageResults
