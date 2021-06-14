@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
+using System;
 using System.Collections.Generic;
 using Yoakke.Text;
 
@@ -20,6 +21,6 @@ namespace Yoakke.Reporting.Present
         public SyntaxHighlightStyle Style { get; set; } = SyntaxHighlightStyle.Default;
 
         public IReadOnlyList<ColoredToken> GetHighlightingForLine(ISourceFile sourceFile, int line) =>
-            new ColoredToken[] { };
+            Array.Empty<ColoredToken>();
     }
 }
