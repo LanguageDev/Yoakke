@@ -7,12 +7,12 @@ namespace Yoakke.Reporting.Present
     /// <summary>
     /// Interface for objects that can present a <see cref="Diagnostics"/> for the user in some way.
     /// </summary>
-    public interface IDiagnosticPresenter
+    public interface IDiagnosticsPresenter
     {
         /// <summary>
         /// The style to use when presenting.
         /// </summary>
-        public DiagnosticStyle Style { get; set; }
+        public DiagnosticsStyle Style { get; set; }
 
         /// <summary>
         /// The syntax highlighter to use for source code.

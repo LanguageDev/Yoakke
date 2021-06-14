@@ -13,7 +13,7 @@ namespace Yoakke.Reporting.Present
     /// <summary>
     /// A diagnostic presenter that just writes to a text buffer or console with color.
     /// </summary>
-    public class TextDiagnosticPresenter : IDiagnosticPresenter
+    public class TextDiagnosticsPresenter : IDiagnosticsPresenter
     {
         private abstract class LinePrimitive
         {
@@ -40,9 +40,9 @@ namespace Yoakke.Reporting.Present
         /// <summary>
         /// A default text presenter that writes to the console error.
         /// </summary>
-        public static readonly TextDiagnosticPresenter Default = new(Console.Error);
+        public static readonly TextDiagnosticsPresenter Default = new(Console.Error);
 
-        public DiagnosticStyle Style { get; set; } = DiagnosticStyle.Default;
+        public DiagnosticsStyle Style { get; set; } = DiagnosticsStyle.Default;
 
         public ISyntaxHighlighter SyntaxHighlighter { get; set; } = ISyntaxHighlighter.Null;
 
@@ -54,10 +54,10 @@ namespace Yoakke.Reporting.Present
         private readonly ColoredBuffer buffer;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TextDiagnosticPresenter"/> class.
+        /// Initializes a new instance of the <see cref="TextDiagnosticsPresenter"/> class.
         /// </summary>
         /// <param name="writer">The writer to write to.</param>
-        public TextDiagnosticPresenter(TextWriter writer)
+        public TextDiagnosticsPresenter(TextWriter writer)
         {
             this.Writer = writer;
             this.buffer = new ColoredBuffer();

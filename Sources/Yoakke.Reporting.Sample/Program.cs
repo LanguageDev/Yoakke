@@ -46,7 +46,7 @@ func foo() {
 }
 ");
 
-            var presenter = new TextDiagnosticPresenter(Console.Error)
+            var presenter = new TextDiagnosticsPresenter(Console.Error)
             {
                 SyntaxHighlighter = new MyHighlighter(),
             };

@@ -31,7 +31,7 @@ some other line");
                 .WithMessage("Some error message")
                 .WithSourceInfo(Loc(src, line: 2, column: 10, length: 4), Severity.Error, "some annotation");
             var result = new StringWriter();
-            var renderer = new TextDiagnosticPresenter(result);
+            var renderer = new TextDiagnosticsPresenter(result);
             renderer.Present(diag);
             Assert.AreEqual(
                 @"error[E0001]: Some error message
@@ -62,7 +62,7 @@ last line");
                 .WithSourceInfo(Loc(src, line: 2, column: 10, length: 4), Severity.Error, "some annotation1")
                 .WithSourceInfo(Loc(src, line: 3, column: 5, length: 5), "some annotation2");
             var result = new StringWriter();
-            var renderer = new TextDiagnosticPresenter(result);
+            var renderer = new TextDiagnosticsPresenter(result);
             renderer.Present(diag);
             Assert.AreEqual(
                 @"error[E0001]: Some error message
@@ -96,7 +96,7 @@ last line");
                 .WithSourceInfo(Loc(src, line: 2, column: 10, length: 4), Severity.Error, "some annotation1")
                 .WithSourceInfo(Loc(src, line: 4, column: 5, length: 5), "some annotation2");
             var result = new StringWriter();
-            var renderer = new TextDiagnosticPresenter(result);
+            var renderer = new TextDiagnosticsPresenter(result);
             renderer.Present(diag);
             Assert.AreEqual(
                 @"error[E0001]: Some error message
@@ -132,7 +132,7 @@ last line");
                 .WithSourceInfo(Loc(src, line: 2, column: 10, length: 4), Severity.Error, "some annotation1")
                 .WithSourceInfo(Loc(src, line: 5, column: 5, length: 5), "some annotation2");
             var result = new StringWriter();
-            var renderer = new TextDiagnosticPresenter(result);
+            var renderer = new TextDiagnosticsPresenter(result);
             renderer.Present(diag);
             Assert.AreEqual(
                 @"error[E0001]: Some error message
@@ -170,7 +170,7 @@ last line");
                 .WithSourceInfo(Loc(src, line: 2, column: 10, length: 4), Severity.Error, "some annotation1")
                 .WithSourceInfo(Loc(src, line: 6, column: 5, length: 5), "some annotation2");
             var result = new StringWriter();
-            var renderer = new TextDiagnosticPresenter(result);
+            var renderer = new TextDiagnosticsPresenter(result);
             renderer.Present(diag);
             Assert.AreEqual(
                 @"error[E0001]: Some error message
@@ -210,7 +210,7 @@ last line");
                 .WithSourceInfo(Loc(src, line: 2, column: 10, length: 4), Severity.Error, "some annotation1")
                 .WithSourceInfo(Loc(src, line: 7, column: 5, length: 5), "some annotation2");
             var result = new StringWriter();
-            var renderer = new TextDiagnosticPresenter(result);
+            var renderer = new TextDiagnosticsPresenter(result);
             renderer.Present(diag);
             Assert.AreEqual(
                 @"error[E0001]: Some error message

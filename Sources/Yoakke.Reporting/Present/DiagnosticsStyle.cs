@@ -10,12 +10,12 @@ namespace Yoakke.Reporting.Present
     /// <summary>
     /// The style descriptor used unside the presenter.
     /// </summary>
-    public class DiagnosticStyle
+    public class DiagnosticsStyle
     {
         /// <summary>
         /// The default diagnostic style.
         /// </summary>
-        public static readonly DiagnosticStyle Default = new();
+        public static readonly DiagnosticsStyle Default = new();
 
         /// <summary>
         /// The color of different severities.
