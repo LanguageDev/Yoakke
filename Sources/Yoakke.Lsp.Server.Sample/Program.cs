@@ -16,20 +16,50 @@ namespace Yoakke.Lsp.Sample
     internal class SyncHandler : ITextDocumentSyncHandler
     {
         public bool SendOpenClose => true;
-
         public TextDocumentSyncKind SyncKind => TextDocumentSyncKind.Incremental;
 
-        public void DidChange(DidChangeTextDocumentParams changeParams) => throw new NotImplementedException();
+        public void DidChange(DidChangeTextDocumentParams changeParams)
+        {
+            Console.Error.WriteLine("CHANGE");
+            Console.Error.WriteLine($"  Uri: {changeParams.TextDocument.Uri.Value}");
+            foreach (var change in changeParams.ContentChanges)
+            {
+                var ch = (TextDocumentContentChangeEvent.Incremental)change;
+                Console.Error.WriteLine($"  From: {ch.Range.Start.Line}, {ch.Range.Start.Character}");
+                Console.Error.WriteLine($"  Text: {ch.Text}");
+            }
+        }
 
-        public void DidClose(DidCloseTextDocumentParams closeParams) => throw new NotImplementedException();
+        public void DidClose(DidCloseTextDocumentParams closeParams)
+        {
+            Console.Error.WriteLine("CLOSE");
+            Console.Error.WriteLine($"  Uri: {closeParams.TextDocument.Uri.Value}");
+        }
 
-        public void DidOpen(DidOpenTextDocumentParams openParams) => throw new NotImplementedException();
+        public void DidOpen(DidOpenTextDocumentParams openParams)
+        {
+            Console.Error.WriteLine("OPEN");
+            Console.Error.WriteLine($"  Uri: {openParams.TextDocument.Uri.Value}");
+        }
 
-        public void DidSave(DidSaveTextDocumentParams saveParams) => throw new NotImplementedException();
+        public void DidSave(DidSaveTextDocumentParams saveParams)
+        {
+            Console.Error.WriteLine("SAVE");
+            Console.Error.WriteLine($"  Uri: {saveParams.TextDocument.Uri.Value}");
+        }
 
-        public void WillSave(WillSaveTextDocumentParams saveParams) => throw new NotImplementedException();
+        public void WillSave(WillSaveTextDocumentParams saveParams)
+        {
+            Console.Error.WriteLine("WILL SAVE");
+            Console.Error.WriteLine($"  Uri: {saveParams.TextDocument.Uri.Value}");
+        }
 
-        public IReadOnlyList<TextEdit>? WillSaveWaitUntil(WillSaveTextDocumentParams saveParams) => throw new NotImplementedException();
+        public IReadOnlyList<TextEdit>? WillSaveWaitUntil(WillSaveTextDocumentParams saveParams)
+        {
+            Console.Error.WriteLine("WILL SAVE");
+            Console.Error.WriteLine($"  Uri: {saveParams.TextDocument.Uri.Value}");
+            return null;
+        }
     }
 
     internal class Program
