@@ -3,6 +3,12 @@
 # File header template
 file_header_template = Copyright (c) 2021 Yoakke.\nLicensed under the Apache License, Version 2.0.\nSource repository: https://github.com/LanguageDev/Yoakke
 
+# Miscellaneous
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+charset = utf-8
+
 #Core editorconfig formatting - indentation
 
 #use soft tabs (spaces) for indentation
