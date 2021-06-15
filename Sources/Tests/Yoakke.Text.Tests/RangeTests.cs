@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -11,7 +11,7 @@ namespace Yoakke.Text.Tests
     [TestClass]
     public class RangeTests
     {
-        public static IReadOnlyList<object[]> InvalidPositionPairs { get; } = new object[][]
+        private static IReadOnlyList<object[]> InvalidPositionPairs { get; } = new object[][]
         {
             new object[] { new Position(0, 1), new Position(0, 0) },
             new object[] { new Position(0, 3), new Position(0, 0) },
@@ -21,7 +21,7 @@ namespace Yoakke.Text.Tests
             new object[] { new Position(4, 3), new Position(4, 1) },
         };
 
-        public static IReadOnlyList<object[]> EqualRanges { get; } = new object[][]
+        private static IReadOnlyList<object[]> EqualRanges { get; } = new object[][]
         {
             new object[] { new Range(new Position(0, 0), 3), new Range(new Position(0, 0), new Position(0, 3)) },
             new object[] { new Range(new Position(0, 2), 3), new Range(new Position(0, 2), new Position(0, 5)) },
@@ -29,7 +29,7 @@ namespace Yoakke.Text.Tests
             new object[] { new Range(new Position(1, 3), 5), new Range(new Position(1, 3), new Position(1, 8)) },
         };
 
-        public static IReadOnlyList<object[]> UnequalRanges { get; } = new object[][]
+        private static IReadOnlyList<object[]> UnequalRanges { get; } = new object[][]
         {
             new object[] { new Range(new Position(0, 0), 3), new Range(new Position(0, 0), new Position(0, 4)) },
             new object[] { new Range(new Position(0, 1), 3), new Range(new Position(0, 2), new Position(0, 5)) },
@@ -37,7 +37,7 @@ namespace Yoakke.Text.Tests
             new object[] { new Range(new Position(1, 4), 4), new Range(new Position(1, 3), new Position(1, 8)) },
         };
 
-        public static IReadOnlyList<object[]> ContainedPoints { get; } = new object[][]
+        private static IReadOnlyList<object[]> ContainedPoints { get; } = new object[][]
         {
             new object[] { new Range(new Position(0, 0), 3), new Position(0, 0) },
             new object[] { new Range(new Position(0, 0), 3), new Position(0, 1) },
@@ -48,7 +48,7 @@ namespace Yoakke.Text.Tests
             new object[] { new Range(new Position(1, 3), 5), new Position(1, 7) },
         };
 
-        public static IReadOnlyList<object[]> NotContainedPoints { get; } = new object[][]
+        private static IReadOnlyList<object[]> NotContainedPoints { get; } = new object[][]
         {
             new object[] { new Range(new Position(0, 0), 3), new Position(0, 3) },
             new object[] { new Range(new Position(0, 0), 3), new Position(0, 4) },
@@ -64,7 +64,7 @@ namespace Yoakke.Text.Tests
             new object[] { new Range(new Position(1, 3), 5), new Position(1, 10) },
         };
 
-        public static IReadOnlyList<object[]> IntersectingRanges { get; } = new object[][]
+        private static IReadOnlyList<object[]> IntersectingRanges { get; } = new object[][]
         {
             new object[] { new Range(new Position(0, 0), 3), new Range(new Position(0, 0), new Position(0, 3)) },
             new object[] { new Range(new Position(0, 0), 3), new Range(new Position(0, 1), new Position(0, 1)) },
@@ -76,7 +76,7 @@ namespace Yoakke.Text.Tests
             new object[] { new Range(new Position(0, 0), 5), new Range(new Position(0, 2), new Position(0, 8)) },
         };
 
-        public static IReadOnlyList<object[]> NotIntersectingRanges { get; } = new object[][]
+        private static IReadOnlyList<object[]> NotIntersectingRanges { get; } = new object[][]
         {
             new object[] { new Range(new Position(0, 0), 3), new Range(new Position(0, 0), new Position(0, 0)) },
             new object[] { new Range(new Position(0, 2), 3), new Range(new Position(0, 1), new Position(0, 2)) },

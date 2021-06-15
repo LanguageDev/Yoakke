@@ -10,14 +10,14 @@ namespace Yoakke.Text.Tests
     [TestClass]
     public class PositionTests
     {
-        public static IReadOnlyList<object[]> EqualPositions { get; } = new object[][]
+        private static IReadOnlyList<object[]> EqualPositions { get; } = new object[][]
         {
             new object[] { new Position(0, 0), new Position(0, 0) },
             new object[] { new Position(0, 3), new Position(0, 3) },
             new object[] { new Position(3, 3), new Position(3, 3) },
         };
 
-        public static IReadOnlyList<object[]> UnequalPositions { get; } = new object[][]
+        private static IReadOnlyList<object[]> UnequalPositions { get; } = new object[][]
         {
             new object[] { new Position(0, 0), new Position(0, 1) },
             new object[] { new Position(0, 0), new Position(1, 0) },
