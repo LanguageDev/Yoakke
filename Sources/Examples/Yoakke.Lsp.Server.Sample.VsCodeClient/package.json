@@ -14,6 +14,18 @@
 	],
 	"main": "./out/extension.js",
 	"contributes": {
+		"configuration": {
+            "type": "object",
+            "title": "Example configuration",
+            "properties": {
+                "sampleLanguageServer.trace.server": {
+                    "scope": "window",
+                    "type": "string",
+                    "enum": ["off", "messages","verbose"],
+                    "default": "verbose"
+                }
+            }
+        }
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
