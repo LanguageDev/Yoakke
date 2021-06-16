@@ -6,3 +6,5 @@ bin
 *.user
 TestResults
 CoverageResults
+node_modules
+out
