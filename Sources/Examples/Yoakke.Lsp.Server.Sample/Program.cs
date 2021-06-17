@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -72,7 +72,7 @@ namespace Yoakke.Lsp.Sample
                 .ConfigureLanguageServer(langServerBuilder =>
                 {
                     langServerBuilder
-                        .UseNameAndVersion("Test LS", "0.0.1")
+                        .UseNameAndVersion("Test LS", "0.0.1-alpha")
                         .UseInputAndOutputStream(Console.OpenStandardInput(), Console.OpenStandardOutput())
                         .UseHandler<ITextDocumentSyncHandler, SyncHandler>();
                 });

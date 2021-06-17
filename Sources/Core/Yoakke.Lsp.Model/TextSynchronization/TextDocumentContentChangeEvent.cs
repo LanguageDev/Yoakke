@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -16,6 +16,7 @@ namespace Yoakke.Lsp.Model.TextSynchronization
     [JsonConverter(typeof(TextDocumentContentChangeEventConverter))]
     public abstract class TextDocumentContentChangeEvent
     {
+        [JsonConverter(typeof(DisabledConverter))]
         public class Incremental : TextDocumentContentChangeEvent
         {
             /// <summary>
@@ -38,6 +39,7 @@ namespace Yoakke.Lsp.Model.TextSynchronization
             public string Text { get; set; }
         }
 
+        [JsonConverter(typeof(DisabledConverter))]
         public class Full : TextDocumentContentChangeEvent
         {
             /// <summary>

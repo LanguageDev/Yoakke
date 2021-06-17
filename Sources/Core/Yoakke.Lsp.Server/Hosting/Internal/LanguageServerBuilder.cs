@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -63,7 +63,9 @@ namespace Yoakke.Lsp.Server.Hosting.Internal
             return this;
         }
 
-        public string? GetSetting(string key) => this.settings[key];
+        public string? GetSetting(string key) => this.settings.TryGetValue(key, out var value)
+            ? value
+            : null;
 
         internal Stream GetCommunicationStream()
         {

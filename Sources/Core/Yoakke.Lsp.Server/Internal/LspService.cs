@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -16,6 +16,7 @@ using Yoakke.Lsp.Model.Capabilities.Server;
 using Yoakke.Lsp.Model.General;
 using Yoakke.Lsp.Model.TextSynchronization;
 using Yoakke.Lsp.Server.Handlers;
+using Yoakke.Lsp.Server.Hosting;
 
 namespace Yoakke.Lsp.Server.Internal
 {
@@ -52,11 +53,16 @@ namespace Yoakke.Lsp.Server.Internal
         private ServerState state;
         private readonly ITextDocumentSyncHandler textDocumentSyncHandler;
 
-        public LspService(JsonRpc jsonRpc, IServiceProvider serviceProvider)
+        public LspService(IServiceProvider serviceProvider, JsonRpc jsonRpc, ILanguageServerBuilder builder)
         {
             this.jsonRpc = jsonRpc;
             this.state = ServerState.NotStarted;
             this.jsonRpc.AddLocalRpcTarget(this, JsonRpcTargetOptions);
+
+            // Name and version
+            this.Name = builder.GetSetting("name");
+            this.Version = builder.GetSetting("version");
+
             // Dependencies
             this.textDocumentSyncHandler = serviceProvider.GetRequiredService<ITextDocumentSyncHandler>();
         }

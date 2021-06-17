@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -30,7 +30,8 @@ namespace Yoakke.Lsp.Server.Hosting
             hostBuilder.ConfigureServices((_, services) =>
             {
                 services.AddSingleton(_ => new JsonRpc(builder.GetCommunicationStream()));
-                services.AddHostedService<LspService>();
+                services.AddHostedService(serviceProvider =>
+                    new LspService(serviceProvider, serviceProvider.GetRequiredService<JsonRpc>(), builder));
                 var provider = services.BuildServiceProvider();
             });
             // Invoke user configure
