@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -10,17 +10,17 @@ using System.Text;
 
 namespace Yoakke.LSP.Generator
 {
-    internal class Program
+    internal static class Program
     {
-        private const string JsonPropertyAttribute = "JsonProperty";
-        private const string JsonEnumValueAttribute = "EnumMember";
-        private static readonly string[] knownInterfaces = new string[]
+        private static readonly string[] KnownInterfaces = new string[]
         {
-            "WorkDoneProgressParams", "WorkDoneProgressOptions",
+            "WorkDoneProgressParams",
+            "WorkDoneProgressOptions",
             "TextDocumentRegistrationOptions",
             "StaticRegistrationOptions",
         };
-        private static readonly List<string> typeDefinitions = new();
+
+        private static readonly List<string> TypeDefinitions = new();
 
         private static void Main(string[] args)
         {
@@ -47,7 +47,7 @@ namespace Yoakke.LSP.Generator
                 Console.WriteLine("Generated types:");
                 Console.WriteLine();
 
-                foreach (var typeDef in typeDefinitions)
+                foreach (var typeDef in TypeDefinitions)
                 {
                     Console.WriteLine();
                     Console.WriteLine(typeDef);
@@ -55,7 +55,7 @@ namespace Yoakke.LSP.Generator
 
                 Console.WriteLine("====================================================");
 
-                typeDefinitions.Clear();
+                TypeDefinitions.Clear();
             }
         }
 
@@ -76,7 +76,7 @@ namespace Yoakke.LSP.Generator
         private static void Translate(InterfaceDef interfaceDef)
         {
             var result = new StringBuilder();
-            var interfaces = interfaceDef.Bases.Intersect(knownInterfaces).ToList();
+            var interfaces = interfaceDef.Bases.Intersect(KnownInterfaces).ToList();
             var baseClasses = interfaceDef.Bases.Except(interfaces).ToList();
             if (interfaceDef.Docs != null) result.AppendLine(TranslateDocComment(string.Empty, interfaceDef.Docs));
             result.Append($"public class {interfaceDef.Name}");
@@ -87,7 +87,7 @@ namespace Yoakke.LSP.Generator
             result.AppendLine("{");
             foreach (var field in interfaceDef.Fields) result.AppendLine(Translate(field));
             result.AppendLine("}");
-            typeDefinitions.Add(result.ToString());
+            TypeDefinitions.Add(result.ToString());
         }
 
         private static void Translate(NamespaceDef namespaceDef)
@@ -98,7 +98,7 @@ namespace Yoakke.LSP.Generator
             result.AppendLine("{");
             foreach (var field in namespaceDef.Fields) result.AppendLine(Translate(field));
             result.AppendLine("}");
-            typeDefinitions.Add(result.ToString());
+            TypeDefinitions.Add(result.ToString());
         }
 
         private static string Translate(string? hintName, TypeNode type) => type switch
@@ -145,7 +145,7 @@ namespace Yoakke.LSP.Generator
             result.AppendLine("{");
             foreach (var field in obj.Fields) result.AppendLine(Translate(field));
             result.AppendLine("}");
-            typeDefinitions.Add(result.ToString());
+            TypeDefinitions.Add(result.ToString());
             return className;
         }
 
@@ -156,7 +156,7 @@ namespace Yoakke.LSP.Generator
             if (field.Docs != null) result.AppendLine(TranslateDocComment("    ", field.Docs));
             var propExtra = string.Empty;
             if (field.Optional) propExtra += ", NullValueHandling = NullValueHandling.Ignore";
-            result.AppendLine($"    [{JsonPropertyAttribute}(\"{field.Name}\"{propExtra})]");
+            result.AppendLine($"    [JsonProperty(\"{field.Name}\"{propExtra})]");
             result.Append("    public ");
             var typeName = Translate(fieldName, field.Type);
             if (field.Optional) typeName = WithOptional(typeName);
@@ -174,7 +174,7 @@ namespace Yoakke.LSP.Generator
             if (field.Docs != null) result.AppendLine(TranslateDocComment("    ", field.Docs));
             if (field.Value is string strValue)
             {
-                result.AppendLine($"    [{JsonEnumValueAttribute}(Value = \"{strValue}\")]");
+                result.AppendLine($"    [EnumMember(Value = \"{strValue}\")]");
             }
             result.Append("    ");
             result.Append(fieldName);
@@ -189,7 +189,7 @@ namespace Yoakke.LSP.Generator
 
         private static string TranslateTypeName(string name)
         {
-            if (knownInterfaces.Contains(name)) throw new InvalidOperationException();
+            if (KnownInterfaces.Contains(name)) throw new InvalidOperationException();
             return name switch
             {
                 "boolean" => "bool",

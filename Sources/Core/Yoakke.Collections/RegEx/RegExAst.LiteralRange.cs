@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -21,12 +21,12 @@ namespace Yoakke.Collections.RegEx
             /// <summary>
             /// True, if the range should be negated.
             /// </summary>
-            public readonly bool Negate;
+            public bool Negate { get; }
 
             /// <summary>
             /// The character ranges.
             /// </summary>
-            public readonly IList<(char From, char To)> Ranges;
+            public IList<(char From, char To)> Ranges { get; }
 
             public LiteralRange(bool negate, IList<(char From, char To)> ranges)
             {

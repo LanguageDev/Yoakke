@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -124,6 +124,7 @@ namespace Yoakke.Collections
             var nextCapacity = this.Capacity == 0 ? DefaultCapacity : this.Capacity * 2;
             for (; nextCapacity < this.Count + amount; nextCapacity *= 2)
             {
+                // Blank
             }
             this.SetCapacity(nextCapacity);
         }

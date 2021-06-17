@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -18,17 +18,17 @@ namespace Yoakke.Collections.RegEx
             /// <summary>
             /// The sub-construct to repeat.
             /// </summary>
-            public readonly RegExAst Subexpr;
+            public RegExAst Subexpr { get; }
 
             /// <summary>
             /// The minimum number of repetitions. Can be zero.
             /// </summary>
-            public readonly int AtLeast;
+            public int AtLeast { get; }
 
             /// <summary>
             /// The maximum number of repetitions, if any.
             /// </summary>
-            public readonly int? AtMost;
+            public int? AtMost { get; }
 
             public Quantified(RegExAst subexpr, int atLeast, int? atMost)
             {

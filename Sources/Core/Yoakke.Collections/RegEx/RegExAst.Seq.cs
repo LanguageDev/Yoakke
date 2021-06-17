@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -17,12 +17,12 @@ namespace Yoakke.Collections.RegEx
             /// <summary>
             /// The first construct of the sequence.
             /// </summary>
-            public readonly RegExAst First;
+            public RegExAst First { get; }
 
             /// <summary>
             /// The second construct of the sequence.
             /// </summary>
-            public readonly RegExAst Second;
+            public RegExAst Second { get; }
 
             public Seq(RegExAst first, RegExAst second)
             {
