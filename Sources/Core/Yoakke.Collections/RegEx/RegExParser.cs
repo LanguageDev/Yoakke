@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -134,6 +134,7 @@ namespace Yoakke.Collections.RegEx
             var result = new StringBuilder();
             for (; char.IsDigit(this.Peek()); result.Append(this.Consume()))
             {
+                // Blank
             }
             if (result.Length == 0) throw new FormatException($"number expected (position {this.index})");
             return int.Parse(result.ToString());

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -56,14 +56,10 @@ namespace Yoakke.Collections.FiniteAutomata
             if (to is not null) yield return to;
         }
 
-        public State? GetTransition(State from, TSymbol on)
-        {
-            if (this.transitions.TryGetValue(from, out var map))
-            {
-                if (map.TryGetValue(on, out var state)) return state;
-            }
-            return null;
-        }
+        public State? GetTransition(State from, TSymbol on) =>
+            this.transitions.TryGetValue(from, out var map) && map.TryGetValue(on, out var state)
+                ? state
+                : null;
 
         public IDeterministicFiniteAutomata<TSymbol> Minify() =>
             // TODO

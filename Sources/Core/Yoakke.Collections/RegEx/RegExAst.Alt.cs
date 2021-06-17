@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -17,12 +17,12 @@ namespace Yoakke.Collections.RegEx
             /// <summary>
             /// The first alternative construct.
             /// </summary>
-            public readonly RegExAst First;
+            public RegExAst First { get; }
 
             /// <summary>
             /// The second alternative construct.
             /// </summary>
-            public readonly RegExAst Second;
+            public RegExAst Second { get; }
 
             public Alt(RegExAst first, RegExAst second)
             {

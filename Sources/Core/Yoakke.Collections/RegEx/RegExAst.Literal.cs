@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -17,7 +17,7 @@ namespace Yoakke.Collections.RegEx
             /// <summary>
             /// The character to match.
             /// </summary>
-            public readonly char Char;
+            public char Char { get; }
 
             public Literal(char @char)
             {

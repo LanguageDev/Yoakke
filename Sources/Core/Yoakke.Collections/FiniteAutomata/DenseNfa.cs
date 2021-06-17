@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -75,9 +75,9 @@ namespace Yoakke.Collections.FiniteAutomata
             var fromClosure = this.EpsilonClosure(from);
             return fromClosure.SelectMany(f =>
             {
-                if (this.transitions.TryGetValue(f, out var map))
+                if (this.transitions.TryGetValue(f, out var map) && map.TryGetValue(on, out var to))
                 {
-                    if (map.TryGetValue(on, out var to)) return to.SelectMany(this.EpsilonClosure);
+                    return to.SelectMany(this.EpsilonClosure);
                 }
                 return Enumerable.Empty<State>();
             });

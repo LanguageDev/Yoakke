@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -12,9 +12,9 @@ namespace Yoakke.LSP.Generator
 
     internal class InterfaceDef : DefBase
     {
-        public readonly string Name;
-        public readonly IReadOnlyList<string> Bases;
-        public readonly IReadOnlyList<InterfaceField> Fields;
+        public string Name { get; }
+        public IReadOnlyList<string> Bases { get; }
+        public IReadOnlyList<InterfaceField> Fields { get; }
 
         public string? Docs { get; set; }
 
@@ -28,8 +28,8 @@ namespace Yoakke.LSP.Generator
 
     internal class NamespaceDef : DefBase
     {
-        public readonly string Name;
-        public readonly IReadOnlyList<NamespaceField> Fields;
+        public string Name { get; }
+        public IReadOnlyList<NamespaceField> Fields { get; }
 
         public string? Docs { get; set; }
 
@@ -42,9 +42,9 @@ namespace Yoakke.LSP.Generator
 
     internal class InterfaceField
     {
-        public readonly string Name;
-        public readonly bool Optional;
-        public readonly TypeNode Type;
+        public string Name { get; }
+        public bool Optional { get; }
+        public TypeNode Type { get; }
 
         public string? Docs { get; set; }
 
@@ -58,8 +58,8 @@ namespace Yoakke.LSP.Generator
 
     internal class NamespaceField
     {
-        public readonly string Name;
-        public readonly object Value;
+        public string Name { get; }
+        public object Value { get; }
 
         public string? Docs { get; set; }
 
@@ -74,7 +74,7 @@ namespace Yoakke.LSP.Generator
     {
         public class Ident : TypeNode
         {
-            public readonly string Name;
+            public string Name { get; }
 
             public Ident(string name)
             {
@@ -84,7 +84,7 @@ namespace Yoakke.LSP.Generator
 
         public class Array : TypeNode
         {
-            public readonly TypeNode ElementType;
+            public TypeNode ElementType { get; }
 
             public Array(TypeNode elementType)
             {
@@ -94,7 +94,7 @@ namespace Yoakke.LSP.Generator
 
         public class Or : TypeNode
         {
-            public readonly IReadOnlyList<TypeNode> Alternatives;
+            public IReadOnlyList<TypeNode> Alternatives { get; }
 
             public Or(IReadOnlyList<TypeNode> alternatives)
             {
@@ -104,7 +104,7 @@ namespace Yoakke.LSP.Generator
 
         public class Object : TypeNode
         {
-            public readonly IReadOnlyList<InterfaceField> Fields;
+            public IReadOnlyList<InterfaceField> Fields { get; }
 
             public Object(IReadOnlyList<InterfaceField> fields)
             {

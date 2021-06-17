@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -22,7 +22,7 @@ namespace Yoakke.Lexer
         /// <summary>
         /// The kind tag of this <see cref="Token{TKind}"/>.
         /// </summary>
-        public readonly TKind Kind;
+        public TKind Kind { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Token{TKind}"/> class.

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -14,17 +14,17 @@ namespace Yoakke.Lexer.Generator
         /// <summary>
         /// The symbol that defines the token type.
         /// </summary>
-        public readonly IFieldSymbol Symbol;
+        public IFieldSymbol Symbol { get; }
 
         /// <summary>
         /// The regex that matches the token.
         /// </summary>
-        public readonly string Regex;
+        public string Regex { get; }
 
         /// <summary>
         /// True, if the token-type should be ignored while lexing.
         /// </summary>
-        public readonly bool Ignore;
+        public bool Ignore { get; }
 
         public TokenDescription(IFieldSymbol symbol, string regex, bool ignore)
         {
