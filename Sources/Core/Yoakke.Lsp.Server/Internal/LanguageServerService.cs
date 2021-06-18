@@ -116,14 +116,14 @@ namespace Yoakke.Lsp.Server.Internal
         {
             this.AssertState(ServerState.WaitingForInitializedNotification, JsonRpcErrorCode.InvalidRequest);
             // Client told us that they got our initialize response
+            // Increment server state
+            // We can go into normal operation
+            this.SetServerState(ServerState.Operating);
             // Dynamically register capabilities that we need
             if (this.RegisterTextDocumentSyncDynamically())
             {
                 this.languageClient.RegisterHandler(this.textDocumentSyncHandler);
             }
-            // Increment server state
-            // We can go into normal operation
-            this.SetServerState(ServerState.Operating);
         }
 
         [JsonRpcMethod("shutdown")]
