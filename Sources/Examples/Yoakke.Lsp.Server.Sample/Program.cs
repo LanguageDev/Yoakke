@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Yoakke.Lsp.Model.Basic;
+using Yoakke.Lsp.Model.Diagnostics;
 using Yoakke.Lsp.Model.TextSynchronization;
 using Yoakke.Lsp.Server.Handlers;
 using Yoakke.Lsp.Server.Hosting;
@@ -25,6 +26,13 @@ namespace Yoakke.Lsp.Sample
             },
         };
 
+        private readonly ILanguageClient client;
+
+        public SyncHandler(ILanguageClient client)
+        {
+            this.client = client;
+        }
+
         public void DidChange(DidChangeTextDocumentParams changeParams)
         {
             Console.Error.WriteLine("CHANGE");
@@ -35,6 +43,35 @@ namespace Yoakke.Lsp.Sample
                 Console.Error.WriteLine($"  From: {ch.Range.Start.Line}, {ch.Range.Start.Character}");
                 Console.Error.WriteLine($"  Text: {ch.Text}");
             }
+
+            Console.Error.WriteLine("AAAAAA");
+            this.client.PublishDiagnostics(new PublishDiagnosticsParams
+            {
+                Uri = changeParams.TextDocument.Uri,
+                Diagnostics = new Diagnostic[]
+                {
+                    new Diagnostic
+                    {
+                        Code = "E001",
+                        Message = "Hello diagnosics",
+                        Range = new Model.Basic.Range
+                        {
+                            Start = new Position
+                            {
+                                Line = 0,
+                                Character = 0,
+                            },
+                            End = new Position
+                            {
+                                Line = 0,
+                                Character = 1,
+                            },
+                        },
+                        Severity = DiagnosticSeverity.Error,
+                    },
+                },
+            });
+            Console.Error.WriteLine("BBBBBBB");
         }
 
         public void DidClose(DidCloseTextDocumentParams closeParams)
@@ -66,7 +103,7 @@ namespace Yoakke.Lsp.Sample
                 .ConfigureLanguageServer(langServerBuilder =>
                 {
                     langServerBuilder
-                        .UseNameAndVersion("Test LS", "0.0.1-alpha")
+                        .UseNameAndVersion("Test LS", "0.0.1-alpha2")
                         .UseInputAndOutputStream(Console.OpenStandardInput(), Console.OpenStandardOutput())
                         .UseHandler<ITextDocumentSyncHandler, SyncHandler>();
                 });

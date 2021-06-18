@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Yoakke.Lsp.Model.Diagnostics;
 
 namespace Yoakke.Lsp.Server.Handlers
 {
@@ -21,5 +22,11 @@ namespace Yoakke.Lsp.Server.Handlers
         /// <param name="handler">The <see cref="ITextDocumentSyncHandler"/> to register.</param>
         /// <returns>The id to refer to this registration to unregister it later.</returns>
         public string RegisterHandler(ITextDocumentSyncHandler handler);
+
+        /// <summary>
+        /// Publishes diagnostics to the client.
+        /// </summary>
+        /// <param name="diagnosticsParams">The diagnostics parameter.</param>
+        public void PublishDiagnostics(PublishDiagnosticsParams diagnosticsParams);
     }
 }

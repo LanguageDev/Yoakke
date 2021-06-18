@@ -51,7 +51,7 @@ namespace Yoakke.Lsp.Server.Internal
         private readonly JsonRpc jsonRpc;
         private ServerState state;
         private readonly ILanguageClient languageClient;
-        private readonly ITextDocumentSyncHandler? textDocumentSyncHandler;
+        private readonly ITextDocumentSyncHandler textDocumentSyncHandler;
         private ClientCapabilities clientCapabilities;
 
         public LanguageServerService(IServiceProvider serviceProvider, ILanguageServerBuilder builder)
@@ -67,7 +67,7 @@ namespace Yoakke.Lsp.Server.Internal
 
             // Dependencies
             this.languageClient = serviceProvider.GetRequiredService<ILanguageClient>();
-            this.textDocumentSyncHandler = serviceProvider.GetService<ITextDocumentSyncHandler>();
+            this.textDocumentSyncHandler = serviceProvider.GetRequiredService<ITextDocumentSyncHandler>();
         }
 
         // Lifecycle ///////////////////////////////////////////////////////////
@@ -117,7 +117,7 @@ namespace Yoakke.Lsp.Server.Internal
             this.AssertState(ServerState.WaitingForInitializedNotification, JsonRpcErrorCode.InvalidRequest);
             // Client told us that they got our initialize response
             // Dynamically register capabilities that we need
-            if (this.textDocumentSyncHandler is not null && this.RegisterTextDocumentSyncDynamically())
+            if (this.RegisterTextDocumentSyncDynamically())
             {
                 this.languageClient.RegisterHandler(this.textDocumentSyncHandler);
             }
@@ -235,6 +235,6 @@ namespace Yoakke.Lsp.Server.Internal
                 };
 
         private bool RegisterTextDocumentSyncDynamically() =>
-            this.clientCapabilities?.TextDocument?.Synchronization?.DynamicRegistration == true;
+            this.clientCapabilities.TextDocument?.Synchronization?.DynamicRegistration == true;
     }
 }

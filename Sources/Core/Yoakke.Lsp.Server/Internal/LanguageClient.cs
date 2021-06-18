@@ -11,6 +11,7 @@ using StreamJsonRpc;
 using Yoakke.Lsp.Model.Basic;
 using Yoakke.Lsp.Model.Capabilities.Server.RegistrationOptions;
 using Yoakke.Lsp.Model.Client;
+using Yoakke.Lsp.Model.Diagnostics;
 using Yoakke.Lsp.Server.Handlers;
 
 namespace Yoakke.Lsp.Server.Internal
@@ -85,7 +86,7 @@ namespace Yoakke.Lsp.Server.Internal
                 },
             });
 
-            this.RegisterCapability("client/registerCapability", new RegistrationParams
+            this.RegisterCapability(new RegistrationParams
             {
                 Registrations = registrations,
             }).Wait();
@@ -95,8 +96,11 @@ namespace Yoakke.Lsp.Server.Internal
             return deregistrationKey;
         }
 
-        private Task RegisterCapability(string name, RegistrationParams @params) =>
-            this.jsonRpc.InvokeWithParameterObjectAsync(name, @params);
+        public void PublishDiagnostics(PublishDiagnosticsParams diagnosticsParams) =>
+            this.jsonRpc.NotifyWithParameterObjectAsync("textDocument/publishDiagnostics", diagnosticsParams).Wait();
+
+        private Task RegisterCapability(RegistrationParams @params) =>
+            this.jsonRpc.InvokeWithParameterObjectAsync("client/registerCapability", @params);
 
         private static string GenerateGuid() => Guid.NewGuid().ToString();
     }
