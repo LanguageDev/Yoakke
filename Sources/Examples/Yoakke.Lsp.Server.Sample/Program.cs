@@ -15,8 +15,15 @@ namespace Yoakke.Lsp.Sample
 {
     internal class SyncHandler : ITextDocumentSyncHandler
     {
-        public bool SendOpenClose => true;
         public TextDocumentSyncKind SyncKind => TextDocumentSyncKind.Incremental;
+
+        public IReadOnlyList<DocumentFilter>? DocumentSelector { get; } = new DocumentFilter[]
+        {
+            new DocumentFilter
+            {
+                Pattern = "**/*.txt",
+            },
+        };
 
         public void DidChange(DidChangeTextDocumentParams changeParams)
         {
@@ -46,19 +53,6 @@ namespace Yoakke.Lsp.Sample
         {
             Console.Error.WriteLine("SAVE");
             Console.Error.WriteLine($"  Uri: {saveParams.TextDocument.Uri.Value}");
-        }
-
-        public void WillSave(WillSaveTextDocumentParams saveParams)
-        {
-            Console.Error.WriteLine("WILL SAVE");
-            Console.Error.WriteLine($"  Uri: {saveParams.TextDocument.Uri.Value}");
-        }
-
-        public IReadOnlyList<TextEdit>? WillSaveWaitUntil(WillSaveTextDocumentParams saveParams)
-        {
-            Console.Error.WriteLine("WILL SAVE");
-            Console.Error.WriteLine($"  Uri: {saveParams.TextDocument.Uri.Value}");
-            return null;
         }
     }
 

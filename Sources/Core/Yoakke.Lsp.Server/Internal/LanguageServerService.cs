@@ -12,6 +12,7 @@ using StreamJsonRpc;
 using StreamJsonRpc.Protocol;
 using Yoakke.Lsp.Model;
 using Yoakke.Lsp.Model.Basic;
+using Yoakke.Lsp.Model.Capabilities.Client;
 using Yoakke.Lsp.Model.Capabilities.Server;
 using Yoakke.Lsp.Model.General;
 using Yoakke.Lsp.Model.TextSynchronization;
@@ -20,7 +21,7 @@ using Yoakke.Lsp.Server.Hosting;
 
 namespace Yoakke.Lsp.Server.Internal
 {
-    internal class LspService : IHostedService, IDisposable
+    internal class LanguageServerService : IHostedService, IDisposable
     {
         private static readonly JsonRpcTargetOptions JsonRpcTargetOptions = new()
         {
@@ -39,31 +40,33 @@ namespace Yoakke.Lsp.Server.Internal
             Exited,
         }
 
-        private readonly JsonRpc jsonRpc;
-
         // TODO: Interlocked anywhere? This is not thread-safe
 
-        // TODO. Get these as configuration instead?
         public string? Name { get; set; }
 
         public string? Version { get; set; }
 
         public int ExitCode { get; private set; }
 
+        private readonly JsonRpc jsonRpc;
         private ServerState state;
+        private readonly ILanguageClient languageClient;
         private readonly ITextDocumentSyncHandler textDocumentSyncHandler;
+        private ClientCapabilities clientCapabilities;
 
-        public LspService(IServiceProvider serviceProvider, JsonRpc jsonRpc, ILanguageServerBuilder builder)
+        public LanguageServerService(IServiceProvider serviceProvider, ILanguageServerBuilder builder)
         {
-            this.jsonRpc = jsonRpc;
+            this.jsonRpc = serviceProvider.GetRequiredService<JsonRpc>();
             this.state = ServerState.NotStarted;
             this.jsonRpc.AddLocalRpcTarget(this, JsonRpcTargetOptions);
+            this.clientCapabilities = new ClientCapabilities { };
 
             // Name and version
             this.Name = builder.GetSetting("name");
             this.Version = builder.GetSetting("version");
 
             // Dependencies
+            this.languageClient = serviceProvider.GetRequiredService<ILanguageClient>();
             this.textDocumentSyncHandler = serviceProvider.GetRequiredService<ITextDocumentSyncHandler>();
         }
 
@@ -90,6 +93,7 @@ namespace Yoakke.Lsp.Server.Internal
         {
             this.AssertState(ServerState.WaitingForInitializeRequest, JsonRpcErrorCode.InvalidRequest);
             // We are waiting for an initialize request and just received one, answer with the proper result
+            this.clientCapabilities = initializeParams.Capabilities;
             var result = new InitializeResult
             {
                 ServerInfo = new InitializeResult.ServerInformation
@@ -99,7 +103,7 @@ namespace Yoakke.Lsp.Server.Internal
                 },
                 Capabilities = new ServerCapabilities
                 {
-                    TextDocumentSync = this.GetTextDocumentSyncCapability(),
+                    TextDocumentSync = this.GetStaticTextDocumentSyncCapability(),
                 },
             };
             // Increment server state
@@ -112,7 +116,11 @@ namespace Yoakke.Lsp.Server.Internal
         {
             this.AssertState(ServerState.WaitingForInitializedNotification, JsonRpcErrorCode.InvalidRequest);
             // Client told us that they got our initialize response
-            // TODO: Dynamically register capabilities
+            // Dynamically register capabilities that we need
+            if (this.RegisterTextDocumentSyncDynamically())
+            {
+                this.languageClient.RegisterHandler(this.textDocumentSyncHandler);
+            }
             // Increment server state
             // We can go into normal operation
             this.SetServerState(ServerState.Operating);
@@ -156,18 +164,21 @@ namespace Yoakke.Lsp.Server.Internal
             this.textDocumentSyncHandler.DidChange(didChangeParams);
         }
 
+        // TODO: Implement if can
         [JsonRpcMethod("textDocument/willSave", UseSingleObjectParameterDeserialization = true)]
         private void TextDocument_WillSave(WillSaveTextDocumentParams willSaveParams)
         {
             this.AssertState(ServerState.Operating, JsonRpcErrorCode.InvalidRequest);
-            this.textDocumentSyncHandler.WillSave(willSaveParams);
+            // this.textDocumentSyncHandler.WillSave(willSaveParams);
         }
 
+        // TODO: Implement if can
         [JsonRpcMethod("textDocument/willSaveWaitUntil", UseSingleObjectParameterDeserialization = true)]
         private IReadOnlyList<TextEdit>? TextDocument_WillSaveWaitUntil(WillSaveTextDocumentParams willSaveParams)
         {
             this.AssertState(ServerState.Operating, JsonRpcErrorCode.InvalidRequest);
-            return this.textDocumentSyncHandler.WillSaveWaitUntil(willSaveParams);
+            return null;
+            // return this.textDocumentSyncHandler.WillSaveWaitUntil(willSaveParams);
         }
 
         [JsonRpcMethod("textDocument/didSave", UseSingleObjectParameterDeserialization = true)]
@@ -214,13 +225,16 @@ namespace Yoakke.Lsp.Server.Internal
 
         // Capability construction
 
-        private Either<TextDocumentSyncOptions, TextDocumentSyncKind> GetTextDocumentSyncCapability() =>
-            this.textDocumentSyncHandler.SendOpenClose
-                ? new TextDocumentSyncOptions
+        private Either<TextDocumentSyncOptions, TextDocumentSyncKind>? GetStaticTextDocumentSyncCapability() =>
+            this.RegisterTextDocumentSyncDynamically()
+                ? (Either<TextDocumentSyncOptions, TextDocumentSyncKind>?)null
+                : new TextDocumentSyncOptions
                 {
                     OpenClose = true,
                     Change = this.textDocumentSyncHandler.SyncKind,
-                }
-                : this.textDocumentSyncHandler.SyncKind;
+                };
+
+        private bool RegisterTextDocumentSyncDynamically() =>
+            this.clientCapabilities.TextDocument?.Synchronization?.DynamicRegistration == true;
     }
 }

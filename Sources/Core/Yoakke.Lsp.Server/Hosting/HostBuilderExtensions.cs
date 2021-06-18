@@ -6,6 +6,7 @@ using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using StreamJsonRpc;
+using Yoakke.Lsp.Server.Handlers;
 using Yoakke.Lsp.Server.Hosting.Internal;
 using Yoakke.Lsp.Server.Internal;
 
@@ -30,8 +31,8 @@ namespace Yoakke.Lsp.Server.Hosting
             hostBuilder.ConfigureServices((_, services) =>
             {
                 services.AddSingleton(_ => new JsonRpc(builder.GetCommunicationStream()));
-                services.AddHostedService(serviceProvider =>
-                    new LspService(serviceProvider, serviceProvider.GetRequiredService<JsonRpc>(), builder));
+                services.AddSingleton<ILanguageClient, LanguageClient>();
+                services.AddHostedService(serviceProvider => new LanguageServerService(serviceProvider, builder));
                 var provider = services.BuildServiceProvider();
             });
             // Invoke user configure
