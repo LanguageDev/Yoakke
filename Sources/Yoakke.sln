@@ -51,7 +51,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Symbols", "Core\Yoak
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LanguageServerProtocol", "LanguageServerProtocol", "{C32F06FE-A533-4BD3-B361-2D9BECCDFBDF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lsp.Generator", "Core\Yoakke.Lsp.Generator\Yoakke.Lsp.Generator.csproj", "{14BA531F-4D06-4507-A3C5-027FB097E970}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lsp.Generator", "Tools\Yoakke.Lsp.Generator\Yoakke.Lsp.Generator.csproj", "{14BA531F-4D06-4507-A3C5-027FB097E970}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lsp.Server.Sample", "Examples\Yoakke.Lsp.Server.Sample\Yoakke.Lsp.Server.Sample.csproj", "{A4D7FE59-C1D4-47AC-9822-A51BC09045BC}"
 EndProject
