@@ -50,8 +50,8 @@ jobs:
         run: |
           .\.sonar\scanner\dotnet-sonarscanner begin /k:"LanguageDev_Yoakke" /o:"languagedev" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" ^
             /d:sonar.cs.opencover.reportsPaths="CoverageResults/coverage.opencover.xml" ^
-            /d:sonar.coverage.exclusions="Core/*.Generator/**,Examples/**" ^
-            /d:sonar.exclusions="Examples/**"
+            /d:sonar.coverage.exclusions="Core/*.Generator/**,Examples/**,Tools/**" ^
+            /d:sonar.exclusions="Examples/**,Tools/**"
           dotnet build Sources /p:ContinuousIntegrationBuild=false
           dotnet test Sources /p:CollectCoverage=true ^
             /p:CoverletOutput="../../../CoverageResults/" /p:MergeWith="../../../CoverageResults/coverage.json" ^
