@@ -38,7 +38,7 @@ This is a list of the libraries that are planned for implementation, along with 
 
 ## Documentation
 
-Work in progress...
+Documentation is very much work-in-progress, but you can always find the latest version in the [Documentation folder](https://github.com/LanguageDev/Yoakke/tree/master/Documentation). Feel free to open up Pull-Requests, if you see mistakes!
 
 ## Developer documentation
 
