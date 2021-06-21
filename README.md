@@ -1,3 +1,7 @@
+<p align="center">
+	<a href="#"><img src="https://github.com/LanguageDev/Yoakke/blob/master/.github/resources/YoakkeLogoAnimated.svg?raw=true" height="200"></a>
+</p>
+
 <h2 align="center">The Yoakke Compiler Infrastructure</h2>
 <p align="center">
 	<i>Language- and Compiler development tools in .NET.</i>
