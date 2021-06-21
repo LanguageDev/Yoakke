@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -24,7 +24,7 @@ namespace Yoakke.Lexer
 
         /// <summary>
         /// Lexes the next <see cref="IToken"/>. If the source text has been depleted, it should produce some default
-        /// end-asignaling <see cref="IToken"/>.
+        /// end-signaling <see cref="IToken"/>.
         /// </summary>
         /// <returns>The lexed <see cref="IToken"/>.</returns>
         public IToken Next();
