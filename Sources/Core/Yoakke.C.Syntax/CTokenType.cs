@@ -5,5 +5,6 @@ namespace Yoakke.C.Syntax
     /// </summary>
     public enum CTokenType
     {
+        End,
     }
 }

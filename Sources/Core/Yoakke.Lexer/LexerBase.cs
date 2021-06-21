@@ -136,11 +136,13 @@ namespace Yoakke.Lexer
         /// <summary>
         /// Skips characters in the input and builds a <see cref="IToken{T}"/> with a given factory function.
         /// </summary>
+        /// <typeparam name="TToken">The exact token type to produce.</typeparam>
         /// <param name="length">The amount of characters to skip.</param>
         /// <param name="makeToken">The factory function that receives the source <see cref="Range"/> of the skipped characters
         /// and the skipped characters themselves concatenated as a string, and produces an <see cref="IToken{T}"/> from them.</param>
         /// <returns>The constructed <see cref="IToken{TKind}"/> returned from <paramref name="makeToken"/>.</returns>
-        protected IToken<TKind> TakeToken(int length, Func<Range, string, IToken<TKind>> makeToken)
+        protected TToken TakeToken<TToken>(int length, Func<Range, string, TToken> makeToken)
+            where TToken : IToken<TKind>
         {
             var start = this.Position;
             var text = length == 0 ? string.Empty : this.Take(length);

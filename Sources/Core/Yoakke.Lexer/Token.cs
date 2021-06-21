@@ -11,7 +11,7 @@ namespace Yoakke.Lexer
     /// A default implementation for <see cref="IToken{TKind}"/>.
     /// </summary>
     /// <typeparam name="TKind">The kind type this <see cref="Token{TKind}"/> uses. Usually an enumeration type.</typeparam>
-    public sealed class Token<TKind> : IToken<TKind>
+    public sealed class Token<TKind> : IToken<TKind>, IEquatable<Token<TKind>>
         where TKind : notnull
     {
         public Range Range { get; }
