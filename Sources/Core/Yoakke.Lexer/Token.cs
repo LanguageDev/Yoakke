@@ -12,7 +12,7 @@ namespace Yoakke.Lexer
     /// This is a tagged implementation of <see cref="IToken"/>.
     /// </summary>
     /// <typeparam name="TKind">The kind type this <see cref="Token{TKind}"/> uses. Usually an enumeration type.</typeparam>
-    public class Token<TKind> : IToken, IEquatable<Token<TKind>>
+    public sealed class Token<TKind> : IToken, IEquatable<Token<TKind>>
         where TKind : notnull
     {
         public Range Range { get; }
@@ -41,7 +41,7 @@ namespace Yoakke.Lexer
 
         public bool Equals(IToken? other) => this.Equals(other as Token<TKind>);
 
-        public virtual bool Equals(Token<TKind>? other) =>
+        public bool Equals(Token<TKind>? other) =>
                other is not null
             && this.Range == other.Range
             && this.Text == other.Text

@@ -6,8 +6,4 @@
 
   <Import Project="$(SolutionDir)/ProjectBase.props" />
 
-  <ItemGroup>
-    <ProjectReference Include="..\Yoakke.Lexer\Yoakke.Lexer.csproj" />
-  </ItemGroup>
-
 </Project>
