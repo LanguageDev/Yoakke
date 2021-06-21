@@ -33,6 +33,7 @@ This is a list of the libraries that are planned for implementation, along with 
 -   AST generator, visitor: Considered mostly done
 -   Lexical symbols: Considered mostly done
 -   Language server protocol: Work in progress
+-   C syntax (pre-processor, lexer, parser)
 -   Type-system: Planned
 -   Virtual Machine: Planned
 -   X86 Assembly: Planned
