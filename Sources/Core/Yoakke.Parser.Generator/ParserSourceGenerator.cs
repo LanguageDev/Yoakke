@@ -101,7 +101,7 @@ namespace Yoakke.Parser.Generator
                     // Part of public API
 
                     // Implement a try... pattern method
-                    parserMethods.AppendLine($"public bool TryParse{key}(out {parsedType} value) {{");
+                    parserMethods.AppendLine($"public bool TryParse{key}([{TypeNames.MaybeNullWhen}(false)] out {parsedType} value) {{");
                     parserMethods.AppendLine($"    var result = parse{key}(0);");
                     // Failure case
                     parserMethods.AppendLine("    if (result.IsError) {");
@@ -152,7 +152,11 @@ namespace {namespaceName}
 #nullable enable
 #pragma warning disable CS8632
 #pragma warning disable CS8604
+#pragma warning disable CS8619
+#pragma warning disable CS8600
         {parserMethods}
+#pragma warning restore CS8600
+#pragma warning restore CS8619
 #pragma warning restore CS8604
 #pragma warning restore CS8632
 #nullable restore

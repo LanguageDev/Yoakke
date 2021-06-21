@@ -30,5 +30,6 @@ namespace Yoakke.Parser.Generator
         public const string IList = "System.Collections.Generic.IList";
         public const string List = "System.Collections.Generic.List";
         public const string IEnumerable = "System.Collections.Generic.IEnumerable";
+        public const string MaybeNullWhen = "System.Diagnostics.CodeAnalysis.MaybeNullWhen";
     }
 }
