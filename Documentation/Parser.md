@@ -3,7 +3,7 @@ The parser library is constructed very similarly to the lexer, consisting of 2 l
  * `Yoakke.Parser`: Basic structures for parsing.
  * `Yoakke.Parser.Generator`: A source generator that generates a parser from the annotations.
 
-Check out the [basic structures](#basic-structures), then [using the parser generator](#using-the-parser-generator). Since parsing is a lot more diverse then lexing, the library does not provide an as-complete abstraction for a handwritten version as the `LexerBase`. Still, if you want to, you can utilize the very basic functionalities of [`ParserBase`](#the-parserbase-abstraction).
+Check out the [basic structures](#basic-structures), then [using the parser generator](#using-the-parser-generator). Since parsing is a lot more diverse then lexing, the library does not provide an as-complete abstraction for a handwritten version as the `LexerBase<TKind>`. Still, if you want to, you can utilize the very basic functionalities of [`ParserBase`](#the-parserbase-abstraction).
 
 ## Basic structures
 Parsing something can succeed, or it can fail. Since both are likely outcomes - errors are not exceptional -, the outcome is modeled as a `ParseResult<T>` type, where the type-parameter `T` is the parsed value, given that it succeeded.
@@ -18,11 +18,11 @@ public partial class Parser
 {
     [Rule("if_stmt: KwIf expr '{' stmt '}'")]
     private static Statement MakeIf(
-        Token<TokenType> kwIf, 
+        IToken<TokenType> kwIf,
         Expression condition,
-        Token<TokenType> openBrace,
+        IToken<TokenType> openBrace,
         Statement body,
-        Token<TokenType> openBrace) => new IfStatement(condition, body);	
+        IToken<TokenType> openBrace) => new IfStatement(condition, body);
 
     [Rule("stmt : expr")]
     private static Statement MakeExprStatement(Expression expr) => new ExprStatement(expr);
@@ -33,12 +33,12 @@ public partial class Parser
     [Rule("expr : IntLit '==' IntLit")]
     [Rule("expr : IntLit '!=' IntLit")]
     private static Expression MakeCmp(
-        Token<TokenType> left, 
-        Token<TokenType> op, 
-        Token<TokenType> right) => new CmpExpression(left, op, right);
+        IToken<TokenType> left,
+        IToken<TokenType> op,
+        IToken<TokenType> right) => new CmpExpression(left, op, right);
 
     [Rule("expr : 'true' | 'false'")]
-    private static Expression MakeBool(Token<TokenType> t) => new BoolExpression(t);
+    private static Expression MakeBool(IToken<TokenType> t) => new BoolExpression(t);
 }
 ```
 The attribute `Parser(typeof(TokenType))` tells the source generator that the annotated class is a parser with rules inside it. Also, the kind of the tokens will be the specified type inside the attribute - `TokenType` in this case. You can choose not to pass in a token kind, in that case all tokens will be assumed to be `IToken`. **Note, that it is important to qualify the parser class as `partial`.** The generator has to generate code for the class, that can be only achieved through partial classes because of source generator limitations.
@@ -146,8 +146,8 @@ The notation supported for the grammar is extended, some regular expression oper
 
 | Name | Syntax | Value type |
 | --- | --- | --- |
-| Literal by text | `'text'` | A `Token<T>`, if the parser is given a token-kind type, `IToken` otherwise |
-| Literal by kind | `KindName` | A `Token<T>`, if the parser is given a token-kind type, `IToken` otherwise |
+| Literal by text | `'text'` | An `IToken<TKind>`, if the parser is given a token-kind type, `IToken` otherwise |
+| Literal by kind | `KindName` | An `IToken<TKind>`, if the parser is given a token-kind type, `IToken` otherwise |
 | Rule invocation | `rule_name` | Whatever the invoked rule returns. |
 | Sequence | `a b c` | On top-level they become separate parameters. Nested, they become tuples of the elements. |
 | Alternative | `a | b` | The two sides are assumed to result in the same parsed type. |
@@ -160,27 +160,27 @@ The notation supported for the grammar is extended, some regular expression oper
 Some patterns are kind of clumsy to handle, because their types become very ugly and complex to type. Most commonly, these would be punctuated sequences of values. Let's see how you would write them and what the library can give you to simplify these.
 
 #### 0 or more elements without a trailing separator
-This would be how C handles it's argument list for a function call. 0 or more expressions, each separated by a comma, trailing comma is not allowed. In grammar you would write this as: `(expr (',' expr)*)?`. The type of this would be `(Expression, IReadOnlyList<(Token<T>, Expression)>)?`, which is not very pretty.
+This would be how C handles it's argument list for a function call. 0 or more expressions, each separated by a comma, trailing comma is not allowed. In grammar you would write this as: `(expr (',' expr)*)?`. The type of this would be `(Expression, IReadOnlyList<(IToken<TKind>, Expression)>)?`, which is not very pretty.
 
 #### 1 or more elements without a trailing separator
-Similar to the previous example, but at least one element is mandatory: `expr (',' expr)*`. The type of this is `(Expression, IReadOnlyList<(Token<T>, Expression)>)`.
+Similar to the previous example, but at least one element is mandatory: `expr (',' expr)*`. The type of this is `(Expression, IReadOnlyList<(IToken<TKind>, Expression)>)`.
 
 #### 0 or more elements with an optional trailing separator
-This would be how C# handles it's brace-initialization. 0 or more initializers, each separated by a comma, the trailing comma is optional. In grammar this would be `(initializer (',' initializer)* ','?)?`. The type of this would be the worst so far: `(Initializer, IReadOnlyList<(Token<T>, Expression)>, Token<T>?)?`.
+This would be how C# handles it's brace-initialization. 0 or more initializers, each separated by a comma, the trailing comma is optional. In grammar this would be `(initializer (',' initializer)* ','?)?`. The type of this would be the worst so far: `(Initializer, IReadOnlyList<(IToken<TKind>, Expression)>, IToken<TKind>?)?`.
 
 #### 1 or more elements with an optional trailing separator
-Similar to the previous case, but at least one element is mandatory: `(initializer (',' initializer)* ','?)`. The type of this is `(Initializer, IReadOnlyList<(Token<T>, Expression)>, Token<T>?)`.
+Similar to the previous case, but at least one element is mandatory: `(initializer (',' initializer)* ','?)`. The type of this is `(Initializer, IReadOnlyList<(IToken<TKind>, Expression)>, IToken<TKind>?)`.
 
 #### The solution
-Since these are very common patterns, the parser library provides a `Punctuated<TValue, TPunct>` type. `TValue` is the punctuated element type - like an `Expression` -, `TPunct` is the punctuation type - like a `Token<T>`. The above complex types are implicitly convertible to `Punctuated<TValue, TPunct>`, which provides simpler access to its elements.
+Since these are very common patterns, the parser library provides a `Punctuated<TValue, TPunct>` type. `TValue` is the punctuated element type - like an `Expression` -, `TPunct` is the punctuation type - like a `IToken<TKind>`. The above complex types are implicitly convertible to `Punctuated<TValue, TPunct>`, which provides simpler access to its elements.
 
 Let's see an example usage:
 ```csharp
 [Rule("name_list : Lparen (Identifier (',' Identifier)*)? Rparen")]
 private static List<string> NameList(
-    Token<TokenType> _lp, 
-    Punctuated<Token<TokenType>, Token<TokenType>> elements, 
-    Token<TokenType> _rp) => elements.Values.Select(t => t.Text).ToList();
+    IToken<TokenType> _lp,
+    Punctuated<IToken<TokenType>, IToken<TokenType>> elements,
+    IToken<TokenType> _rp) => elements.Values.Select(t => t.Text).ToList();
 ```
 
 **Important:** In case of 1-or-more patterns the result is a non-nullable tuple. If it's on the top level, the library will unwrap it into the parameter list, which makes it impossible to convert to `Punctuated<TValue, TPunct>`. To avoid that, group the construct inside parentheses.
