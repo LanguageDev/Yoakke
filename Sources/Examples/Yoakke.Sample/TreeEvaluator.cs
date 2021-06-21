@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -35,16 +35,16 @@ namespace Yoakke.Sample
             this.symbolResolution = symbolResolution;
         }
 
-        public void Execute(Statement stmt) => Visit(stmt);
+        public void Execute(Statement stmt) => this.Visit(stmt);
 
-        public object Evaluate(Expression expr) => Visit(expr);
+        public object Evaluate(Expression expr) => this.Visit(expr);
 
         // Statement related ///////////////////////////////////////////////////
 
         protected override void Visit(Statement.Var vars)
         {
             var symbol = this.symbolResolution.Symbols[vars];
-            Bind(symbol, Visit(vars.Value));
+            this.Bind(symbol, this.Visit(vars.Value));
         }
 
         protected override void Visit(Statement.Func func)
@@ -52,25 +52,25 @@ namespace Yoakke.Sample
         }
 
         protected override void Visit(Statement.Return ret) =>
-            throw new Return(ret.Value == null ? null : Visit(ret.Value));
+            throw new Return(ret.Value == null ? null : this.Visit(ret.Value));
 
         protected override void Visit(Statement.If iff)
         {
-            if ((bool)Visit(iff.Condition)) Visit(iff.Then);
-            else if (iff.Else != null) Visit(iff.Else);
+            if ((bool)this.Visit(iff.Condition)) this.Visit(iff.Then);
+            else if (iff.Else != null) this.Visit(iff.Else);
         }
 
         protected override void Visit(Statement.While whil)
         {
-            while ((bool)Visit(whil.Condition)) Visit(whil.Body);
+            while ((bool)this.Visit(whil.Condition)) this.Visit(whil.Body);
         }
 
         // Expression related //////////////////////////////////////////////////
 
         protected override object? Visit(Expression.Call call)
         {
-            var func = Visit(call.Function);
-            var args = call.Arguments.Select(Visit).ToArray();
+            var func = this.Visit(call.Function);
+            var args = call.Arguments.Select(this.Visit).ToArray();
             if (func is Statement.Func langFunc)
             {
                 // Language function
@@ -91,7 +91,7 @@ namespace Yoakke.Sample
                 object? returnValue = null;
                 try
                 {
-                    Visit(langFunc.Body);
+                    this.Visit(langFunc.Body);
                 }
                 catch (Return ret)
                 {
@@ -114,32 +114,32 @@ namespace Yoakke.Sample
 
         protected override object Visit(Expression.Unary ury) => ury.Op switch
         {
-            UnaryOp.Negate => -(int)Visit(ury.Subexpr),
-            UnaryOp.Ponate => (int)Visit(ury.Subexpr),
-            UnaryOp.Not => !(bool)Visit(ury.Subexpr),
+            UnaryOp.Negate => -(int)this.Visit(ury.Subexpr),
+            UnaryOp.Ponate => (int)this.Visit(ury.Subexpr),
+            UnaryOp.Not => !(bool)this.Visit(ury.Subexpr),
 
             _ => throw new NotSupportedException(),
         };
 
         protected override object Visit(Expression.Binary bin) => bin.Op switch
         {
-            BinOp.Add => PerformAdd(Visit(bin.Left), (int)Visit(bin.Right)),
+            BinOp.Add => this.PerformAdd(this.Visit(bin.Left), (int)this.Visit(bin.Right)),
 
-            BinOp.Sub => (int)Visit(bin.Left) - (int)Visit(bin.Right),
-            BinOp.Mul => (int)Visit(bin.Left) * (int)Visit(bin.Right),
-            BinOp.Div => (int)Visit(bin.Left) / (int)Visit(bin.Right),
-            BinOp.Mod => (int)Visit(bin.Left) % (int)Visit(bin.Right),
+            BinOp.Sub => (int)this.Visit(bin.Left) - (int)this.Visit(bin.Right),
+            BinOp.Mul => (int)this.Visit(bin.Left) * (int)this.Visit(bin.Right),
+            BinOp.Div => (int)this.Visit(bin.Left) / (int)this.Visit(bin.Right),
+            BinOp.Mod => (int)this.Visit(bin.Left) % (int)this.Visit(bin.Right),
 
-            BinOp.And => (bool)Visit(bin.Left) && (bool)Visit(bin.Right),
-            BinOp.Or => (bool)Visit(bin.Left) || (bool)Visit(bin.Right),
+            BinOp.And => (bool)this.Visit(bin.Left) && (bool)this.Visit(bin.Right),
+            BinOp.Or => (bool)this.Visit(bin.Left) || (bool)this.Visit(bin.Right),
 
-            BinOp.Eq => EqualityComparer<object>.Default.Equals(Visit(bin.Left), Visit(bin.Right)),
-            BinOp.Neq => !EqualityComparer<object>.Default.Equals(Visit(bin.Left), Visit(bin.Right)),
+            BinOp.Eq => EqualityComparer<object>.Default.Equals(this.Visit(bin.Left), this.Visit(bin.Right)),
+            BinOp.Neq => !EqualityComparer<object>.Default.Equals(this.Visit(bin.Left), this.Visit(bin.Right)),
 
-            BinOp.Greater => (int)Visit(bin.Left) > (int)Visit(bin.Right),
-            BinOp.Less => (int)Visit(bin.Left) < (int)Visit(bin.Right),
-            BinOp.GreaterEq => (int)Visit(bin.Left) >= (int)Visit(bin.Right),
-            BinOp.LessEq => (int)Visit(bin.Left) <= (int)Visit(bin.Right),
+            BinOp.Greater => (int)this.Visit(bin.Left) > (int)this.Visit(bin.Right),
+            BinOp.Less => (int)this.Visit(bin.Left) < (int)this.Visit(bin.Right),
+            BinOp.GreaterEq => (int)this.Visit(bin.Left) >= (int)this.Visit(bin.Right),
+            BinOp.LessEq => (int)this.Visit(bin.Left) <= (int)this.Visit(bin.Right),
 
             // TODO
             BinOp.Assign => throw new NotImplementedException(),

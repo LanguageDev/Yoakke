@@ -63,7 +63,7 @@ namespace Yoakke.Sample
                 this.scopes = scopes;
             }
 
-            public void Pass(Statement statement) => Visit(statement);
+            public void Pass(Statement statement) => this.Visit(statement);
 
             protected override void Visit(Statement.Func func)
             {
@@ -91,7 +91,7 @@ namespace Yoakke.Sample
                 this.scopes = scopes;
             }
 
-            public void Pass(Statement statement) => Visit(statement);
+            public void Pass(Statement statement) => this.Visit(statement);
 
             protected override void Visit(Statement.Var var)
             {
@@ -111,7 +111,7 @@ namespace Yoakke.Sample
                     innerScope.DefineSymbol(symbol);
                     this.Symbols[(func, param)] = symbol;
                 }
-                Visit(func.Body);
+                this.Visit(func.Body);
             }
 
             protected override void Visit(Expression.Ident ident)

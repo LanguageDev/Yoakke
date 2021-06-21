@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -31,7 +31,7 @@ namespace Yoakke.Parser.Generator.Ast
             public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens)
             {
                 if (tokens.EnumType == null) return TypeNames.IToken;
-                else return $"{TypeNames.Token}<{tokens.EnumType.ToDisplayString()}>";
+                else return $"{TypeNames.IToken}<{tokens.EnumType.ToDisplayString()}>";
             }
         }
     }

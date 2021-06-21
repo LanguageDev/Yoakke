@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -10,7 +10,7 @@ using Yoakke.Lexer;
 using Yoakke.Lexer.Attributes;
 using Yoakke.Parser.Attributes;
 using IgnoreAttribute = Yoakke.Lexer.Attributes.IgnoreAttribute;
-using Token = Yoakke.Lexer.Token<Yoakke.Parser.Tests.PunctuatedTests.TokenType>;
+using Token = Yoakke.Lexer.IToken<Yoakke.Parser.Tests.PunctuatedTests.TokenType>;
 
 namespace Yoakke.Parser.Tests
 {

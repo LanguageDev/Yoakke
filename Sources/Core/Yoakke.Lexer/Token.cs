@@ -8,20 +8,16 @@ using Range = Yoakke.Text.Range;
 namespace Yoakke.Lexer
 {
     /// <summary>
-    /// Represents an atom in a language grammar as the lowest level element (atom/terminal) of parsing.
-    /// This is a tagged implementation of <see cref="IToken"/>.
+    /// A default implementation for <see cref="IToken{TKind}"/>.
     /// </summary>
     /// <typeparam name="TKind">The kind type this <see cref="Token{TKind}"/> uses. Usually an enumeration type.</typeparam>
-    public sealed class Token<TKind> : IToken, IEquatable<Token<TKind>>
+    public sealed class Token<TKind> : IToken<TKind>
         where TKind : notnull
     {
         public Range Range { get; }
 
         public string Text { get; }
 
-        /// <summary>
-        /// The kind tag of this <see cref="Token{TKind}"/>.
-        /// </summary>
         public TKind Kind { get; }
 
         /// <summary>
@@ -40,6 +36,8 @@ namespace Yoakke.Lexer
         public override bool Equals(object? obj) => this.Equals(obj as Token<TKind>);
 
         public bool Equals(IToken? other) => this.Equals(other as Token<TKind>);
+
+        public bool Equals(IToken<TKind>? other) => this.Equals(other as Token<TKind>);
 
         public bool Equals(Token<TKind>? other) =>
                other is not null

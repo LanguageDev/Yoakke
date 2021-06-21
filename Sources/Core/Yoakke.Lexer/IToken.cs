@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -9,7 +9,7 @@ namespace Yoakke.Lexer
 {
     /// <summary>
     /// Represents an atom in a language grammar as the lowest level element (atom/terminal) of parsing.
-    /// Usually tokens have a kind/category tag attached to them, for that <see cref="Token{TKind}"/>.
+    /// Usually tokens have a kind/category tag attached to them, for that <see cref="IToken{TKind}"/>.
     /// </summary>
     public interface IToken : IEquatable<IToken>
     {

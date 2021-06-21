@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -151,7 +151,9 @@ namespace {namespaceName}
 
 #nullable enable
 #pragma warning disable CS8632
+#pragma warning disable CS8604
         {parserMethods}
+#pragma warning restore CS8604
 #pragma warning restore CS8632
 #nullable restore
     }}

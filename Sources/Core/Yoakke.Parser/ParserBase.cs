@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -47,10 +47,10 @@ namespace Yoakke.Parser
         /// <param name="kind">The token kind to check for.</param>
         /// <param name="token">The token, if it matched the kind.</param>
         /// <returns>True, if the given token ahead has the certain kind.</returns>
-        protected bool TryMatchKind<T>(int offset, T kind, [MaybeNullWhen(false)] out Token<T>? token)
+        protected bool TryMatchKind<T>(int offset, T kind, [MaybeNullWhen(false)] out IToken<T>? token)
             where T : notnull
         {
-            if (this.TryPeek(offset, out var itoken) && itoken is Token<T> t && kind!.Equals(t.Kind))
+            if (this.TryPeek(offset, out var itoken) && itoken is IToken<T> t && kind!.Equals(t.Kind))
             {
                 token = t;
                 return true;

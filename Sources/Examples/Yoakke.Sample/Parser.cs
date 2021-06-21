@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -8,7 +8,7 @@ using System.Linq;
 using Yoakke.Lexer;
 using Yoakke.Parser;
 using Yoakke.Parser.Attributes;
-using Token = Yoakke.Lexer.Token<Yoakke.Sample.TokenType>;
+using Token = Yoakke.Lexer.IToken<Yoakke.Sample.TokenType>;
 
 namespace Yoakke.Sample
 {
@@ -71,7 +71,7 @@ namespace Yoakke.Sample
         private static Expression Identity(Expression e) => e;
 
         [Rule("pre_expr : ('+' | '-' | 'not') pre_expr")]
-        private static Expression Unary(Token<TokenType> op, Expression sub) =>
+        private static Expression Unary(Token op, Expression sub) =>
             new Expression.Unary(ToUnaryOp(op.Kind), sub);
 
         [Rule("post_expr : post_expr '(' (expr (',' expr)*)? ')'")]

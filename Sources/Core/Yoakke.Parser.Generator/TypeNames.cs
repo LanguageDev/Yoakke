@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -24,7 +24,6 @@ namespace Yoakke.Parser.Generator
         public static readonly string ParseResult = $"{ParserNamespace}.ParseResult";
 
         public static readonly string IToken = $"{LexerNamespace}.IToken";
-        public static readonly string Token = $"{LexerNamespace}.Token";
         public static readonly string ILexer = $"{LexerNamespace}.ILexer";
 
         public const string IReadOnlyList = "System.Collections.Generic.IReadOnlyList";

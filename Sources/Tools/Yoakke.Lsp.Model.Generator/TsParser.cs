@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Yoakke.Lexer;
+using Yoakke.Parser;
 using Yoakke.Parser.Attributes;
 
 namespace Yoakke.LSP.Generator
@@ -27,13 +28,14 @@ namespace Yoakke.LSP.Generator
                 Docs = doc?.Text,
             };
 
-        [Rule("namespace : DocComment? 'export'? 'type' Ident '=' StringLit ('|' StringLit)+ ';'")]
+        [Rule("namespace : DocComment? 'export'? 'type' Ident '=' (StringLit ('|' StringLit)+) ';'")]
         private static NamespaceDef StringSumType(
             IToken? doc,
             IToken _1, IToken _2,
             IToken name, IToken _3,
-            Token<TokenType> first, IReadOnlyList<(Token<TokenType>, Token<TokenType>)> rest, IToken _4) =>
-            new(name.Text, rest.Select(r => r.Item2).Prepend(first).Select(StringLitToNamespaceField).ToArray())
+            Punctuated<IToken<TokenType>, IToken<TokenType>> items,
+            IToken _4) =>
+            new(name.Text, items.Values.Select(StringLitToNamespaceField).ToArray())
             {
                 Docs = doc?.Text,
             };
@@ -43,19 +45,19 @@ namespace Yoakke.LSP.Generator
             IToken? doc,
             IToken? _1, IToken _2,
             IToken name, (IToken, IToken)? _3, IToken _4,
-            Token<TokenType> value, IToken _5) =>
+            IToken<TokenType> value, IToken _5) =>
             new(name.Text, MakeNamespaceValue(value))
             {
                 Docs = doc?.Text,
             };
 
-        [Rule("interface : DocComment? 'export'? 'interface' Ident ('extends' Ident (',' Ident)*)? '{' i_field* '}'")]
+        [Rule("interface : DocComment? 'export'? 'interface' Ident ('extends' (Ident (',' Ident)*))? '{' i_field* '}'")]
         private static InterfaceDef Interface(
             IToken? doc,
             IToken _1, IToken _2,
-            IToken name, (IToken, IToken, IReadOnlyList<(Token<TokenType>, Token<TokenType>)>)? extend,
+            IToken name, (IToken, Punctuated<IToken<TokenType>, IToken<TokenType>>)? extend,
             IToken _3, IReadOnlyList<InterfaceField> fields, IToken _4) =>
-            new(name.Text, extend?.Item3?.Select(t => t.Item2.Text).Prepend(extend.Value.Item2.Text).ToArray() ?? Array.Empty<string>(), fields)
+            new(name.Text, extend?.Item2?.Values?.Select(v => v.Text)?.ToArray() ?? Array.Empty<string>(), fields)
             {
                 Docs = doc?.Text,
             };
@@ -68,7 +70,7 @@ namespace Yoakke.LSP.Generator
             };
 
         [Rule("type : type_postfix ('|' type_postfix)*")]
-        private static TypeNode Or(TypeNode first, IReadOnlyList<(Token<TokenType>, TypeNode)> rest) => rest.Count == 0
+        private static TypeNode Or(TypeNode first, IReadOnlyList<(IToken<TokenType>, TypeNode)> rest) => rest.Count == 0
             ? first
             : new TypeNode.Or(rest.Select(v => v.Item2).Prepend(first).ToArray());
 
@@ -87,7 +89,7 @@ namespace Yoakke.LSP.Generator
         [Rule("type_atom : '{' i_field* '}'")]
         private static TypeNode Object(IToken _1, IReadOnlyList<InterfaceField> fs, IToken _2) => new TypeNode.Object(fs);
 
-        private static NamespaceField StringLitToNamespaceField(Token<TokenType> t)
+        private static NamespaceField StringLitToNamespaceField(IToken<TokenType> t)
         {
             if (t.Kind != TokenType.StringLit) throw new ArgumentException("string literal expected");
             var text = t.Text.Substring(1, t.Text.Length - 2);
@@ -95,7 +97,7 @@ namespace Yoakke.LSP.Generator
             return new NamespaceField(capitalText, text);
         }
 
-        private static object MakeNamespaceValue(Token<TokenType> t) => t.Kind == TokenType.NumLit
+        private static object MakeNamespaceValue(IToken<TokenType> t) => t.Kind == TokenType.NumLit
             ? int.Parse(t.Text)
             : t.Text.Substring(1, t.Text.Length - 2);
     }
