@@ -14,12 +14,12 @@ namespace Yoakke.Lexer
     /// <summary>
     /// Base-class to provide common functionality for lexers, if a custom solution is needed.
     /// </summary>
-    /// <typeparam name="TKind">The token-kind of the <see cref="IToken{TKind}"/>s this <see cref="LexerBase{TKind}"/> produces.</typeparam>
-    public abstract class LexerBase<TKind> : LexerBaseCommon, ILexer<TKind>
-        where TKind : notnull
+    /// <typeparam name="TToken">The exact type of token this <see cref="LexerBase{TToken}"/> produces.</typeparam>
+    public abstract class LexerBase<TToken> : LexerBaseCommon, ILexer<TToken>
+        where TToken : IToken
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LexerBase{T}"/> class.
+        /// Initializes a new instance of the <see cref="LexerBase{TToken}"/> class.
         /// </summary>
         /// <param name="reader">The <see cref="TextReader"/> that reads the source text.</param>
         protected LexerBase(TextReader reader)
@@ -28,7 +28,7 @@ namespace Yoakke.Lexer
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LexerBase{T}"/> class.
+        /// Initializes a new instance of the <see cref="LexerBase{TToken}"/> class.
         /// </summary>
         /// <param name="source">The string to lex.</param>
         protected LexerBase(string source)
@@ -44,8 +44,7 @@ namespace Yoakke.Lexer
         /// <param name="makeToken">The factory function that receives the source <see cref="Range"/> of the skipped characters
         /// and the skipped characters themselves concatenated as a string, and produces an <see cref="IToken{T}"/> from them.</param>
         /// <returns>The constructed <see cref="IToken{TKind}"/> returned from <paramref name="makeToken"/>.</returns>
-        protected new TToken TakeToken<TToken>(int length, Func<Range, string, TToken> makeToken)
-            where TToken : IToken<TKind>
+        protected TToken TakeToken(int length, Func<Range, string, TToken> makeToken)
         {
             var start = this.Position;
             var text = length == 0 ? string.Empty : this.Take(length);
@@ -54,12 +53,14 @@ namespace Yoakke.Lexer
         }
 
         /// <summary>
-        /// Skips characters in the input and builds a <see cref="Token{T}"/> from the skipped characters.
+        /// Skips characters in the input and builds a <see cref="Token{TKind}"/> from the skipped characters.
         /// </summary>
+        /// <typeparam name="TKind">The kind-type for the produces <see cref="Token{TKind}"/>.</typeparam>
         /// <param name="kind">The token-kind to build.</param>
         /// <param name="length">The amount of characters to skip.</param>
-        /// <returns>The constructed <see cref="Token{T}"/>.</returns>
-        protected Token<TKind> TakeToken(TKind kind, int length)
+        /// <returns>The constructed <see cref="Token{TKind}"/>.</returns>
+        protected Token<TKind> TakeToken<TKind>(TKind kind, int length)
+            where TKind : notnull
         {
             var start = this.Position;
             var text = length == 0 ? string.Empty : this.Take(length);
@@ -70,9 +71,9 @@ namespace Yoakke.Lexer
         IToken ILexer.Next() => this.Next();
 
         /// <summary>
-        /// Lexes the next <see cref="IToken{T}"/> in the input.
+        /// Lexes the next <see cref="TToken"/> in the input.
         /// </summary>
-        /// <returns>The lexed <see cref="IToken{T}"/>.</returns>
-        public abstract IToken<TKind> Next();
+        /// <returns>The lexed <see cref="TToken"/>.</returns>
+        public abstract TToken Next();
     }
 }

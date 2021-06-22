@@ -14,14 +14,15 @@ namespace Yoakke.Lexer
     /// Represents a general lexer.
     /// It's a stateful iterator-like object that reads in <see cref="IToken{TKind}"/>s from a text source.
     /// </summary>
-    /// <typeparam name="TKind">The token-type of the read in <see cref="IToken{TKind}"/>s.</typeparam>
-    public interface ILexer<TKind> : ILexer
+    /// <typeparam name="TToken">The exact type of token the <see cref="ILexer{TKind}"/> produces.</typeparam>
+    public interface ILexer<TToken> : ILexer
+        where TToken : IToken
     {
         /// <summary>
-        /// Lexes the next <see cref="IToken{TKind}"/>. If the source text has been depleted, it should produce some default
-        /// end-signaling <see cref="IToken{TKind}"/>.
+        /// Lexes the next <see cref="TToken"/>. If the source text has been depleted, it should produce some default
+        /// end-signaling <see cref="TToken"/>.
         /// </summary>
-        /// <returns>The lexed <see cref="IToken{TKind}"/>.</returns>
-        public new IToken<TKind> Next();
+        /// <returns>The lexed <see cref="TToken"/>.</returns>
+        public new TToken Next();
     }
 }

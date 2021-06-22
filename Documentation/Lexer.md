@@ -10,8 +10,9 @@ No matter which version you choose, there are some basic structures defined in `
 
 1.  `IToken`: They represent a kind-less token, meaning it's just a text-range and the text value itself. All token implementations should implement this.
 2.  `IToken<TKind>`: They represent a token with some kind tag. Implements `IToken`.
-2.  `Token<TKind>`: A token with an actual kind, that is defined by the generic parameter `TKind`. This can be used as a default implementation for `IToken<TKind>` in most cases.
-3.  `ILexer`: An interface for a lexer that can produce `IToken`s. All lexers should implement this.
+3.  `Token<TKind>`: A token with an actual kind, that is defined by the generic parameter `TKind`. This can be used as a default implementation for `IToken<TKind>` in most cases.
+4.  `ILexer`: An interface for a lexer that can produce `IToken`s. All lexers should implement this.
+5.  `ILexer<TToken>`: An interface for a lexer that can produce `TToken`s. It inherits from `ILexer`.
 
 ### Using the lexer generator
 The lexer generator can be used by annotating a token-kind enumeration with a few attributes. Let's see an example:
@@ -34,7 +35,7 @@ public enum TokenType
     [Regex(@"[0-9]+")] IntLiteral,
 }
 ```
-The attribute `Lexer("MyLexer")` tells the source generator to generate the lexer class with the name `MyLexer`. It will be defined in the same namespace as the annotated enumeration. The generated class implements `ILexer` and inherits from `LexerBase<TKind>`. You can find more documentation about `LexerBase<TKind>` later in the chapter [rolling your own lexer](#rolling-your-own-lexer).
+The attribute `Lexer("MyLexer")` tells the source generator to generate the lexer class with the name `MyLexer`. It will be defined in the same namespace as the annotated enumeration. The generated class implements `ILexer<Token<TokenType>>` and inherits from `LexerBase<Token<TokenType>>`. You can find more documentation about `LexerBase<TToken>` later in the chapter [rolling your own lexer](#rolling-your-own-lexer).
 
 There are two special token types you need to define: `Error` and `End`. An `Error` kind token will be returned when there is no appropriate rule to apply, hence it denotes a lexical error. The `End` token type will signal the end of the source text.
 
@@ -110,25 +111,25 @@ Only those regular expressions are supported, that keep their expression power a
 Any special characters need to be escaped with `\`. If you want to match escaped characters, like `\n`, it is advised to use `@` strings (verbatim strings).
 
 ### Rolling your own lexer
-If, for some reason you'd like to roll your own lexer - either because your lexer needs to recognize non-regular languages, or just for fun -, the library gives you support to do so. Namely, you can inherit from the `LexerBase<TKind>` class.
+If, for some reason you'd like to roll your own lexer - either because your lexer needs to recognize non-regular languages, or just for fun -, the library gives you support to do so. Namely, you can inherit from the `LexerBase<TToken>` class.
 
-`LexerBase<TKind>` helps you defined a lexer, that will produce `IToken<TKind>`s. All you have to do, is overwrite it's `IToken<TKind> Next()` method, to lex the next token from the input. You get a few helper methods for that:
+`LexerBase<TToken>` helps you defined a lexer, that will produce `TToken`s. All you have to do, is overwrite it's `TToken Next()` method, to lex the next token from the input. You get a few helper methods for that:
  * `Matches(string, int)`: Checks, if the input text matches a given string in some offset
  * `TryPeek(out char, int)`: Peeks ahead some characters in the input without consuming it
  * `Peek(int, char)`: Peeks ahead some characters in the input, returning a default one, if the offset points past the end of source
  * `Skip()`: Skips (consumes) a single character in the input
  * `Skip(int)`: Skips (consumes) a given amount of characters in the input
  * `Take(int)`: Consumes a given amount of characters in the input and constructs a string from them
- * `TakeToken(int, Func<Range, string, IToken<TKind>>)`: Consumes a given amount of characters in the input and constructs an `IToken<TKind>` using the factory function
- * `TakeToken(T, int)`: Consumes a given amount of characters in the input and constructs a `Token<TKind>` from them
+ * `TakeToken(int, Func<Range, string, TToken>)`: Consumes a given amount of characters in the input and constructs an `TToken` using the factory function
+ * `TakeToken(TKind, int)`: Consumes a given amount of characters in the input and constructs a `Token<TKind>` from them
 
 For more precise documentation please refer to the API docs for each method.
 
-`LexerBase<TKind>` works with a `System.IO.TextReader`, so it can lex from simple strings, files or even from console input - handy for a REPL.
+`LexerBase<TToken>` works with a `System.IO.TextReader`, so it can lex from simple strings, files or even from console input - handy for a REPL.
 
-Let's implement the lexer we generated above, but using `LexerBase<TKind>`, and making multi-line comments nestable, to have an advantage over the generated implementation:
+Let's implement the lexer we generated above, but using `LexerBase<TToken>`, and making multi-line comments nestable, to have an advantage over the generated implementation:
 ```csharp
-public class MyLexer : LexerBase<TokenType>
+public class MyLexer : LexerBase<Token<TokenType>>
 {
     public MyLexer(TextReader reader)
         : base(reader)
@@ -138,7 +139,7 @@ public class MyLexer : LexerBase<TokenType>
     // Just a helper for valid identifier characters
     private static bool IsIdent(char ch) => char.IsLetterOrDigit(ch) || ch == '_';
 
-    public IToken<TokenType> Next()
+    public Token<TokenType> Next()
     {
         while (true)
         {

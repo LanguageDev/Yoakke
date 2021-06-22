@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -21,7 +21,7 @@ namespace Yoakke.Lexer.Tests
             End,
         }
 
-        public class Lexer : LexerBase<TokenType>
+        public class Lexer : LexerBase<Token<TokenType>>
         {
             public Lexer(string source)
                 : base(source)

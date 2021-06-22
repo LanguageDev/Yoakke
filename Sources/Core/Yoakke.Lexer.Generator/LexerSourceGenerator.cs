@@ -146,7 +146,7 @@ namespace Yoakke.Lexer.Generator
             return $@"
 namespace {namespaceName}
 {{
-    {accessibility} class {lexerClassName} : {TypeNames.LexerBase}<{enumName}>
+    {accessibility} class {lexerClassName} : {TypeNames.LexerBase}<{tokenName}>
     {{
         public {lexerClassName}({TypeNames.TextReader} reader)
             : base(reader)

@@ -15,7 +15,7 @@ namespace Yoakke.C.Syntax
     /// <summary>
     /// A lexer that lexes C source tokens, including preprocessor directives.
     /// </summary>
-    public class CLexer : LexerBase<CTokenType>
+    public class CLexer : LexerBase<CToken>
     {
         /// <summary>
         /// True, if line continuations should be enabled with '\'.
@@ -42,7 +42,7 @@ namespace Yoakke.C.Syntax
         {
         }
 
-        public override IToken<CTokenType> Next()
+        public override CToken Next()
         {
         begin:
             if (this.IsEnd) return this.TakeToken(CTokenType.End, 0, string.Empty);
