@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Yoakke.Lexer;
+using Yoakke.Text;
 
 namespace Yoakke.C.Syntax
 {
@@ -17,6 +18,11 @@ namespace Yoakke.C.Syntax
     /// </summary>
     public class CLexer : LexerBase<CToken>
     {
+        /// <summary>
+        /// The logical <see cref="Position"/> in the source.
+        /// </summary>
+        public Position LogicalPosition { get; private set; }
+
         /// <summary>
         /// True, if line continuations should be enabled with '\'.
         /// </summary>
@@ -45,7 +51,7 @@ namespace Yoakke.C.Syntax
         public override CToken Next()
         {
         begin:
-            if (this.IsEnd) return this.TakeToken(CTokenType.End, 0, string.Empty);
+            if (this.IsEnd) return this.TakeToken(CTokenType.End, 0, new Text.Range(/* TODO */), string.Empty);
 
             throw new NotImplementedException();
         }
@@ -215,7 +221,7 @@ namespace Yoakke.C.Syntax
             }
         }
 
-        protected CToken TakeToken(CTokenType type, int length, string text) =>
-            base.TakeToken(length, (range, origText) => new CToken(range, text, origText, type));
+        protected CToken TakeToken(CTokenType type, int length, Text.Range logicalRange, string logicalText) =>
+            base.TakeToken(length, (origRange, origText) => new CToken(logicalRange, logicalText, origRange, origText, type));
     }
 }

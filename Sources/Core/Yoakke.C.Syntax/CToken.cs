@@ -20,6 +20,11 @@ namespace Yoakke.C.Syntax
         public CTokenType Kind { get; }
 
         /// <summary>
+        /// The original <see cref="Text.Range"/> that the token can be found at.
+        /// </summary>
+        public Text.Range OriginalRange { get; }
+
+        /// <summary>
         /// The original text value without escaped digraph, trigraphs and line-continuations.
         /// </summary>
         public string OriginalText { get; }
@@ -27,15 +32,17 @@ namespace Yoakke.C.Syntax
         /// <summary>
         /// Initializes a new instance of the <see cref="CToken"/> class.
         /// </summary>
-        /// <param name="range">The <see cref="Text.Range"/> of the <see cref="CToken"/> in the source.</param>
-        /// <param name="text">The text the <see cref="CToken"/>.</param>
+        /// <param name="range">The logical <see cref="Text.Range"/> of the <see cref="CToken"/> in the source.</param>
+        /// <param name="text">The logical, escaped text of the <see cref="CToken"/>.</param>
+        /// <param name="originalRange">The original <see cref="Text.Range"/> of the <see cref="CToken"/> in the source.</param>
         /// <param name="originalText">The original text the <see cref="CToken"/> was parsed from.</param>
         /// <param name="kind">The <see cref="CTokenType"/> of the <see cref="CToken"/>.</param>
-        public CToken(Text.Range range, string text, string originalText, CTokenType kind)
+        public CToken(Text.Range range, string text, Text.Range originalRange, string originalText, CTokenType kind)
         {
             this.Range = range;
             this.Text = text;
             this.Kind = kind;
+            this.OriginalRange = originalRange;
             this.OriginalText = originalText;
         }
 

@@ -141,6 +141,22 @@ namespace Yoakke.Lexer
             return makeToken(range, text);
         }
 
+        /// <summary>
+        /// Skips characters in the input and builds a <see cref="Token{TKind}"/> from the skipped characters.
+        /// </summary>
+        /// <typeparam name="TKind">The kind-type for the produces <see cref="Token{TKind}"/>.</typeparam>
+        /// <param name="kind">The token-kind to build.</param>
+        /// <param name="length">The amount of characters to skip.</param>
+        /// <returns>The constructed <see cref="Token{TKind}"/>.</returns>
+        protected Token<TKind> TakeToken<TKind>(TKind kind, int length)
+            where TKind : notnull
+        {
+            var start = this.Position;
+            var text = length == 0 ? string.Empty : this.Take(length);
+            var range = new Text.Range(start, this.Position);
+            return new Token<TKind>(range, text, kind);
+        }
+
         private static Position NextPosition(Position pos, char lastChar, char currentChar)
         {
             // Windows-style, already advanced line at \r

@@ -44,29 +44,8 @@ namespace Yoakke.Lexer
         /// <param name="makeToken">The factory function that receives the source <see cref="Range"/> of the skipped characters
         /// and the skipped characters themselves concatenated as a string, and produces an <see cref="IToken{T}"/> from them.</param>
         /// <returns>The constructed <see cref="IToken{TKind}"/> returned from <paramref name="makeToken"/>.</returns>
-        protected TToken TakeToken(int length, Func<Range, string, TToken> makeToken)
-        {
-            var start = this.Position;
-            var text = length == 0 ? string.Empty : this.Take(length);
-            var range = new Range(start, this.Position);
-            return makeToken(range, text);
-        }
-
-        /// <summary>
-        /// Skips characters in the input and builds a <see cref="Token{TKind}"/> from the skipped characters.
-        /// </summary>
-        /// <typeparam name="TKind">The kind-type for the produces <see cref="Token{TKind}"/>.</typeparam>
-        /// <param name="kind">The token-kind to build.</param>
-        /// <param name="length">The amount of characters to skip.</param>
-        /// <returns>The constructed <see cref="Token{TKind}"/>.</returns>
-        protected Token<TKind> TakeToken<TKind>(TKind kind, int length)
-            where TKind : notnull
-        {
-            var start = this.Position;
-            var text = length == 0 ? string.Empty : this.Take(length);
-            var range = new Range(start, this.Position);
-            return new Token<TKind>(range, text, kind);
-        }
+        protected TToken TakeToken(int length, Func<Range, string, TToken> makeToken) =>
+            base.TakeToken<TToken>(length, makeToken);
 
         IToken ILexer.Next() => this.Next();
 
