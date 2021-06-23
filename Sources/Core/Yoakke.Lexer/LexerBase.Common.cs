@@ -163,7 +163,7 @@ namespace Yoakke.Lexer
             if (lastChar == '\r' && currentChar == '\n') return pos;
             if (currentChar == '\r' || currentChar == '\n') return pos.Newline();
             if (char.IsControl(currentChar)) return pos;
-            return pos.Advance(1);
+            return pos.Advance();
         }
     }
 }

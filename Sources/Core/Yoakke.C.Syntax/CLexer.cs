@@ -20,6 +20,7 @@ namespace Yoakke.C.Syntax
     {
         /// <summary>
         /// The logical <see cref="Position"/> in the source.
+        /// This takes line continuations as being in the same line as the previous one for example.
         /// </summary>
         public Position LogicalPosition { get; private set; }
 
@@ -51,31 +52,156 @@ namespace Yoakke.C.Syntax
         public override CToken Next()
         {
         begin:
-            if (this.IsEnd) return this.TakeToken(CTokenType.End, 0, new Text.Range(/* TODO */), string.Empty);
+            // Current logical position
+            var currentPosition = this.LogicalPosition;
 
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Matches a literal text similarly to <see cref="LexerBase{TKind}.Matches(string, int)"/>, but it compares
-        /// the escaped text.
-        /// </summary>
-        protected bool Matches(string text, out int length, int offset)
-        {
-            length = 0;
-            for (var i = 0; i < text.Length; ++i)
+            // Ease token creation by updating the logical position
+            CToken TakeToken(CTokenType type, int length, string logicalText)
             {
-                if (!this.TryPeek(out var ch, out var charLength, offset + i)) return false;
-                if (ch != text[i]) return false;
-                length += charLength;
+                var logicalRange = new Text.Range(this.LogicalPosition, currentPosition);
+                this.LogicalPosition = currentPosition;
+                return this.TakeToken(type, length, logicalRange, logicalText);
             }
-            return true;
+
+            // EOF
+            if (this.IsEnd) return TakeToken(CTokenType.End, 0, string.Empty);
+
+            // Peek a character to have a clue what is coming up
+            var peek = this.PeekDigraph(out var peekLength);
+
+            // Handling newlines
+            if (peek == '\r')
+            {
+                // We use the primitive peek method, it is enough
+                var peek2 = this.Peek(peekLength);
+
+                // It is a Windows-style newline
+                if (peek2 == '\n') this.Skip(peekLength + 1);
+                // OS-X 9 style
+                else this.Skip(peekLength);
+
+                // Either way, it was a newline
+                this.LogicalPosition = this.LogicalPosition.Newline();
+                goto begin;
+            }
+            if (peek == '\n')
+            {
+                // Unix-style newline
+                this.Skip(peekLength);
+                this.LogicalPosition = this.LogicalPosition.Newline();
+                goto begin;
+            }
+
+            // A control character means nothing, no logical position steps
+            if (char.IsControl(peek))
+            {
+                this.Skip(peekLength);
+                goto begin;
+            }
+
+            // Whitespace on the other hand is advancement
+            // Also the NUL character for some reason
+            if (char.IsWhiteSpace(peek) || peek == '\0')
+            {
+                this.Skip(peekLength);
+                this.LogicalPosition = this.LogicalPosition.Advance();
+                goto begin;
+            }
+
+            // Look up what it could be based on the single peek
+            switch (peek)
+            {
+            case '/':
+            {
+                // Can be a division operator ('/'), a line comment ('//') and a multiline-comment ('/* ... */')
+                // To find out, trigraph-peeking is enough
+                var peek2 = this.PeekTrigraph(out var peekLength2, peekLength);
+                if (peek2 == '/')
+                {
+                    // Line comment
+                    // We don't deal with escaping digraphs from here, nor do we care about logical positioning
+                    // Logical position will essentially update by a space
+                    int offset = peekLength + peekLength2;
+                    while (true)
+                    {
+                        var ch = this.PeekTrigraph(out var length, offset, '\n');
+                        // End of comment
+                        if (ch == '\r' || ch == '\n') break;
+                        // Skip character
+                        offset += length;
+                    }
+                    // Advance logical position by a space, skip
+                    this.Skip(offset);
+                    this.LogicalPosition = this.LogicalPosition.Advance();
+                    goto begin;
+                }
+                else if (peek2 == '*')
+                {
+                    // Multiline comment
+                    // We don't deal with escaping digraphs from here, nor do we care about logical positioning
+                    // Logical position will essentially update by a space
+                    int offset = peekLength + peekLength2;
+                    while (true)
+                    {
+                        if (!this.TryPeekTrigraph(out var ch1, out var length1, offset))
+                        {
+                            // EOF, but comment did not end
+                            // TODO: Handle properly
+                            break;
+                        }
+                        offset += length1;
+                        if (ch1 == '*')
+                        {
+                            // Potentially end of comment
+                            var ch2 = this.PeekTrigraph(out var length2, offset);
+                            if (ch2 == '/')
+                            {
+                                // End of comment
+                                offset += length2;
+                                break;
+                            }
+                        }
+                    }
+                    // Advance logical position by a space, skip
+                    this.Skip(offset);
+                    this.LogicalPosition = this.LogicalPosition.Advance();
+                    goto begin;
+                }
+                else
+                {
+                    // Division operator
+                    return TakeToken(CTokenType.Slash, peekLength2, "/");
+                }
+            }
+
+            case '#':
+            {
+                // It's either a hashmark or a double-hashmark
+                // But for that we use the digraph-escaping peek, because %:%: can specify ## with digraphs
+                var peek2 = this.PeekDigraph(out var peekLength2, peekLength);
+                return peek2 == '#'
+                    // It's a ##
+                    ? TakeToken(CTokenType.HashHash, peekLength + peekLength2, "##")
+                    // It's a simple #
+                    : TakeToken(CTokenType.Hash, peekLength, "#");
+            }
+            }
+
+            // Unknown
+            return TakeToken(CTokenType.Unknown, 1, peek.ToString());
         }
 
         /// <summary>
-        /// Analogue of <see cref="LexerBase{TKind}.Peek(int, char)"/>.
+        /// Peeks while escaping digraphs and trigraphs. Wrapper for <see cref="TryPeekDigraph(out char, out int, int)"/>.
         /// </summary>
-        protected char Peek(out int length, int offset = 0, char @default = '\0') => this.TryPeek(out var result, out length, offset)
+        protected char PeekDigraph(out int length, int offset = 0, char @default = '\0') => this.TryPeekDigraph(out var result, out length, offset)
+            ? result
+            : @default;
+
+        /// <summary>
+        /// Peeks while escaping trigraphs only. Wrapper for <see cref="TryPeekTrigraph(out char, out int, int)"/>.
+        /// </summary>
+        protected char PeekTrigraph(out int length, int offset = 0, char @default = '\0') => this.TryPeekTrigraph(out var result, out length, offset)
             ? result
             : @default;
 
@@ -86,10 +212,10 @@ namespace Yoakke.C.Syntax
         /// <param name="length">The length of the parsed characters.</param>
         /// <param name="offset">The offset to peek at.</param>
         /// <returns>True, if there was a character to peek (end was not reached).</returns>
-        protected bool TryPeek(out char result, out int length, int offset)
+        protected bool TryPeekDigraph(out char result, out int length, int offset)
         {
             // Try to parse the first character
-            if (!this.TryPeekLineContinuated(out var firstCh, out var firstLen, offset))
+            if (!this.TryPeekTrigraph(out var firstCh, out var firstLen, offset))
             {
                 result = default;
                 length = 0;
@@ -97,7 +223,7 @@ namespace Yoakke.C.Syntax
             }
             // We succeeded, we have a first character
             // If digraphs are enabled, we need to check for that
-            if (this.AllowDigraphs && this.TryPeekLineContinuated(out var secondCh, out var secondLen, offset + firstLen))
+            if (this.AllowDigraphs && this.TryPeekTrigraph(out var secondCh, out var secondLen, offset + firstLen))
             {
                 // Check if the 2 characters form a digraph
                 char? digraph = (firstCh, secondCh) switch
@@ -131,7 +257,7 @@ namespace Yoakke.C.Syntax
         /// <param name="length">The length of the parsed characters, in case it has continuations or trigraphs.</param>
         /// <param name="offset">The offset to peek at.</param>
         /// <returns>True, if there was a character to peek (end was not reached).</returns>
-        private bool TryPeekLineContinuated(out char result, out int length, int offset)
+        private bool TryPeekTrigraph(out char result, out int length, int offset)
         {
             // We could have a line-continuation, a digraph, or a trigraph
             // NOTE: Digraphs can be split by line-continuations, trigraphs can not

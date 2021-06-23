@@ -6,5 +6,11 @@ namespace Yoakke.C.Syntax
     public enum CTokenType
     {
         End,
+        Unknown,
+
+        Hash,
+        HashHash,
+
+        Slash,
     }
 }
