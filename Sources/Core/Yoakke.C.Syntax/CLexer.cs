@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -53,30 +54,21 @@ namespace Yoakke.C.Syntax
         {
         begin:
             // EOF
-            if (this.IsEnd) return TakeToken(CTokenType.End, 0, string.Empty, 0);
+            if (this.IsEnd) return this.TakeToken(CTokenType.End, 0, string.Empty);
 
             // Peek a character to have a clue what is coming up
             var peek = this.PeekDigraph(out var peekLength);
 
             // Handling newlines
-            if (peek == '\r')
+            if (peek == '\r' || peek == '\n')
             {
-                // We use the primitive peek method, it is enough
-                var peek2 = this.Peek(peekLength);
-
+                // NOTE: It's ok to use the escape-less peek here
                 // It is a Windows-style newline
-                if (peek2 == '\n') this.Skip(peekLength + 1);
-                // OS-X 9 style
+                if (peek == '\r' && base.Peek(peekLength) == '\n') this.Skip(peekLength + 1);
+                // OS-X 9 or Unix-style
                 else this.Skip(peekLength);
 
                 // Either way, it was a newline
-                this.LogicalPosition = this.LogicalPosition.Newline();
-                goto begin;
-            }
-            if (peek == '\n')
-            {
-                // Unix-style newline
-                this.Skip(peekLength);
                 this.LogicalPosition = this.LogicalPosition.Newline();
                 goto begin;
             }
@@ -159,12 +151,12 @@ namespace Yoakke.C.Syntax
                 else if (peek2 == '=')
                 {
                     // Divide-assign operator
-                    return TakeToken(CTokenType.DivideAssign, peekLength + peekLength2, "/=", 2);
+                    return this.TakeToken(CTokenType.DivideAssign, peekLength + peekLength2, "/=");
                 }
                 else
                 {
                     // Division operator
-                    return TakeToken(CTokenType.Divide, peekLength, "/", 1);
+                    return this.TakeToken(CTokenType.Divide, peekLength, "/");
                 }
             }
 
@@ -175,83 +167,83 @@ namespace Yoakke.C.Syntax
                 var peek2 = this.PeekDigraph(out var peekLength2, peekLength);
                 return peek2 == '#'
                     // It's a ##
-                    ? TakeToken(CTokenType.HashHash, peekLength + peekLength2, "##", 2)
+                    ? this.TakeToken(CTokenType.HashHash, peekLength + peekLength2, "##")
                     // It's a simple #
-                    : TakeToken(CTokenType.Hash, peekLength, "#", 1);
+                    : this.TakeToken(CTokenType.Hash, peekLength, "#");
             }
 
-            case '(': return TakeToken(CTokenType.OpenParen, peekLength, "(", 1);
-            case ')': return TakeToken(CTokenType.CloseParen, peekLength, ")", 1);
-            case '[': return TakeToken(CTokenType.OpenBracket, peekLength, "[", 1);
-            case ']': return TakeToken(CTokenType.CloseBracket, peekLength, "]", 1);
-            case '{': return TakeToken(CTokenType.OpenBrace, peekLength, "{", 1);
-            case '}': return TakeToken(CTokenType.CloseBrace, peekLength, "}", 1);
-            case '~': return TakeToken(CTokenType.BitNot, peekLength, "~", 1);
-            case ',': return TakeToken(CTokenType.Comma, peekLength, ",", 1);
-            case ':': return TakeToken(CTokenType.Colon, peekLength, ":", 1);
-            case ';': return TakeToken(CTokenType.Semicolon, peekLength, ";", 1);
-            case '?': return TakeToken(CTokenType.QuestionMark, peekLength, "?", 1);
+            case '(': return this.TakeToken(CTokenType.OpenParen, peekLength, "(");
+            case ')': return this.TakeToken(CTokenType.CloseParen, peekLength, ")");
+            case '[': return this.TakeToken(CTokenType.OpenBracket, peekLength, "[");
+            case ']': return this.TakeToken(CTokenType.CloseBracket, peekLength, "]");
+            case '{': return this.TakeToken(CTokenType.OpenBrace, peekLength, "{");
+            case '}': return this.TakeToken(CTokenType.CloseBrace, peekLength, "}");
+            case '~': return this.TakeToken(CTokenType.BitNot, peekLength, "~");
+            case ',': return this.TakeToken(CTokenType.Comma, peekLength, ",");
+            case ':': return this.TakeToken(CTokenType.Colon, peekLength, ":");
+            case ';': return this.TakeToken(CTokenType.Semicolon, peekLength, ";");
+            case '?': return this.TakeToken(CTokenType.QuestionMark, peekLength, "?");
 
             case '+':
             {
                 var peek2 = this.PeekTrigraph(out var peekLength2, peekLength);
-                if (peek2 == '=') return TakeToken(CTokenType.AddAssign, peekLength + peekLength2, "+=", 2);
-                else if (peek2 == '+') return TakeToken(CTokenType.Increment, peekLength + peekLength2, "++", 2);
-                else return TakeToken(CTokenType.Add, peekLength, "+", 1);
+                if (peek2 == '=') return this.TakeToken(CTokenType.AddAssign, peekLength + peekLength2, "+=");
+                else if (peek2 == '+') return this.TakeToken(CTokenType.Increment, peekLength + peekLength2, "++");
+                else return this.TakeToken(CTokenType.Add, peekLength, "+");
             }
             case '-':
             {
                 var peek2 = this.PeekTrigraph(out var peekLength2, peekLength);
-                if (peek2 == '=') return TakeToken(CTokenType.SubtractAssign, peekLength + peekLength2, "-=", 2);
-                else if (peek2 == '-') return TakeToken(CTokenType.Decrement, peekLength + peekLength2, "--", 2);
-                else if (peek2 == '>') return TakeToken(CTokenType.Arrow, peekLength + peekLength2, "->", 2);
-                else return TakeToken(CTokenType.Subtract, peekLength, "-", 1);
+                if (peek2 == '=') return this.TakeToken(CTokenType.SubtractAssign, peekLength + peekLength2, "-=");
+                else if (peek2 == '-') return this.TakeToken(CTokenType.Decrement, peekLength + peekLength2, "--");
+                else if (peek2 == '>') return this.TakeToken(CTokenType.Arrow, peekLength + peekLength2, "->");
+                else return this.TakeToken(CTokenType.Subtract, peekLength, "-");
             }
             case '*':
             {
                 return this.PeekTrigraph(out var peekLength2, peekLength) == '='
-                    ? TakeToken(CTokenType.MultiplyAssign, peekLength + peekLength2, "*=", 2)
-                    : TakeToken(CTokenType.Multiply, peekLength, "*", 1);
+                    ? this.TakeToken(CTokenType.MultiplyAssign, peekLength + peekLength2, "*=")
+                    : this.TakeToken(CTokenType.Multiply, peekLength, "*");
             }
             // NOTE: '/' is handled above
             case '%':
             {
                 return this.PeekTrigraph(out var peekLength2, peekLength) == '='
-                    ? TakeToken(CTokenType.ModuloAssign, peekLength + peekLength2, "%=", 2)
-                    : TakeToken(CTokenType.Modulo, peekLength, "%", 1);
+                    ? this.TakeToken(CTokenType.ModuloAssign, peekLength + peekLength2, "%=")
+                    : this.TakeToken(CTokenType.Modulo, peekLength, "%");
             }
             case '^':
             {
                 return this.PeekTrigraph(out var peekLength2, peekLength) == '='
-                    ? TakeToken(CTokenType.BitXorAssign, peekLength + peekLength2, "^=", 2)
-                    : TakeToken(CTokenType.BitXor, peekLength, "^", 1);
+                    ? this.TakeToken(CTokenType.BitXorAssign, peekLength + peekLength2, "^=")
+                    : this.TakeToken(CTokenType.BitXor, peekLength, "^");
             }
             case '!':
             {
                 return this.PeekTrigraph(out var peekLength2, peekLength) == '='
-                    ? TakeToken(CTokenType.NotEqual, peekLength + peekLength2, "!=", 2)
-                    : TakeToken(CTokenType.LogicalNot, peekLength, "!", 1);
+                    ? this.TakeToken(CTokenType.NotEqual, peekLength + peekLength2, "!=")
+                    : this.TakeToken(CTokenType.LogicalNot, peekLength, "!");
             }
             case '=':
             {
                 return this.PeekTrigraph(out var peekLength2, peekLength) == '='
-                    ? TakeToken(CTokenType.Equal, peekLength + peekLength2, "==", 2)
-                    : TakeToken(CTokenType.Assign, peekLength, "=", 1);
+                    ? this.TakeToken(CTokenType.Equal, peekLength + peekLength2, "==")
+                    : this.TakeToken(CTokenType.Assign, peekLength, "=");
             }
 
             case '&':
             {
                 var peek2 = this.PeekTrigraph(out var peekLength2, peekLength);
-                if (peek2 == '=') return TakeToken(CTokenType.BitAndAssign, peekLength + peekLength2, "&=", 2);
-                else if (peek2 == '&') return TakeToken(CTokenType.LogicalAnd, peekLength + peekLength2, "&&", 2);
-                else return TakeToken(CTokenType.BitAnd, peekLength, "&", 1);
+                if (peek2 == '=') return this.TakeToken(CTokenType.BitAndAssign, peekLength + peekLength2, "&=");
+                else if (peek2 == '&') return this.TakeToken(CTokenType.LogicalAnd, peekLength + peekLength2, "&&");
+                else return this.TakeToken(CTokenType.BitAnd, peekLength, "&");
             }
             case '|':
             {
                 var peek2 = this.PeekTrigraph(out var peekLength2, peekLength);
-                if (peek2 == '=') return TakeToken(CTokenType.BitOrAssign, peekLength + peekLength2, "|=", 2);
-                else if (peek2 == '|') return TakeToken(CTokenType.LogicalOr, peekLength + peekLength2, "||", 2);
-                else return TakeToken(CTokenType.BitOr, peekLength, "|", 1);
+                if (peek2 == '=') return this.TakeToken(CTokenType.BitOrAssign, peekLength + peekLength2, "|=");
+                else if (peek2 == '|') return this.TakeToken(CTokenType.LogicalOr, peekLength + peekLength2, "||");
+                else return this.TakeToken(CTokenType.BitOr, peekLength, "|");
             }
 
             case '>':
@@ -262,22 +254,22 @@ namespace Yoakke.C.Syntax
                     // Shift or shift-assign
                     if (this.PeekTrigraph(out var peekLength3, peekLength + peekLength2) == '=')
                     {
-                        return TakeToken(CTokenType.ShiftRightAssign, peekLength + peekLength2 + peekLength3, ">>=", 3);
+                        return this.TakeToken(CTokenType.ShiftRightAssign, peekLength + peekLength2 + peekLength3, ">>=");
                     }
                     else
                     {
-                        return TakeToken(CTokenType.ShiftRight, peekLength + peekLength2, ">>", 2);
+                        return this.TakeToken(CTokenType.ShiftRight, peekLength + peekLength2, ">>");
                     }
                 }
                 else if (peek2 == '=')
                 {
                     // Cmp-equal
-                    return TakeToken(CTokenType.GreaterEqual, peekLength + peekLength2, ">=", 2);
+                    return this.TakeToken(CTokenType.GreaterEqual, peekLength + peekLength2, ">=");
                 }
                 else
                 {
                     // Just cmp
-                    return TakeToken(CTokenType.Greater, peekLength, ">", 1);
+                    return this.TakeToken(CTokenType.Greater, peekLength, ">");
                 }
             }
 
@@ -289,41 +281,311 @@ namespace Yoakke.C.Syntax
                     // Shift or shift-assign
                     if (this.PeekTrigraph(out var peekLength3, peekLength + peekLength2) == '=')
                     {
-                        return TakeToken(CTokenType.ShiftLeftAssign, peekLength + peekLength2 + peekLength3, "<<=", 3);
+                        return this.TakeToken(CTokenType.ShiftLeftAssign, peekLength + peekLength2 + peekLength3, "<<=");
                     }
                     else
                     {
-                        return TakeToken(CTokenType.ShiftLeft, peekLength + peekLength2, "<<", 2);
+                        return this.TakeToken(CTokenType.ShiftLeft, peekLength + peekLength2, "<<");
                     }
                 }
                 else if (peek2 == '=')
                 {
                     // Cmp-equal
-                    return TakeToken(CTokenType.LessEqual, peekLength + peekLength2, "<=", 2);
+                    return this.TakeToken(CTokenType.LessEqual, peekLength + peekLength2, "<=");
                 }
                 else
                 {
                     // Just cmp
-                    return TakeToken(CTokenType.Less, peekLength, "<", 1);
+                    return this.TakeToken(CTokenType.Less, peekLength, "<");
                 }
             }
 
             case '.':
             {
-                if (this.PeekTrigraph(out var peekLength2, peekLength) == '.'
-                    && this.PeekTrigraph(out var peekLength3, peekLength + peekLength2) == '.')
+                var peek2 = this.PeekTrigraph(out var peekLength2, peekLength);
+                if (peek2 == '.' && this.PeekTrigraph(out var peekLength3, peekLength + peekLength2) == '.')
                 {
-                    return TakeToken(CTokenType.Ellipsis, peekLength + peekLength2 + peekLength3, "...", 3);
+                    return this.TakeToken(CTokenType.Ellipsis, peekLength + peekLength2 + peekLength3, "...");
                 }
-                else
+                else if (!char.IsDigit(peek2))
                 {
-                    return TakeToken(CTokenType.Dot, peekLength, ".", 1);
+                    // If it was a digit, we would consider it a float literal
+                    return this.TakeToken(CTokenType.Dot, peekLength, ".");
                 }
+                break;
             }
             }
 
+            if (char.IsDigit(peek))
+            {
+                // Number literals
+                var offset = peekLength;
+                var number = new StringBuilder(peek);
+
+                if (peek == '0' && this.TakeIf(number, ref offset, IsX))
+                {
+                    // Hex literal
+                    this.TakeWhile(number, ref offset, IsHexDigit);
+                    // Only consider it a real hex number, if at least 1 hex digit was present
+                    // That means a length greater than 2, as '0x' is 2 chars
+                    if (number.Length > 2)
+                    {
+                        // Now we can take arbitrary amount of integer suffixes
+                        this.TakeWhile(number, ref offset, IsIntSuffix);
+                        // We are done
+                        return this.TakeToken(CTokenType.IntLiteral, offset, number.ToString());
+                    }
+                }
+                else
+                {
+                    // Any other decimal number literal
+                    bool isFloat = false;
+                    this.TakeWhile(number, ref offset, char.IsDigit);
+                    // We have consumed all decimal digits available
+                    if (this.TakeIf(number, ref offset, '.'))
+                    {
+                        // Decimal point
+                        isFloat = true;
+                        this.TakeWhile(number, ref offset, char.IsDigit);
+                    }
+                    // Exponent
+                    if (this.TakeExponent(number, ref offset)) isFloat = true;
+
+                    if (isFloat)
+                    {
+                        // Only allow float suffixes
+                        this.TakeWhile(number, ref offset, IsFloatSuffix);
+                    }
+                    else
+                    {
+                        // Only allow integer suffixes
+                        this.TakeWhile(number, ref offset, IsIntSuffix);
+                    }
+
+                    // We are done
+                    return this.TakeToken(isFloat ? CTokenType.FloatLiteral : CTokenType.IntLiteral, offset, number.ToString());
+                }
+            }
+
+            if (peek == '.')
+            {
+                // It can only be a floating point number
+                var offset = peekLength;
+                var number = new StringBuilder(peek);
+                this.TakeWhile(number, ref offset, char.IsDigit);
+                Debug.Assert(number.Length > 1, "digit expected after dot");
+                // Exponent
+                this.TakeExponent(number, ref offset);
+                // Suffixes
+                this.TakeWhile(number, ref offset, IsFloatSuffix);
+                // We are done
+                return this.TakeToken(CTokenType.FloatLiteral, offset, number.ToString());
+            }
+
+            // Char literal
+            if (peek == '\'')
+            {
+                var literal = new StringBuilder(peek);
+                var offset = peekLength;
+                if (this.TakeLiteral(literal, ref offset, '\'') && literal.Length > 2)
+                {
+                    // This is only successful, if there was at least one character besides the open and close character
+                    return this.TakeToken(CTokenType.CharLiteral, offset, literal.ToString());
+                }
+            }
+
+            // String literal
+            if (peek == '"')
+            {
+                var literal = new StringBuilder(peek);
+                var offset = peekLength;
+                if (this.TakeLiteral(literal, ref offset, '"'))
+                {
+                    return this.TakeToken(CTokenType.StringLiteral, offset, literal.ToString());
+                }
+            }
+
+            if (IsIdent(peek))
+            {
+                var ident = new StringBuilder(peek);
+                var offset = peekLength;
+
+                if (this.TakeIf(ident, ref offset, '\''))
+                {
+                    // Char literal
+                    if (this.TakeLiteral(ident, ref offset, '\'') && ident.Length > 2)
+                    {
+                        // This is only successful, if there was at least one character besides the open and close character
+                        return this.TakeToken(CTokenType.CharLiteral, offset, ident.ToString());
+                    }
+                }
+                else if (this.TakeIf(ident, ref offset, '"'))
+                {
+                    // String literal
+                    if (this.TakeLiteral(ident, ref offset, '"'))
+                    {
+                        return this.TakeToken(CTokenType.StringLiteral, offset, ident.ToString());
+                    }
+                }
+                else
+                {
+                    // Identifier
+                    this.TakeWhile(ident, ref offset, IsIdent);
+                    var text = ident.ToString();
+
+                    // Determine the token-type
+                    var tokenType = text switch
+                    {
+                        "auto" => CTokenType.KeywordAuto,
+                        "break" => CTokenType.KeywordBreak,
+                        "case" => CTokenType.KeywordCase,
+                        "char" => CTokenType.KeywordChar,
+                        "const" => CTokenType.KeywordConst,
+                        "continue" => CTokenType.KeywordContinue,
+                        "default" => CTokenType.KeywordDefault,
+                        "do" => CTokenType.KeywordDo,
+                        "double" => CTokenType.KeywordDouble,
+                        "else" => CTokenType.KeywordElse,
+                        "enum" => CTokenType.KeywordEnum,
+                        "extern" => CTokenType.KeywordExtern,
+                        "float" => CTokenType.KeywordFloat,
+                        "for" => CTokenType.KeywordFor,
+                        "goto" => CTokenType.KeywordGoto,
+                        "if" => CTokenType.KeywordIf,
+                        "int" => CTokenType.KeywordInt,
+                        "long" => CTokenType.KeywordLong,
+                        "register" => CTokenType.KeywordRegister,
+                        "return" => CTokenType.KeywordReturn,
+                        "short" => CTokenType.KeywordShort,
+                        "signed" => CTokenType.KeywordSigned,
+                        "sizeof" => CTokenType.KeywordSizeof,
+                        "static" => CTokenType.KeywordStatic,
+                        "struct" => CTokenType.KeywordStruct,
+                        "switch" => CTokenType.KeywordSwitch,
+                        "typedef" => CTokenType.KeywordTypedef,
+                        "union" => CTokenType.KeywordUnion,
+                        "unsigned" => CTokenType.KeywordUnsigned,
+                        "void" => CTokenType.KeywordVoid,
+                        "volatile" => CTokenType.KeywordVolatile,
+                        "while" => CTokenType.KeywordWhile,
+                        _ => CTokenType.Identifier,
+                    };
+
+                    return this.TakeToken(tokenType, offset, text);
+                }
+            }
+
             // Unknown
-            return TakeToken(CTokenType.Unknown, 1, peek.ToString(), 1);
+            return this.TakeToken(CTokenType.Unknown, 1, peek.ToString());
+        }
+
+        private static bool IsX(char ch) => ch == 'x' || ch == 'X';
+
+        private static bool IsE(char ch) => ch == 'e' || ch == 'E';
+
+        private static bool IsSign(char ch) => ch == '+' || ch == '-';
+
+        private static bool IsHexDigit(char ch) => char.IsDigit(ch) || "abcdef".Contains(char.ToLower(ch));
+
+        private static bool IsIntSuffix(char ch) => ch == 'u' || ch == 'U' || ch == 'l' || ch == 'L';
+
+        private static bool IsFloatSuffix(char ch) => ch == 'f' || ch == 'F' || ch == 'l' || ch == 'L';
+
+        private static bool IsIdent(char ch) => char.IsLetterOrDigit(ch) || ch == '_';
+
+        private bool TakeIf(out char @char, ref int offset, Predicate<char> predicate)
+        {
+            var peek = this.PeekTrigraph(out var length, offset);
+            if (predicate(peek))
+            {
+                offset += length;
+                @char = peek;
+                return true;
+            }
+            else
+            {
+                @char = default;
+                return false;
+            }
+        }
+
+        private bool TakeIf(StringBuilder target, ref int offset, Predicate<char> predicate)
+        {
+            if (this.TakeIf(out var ch, ref offset, predicate))
+            {
+                target.Append(ch);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private bool TakeIf(StringBuilder target, ref int offset, char what) =>
+            this.TakeIf(target, ref offset, ch => ch == what);
+
+        private int TakeWhile(StringBuilder target, ref int offset, Predicate<char> predicate)
+        {
+            int i = 0;
+            for (; this.TakeIf(target, ref offset, predicate); ++i)
+            {
+                // Pass
+            }
+            return i;
+        }
+
+        private bool TakeExponent(StringBuilder target, ref int offset)
+        {
+            var count = target.Length;
+            if (this.TakeIf(target, ref offset, IsE))
+            {
+                this.TakeIf(target, ref offset, IsSign);
+                if (this.TakeWhile(target, ref offset, char.IsDigit) > 0) return true;
+            }
+            target.Remove(count, target.Length - count);
+            return false;
+        }
+
+        private bool TakeOneLiteral(StringBuilder target, ref int offset, char forbidden)
+        {
+            var peek1 = this.PeekTrigraph(out var length, offset, forbidden);
+            if (peek1 == '\\')
+            {
+                // Escaped
+                if (this.TryPeekTrigraph(out var ch, out var length2, offset + length))
+                {
+                    // There was a character to escape
+                    offset += length + length2;
+                    target.Append('\\').Append(ch);
+                    return true;
+                }
+            }
+            else if (peek1 != forbidden)
+            {
+                offset += length;
+                target.Append(peek1);
+                return true;
+            }
+            return false;
+        }
+
+        private bool TakeLiteral(StringBuilder target, ref int offset, char close)
+        {
+            int i = 0;
+            for (; this.TakeOneLiteral(target, ref offset, close); ++i)
+            {
+                // Pass
+            }
+            if (this.TakeIf(target, ref offset, close))
+            {
+                // There was a proper close character
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         /// <summary>
@@ -332,12 +594,11 @@ namespace Yoakke.C.Syntax
         /// <param name="type">The <see cref="CTokenType"/> of the token.</param>
         /// <param name="length">The length of the <see cref="CToken"/> in actual characters.</param>
         /// <param name="logicalText">The logical, meaningful text of the <see cref="CToken"/>.</param>
-        /// <param name="toAdvance">The amount to advance logical <see cref="Position"/> horizontally.</param>
         /// <returns>The created <see cref="CToken"/>.</returns>
-        private CToken TakeToken(CTokenType type, int length, string logicalText, int toAdvance)
+        private CToken TakeToken(CTokenType type, int length, string logicalText)
         {
             var lastPosition = this.LogicalPosition;
-            this.LogicalPosition = this.LogicalPosition.Advance(toAdvance);
+            this.LogicalPosition = this.LogicalPosition.Advance(logicalText.Length);
             var logicalRange = new Text.Range(lastPosition, this.LogicalPosition);
             return this.TakeToken(type, length, logicalRange, logicalText);
         }
