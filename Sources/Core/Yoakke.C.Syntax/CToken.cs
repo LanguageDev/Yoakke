@@ -20,30 +20,30 @@ namespace Yoakke.C.Syntax
         public CTokenType Kind { get; }
 
         /// <summary>
-        /// The original <see cref="Text.Range"/> that the token can be found at.
+        /// The logical (escaped) <see cref="Text.Range"/> that the token can be found at.
         /// </summary>
-        public Text.Range OriginalRange { get; }
+        public Text.Range LogicalRange { get; }
 
         /// <summary>
-        /// The original text value without escaped digraph, trigraphs and line-continuations.
+        /// The logical (escaped) text value without line-continuations and trigraphs.
         /// </summary>
-        public string OriginalText { get; }
+        public string LogicalText { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CToken"/> class.
         /// </summary>
-        /// <param name="range">The logical <see cref="Text.Range"/> of the <see cref="CToken"/> in the source.</param>
-        /// <param name="text">The logical, escaped text of the <see cref="CToken"/>.</param>
-        /// <param name="originalRange">The original <see cref="Text.Range"/> of the <see cref="CToken"/> in the source.</param>
-        /// <param name="originalText">The original text the <see cref="CToken"/> was parsed from.</param>
+        /// <param name="range">The <see cref="Text.Range"/> of the <see cref="CToken"/> in the source.</param>
+        /// <param name="text">The text of the <see cref="CToken"/>.</param>
+        /// <param name="logicalRange">The logical <see cref="Text.Range"/> of the <see cref="CToken"/> in the source.</param>
+        /// <param name="logicalText">The original text the <see cref="CToken"/> was parsed from.</param>
         /// <param name="kind">The <see cref="CTokenType"/> of the <see cref="CToken"/>.</param>
-        public CToken(Text.Range range, string text, Text.Range originalRange, string originalText, CTokenType kind)
+        public CToken(Text.Range range, string text, Text.Range logicalRange, string logicalText, CTokenType kind)
         {
             this.Range = range;
             this.Text = text;
             this.Kind = kind;
-            this.OriginalRange = originalRange;
-            this.OriginalText = originalText;
+            this.LogicalRange = logicalRange;
+            this.LogicalText = logicalText;
         }
 
         public bool Equals(IToken? other) => this.Equals(other as CToken);
