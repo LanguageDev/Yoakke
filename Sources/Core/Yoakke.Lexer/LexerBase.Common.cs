@@ -66,6 +66,14 @@ namespace Yoakke.Lexer
         }
 
         /// <summary>
+        /// Checks, some upcoming character matches a given one.
+        /// </summary>
+        /// <param name="ch">The character to compare with the upcoming one.</param>
+        /// <param name="offset">The offset to start look for match at in the input.</param>
+        /// <returns>True, if they match.</returns>
+        protected bool Matches(char ch, int offset = 0) => this.TryPeek(out var inInput, offset) && ch == inInput;
+
+        /// <summary>
         /// Peeks ahead some characters into the input.
         /// </summary>
         /// <param name="result">The peeked character is written here, if the method returns true.</param>
