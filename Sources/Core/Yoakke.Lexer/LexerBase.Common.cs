@@ -53,10 +53,14 @@ namespace Yoakke.Lexer
         /// <returns>True, if there is a full match.</returns>
         protected bool Matches(string text, int offset = 0)
         {
+            // To avoid peeking -1, we pre-check empty string
+            if (text.Length == 0) return true;
+            // Check if we even have enough characters
+            if (!this.TryPeek(out var _, offset + text.Length - 1)) return false;
+            // If so, we can do a linear match without the overhead of the peek call
             for (var i = 0; i < text.Length; ++i)
             {
-                if (!this.TryPeek(out var ch, offset + i)) return false;
-                if (ch != text[i]) return false;
+                if (text[i] != this.peek[offset + 1]) return false;
             }
             return true;
         }
