@@ -41,16 +41,6 @@ namespace Yoakke.C.Syntax
         /// </summary>
         public bool AllowTrigraphs { get; set; } = true;
 
-        // Our escaped character peek-buffer
-        private readonly RingBuffer<char> escapedPeek = new();
-        // Our escaped character textual positions
-        // We are always a bit ahead in the primitive peek buffer because we always consume everything ASAP
-        // This way the physical position gets de-synced from what we are lexing
-        // To work around this, we simply store the physical positions of the peeked elements
-        private readonly RingBuffer<Position> escapedPosition = new();
-
-        private char prevChar;
-
         public CLexer(TextReader reader)
             : base(reader)
         {
