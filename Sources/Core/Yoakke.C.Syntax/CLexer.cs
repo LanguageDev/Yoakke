@@ -195,21 +195,195 @@ namespace Yoakke.C.Syntax
                 break;
             }
 
+            if (char.IsDigit(peek) || peek == '.')
+            {
+                var oldOffset = offset;
+                // It's number
+                var text = new StringBuilder(peek);
+                if (peek == '0' && this.MatchesEscaped(IsX, out var x, ref offset))
+                {
+                    // Hex number
+                    text.Append(x);
+                    // At least one hex digit is required
+                    if (this.TakeWhile(text, IsHex, ref offset) > 0)
+                    {
+                        this.TakeWhile(text, IsIntSuffix, ref offset);
+                        return Make(CTokenType.IntLiteral, text.ToString());
+                    }
+                    else
+                    {
+                        // Reset the offset, let the rest be handled by the lexer
+                        offset = oldOffset;
+                    }
+                }
+                else
+                {
+                    // Any other number
+                    var isFloat = peek == '.';
+                    if (peek != '.')
+                    {
+                        this.TakeWhile(text, char.IsDigit, ref offset);
+                        if (this.MatchesEscaped('.', ref offset)) isFloat = true;
+                    }
+                    this.TakeWhile(text, char.IsDigit, ref offset);
+                    if (this.TryParseExponent(text, ref offset)) isFloat = true;
+                    // Proper suffixes
+                    if (isFloat) this.TakeWhile(text, IsFloatSuffix, ref offset);
+                    else this.TakeWhile(text, IsIntSuffix, ref offset);
+                    // Done
+                    return Make(isFloat ? CTokenType.FloatLiteral : CTokenType.IntLiteral, text.ToString());
+                }
+            }
+
+            // Literals
+            if (IsLiteralSeparator(peek) || IsIdent(peek))
+            {
+                var isLiteral = false;
+                var text = new StringBuilder(peek);
+                char separatorChar = peek;
+                if (IsLiteralSeparator(peek))
+                {
+                    isLiteral = true;
+                }
+                else if (this.MatchesEscaped(IsLiteralSeparator, out var sep, ref offset))
+                {
+                    isLiteral = true;
+                    text.Append(sep);
+                    separatorChar = sep;
+                }
+
+                // It is a literal
+                if (isLiteral)
+                {
+                    while (true)
+                    {
+                        if (this.MatchesEscaped(separatorChar, ref offset))
+                        {
+                            text.Append(separatorChar);
+                            break;
+                        }
+                        if (this.MatchesEscaped('\\', ref offset))
+                        {
+                            // Anything
+                            text.Append('\\');
+                            text.Append(this.ParseEscaped(ref offset));
+                        }
+                    }
+                    return Make(separatorChar == '\'' ? CTokenType.CharLiteral : CTokenType.StringLiteral, text.ToString());
+                }
+            }
+
+            if (IsIdent(peek))
+            {
+                var text = new StringBuilder(peek);
+                this.TakeWhile(text, IsIdent, ref offset);
+                var str = text.ToString();
+                // Determine the token-type
+                var tokenType = str switch
+                {
+                    "auto" => CTokenType.KeywordAuto,
+                    "break" => CTokenType.KeywordBreak,
+                    "case" => CTokenType.KeywordCase,
+                    "char" => CTokenType.KeywordChar,
+                    "const" => CTokenType.KeywordConst,
+                    "continue" => CTokenType.KeywordContinue,
+                    "default" => CTokenType.KeywordDefault,
+                    "do" => CTokenType.KeywordDo,
+                    "double" => CTokenType.KeywordDouble,
+                    "else" => CTokenType.KeywordElse,
+                    "enum" => CTokenType.KeywordEnum,
+                    "extern" => CTokenType.KeywordExtern,
+                    "float" => CTokenType.KeywordFloat,
+                    "for" => CTokenType.KeywordFor,
+                    "goto" => CTokenType.KeywordGoto,
+                    "if" => CTokenType.KeywordIf,
+                    "int" => CTokenType.KeywordInt,
+                    "long" => CTokenType.KeywordLong,
+                    "register" => CTokenType.KeywordRegister,
+                    "return" => CTokenType.KeywordReturn,
+                    "short" => CTokenType.KeywordShort,
+                    "signed" => CTokenType.KeywordSigned,
+                    "sizeof" => CTokenType.KeywordSizeof,
+                    "static" => CTokenType.KeywordStatic,
+                    "struct" => CTokenType.KeywordStruct,
+                    "switch" => CTokenType.KeywordSwitch,
+                    "typedef" => CTokenType.KeywordTypedef,
+                    "union" => CTokenType.KeywordUnion,
+                    "unsigned" => CTokenType.KeywordUnsigned,
+                    "void" => CTokenType.KeywordVoid,
+                    "volatile" => CTokenType.KeywordVolatile,
+                    "while" => CTokenType.KeywordWhile,
+                    _ => CTokenType.Identifier,
+                };
+
+                return Make(tokenType, str);
+            }
+
             // Unknown
             return this.TakeToken(CTokenType.Unknown, offset, peek.ToString());
         }
 
-        private bool TryParseExponent(int offset, out int nextOffset)
+        private bool TryParseExponent(StringBuilder result, ref int offset) =>
+            this.TryParseExponent(result, offset, out offset);
+
+        private bool TryParseExponent(StringBuilder result, int offset, out int nextOffset)
         {
             var initial = offset;
-            if (IsE(this.ParseEscaped(ref offset)))
+            if (this.MatchesEscaped(IsE, out var e, ref offset))
             {
-                if (IsSign(this.ParseEscaped(offset, out var offset2))) offset = offset2;
-                var anyDigits = false;
-                for (; char.IsDigit(this.ParseEscaped(ref offset)); anyDigits = true) ;
+                this.MatchesEscaped(IsSign, out var sign, ref offset);
+                if (this.TakeWhile(result, char.IsDigit, ref offset) > 0)
+                {
+                    nextOffset = offset;
+                    return true;
+                }
             }
             nextOffset = initial;
             return false;
+        }
+
+        private int TakeWhile(StringBuilder result, Predicate<char> predicate, ref int offset) =>
+            this.TakeWhile(result, predicate, offset, out offset);
+
+        private int TakeWhile(StringBuilder result, Predicate<char> predicate, int offset, out int nextOffset)
+        {
+            int length = 0;
+            for (; this.MatchesEscaped(predicate, out var ch, ref offset); ++length)
+            {
+                result.Append(ch);
+            }
+            nextOffset = offset;
+            return length;
+        }
+
+        /// <summary>
+        /// Wrapper to <see cref="MatchesEscaped(Predicate{char}, out char, int, out int)"/>.
+        /// </summary>
+        private bool MatchesEscaped(Predicate<char> predicate, out char result, ref int offset) =>
+            this.MatchesEscaped(predicate, out result, offset, out offset);
+
+        /// <summary>
+        /// Tries to match an escaped character with a predicate.
+        /// </summary>
+        /// <param name="predicate">The predicate to match the character with.</param>
+        /// <param name="result">The result character gets written here.</param>
+        /// <param name="offset">The offset to match at.</param>
+        /// <param name="nextOffset">The offset gets written here after the match.</param>
+        /// <returns>True, if the character matches.</returns>
+        private bool MatchesEscaped(Predicate<char> predicate, out char result, int offset, out int nextOffset)
+        {
+            if (this.TryParseEscaped(out var ch, offset, out var offset2) && predicate(ch))
+            {
+                nextOffset = offset2;
+                result = ch;
+                return true;
+            }
+            else
+            {
+                nextOffset = offset;
+                result = default;
+                return false;
+            }
         }
 
         /// <summary>
@@ -228,7 +402,7 @@ namespace Yoakke.C.Syntax
         private bool MatchesEscaped(string text, int offset, out int nextOffset)
         {
             var initial = offset;
-            for (int i = 0; i < text.Length; ++i)
+            for (var i = 0; i < text.Length; ++i)
             {
                 if (!this.MatchesEscaped(text[i], offset, out nextOffset))
                 {
@@ -399,11 +573,16 @@ namespace Yoakke.C.Syntax
 
         private static bool IsHex(char ch) => "0123456789abcdefABCDEF".Contains(ch);
 
+        private static bool IsX(char ch) => "xX".Contains(ch);
+
         private static bool IsE(char ch) => "eE".Contains(ch);
+
         private static bool IsSign(char ch) => "+-".Contains(ch);
 
         private static bool IsFloatSuffix(char ch) => "fFlL".Contains(ch);
 
         private static bool IsIntSuffix(char ch) => "uUlL".Contains(ch);
+
+        private static bool IsLiteralSeparator(char ch) => "'\"".Contains(ch);
     }
 }
