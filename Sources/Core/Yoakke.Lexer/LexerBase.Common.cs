@@ -60,7 +60,7 @@ namespace Yoakke.Lexer
             // If so, we can do a linear match without the overhead of the peek call
             for (var i = 0; i < text.Length; ++i)
             {
-                if (text[i] != this.peek[offset + 1]) return false;
+                if (text[i] != this.peek[offset + i]) return false;
             }
             return true;
         }

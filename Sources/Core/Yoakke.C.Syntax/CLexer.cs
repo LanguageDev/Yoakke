@@ -503,26 +503,26 @@ namespace Yoakke.C.Syntax
                 // Line-continuations are enabled, if there is a '\', means a potential line-continuation
                 var backslashLength = 0;
                 if (ch == '\\') backslashLength = 1;
-                else if (this.AllowTrigraphs && this.Matches("??/")) backslashLength = 3;
+                else if (this.AllowTrigraphs && this.Matches("??/", offset)) backslashLength = 3;
 
                 // A length > 0 means that there was a '\' or equivalent trigraph
                 if (backslashLength > 0)
                 {
                     var length = backslashLength;
                     // Consume whitespace, we allow trailing spaces before the newline
-                    for (; IsSpace(this.Peek(length)); ++length)
+                    for (; IsSpace(this.Peek(offset + length)); ++length)
                     {
                         // Pass
                     }
                     // Now we expect a newline
                     var newline = 0;
-                    if (this.Matches("\r\n", length)) newline = 2;
-                    else if (this.Matches('\r', length) || this.Matches('\n', length)) newline = 1;
+                    if (this.Matches("\r\n", offset + length)) newline = 2;
+                    else if (this.Matches('\r', offset + length) || this.Matches('\n', offset + length)) newline = 1;
                     // If we got a newline, it's a line-continuation
                     if (newline > 0)
                     {
                         // It's a line-continuation, retry after consume
-                        offset = length + newline;
+                        offset += length + newline;
                         goto begin;
                     }
                     // Otherwise we just eat the backslash
@@ -535,7 +535,7 @@ namespace Yoakke.C.Syntax
             // It could be a trigraph
             if (this.AllowTrigraphs && this.Matches("??", offset))
             {
-                char? trigraph = this.TryPeek(out var ch2, 2) ? ch2 switch
+                char? trigraph = this.TryPeek(out var ch2, offset + 2) ? ch2 switch
                 {
                     '=' => '#',
                     '/' => '\\',

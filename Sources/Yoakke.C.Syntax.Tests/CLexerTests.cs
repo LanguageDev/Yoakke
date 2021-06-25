@@ -156,6 +156,10 @@ namespace Yoakke.C.Syntax.Tests
 
         private static Range Rn(int line, int column, int length) => new(new(line, column), length);
 
+        private static Range Rn(Position from, Position to) => new(from, to);
+
+        private static Position Pos(int line, int column) => new(line, column);
+
         private static CToken Tok(Kind ty, string t) => Tok(ty, Rn(0, 0, t.Length), t);
 
         private static CToken Tok(Kind ty, Range r, string t) => Tok(ty, r, t, r, t);
@@ -171,6 +175,51 @@ namespace Yoakke.C.Syntax.Tests
             var end = Tok(Kind.End, Rn(0, token.Text.Length, 0), string.Empty);
             Assert.AreEqual(expected, token);
             Assert.AreEqual(end, lexer.Next());
+        }
+
+        [TestMethod]
+        public void SimpleSequence()
+        {
+            var sourceCode = "int x = 2;";
+            var lexer = new CLexer(sourceCode);
+            Assert.AreEqual(Tok(Kind.KeywordInt, Rn(0, 0, 3), "int"), lexer.Next());
+            Assert.AreEqual(Tok(Kind.Identifier, Rn(0, 4, 1), "x"), lexer.Next());
+            Assert.AreEqual(Tok(Kind.Assign, Rn(0, 6, 1), "="), lexer.Next());
+            Assert.AreEqual(Tok(Kind.IntLiteral, Rn(0, 8, 1), "2"), lexer.Next());
+            Assert.AreEqual(Tok(Kind.Semicolon, Rn(0, 9, 1), ";"), lexer.Next());
+            Assert.AreEqual(Tok(Kind.End, Rn(0, 10, 0), string.Empty), lexer.Next());
+        }
+
+        [TestMethod]
+        public void LineContinuatedSequence()
+        {
+            var sourceCode = @"char* x = ""ab\
+cd"";";
+            var lexer = new CLexer(sourceCode);
+            Assert.AreEqual(Tok(Kind.KeywordChar, Rn(0, 0, 4), "char", Rn(0, 0, 4), "char"), lexer.Next());
+            Assert.AreEqual(Tok(Kind.Multiply, Rn(0, 4, 1), "*", Rn(0, 4, 1), "*"), lexer.Next());
+            Assert.AreEqual(Tok(Kind.Identifier, Rn(0, 6, 1), "x", Rn(0, 6, 1), "x"), lexer.Next());
+            Assert.AreEqual(Tok(Kind.Assign, Rn(0, 8, 1), "=", Rn(0, 8, 1), "="), lexer.Next());
+            Assert.AreEqual(Tok(Kind.StringLiteral, Rn(Pos(0, 10), Pos(1, 3)), @"""ab\
+cd""", Rn(0, 10, 6), @"""abcd"""), lexer.Next());
+            Assert.AreEqual(Tok(Kind.Semicolon, Rn(1, 3, 1), ";", Rn(0, 16, 1), ";"), lexer.Next());
+            Assert.AreEqual(Tok(Kind.End, Rn(1, 4, 0), string.Empty, Rn(0, 17, 0), string.Empty), lexer.Next());
+        }
+
+        [TestMethod]
+        public void TrigraphLineContinuatedSequence()
+        {
+            var sourceCode = @"char* x = ""ab??/
+cd"";";
+            var lexer = new CLexer(sourceCode);
+            Assert.AreEqual(Tok(Kind.KeywordChar, Rn(0, 0, 4), "char", Rn(0, 0, 4), "char"), lexer.Next());
+            Assert.AreEqual(Tok(Kind.Multiply, Rn(0, 4, 1), "*", Rn(0, 4, 1), "*"), lexer.Next());
+            Assert.AreEqual(Tok(Kind.Identifier, Rn(0, 6, 1), "x", Rn(0, 6, 1), "x"), lexer.Next());
+            Assert.AreEqual(Tok(Kind.Assign, Rn(0, 8, 1), "=", Rn(0, 8, 1), "="), lexer.Next());
+            Assert.AreEqual(Tok(Kind.StringLiteral, Rn(Pos(0, 10), Pos(1, 3)), @"""ab??/
+cd""", Rn(0, 10, 6), @"""abcd"""), lexer.Next());
+            Assert.AreEqual(Tok(Kind.Semicolon, Rn(1, 3, 1), ";", Rn(0, 16, 1), ";"), lexer.Next());
+            Assert.AreEqual(Tok(Kind.End, Rn(1, 4, 0), string.Empty, Rn(0, 17, 0), string.Empty), lexer.Next());
         }
     }
 }
