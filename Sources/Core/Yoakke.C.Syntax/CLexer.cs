@@ -89,13 +89,10 @@ namespace Yoakke.C.Syntax
             if (peek == '/' && this.MatchesEscaped('/', ref offset))
             {
                 // Line-comment, go until the end of line
-                char lastChar;
-                while (this.TryParseEscaped(out lastChar, ref offset) && !IsNewline(lastChar))
+                while (this.MatchesEscaped(ch => !IsNewline(ch), out var _, ref offset))
                 {
                     // Pass
                 }
-                // End of line reached
-                if (lastChar == '\r') this.MatchesEscaped('\n', ref offset);
                 // A line comment becomes a space
                 this.LogicalPosition = this.LogicalPosition.Advance();
                 goto begin;
