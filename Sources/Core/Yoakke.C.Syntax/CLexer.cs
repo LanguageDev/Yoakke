@@ -152,7 +152,7 @@ namespace Yoakke.C.Syntax
             case '+':
                 if (this.MatchesEscaped('+', ref offset)) return Make(CTokenType.Increment, "++");
                 if (this.MatchesEscaped('=', ref offset)) return Make(CTokenType.AddAssign, "+=");
-                return Make(CTokenType.Add, "=");
+                return Make(CTokenType.Add, "+");
             case '|':
                 if (this.MatchesEscaped('|', ref offset)) return Make(CTokenType.LogicalOr, "||");
                 if (this.MatchesEscaped('=', ref offset)) return Make(CTokenType.BitOrAssign, "|=");
