@@ -46,6 +46,8 @@ namespace Yoakke.C.Syntax
             this.LogicalText = logicalText;
         }
 
+        public override bool Equals(object? obj) => this.Equals(obj as CToken);
+
         public bool Equals(IToken? other) => this.Equals(other as CToken);
 
         public bool Equals(IToken<CTokenType>? other) => this.Equals(other as CToken);
@@ -54,6 +56,11 @@ namespace Yoakke.C.Syntax
                other is not null
             && this.Range == other.Range
             && this.Text == other.Text
-            && this.Kind == other.Kind;
+            && this.Kind == other.Kind
+            && this.LogicalRange == other.LogicalRange
+            && this.LogicalText == other.LogicalText;
+
+        public override int GetHashCode() =>
+            HashCode.Combine(this.Range, this.Text, this.Kind, this.LogicalRange, this.LogicalText);
     }
 }

@@ -199,7 +199,7 @@ namespace Yoakke.C.Syntax
             {
                 var oldOffset = offset;
                 // It's number
-                var text = new StringBuilder(peek);
+                var text = new StringBuilder().Append(peek);
                 if (peek == '0' && this.MatchesEscaped(IsX, out var x, ref offset))
                 {
                     // Hex number
@@ -239,7 +239,7 @@ namespace Yoakke.C.Syntax
             if (IsLiteralSeparator(peek) || IsIdent(peek))
             {
                 var isLiteral = false;
-                var text = new StringBuilder(peek);
+                var text = new StringBuilder().Append(peek);
                 char separatorChar = peek;
                 if (IsLiteralSeparator(peek))
                 {
@@ -275,7 +275,7 @@ namespace Yoakke.C.Syntax
 
             if (IsIdent(peek))
             {
-                var text = new StringBuilder(peek);
+                var text = new StringBuilder().Append(peek);
                 this.TakeWhile(text, IsIdent, ref offset);
                 var str = text.ToString();
                 // Determine the token-type
