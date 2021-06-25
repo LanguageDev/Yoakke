@@ -42,17 +42,17 @@ namespace Yoakke.C.Syntax.Tests
             Case(Kind.KeywordVoid, "void"),
             Case(Kind.KeywordVolatile, "volatile"),
             Case(Kind.KeywordWhile, "while"),
-            
+
             Case(Kind.Identifier, "hello"),
             Case(Kind.Identifier, "ifa"),
             Case(Kind.Identifier, "Hello_123_abc"),
-            
+
             Case(Kind.IntLiteral, "0x1fb"),
             Case(Kind.IntLiteral, "0X1Fb"),
             Case(Kind.IntLiteral, "0x1fbU"),
             Case(Kind.IntLiteral, "0x1fbL"),
             Case(Kind.IntLiteral, "0XABCU"),
-            
+
             Case(Kind.IntLiteral, "123"),
             Case(Kind.IntLiteral, "0123"),
             Case(Kind.IntLiteral, "0123l"),
@@ -67,6 +67,24 @@ namespace Yoakke.C.Syntax.Tests
             Case(Kind.CharLiteral, "L'a'"),
             Case(Kind.CharLiteral, @"x'\''"),
             Case(Kind.CharLiteral, @"_'\n'"),
+
+            Case(Kind.FloatLiteral, "123e2"),
+            Case(Kind.FloatLiteral, "123e+2"),
+            Case(Kind.FloatLiteral, "123E-245"),
+
+            Case(Kind.FloatLiteral, "356.123E-245"),
+            Case(Kind.FloatLiteral, ".123E-245"),
+            Case(Kind.FloatLiteral, "123.E-245"),
+            Case(Kind.FloatLiteral, ".123"),
+            Case(Kind.FloatLiteral, "123."),
+            Case(Kind.FloatLiteral, "123e2f"),
+            Case(Kind.FloatLiteral, "123e+2l"),
+            Case(Kind.FloatLiteral, "123E-245fL"),
+            Case(Kind.FloatLiteral, "356.123E-245lF"),
+            Case(Kind.FloatLiteral, ".123E-245LF"),
+            Case(Kind.FloatLiteral, "123.E-245lLF"),
+            Case(Kind.FloatLiteral, ".123llf"),
+            Case(Kind.FloatLiteral, "123.lf"),
         };
 
         private static object[] Case(Kind kind, string text) => new object[] { Tok(kind, text), text };

@@ -223,7 +223,11 @@ namespace Yoakke.C.Syntax
                     if (peek != '.')
                     {
                         this.TakeWhile(text, char.IsDigit, ref offset);
-                        if (this.MatchesEscaped('.', ref offset)) isFloat = true;
+                        if (this.MatchesEscaped('.', ref offset))
+                        {
+                            text.Append('.');
+                            isFloat = true;
+                        }
                     }
                     this.TakeWhile(text, char.IsDigit, ref offset);
                     if (this.TryParseExponent(text, ref offset)) isFloat = true;
@@ -341,7 +345,8 @@ namespace Yoakke.C.Syntax
             var initial = offset;
             if (this.MatchesEscaped(IsE, out var e, ref offset))
             {
-                this.MatchesEscaped(IsSign, out var sign, ref offset);
+                result.Append(e);
+                if (this.MatchesEscaped(IsSign, out var sign, ref offset)) result.Append(sign);
                 if (this.TakeWhile(result, char.IsDigit, ref offset) > 0)
                 {
                     nextOffset = offset;
