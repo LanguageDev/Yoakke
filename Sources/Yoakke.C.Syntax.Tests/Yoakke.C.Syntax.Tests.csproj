@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)\Core\Yoakke.Text\Yoakke.Text.csproj" />
+    <ProjectReference Include="$(SolutionDir)\Core\Yoakke.C.Syntax\Yoakke.C.Syntax.csproj" />
   </ItemGroup>
 
 </Project>

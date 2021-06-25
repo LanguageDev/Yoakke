@@ -347,7 +347,7 @@ namespace Yoakke.C.Syntax
 
         private int TakeWhile(StringBuilder result, Predicate<char> predicate, int offset, out int nextOffset)
         {
-            int length = 0;
+            var length = 0;
             for (; this.MatchesEscaped(predicate, out var ch, ref offset); ++length)
             {
                 result.Append(ch);
