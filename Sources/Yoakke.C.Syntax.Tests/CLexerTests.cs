@@ -10,12 +10,66 @@ namespace Yoakke.C.Syntax.Tests
     {
         private static IEnumerable<object[]> AllTokensInput { get; } = new object[][]
         {
-            new object[] { Tok(Kind.KeywordAuto, "auto"), "auto" },
-            new object[] { Tok(Kind.KeywordBreak, "break"), "break" },
-            new object[] { Tok(Kind.KeywordCase, "case"), "case" },
-            new object[] { Tok(Kind.KeywordChar, "char"), "char" },
-            // new object[] { Tok(Kind.KeywordChar, Rn(0, 0, 4), "char"), "char" },
+            Case(Kind.KeywordAuto, "auto"),
+            Case(Kind.KeywordBreak, "break"),
+            Case(Kind.KeywordCase, "case"),
+            Case(Kind.KeywordChar, "char"),
+            Case(Kind.KeywordConst, "const"),
+            Case(Kind.KeywordContinue, "continue"),
+            Case(Kind.KeywordDefault, "default"),
+            Case(Kind.KeywordDo, "do"),
+            Case(Kind.KeywordDouble, "double"),
+            Case(Kind.KeywordElse, "else"),
+            Case(Kind.KeywordEnum, "enum"),
+            Case(Kind.KeywordExtern, "extern"),
+            Case(Kind.KeywordFloat, "float"),
+            Case(Kind.KeywordFor, "for"),
+            Case(Kind.KeywordGoto, "goto"),
+            Case(Kind.KeywordIf, "if"),
+            Case(Kind.KeywordInt, "int"),
+            Case(Kind.KeywordLong, "long"),
+            Case(Kind.KeywordRegister, "register"),
+            Case(Kind.KeywordReturn, "return"),
+            Case(Kind.KeywordShort, "short"),
+            Case(Kind.KeywordSigned, "signed"),
+            Case(Kind.KeywordSizeof, "sizeof"),
+            Case(Kind.KeywordStatic, "static"),
+            Case(Kind.KeywordStruct, "struct"),
+            Case(Kind.KeywordSwitch, "switch"),
+            Case(Kind.KeywordTypedef, "typedef"),
+            Case(Kind.KeywordUnion, "union"),
+            Case(Kind.KeywordUnsigned, "unsigned"),
+            Case(Kind.KeywordVoid, "void"),
+            Case(Kind.KeywordVolatile, "volatile"),
+            Case(Kind.KeywordWhile, "while"),
+            
+            Case(Kind.Identifier, "hello"),
+            Case(Kind.Identifier, "ifa"),
+            Case(Kind.Identifier, "Hello_123_abc"),
+            
+            Case(Kind.IntLiteral, "0x1fb"),
+            Case(Kind.IntLiteral, "0X1Fb"),
+            Case(Kind.IntLiteral, "0x1fbU"),
+            Case(Kind.IntLiteral, "0x1fbL"),
+            Case(Kind.IntLiteral, "0XABCU"),
+            
+            Case(Kind.IntLiteral, "123"),
+            Case(Kind.IntLiteral, "0123"),
+            Case(Kind.IntLiteral, "0123l"),
+            Case(Kind.IntLiteral, "0123u"),
+            Case(Kind.IntLiteral, "0123L"),
+            Case(Kind.IntLiteral, "0123U"),
+
+            Case(Kind.CharLiteral, "'a'"),
+            Case(Kind.CharLiteral, @"'\''"),
+            Case(Kind.CharLiteral, @"'\\'"),
+            Case(Kind.CharLiteral, @"'\n'"),
+            Case(Kind.CharLiteral, "L'a'"),
+            Case(Kind.CharLiteral, @"x'\''"),
+            Case(Kind.CharLiteral, @"_'\n'"),
         };
+
+        private static object[] Case(Kind kind, string text) => new object[] { Tok(kind, text), text };
 
         private static Range Rn(int line, int column, int length) => new(new(line, column), length);
 

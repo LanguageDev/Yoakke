@@ -240,7 +240,7 @@ namespace Yoakke.C.Syntax
             {
                 var isLiteral = false;
                 var text = new StringBuilder().Append(peek);
-                char separatorChar = peek;
+                var separatorChar = peek;
                 if (IsLiteralSeparator(peek))
                 {
                     isLiteral = true;
@@ -267,6 +267,16 @@ namespace Yoakke.C.Syntax
                             // Anything
                             text.Append('\\');
                             text.Append(this.ParseEscaped(ref offset));
+                        }
+                        else if (this.MatchesEscaped(ch => !char.IsControl(ch), out var ch, ref offset))
+                        {
+                            // Just a single character to consume
+                            text.Append(ch);
+                        }
+                        else
+                        {
+                            // There's not even a character to get
+                            break;
                         }
                     }
                     return Make(separatorChar == '\'' ? CTokenType.CharLiteral : CTokenType.StringLiteral, text.ToString());
@@ -512,7 +522,7 @@ namespace Yoakke.C.Syntax
                     }
                     // Otherwise we just eat the backslash
                     result = '\\';
-                    nextOffset = backslashLength;
+                    nextOffset = offset + backslashLength;
                     return true;
                 }
             }
