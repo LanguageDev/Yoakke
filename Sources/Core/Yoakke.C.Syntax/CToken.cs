@@ -30,6 +30,31 @@ namespace Yoakke.C.Syntax
         public string LogicalText { get; }
 
         /// <summary>
+        /// The <see cref="CToken"/> that this one was expanded from, if this <see cref="CToken"/> originates from
+        /// a macro expansion.
+        /// </summary>
+        public CToken? ExpandedFrom { get; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CToken"/> class.
+        /// </summary>
+        /// <param name="range">The <see cref="Text.Range"/> of the <see cref="CToken"/> in the source.</param>
+        /// <param name="text">The text of the <see cref="CToken"/>.</param>
+        /// <param name="logicalRange">The logical <see cref="Text.Range"/> of the <see cref="CToken"/> in the source.</param>
+        /// <param name="logicalText">The original text the <see cref="CToken"/> was parsed from.</param>
+        /// <param name="kind">The <see cref="CTokenType"/> of the <see cref="CToken"/>.</param>
+        /// <param name="expandedFrom">The <see cref="CToken"/> that this one was expanded from.</param>
+        public CToken(Text.Range range, string text, Text.Range logicalRange, string logicalText, CTokenType kind, CToken? expandedFrom)
+        {
+            this.Range = range;
+            this.Text = text;
+            this.Kind = kind;
+            this.LogicalRange = logicalRange;
+            this.LogicalText = logicalText;
+            this.ExpandedFrom = expandedFrom;
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="CToken"/> class.
         /// </summary>
         /// <param name="range">The <see cref="Text.Range"/> of the <see cref="CToken"/> in the source.</param>
@@ -38,12 +63,8 @@ namespace Yoakke.C.Syntax
         /// <param name="logicalText">The original text the <see cref="CToken"/> was parsed from.</param>
         /// <param name="kind">The <see cref="CTokenType"/> of the <see cref="CToken"/>.</param>
         public CToken(Text.Range range, string text, Text.Range logicalRange, string logicalText, CTokenType kind)
+            : this(range, text, logicalRange, logicalText, kind, null)
         {
-            this.Range = range;
-            this.Text = text;
-            this.Kind = kind;
-            this.LogicalRange = logicalRange;
-            this.LogicalText = logicalText;
         }
 
         public override bool Equals(object? obj) => this.Equals(obj as CToken);
