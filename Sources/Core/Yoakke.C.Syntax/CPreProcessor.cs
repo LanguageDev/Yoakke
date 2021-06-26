@@ -18,9 +18,13 @@ namespace Yoakke.C.Syntax
     public class CPreProcessor : IPreProcessor
     {
         private readonly ILexer<CToken> lexer;
-        private readonly RingBuffer<CToken> readBuffer;
+        private readonly RingBuffer<CToken> outputBuffer;
         private readonly Dictionary<string, IMacro> macros;
-        private CToken? lastToken;
+
+        /// <summary>
+        /// The last consumed <see cref="CToken"/> from the <see cref="inputBuffer"/>.
+        /// </summary>
+        private CToken? lastInputToken;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CPreProcessor"/> class.
@@ -29,7 +33,7 @@ namespace Yoakke.C.Syntax
         public CPreProcessor(ILexer<CToken> lexer)
         {
             this.lexer = lexer;
-            this.readBuffer = new();
+            this.outputBuffer = new();
             this.macros = new();
         }
 
@@ -45,38 +49,24 @@ namespace Yoakke.C.Syntax
 
         public CToken Next()
         {
-            this.Peek();
-            return this.Skip();
+            throw new NotImplementedException();
         }
 
-        private CToken Skip() => this.readBuffer.RemoveFront();
+        private CToken Skip()
+        {
+            this.Peek();
+            this.lastInputToken = this.outputBuffer.RemoveFront();
+            return this.lastInputToken;
+        }
 
         private CToken Peek(int offset = 0)
         {
-            while (this.readBuffer.Count <= offset)
+            while (this.outputBuffer.Count <= offset)
             {
-                this.LexNext();
+                var token = this.lexer.Next();
+                if (token.Kind == CTokenType.End) return token;
             }
-            return this.readBuffer[offset];
-        }
-
-        private void LexNext()
-        {
-            var token = this.lexer.Next();
-            if (token.Kind == CTokenType.Hash
-            && (this.lastToken is null || (this.lastToken.LogicalRange.End.Line != token.LogicalRange.Start.Line)))
-            {
-                // Potential preprocessor directive, a '#' on a fresh line
-                // TODO: Parse directive
-            }
-            else if (IsIdentifier(token.Kind) && this.macros.TryGetValue(token.LogicalText, out var macro))
-            {
-                // We got a macro identifier
-                // TODO: Parse macro call
-            }
-            // Just a regular token, add it and set as last
-            lastToken = token;
-            this.readBuffer.AddBack(lastToken);
+            return this.outputBuffer[offset];
         }
 
         private static bool IsIdentifier(CTokenType tokenType) =>
