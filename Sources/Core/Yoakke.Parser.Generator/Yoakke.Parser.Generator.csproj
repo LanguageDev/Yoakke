@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -20,8 +20,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="$(SolutionDir)/Core/Yoakke.Collections/**/*.cs" Link="Yoakke.Collections" />
-    <Compile Remove="$(SolutionDir)/Core/Yoakke.Collections/obj/**/*.cs" />
+    <Compile Include="$(SolutionDir)/Core/Yoakke.Utilities/**/*.cs" Link="Yoakke.Utilities" />
+    <Compile Remove="$(SolutionDir)/Core/Yoakke.Utilities/obj/**/*.cs" />
 
     <Compile Include="$(SolutionDir)/Core/Yoakke.SourceGenerator.Common/**/*.cs" Link="Yoakke.SourceGenerator.Common" />
     <Compile Remove="$(SolutionDir)/Core/Yoakke.SourceGenerator.Common/obj/**/*.cs" />

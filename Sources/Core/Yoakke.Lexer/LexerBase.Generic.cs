@@ -5,7 +5,7 @@
 using System;
 using System.IO;
 using System.Text;
-using Yoakke.Collections;
+using Yoakke.Utilities;
 using Yoakke.Text;
 using Range = Yoakke.Text.Range;
 

@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Collections", "Core\Yoakke.Collections\Yoakke.Collections.csproj", "{4896B9FB-A0F2-4886-850C-4943BC374EAF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Utilities", "Core\Yoakke.Utilities\Yoakke.Utilities.csproj", "{4896B9FB-A0F2-4886-850C-4943BC374EAF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Collections.Tests", "Tests\Yoakke.Collections.Tests\Yoakke.Collections.Tests.csproj", "{8251D600-353B-4CDA-853E-51ABCAF94735}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Utilities.Tests", "Tests\Yoakke.Utilities.Tests\Yoakke.Utilities.Tests.csproj", "{8251D600-353B-4CDA-853E-51ABCAF94735}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lexer", "Core\Yoakke.Lexer\Yoakke.Lexer.csproj", "{36D85E41-4CB1-4198-8248-05A30082F0F2}"
 EndProject
@@ -72,7 +72,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "C", "C", "{AE60AFB2-F9EE-48
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.C.Syntax", "Core\Yoakke.C.Syntax\Yoakke.C.Syntax.csproj", "{4A9A90B2-FA50-44D9-9B91-88B0638A7286}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yoakke.C.Syntax.Tests", "Yoakke.C.Syntax.Tests\Yoakke.C.Syntax.Tests.csproj", "{74634FE8-0D46-46ED-B32D-AF78DAEE305C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.C.Syntax.Tests", "Tests\Yoakke.C.Syntax.Tests\Yoakke.C.Syntax.Tests.csproj", "{74634FE8-0D46-46ED-B32D-AF78DAEE305C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

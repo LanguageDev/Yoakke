@@ -9,7 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Yoakke.Collections;
+using Yoakke.Utilities;
 using Yoakke.Lexer;
 using Yoakke.Text;
 

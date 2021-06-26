@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Yoakke.Collections.Compatibility;
+using Yoakke.Utilities.Compatibility;
 using Yoakke.SourceGenerator.Common;
 
 namespace Yoakke.Ast.Generator

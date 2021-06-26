@@ -4,7 +4,7 @@
 
 using System.Linq;
 using Microsoft.CodeAnalysis;
-using Yoakke.Collections.Compatibility;
+using Yoakke.Utilities.Compatibility;
 
 namespace Yoakke.Parser.Generator.Ast
 {
