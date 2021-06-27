@@ -23,6 +23,7 @@ int main() {
             {
                 var token = pp.Next();
                 if (token.Kind == CTokenType.End) break;
+                Console.WriteLine(token.LogicalText);
             }
         }
     }
