@@ -56,9 +56,9 @@ namespace Yoakke.C.Syntax
                     if (paramName == "...")
                     {
                         // Variadic argument, consume remaining
-                        var result = new List<CToken>();
-                        for (; i < arguments.Count; ++i) result.AddRange(arguments[i]);
-                        argDict["__VA_ARGS__"] = result;
+                        var arg = new List<CToken>();
+                        for (; i < arguments.Count; ++i) arg.AddRange(arguments[i]);
+                        argDict["__VA_ARGS__"] = arg;
                     }
                     else
                     {
@@ -69,6 +69,34 @@ namespace Yoakke.C.Syntax
             }
 
             // Do the substitution
+            var result = new List<CToken>();
+            foreach (var element in this.body) result.AddRange(ExpandElement(argDict, element));
+            return result;
+        }
+
+        private static IReadOnlyList<CToken> ExpandElement(
+            IReadOnlyDictionary<string, IReadOnlyList<CToken>> args,
+            MacroElement element) => element switch
+        {
+            MacroElement.Literal lit => args.TryGetValue(lit.Token.LogicalText, out var arg)
+                ? arg
+                : new CToken[] { lit.Token },
+
+            MacroElement.Stringify str => new CToken[] { Stringify(args[str.Argument]) },
+
+            MacroElement.Paste paste => Paste(ExpandElement(args, paste.Left), ExpandElement(args, paste.Right)),
+
+            _ => throw new NotImplementedException(),
+        };
+
+        private static CToken Stringify(IReadOnlyList<CToken> tokens)
+        {
+            // TODO
+            throw new NotImplementedException();
+        }
+
+        private static IReadOnlyList<CToken> Paste(IReadOnlyList<CToken> left, IReadOnlyList<CToken> right)
+        {
             // TODO
             throw new NotImplementedException();
         }
