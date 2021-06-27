@@ -64,6 +64,7 @@ namespace Yoakke.C.Syntax
                     {
                         // Regular arg
                         argDict[paramName] = arguments[i];
+                        ++i;
                     }
                 }
             }

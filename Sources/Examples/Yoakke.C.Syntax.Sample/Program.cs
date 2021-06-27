@@ -7,8 +7,8 @@ namespace Yoakke.C.Syntax.Sample
         static void Main(string[] args)
         {
             var sourceCode = @"
-#define FOO() x + y == z
-FOO()
+#define FOO(x, y, z, ...) x + y == z __VA_ARGS__
+FOO(a, b, c, 3, 4, 5)
 ";
             var lexer = new CLexer(sourceCode);
             var pp = new CPreProcessor(lexer);

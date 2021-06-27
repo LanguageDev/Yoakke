@@ -280,6 +280,8 @@ namespace Yoakke.C.Syntax
             var ended = false;
             while (!ended)
             {
+                // TODO: When parsing variadics, we should keep that a single argument
+                // Because we kinda need the commas positions and it would be simpler to just keep it here
                 // Parse a single argument
                 var arg = new List<CToken>();
                 var depth = 0;
@@ -378,17 +380,64 @@ namespace Yoakke.C.Syntax
                 }
             }
             // Now we parse tha macro-body, which goes until the end of line
-            // TODO
-            var body = new List<MacroElement>();
-            throw new NotImplementedException();
-#if false
-            for (; this.TrySkipInline(macroName, out var element); body.Add(element))
+            var body = this.ParseMacroBody(macroName);
+            // Construct result
+            return new UserMacro(macroName.LogicalText, args, body);
+        }
+
+        private IReadOnlyList<MacroElement> ParseMacroBody(CToken name)
+        {
+            var result = new List<MacroElement>();
+            for (; this.TryParseMacroBodyElement0(name, out var element); result.Add(element))
             {
                 // Pass
             }
-#endif
-            // Construct result
-            return new UserMacro(macroName.LogicalText, args, body);
+            return result;
+        }
+
+        // Pasted elements
+        private bool TryParseMacroBodyElement0(CToken name, [MaybeNullWhen(false)] out MacroElement result)
+        {
+            if (!this.TryParseMacroBodyElement1(name, out result)) return false;
+            // We have an element, check for a paste token repeatedly
+            while (this.TrySkipInline(name, CTokenType.HashHash, out var _))
+            {
+                if (!this.TryParseMacroBodyElement1(name, out var right))
+                {
+                    // TODO: Proper error handling
+                    throw new NotImplementedException();
+                }
+                result = new MacroElement.Paste(result, right);
+            }
+            return true;
+        }
+
+        // Stringified elements
+        private bool TryParseMacroBodyElement1(CToken name, [MaybeNullWhen(false)] out MacroElement result)
+        {
+            if (this.TrySkipInline(name, CTokenType.Hash, out var _))
+            {
+                // We have a hash, we expect an identifier
+                if (!this.TrySkipInline(name, IsIdentifier, out var arg))
+                {
+                    // TODO: Proper error handling
+                    throw new NotImplementedException();
+                }
+                // TODO: Check for existing arg here?
+                result = new MacroElement.Stringify(arg.LogicalText);
+                return true;
+            }
+            else if (this.TrySkipInline(name, out var t))
+            {
+                // Just a literal
+                result = new MacroElement.Literal(t);
+                return true;
+            }
+            else
+            {
+                result = null;
+                return false;
+            }
         }
 
         private bool TryParseDirective([MaybeNullWhen(false)] out CToken directive)
