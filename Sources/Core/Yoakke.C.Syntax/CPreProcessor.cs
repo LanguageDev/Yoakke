@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
@@ -53,9 +54,12 @@ namespace Yoakke.C.Syntax
 
         public bool IsDefined(string name) => this.macros.ContainsKey(name);
 
-        public IMacro? Define(IMacro macro) => this.macros.Remove(macro.Name, out var oldMacro)
-            ? oldMacro
-            : null;
+        public IMacro? Define(IMacro macro)
+        {
+            this.macros.Remove(macro.Name, out var oldMacro);
+            this.macros.Add(macro.Name, macro);
+            return oldMacro;
+        }
 
         public IMacro? Undefine(string name) => this.macros.Remove(name, out var macro)
             ? macro
@@ -73,9 +77,19 @@ namespace Yoakke.C.Syntax
                 goto begin;
             }
 
-            if (IsIdentifier(peek.Kind))
+            if (this.macros.TryGetValue(peek.LogicalText, out var macro)
+             && this.TryParseMacroInvocation(macro, out var args))
             {
-                // TODO: Might be a macro invocation
+                // Macro invocation
+                var expanded = macro.Expand(args).ToList();
+                // Add to the front
+                // We need to go in reverse order to get the proper ordering by adding to the front
+                for (var i = expanded.Count - 1; i >= 0; --i)
+                {
+                    this.outputBuffer.AddFront(expanded[i]);
+                }
+                // An expansion happened but this can cause more expansions
+                goto begin;
             }
 
             // Just consume
@@ -220,6 +234,26 @@ namespace Yoakke.C.Syntax
             }
         }
 
+        private bool TryParseMacroInvocation(IMacro macro, [MaybeNullWhen(false)] out List<IReadOnlyList<CToken>> args)
+        {
+            var ident = this.Peek();
+            Debug.Assert(IsIdentifier(ident), "An identifier was assumed to be the first token for a macro invocation");
+            Debug.Assert(ident.LogicalText == macro.Name, "The identifier does not match the macro name");
+
+            if (macro.Parameters is null)
+            {
+                // We require no arguments or parenthesis at all
+                // Skip the identifier
+                this.Skip();
+                args = new();
+                return true;
+            }
+
+            // We require parenthesis
+            // TODO
+            throw new NotImplementedException();
+        }
+
         private IMacro ParseMacroDefinition(CToken defineToken)
         {
             if (!this.TrySkipInline(defineToken, IsIdentifier, out var macroName))
@@ -244,7 +278,6 @@ namespace Yoakke.C.Syntax
             }
             // Construct result
             return new UserMacro(macroName.LogicalText, args, body);
-            throw new NotImplementedException();
         }
 
         private bool TryParseDirective([MaybeNullWhen(false)] out CToken directive)

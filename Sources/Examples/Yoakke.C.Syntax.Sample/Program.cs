@@ -7,14 +7,9 @@ namespace Yoakke.C.Syntax.Sample
         static void Main(string[] args)
         {
             var sourceCode = @"
-#ifndef FOO
-#define FOO
-
-int main() {
-    return 0;
-}
-
-#endif
+#define FOO BAR
+#define BAR QUX
+FOO
 ";
             var lexer = new CLexer(sourceCode);
             var pp = new CPreProcessor(lexer);
