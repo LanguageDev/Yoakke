@@ -20,9 +20,9 @@ namespace Yoakke.C.Syntax
 
         public IReadOnlyList<string>? Parameters { get; }
 
-        private readonly IReadOnlyList<CToken> body;
+        private readonly IReadOnlyList<MacroElement> body;
 
-        public UserMacro(string name, IReadOnlyList<string>? parameters, IReadOnlyList<CToken> body)
+        public UserMacro(string name, IReadOnlyList<string>? parameters, IReadOnlyList<MacroElement> body)
         {
             this.Name = name;
             this.Parameters = parameters;
@@ -31,13 +31,44 @@ namespace Yoakke.C.Syntax
 
         public IEnumerable<CToken> Expand(IReadOnlyList<IReadOnlyList<CToken>> arguments)
         {
-            if (this.Parameters is null || this.Parameters.Count == 0)
+            if (this.Parameters is not null && this.Parameters.Count != arguments.Count)
             {
-                // If we have no parameters, just return the body
-                return this.body;
+                // There is a parameter count mismatch
+                // Checked if the macro is variadic
+                var variadic = this.Parameters.Count > 0 && this.Parameters[this.Parameters.Count - 1] == "...";
+                // If not variadic, argument count mismatch is a hard error
+                // It's variadic, which means we allow one less arguments (or more), because in the worst case,
+                // we only didnt specify an arg for the variadic args
+                if (!variadic || this.Parameters.Count - 1 > arguments.Count)
+                {
+                    // TODO: Proper error handling
+                    throw new NotImplementedException();
+                }
             }
 
-            // Otherwise we have to look out for substitutions
+            // Assign the arguments
+            var argDict = new Dictionary<string, IReadOnlyList<CToken>>();
+            if (this.Parameters is not null)
+            {
+                for (var i = 0; i < this.Parameters.Count;)
+                {
+                    var paramName = this.Parameters[i];
+                    if (paramName == "...")
+                    {
+                        // Variadic argument, consume remaining
+                        var result = new List<CToken>();
+                        for (; i < arguments.Count; ++i) result.AddRange(arguments[i]);
+                        argDict["__VA_ARGS__"] = result;
+                    }
+                    else
+                    {
+                        // Regular arg
+                        argDict[paramName] = arguments[i];
+                    }
+                }
+            }
+
+            // Do the substitution
             // TODO
             throw new NotImplementedException();
         }

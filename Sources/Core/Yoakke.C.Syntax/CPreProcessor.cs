@@ -378,11 +378,15 @@ namespace Yoakke.C.Syntax
                 }
             }
             // Now we parse tha macro-body, which goes until the end of line
-            var body = new List<CToken>();
+            // TODO
+            var body = new List<MacroElement>();
+            throw new NotImplementedException();
+#if false
             for (; this.TrySkipInline(macroName, out var element); body.Add(element))
             {
                 // Pass
             }
+#endif
             // Construct result
             return new UserMacro(macroName.LogicalText, args, body);
         }
