@@ -26,6 +26,16 @@ namespace Yoakke.C.Syntax
             CurrentlySatisfied,
         }
 
+        /// <summary>
+        /// True, if directives should be allowed.
+        /// </summary>
+        public bool AllowDirectives { get; set; } = true;
+
+        /// <summary>
+        /// True, if macro expansions should be allowed.
+        /// </summary>
+        public bool AllowMacroExpansions { get; set; } = true;
+
         private readonly ILexer<CToken> lexer;
         private readonly RingBuffer<CToken> outputBuffer;
         private readonly Dictionary<string, IMacro> macros;
@@ -36,9 +46,16 @@ namespace Yoakke.C.Syntax
         /// </summary>
         private CToken? lastInputToken;
 
-        private Condition ConditionState => conditionStack.TryPeek(out var condition)
+        private Condition ConditionState => this.conditionStack.TryPeek(out var condition)
             ? condition
             : Condition.CurrentlySatisfied;
+
+        private CPreProcessor(Dictionary<string, IMacro> macros, IReadOnlyList<CToken> tokens)
+        {
+            this.outputBuffer = new();
+            this.macros = macros;
+            foreach (var token in tokens) this.outputBuffer.AddBack(token);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CPreProcessor"/> class.
@@ -71,13 +88,14 @@ namespace Yoakke.C.Syntax
             var peek = this.Peek();
             if (peek.Kind == CTokenType.End) return peek;
 
-            if (this.TryParseDirective(out var name))
+            if (this.AllowDirectives && this.TryParseDirective(out var name))
             {
                 this.HandleDirective(name);
                 goto begin;
             }
 
-            if (this.macros.TryGetValue(peek.LogicalText, out var macro)
+            if (this.AllowMacroExpansions
+             && this.macros.TryGetValue(peek.LogicalText, out var macro)
              && this.TryParseMacroInvocation(macro, out var args))
             {
                 // Macro invocation
@@ -236,22 +254,29 @@ namespace Yoakke.C.Syntax
 
         private bool TryParseMacroInvocation(IMacro macro, [MaybeNullWhen(false)] out List<IReadOnlyList<CToken>> args)
         {
-            var ident = this.Peek();
+            var ident = this.Skip();
             Debug.Assert(IsIdentifier(ident), "An identifier was assumed to be the first token for a macro invocation");
             Debug.Assert(ident.LogicalText == macro.Name, "The identifier does not match the macro name");
 
             if (macro.Parameters is null)
             {
                 // We require no arguments or parenthesis at all
-                // Skip the identifier
-                this.Skip();
                 args = new();
                 return true;
             }
 
             // We require parenthesis
-            // TODO
-            throw new NotImplementedException();
+            if (this.TrySkipInline(ident, CTokenType.OpenParen, out var _))
+            {
+                // We got the open parenthesis, we need to parse arguments
+                // TODO
+                throw new NotImplementedException();
+            }
+
+            // We don't know better for now, put back the taken identifier
+            args = null;
+            this.outputBuffer.AddFront(ident);
+            return false;
         }
 
         private IMacro ParseMacroDefinition(CToken defineToken)
@@ -267,8 +292,46 @@ namespace Yoakke.C.Syntax
             {
                 // We have an argument list
                 args = new();
-                // TODO
-                throw new NotImplementedException();
+
+                if (!this.TrySkipInline(macroName, CTokenType.CloseParen, out var _))
+                {
+                    // At least one arg
+                    while (true)
+                    {
+                        var mustBeLast = false;
+                        if (this.TrySkipInline(macroName, IsIdentifier, out var arg))
+                        {
+                            // We have an identifier
+                            args.Add(arg.LogicalText);
+                        }
+                        else if (this.TrySkipInline(macroName, CTokenType.Ellipsis, out var _))
+                        {
+                            // We have an ellipsis, a close paren must come after
+                            args.Add("...");
+                            mustBeLast = true;
+                        }
+                        else
+                        {
+                            // TODO: Proper error handling
+                            throw new NotImplementedException();
+                        }
+
+                        // If we don't get a comma, we need a close paren
+                        if (!mustBeLast && this.TrySkipInline(macroName, CTokenType.Comma, out var _))
+                        {
+                            // Next argument
+                            continue;
+                        }
+
+                        // Not a comma, need a close paren
+                        if (!this.TrySkipInline(macroName, CTokenType.CloseParen, out var _))
+                        {
+                            // TODO: Proper error handling
+                            throw new NotImplementedException();
+                        }
+                        break;
+                    }
+                }
             }
             // Now we parse tha macro-body, which goes until the end of line
             var body = new List<CToken>();
@@ -345,6 +408,23 @@ namespace Yoakke.C.Syntax
                 this.outputBuffer.AddBack(token);
             }
             return this.outputBuffer[offset];
+        }
+
+        private IReadOnlyList<CToken> Expand(IReadOnlyList<CToken> tokens)
+        {
+            if (tokens.Count == 0) return tokens;
+
+            var pp = new CPreProcessor(this.macros, tokens) { AllowDirectives = false, AllowMacroExpansions = true, };
+
+            var result = new List<CToken>();
+            while (true)
+            {
+                var t = pp.Next();
+                if (t.Kind == CTokenType.End) break;
+                result.Add(t);
+            }
+
+            return result;
         }
 
         private static bool IsIdentifier(CToken token) => IsIdentifier(token.Kind);
