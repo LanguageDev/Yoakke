@@ -74,6 +74,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.C.Syntax", "Core\Yoa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.C.Syntax.Tests", "Tests\Yoakke.C.Syntax.Tests\Yoakke.C.Syntax.Tests.csproj", "{74634FE8-0D46-46ED-B32D-AF78DAEE305C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yoakke.C.Syntax.Sample", "Examples\Yoakke.C.Syntax.Sample\Yoakke.C.Syntax.Sample.csproj", "{2FDE8C48-D2FB-4B0C-8ADF-EAB8EE7C591D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -184,6 +186,10 @@ Global
 		{74634FE8-0D46-46ED-B32D-AF78DAEE305C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{74634FE8-0D46-46ED-B32D-AF78DAEE305C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{74634FE8-0D46-46ED-B32D-AF78DAEE305C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2FDE8C48-D2FB-4B0C-8ADF-EAB8EE7C591D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FDE8C48-D2FB-4B0C-8ADF-EAB8EE7C591D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FDE8C48-D2FB-4B0C-8ADF-EAB8EE7C591D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FDE8C48-D2FB-4B0C-8ADF-EAB8EE7C591D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -208,6 +214,7 @@ Global
 		{7F60E2A0-832A-4FA5-AB69-2B8D6916FAE9} = {C32F06FE-A533-4BD3-B361-2D9BECCDFBDF}
 		{4A9A90B2-FA50-44D9-9B91-88B0638A7286} = {AE60AFB2-F9EE-4850-9F04-7D184B8475A9}
 		{74634FE8-0D46-46ED-B32D-AF78DAEE305C} = {AE60AFB2-F9EE-4850-9F04-7D184B8475A9}
+		{2FDE8C48-D2FB-4B0C-8ADF-EAB8EE7C591D} = {AE60AFB2-F9EE-4850-9F04-7D184B8475A9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1EDE8F07-AE3A-4556-AEF0-3AC518F18F92}

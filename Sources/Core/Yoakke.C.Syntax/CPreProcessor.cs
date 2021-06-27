@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -49,7 +50,50 @@ namespace Yoakke.C.Syntax
 
         public CToken Next()
         {
-            throw new NotImplementedException();
+            if (this.TryParseDirective(out var name, out var args))
+            {
+                // TODO
+                throw new NotImplementedException("");
+            }
+
+            var peek = this.Peek();
+            if (IsIdentifier(peek.Kind))
+            {
+                // TODO: Might be a macro invocation
+            }
+
+            // Just consume
+            return this.Skip();
+        }
+
+        private bool TryParseDirective(
+            [MaybeNullWhen(false)] out string? name,
+            [MaybeNullWhen(false)] out IList<CToken>? arguments)
+        {
+            var peek = this.Peek();
+            var peek2 = this.Peek(1);
+
+            if (peek.Kind == CTokenType.Hash
+             && this.lastInputToken?.LogicalRange.End.Line != peek.LogicalRange.Start.Line
+             && IsIdentifier(peek2.Kind))
+            {
+                // It's a hash on a fresh line with an identifier following, we consider it a pre-processor directive
+                // First skip hash
+                this.Skip();
+                // Store identifier
+                name = this.Skip().LogicalText;
+                // Collect arguments
+                arguments = new List<CToken>();
+                while (this.Peek().LogicalRange.Start.Line == peek.LogicalRange.End.Line)
+                {
+                    arguments.Add(this.Skip());
+                }
+                return true;
+            }
+
+            name = null;
+            arguments = null;
+            return false;
         }
 
         private CToken Skip()
@@ -65,6 +109,7 @@ namespace Yoakke.C.Syntax
             {
                 var token = this.lexer.Next();
                 if (token.Kind == CTokenType.End) return token;
+                this.outputBuffer.AddBack(token);
             }
             return this.outputBuffer[offset];
         }
