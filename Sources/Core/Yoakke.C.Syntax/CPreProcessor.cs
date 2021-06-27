@@ -266,17 +266,61 @@ namespace Yoakke.C.Syntax
             }
 
             // We require parenthesis
-            if (this.TrySkipInline(ident, CTokenType.OpenParen, out var _))
+            if (!this.TrySkipInline(ident, CTokenType.OpenParen, out var _))
             {
-                // We got the open parenthesis, we need to parse arguments
-                // TODO
-                throw new NotImplementedException();
+                // We required parenthesis but we didn't get any, don't count as invocation
+                // We don't know better for now, put back the taken identifier
+                args = null;
+                this.outputBuffer.AddFront(ident);
+                return false;
             }
 
-            // We don't know better for now, put back the taken identifier
-            args = null;
-            this.outputBuffer.AddFront(ident);
-            return false;
+            // We have an open paren and we require arguments
+            args = new();
+            var ended = false;
+            while (!ended)
+            {
+                // Parse a single argument
+                var arg = new List<CToken>();
+                var depth = 0;
+                while (true)
+                {
+                    if (this.TrySkipInline(ident, CTokenType.OpenParen, out var t))
+                    {
+                        ++depth;
+                        arg.Add(t);
+                    }
+                    else if (this.TrySkipInline(ident, CTokenType.CloseParen, out t))
+                    {
+                        if (depth == 0)
+                        {
+                            ended = true;
+                            break;
+                        }
+                        --depth;
+                        arg.Add(t);
+                    }
+                    else if (depth == 0 && this.TrySkipInline(ident, CTokenType.Comma, out var _))
+                    {
+                        // End of current arg
+                        break;
+                    }
+                    else if (this.TrySkipInline(ident, out t))
+                    {
+                        // Any token, just add it
+                        arg.Add(t);
+                    }
+                    else
+                    {
+                        // TODO: Proper error handling
+                        throw new NotImplementedException();
+                    }
+                }
+                args.Add(arg);
+            }
+            // Fix parameterless macros with parenthesis
+            if (macro.Parameters.Count == 0 && args.Count == 1 && args[0].Count == 0) args.Clear();
+            return true;
         }
 
         private IMacro ParseMacroDefinition(CToken defineToken)
