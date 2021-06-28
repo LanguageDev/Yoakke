@@ -283,7 +283,7 @@ namespace Yoakke.C.Syntax
             }
 
             // We require parenthesis
-            if (!this.TrySkipInline(ident, CTokenType.OpenParen, out var _))
+            if (!this.TrySkip(CTokenType.OpenParen, out var _))
             {
                 // We required parenthesis but we didn't get any, don't count as invocation
                 // We don't know better for now, put back the taken identifier
@@ -305,12 +305,12 @@ namespace Yoakke.C.Syntax
                 var depth = 0;
                 while (true)
                 {
-                    if (this.TrySkipInline(ident, CTokenType.OpenParen, out var t))
+                    if (this.TrySkip(CTokenType.OpenParen, out var t))
                     {
                         ++depth;
                         arg.Add(t);
                     }
-                    else if (this.TrySkipInline(ident, CTokenType.CloseParen, out t))
+                    else if (this.TrySkip(CTokenType.CloseParen, out t))
                     {
                         if (depth == 0)
                         {
@@ -325,12 +325,12 @@ namespace Yoakke.C.Syntax
                     // If it's variadic, we only consider it a separator, if we are past the fixed arguments
                     else if (depth == 0
                          && (!variadic || args.Count < macro.Parameters.Count - 1)
-                         && this.TrySkipInline(ident, CTokenType.Comma, out var _))
+                         && this.TrySkip(CTokenType.Comma, out var _))
                     {
                         // End of argument
                         break;
                     }
-                    else if (this.TrySkipInline(ident, out t))
+                    else if (this.TrySkip(out t))
                     {
                         // Any token, just add it
                         arg.Add(t);
@@ -510,6 +510,28 @@ namespace Yoakke.C.Syntax
                 result = null;
                 return false;
             }
+        }
+
+        private bool TrySkip(CTokenType tokenType, [MaybeNullWhen(false)] out CToken result)
+        {
+            var peek = this.Peek();
+            // NOTE: We don't allow the end token so macros won't accidentally include it
+            if (peek.Kind == tokenType)
+            {
+                result = this.Skip();
+                return true;
+            }
+            else
+            {
+                result = null;
+                return false;
+            }
+        }
+
+        private bool TrySkip([MaybeNullWhen(false)] out CToken result)
+        {
+            result = this.Skip();
+            return result.Kind != CTokenType.End;
         }
 
         private CToken Skip()
