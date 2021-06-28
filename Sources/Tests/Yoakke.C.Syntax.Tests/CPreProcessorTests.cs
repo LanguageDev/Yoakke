@@ -50,6 +50,27 @@ FOO(abc)",
 @"#define FOO(x) a x b
 FOO((x, y, z))",
 "a (x, y, z) b"),
+
+            TextInput(
+@"#define CAT(a, b) a ## b
+CAT(ab, 2)
+CAT(L, ""asd"")",
+"ab2 L\"asd\""),
+
+            TextInput(
+@"#define FOO() A
+#define LP() (
+#define RP() )
+FOO LP() RP()",
+"FOO ( )"),
+
+            TextInput(
+@"#define FOO() A
+#define EXPAND(x) x
+#define LP() (
+#define RP() )
+EXPAND(FOO LP() RP())",
+"A"),
         };
 
         private static object[] TextInput(string beforePP, string afterPP) => new object[] { beforePP, afterPP };
