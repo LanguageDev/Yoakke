@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Yoakke.Lexer;
+using Yoakke.Text;
 using Yoakke.Utilities;
 
 namespace Yoakke.C.Syntax
@@ -24,6 +25,17 @@ namespace Yoakke.C.Syntax
             NotYetSatisfied,
             SatisfiedBefore,
             CurrentlySatisfied,
+        }
+
+        private class NullLexer : ILexer<CToken>
+        {
+            public Position Position => default;
+
+            public bool IsEnd => true;
+
+            IToken ILexer.Next() => this.Next();
+
+            public CToken Next() => new CToken(default, string.Empty, default, string.Empty, CTokenType.End);
         }
 
         /// <summary>
@@ -52,8 +64,10 @@ namespace Yoakke.C.Syntax
 
         private CPreProcessor(Dictionary<string, IMacro> macros, IReadOnlyList<CToken> tokens)
         {
+            this.lexer = new NullLexer();
             this.outputBuffer = new();
             this.macros = macros;
+            this.conditionStack = new();
             foreach (var token in tokens) this.outputBuffer.AddBack(token);
         }
 
@@ -278,13 +292,14 @@ namespace Yoakke.C.Syntax
                 return false;
             }
 
+            // Check if the macro is variadic
+            var variadic = macro.Parameters.Count > 0 && macro.Parameters[macro.Parameters.Count - 1] == "...";
+
             // We have an open paren and we require arguments
             args = new();
             var ended = false;
             while (!ended)
             {
-                // TODO: When parsing variadics, we should keep that a single argument
-                // Because we kinda need the commas positions and it would be simpler to just keep it here
                 // Parse a single argument
                 var arg = new List<CToken>();
                 var depth = 0;
@@ -305,9 +320,14 @@ namespace Yoakke.C.Syntax
                         --depth;
                         arg.Add(t);
                     }
-                    else if (depth == 0 && this.TrySkipInline(ident, CTokenType.Comma, out var _))
+                    // A depth of 0 and matching comma is a potential argument separator
+                    // If it's non-variadic, it's guaranteed to mean separator
+                    // If it's variadic, we only consider it a separator, if we are past the fixed arguments
+                    else if (depth == 0
+                         && (!variadic || args.Count < macro.Parameters.Count - 1)
+                         && this.TrySkipInline(ident, CTokenType.Comma, out var _))
                     {
-                        // End of current arg
+                        // End of argument
                         break;
                     }
                     else if (this.TrySkipInline(ident, out t))
