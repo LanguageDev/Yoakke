@@ -18,44 +18,57 @@ namespace Yoakke.C.Syntax.Tests
         {
             TextInput(
                 "a b c",
-                "a", "b", "c"),
+                "a b c"),
 
-            TextInput(@"
-#define FOO
-FOO"),
-
-            TextInput(@"
-#define FOO BAR
+            TextInput(
+@"#define FOO
 FOO",
-                "BAR"),
+string.Empty),
 
-            TextInput(@"
-#define FOO a b c
+            TextInput(
+@"#define FOO BAR
 FOO",
-                "a", "b", "c"),
+"BAR"),
 
-            TextInput(@"
-#define FOO BAR
+            TextInput(
+@"#define FOO a b c
+FOO",
+"a b c"),
+
+            TextInput(
+@"#define FOO BAR
 #define BAR QUX
 FOO",
-                "QUX"),
+"QUX"),
+
+            TextInput(
+@"#define FOO(x) a x b
+FOO(abc)",
+"a abc b"),
+
+            TextInput(
+@"#define FOO(x) a x b
+FOO((x, y, z))",
+"a (x, y, z) b"),
         };
 
-        private static object[] TextInput(string sourceText, params string[] tokenTexts) => new object[] { sourceText, tokenTexts };
+        private static object[] TextInput(string beforePP, string afterPP) => new object[] { beforePP, afterPP };
 
         [DynamicData(nameof(TextEqualsInputs))]
         [DataTestMethod]
-        public void TextEquals(string sourceText, string[] tokenTexts)
+        public void TextEquals(string beforePP, string afterPP)
         {
-            var lexer = new CLexer(sourceText);
-            var pp = new CPreProcessor(lexer);
-            foreach (var tokenText in tokenTexts)
+            var expectLexer = new CLexer(afterPP);
+            var pp = new CPreProcessor(new CLexer(beforePP));
+            while (true)
             {
-                var gotToken = pp.Next();
-                Assert.AreEqual(tokenText, gotToken.LogicalText);
+                var expected = expectLexer.Next();
+                var got = pp.Next();
+
+                Assert.AreEqual(expected.Kind, got.Kind);
+                Assert.AreEqual(expected.LogicalText, got.LogicalText);
+                if (expected.Kind == CTokenType.End) break;
             }
-            var end = pp.Next();
-            Assert.AreEqual(CTokenType.End, end.Kind);
         }
     }
 }
