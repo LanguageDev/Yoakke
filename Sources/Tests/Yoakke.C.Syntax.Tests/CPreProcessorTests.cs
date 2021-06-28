@@ -71,6 +71,21 @@ FOO LP() RP()",
 #define RP() )
 EXPAND(FOO LP() RP())",
 "A"),
+
+            TextInput(
+@"#define FOO(...) __VA_ARGS__
+FOO(a, b, c d)",
+"a, b, c d"),
+
+            TextInput(
+@"#define FOO(...) #__VA_ARGS__
+FOO(a, b, c)",
+"\"a, b, c\""),
+
+            TextInput(
+@"#define FOO(...) #__VA_ARGS__
+FOO(a, b,c)",
+"\"a, b,c\""),
         };
 
         private static object[] TextInput(string beforePP, string afterPP) => new object[] { beforePP, afterPP };
