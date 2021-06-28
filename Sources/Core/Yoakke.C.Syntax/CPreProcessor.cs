@@ -99,6 +99,9 @@ namespace Yoakke.C.Syntax
              && this.TryParseMacroInvocation(macro, out var args))
             {
                 // Macro invocation
+                // We expand arguments once to conform standard
+                args = args.Select(this.Expand).ToList();
+                // Expand the macro body itself
                 var expanded = macro.Expand(args).ToList();
                 // Add to the front
                 // We need to go in reverse order to get the proper ordering by adding to the front
