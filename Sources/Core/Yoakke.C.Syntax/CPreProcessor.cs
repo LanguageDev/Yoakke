@@ -346,7 +346,7 @@ namespace Yoakke.C.Syntax
                 args.Add(arg);
             }
             // Fix parameterless macros with parenthesis
-            if (macro.Parameters.Count == 0 && args.Count == 1 && args[0].Count == 0) args.Clear();
+            if (!variadic && macro.Parameters.Count == 0 && args.Count == 1 && args[0].Count == 0) args.Clear();
             return true;
         }
 

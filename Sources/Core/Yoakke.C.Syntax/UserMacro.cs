@@ -33,17 +33,26 @@ namespace Yoakke.C.Syntax
 
         public IEnumerable<CToken> Expand(IPreProcessor preProcessor, IReadOnlyList<IReadOnlyList<CToken>> arguments)
         {
+            var isVariadic = this.Parameters is not null
+                          && this.Parameters.Count > 0
+                          && this.Parameters[this.Parameters.Count - 1] == "...";
+            var hasVariadicArgs = true;
             if (this.Parameters is not null && this.Parameters.Count != arguments.Count)
             {
-                // TODO: Proper error handling
-                throw new NotImplementedException();
+                // This can still be ok if we are variadic and the count is only one less
+                if (!isVariadic || this.Parameters.Count != arguments.Count + 1)
+                {
+                    // TODO: Proper error handling
+                    throw new NotImplementedException();
+                }
+                if (isVariadic) hasVariadicArgs = false;
             }
 
             // Assign the arguments
             var argDict = new Dictionary<string, IReadOnlyList<CToken>>();
             if (this.Parameters is not null)
             {
-                for (var i = 0; i < this.Parameters.Count;)
+                for (var i = 0; i < arguments.Count;)
                 {
                     var paramName = this.Parameters[i];
                     if (paramName == "...") paramName = "__VA_ARGS__";
@@ -52,6 +61,9 @@ namespace Yoakke.C.Syntax
                     ++i;
                 }
             }
+
+            // If we have no variadic arguments but need it, just define it as empty
+            if (!hasVariadicArgs) argDict["__VA_ARGS__"] = Array.Empty<CToken>();
 
             // Do the substitution
             var result = new List<CToken>();

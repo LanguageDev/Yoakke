@@ -88,6 +88,16 @@ FOO(a, b,c)",
 "\"a, b,c\""),
 
             TextInput(
+@"#define FOO(...) #__VA_ARGS__
+FOO()",
+"\"\""),
+
+            TextInput(
+@"#define FOO(x, ...) x
+FOO(hello)",
+"hello"),
+
+            TextInput(
 @"__COUNTER__
 __COUNTER__
 __COUNTER__",
