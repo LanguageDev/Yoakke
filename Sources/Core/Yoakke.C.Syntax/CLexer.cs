@@ -124,7 +124,7 @@ namespace Yoakke.C.Syntax
             case '[': return Make(CTokenType.OpenBracket, "[");
             case ']': return Make(CTokenType.CloseBracket, "]");
 
-            case ':': return this.MatchesEscaped('>', ref offset)
+            case ':': return this.AllowDigraphs && this.MatchesEscaped('>', ref offset)
                     ? Make(CTokenType.CloseBracket, ":>")
                     : Make(CTokenType.Colon, ":");
             case '*': return this.MatchesEscaped('=', ref offset)
@@ -174,14 +174,14 @@ namespace Yoakke.C.Syntax
                 if (this.MatchesEscaped("<=", ref offset)) return Make(CTokenType.ShiftLeftAssign, "<<=");
                 if (this.MatchesEscaped('<', ref offset)) return Make(CTokenType.ShiftLeft, "<<");
                 if (this.MatchesEscaped('=', ref offset)) return Make(CTokenType.LessEqual, "<=");
-                if (this.MatchesEscaped(':', ref offset)) return Make(CTokenType.OpenBracket, "<:");
-                if (this.MatchesEscaped('%', ref offset)) return Make(CTokenType.OpenBrace, "<%");
+                if (this.AllowDigraphs && this.MatchesEscaped(':', ref offset)) return Make(CTokenType.OpenBracket, "<:");
+                if (this.AllowDigraphs && this.MatchesEscaped('%', ref offset)) return Make(CTokenType.OpenBrace, "<%");
                 return Make(CTokenType.Less, "<");
 
             case '%':
-                if (this.MatchesEscaped(":%:", ref offset)) return Make(CTokenType.HashHash, "%:%:");
-                if (this.MatchesEscaped(':', ref offset)) return Make(CTokenType.Hash, "%:");
-                if (this.MatchesEscaped('>', ref offset)) return Make(CTokenType.CloseBrace, "%>");
+                if (this.AllowDigraphs && this.MatchesEscaped(":%:", ref offset)) return Make(CTokenType.HashHash, "%:%:");
+                if (this.AllowDigraphs && this.MatchesEscaped(':', ref offset)) return Make(CTokenType.Hash, "%:");
+                if (this.AllowDigraphs && this.MatchesEscaped('>', ref offset)) return Make(CTokenType.CloseBrace, "%>");
                 if (this.MatchesEscaped('=', ref offset)) return Make(CTokenType.ModuloAssign, "%=");
                 return Make(CTokenType.Modulo, "%");
 
