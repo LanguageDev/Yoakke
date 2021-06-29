@@ -86,6 +86,12 @@ FOO(a, b, c)",
 @"#define FOO(...) #__VA_ARGS__
 FOO(a, b,c)",
 "\"a, b,c\""),
+
+            TextInput(
+@"__COUNTER__
+__COUNTER__
+__COUNTER__",
+"0 1 2"),
         };
 
         private static object[] TextInput(string beforePP, string afterPP) => new object[] { beforePP, afterPP };
@@ -95,7 +101,8 @@ FOO(a, b,c)",
         public void TextEquals(string beforePP, string afterPP)
         {
             var expectLexer = new CLexer(afterPP);
-            var pp = new CPreProcessor(new CLexer(beforePP));
+            var pp = new CPreProcessor(new CLexer(beforePP))
+                .DefineCounter();
             while (true)
             {
                 var expected = expectLexer.Next();
