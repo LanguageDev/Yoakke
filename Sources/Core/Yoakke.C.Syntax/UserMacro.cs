@@ -31,21 +31,12 @@ namespace Yoakke.C.Syntax
             this.body = body;
         }
 
-        public IEnumerable<CToken> Expand(IReadOnlyList<IReadOnlyList<CToken>> arguments)
+        public IEnumerable<CToken> Expand(IPreProcessor preProcessor, IReadOnlyList<IReadOnlyList<CToken>> arguments)
         {
             if (this.Parameters is not null && this.Parameters.Count != arguments.Count)
             {
-                // There is a parameter count mismatch
-                // Checked if the macro is variadic
-                var variadic = this.Parameters.Count > 0 && this.Parameters[this.Parameters.Count - 1] == "...";
-                // If not variadic, argument count mismatch is a hard error
-                // It's variadic, which means we allow one less arguments (or more), because in the worst case,
-                // we only didnt specify an arg for the variadic args
-                if (!variadic || this.Parameters.Count - 1 > arguments.Count)
-                {
-                    // TODO: Proper error handling
-                    throw new NotImplementedException();
-                }
+                // TODO: Proper error handling
+                throw new NotImplementedException();
             }
 
             // Assign the arguments
@@ -55,19 +46,10 @@ namespace Yoakke.C.Syntax
                 for (var i = 0; i < this.Parameters.Count;)
                 {
                     var paramName = this.Parameters[i];
-                    if (paramName == "...")
-                    {
-                        // Variadic argument, consume remaining
-                        var arg = new List<CToken>();
-                        for (; i < arguments.Count; ++i) arg.AddRange(arguments[i]);
-                        argDict["__VA_ARGS__"] = arg;
-                    }
-                    else
-                    {
-                        // Regular arg
-                        argDict[paramName] = arguments[i];
-                        ++i;
-                    }
+                    if (paramName == "...") paramName = "__VA_ARGS__";
+                    // We expand each argument to conform standards
+                    argDict[paramName] = preProcessor.Expand(arguments[i]).ToList();
+                    ++i;
                 }
             }
 

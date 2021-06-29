@@ -38,6 +38,8 @@ namespace Yoakke.C.Syntax
             public CToken Next() => new CToken(default, string.Empty, default, string.Empty, CTokenType.End);
         }
 
+        public IReadOnlyDictionary<string, IMacro> Macros => this.macros;
+
         /// <summary>
         /// True, if directives should be allowed.
         /// </summary>
@@ -113,10 +115,8 @@ namespace Yoakke.C.Syntax
              && this.TryParseMacroInvocation(macro, out var args))
             {
                 // Macro invocation
-                // We expand arguments once to conform standard
-                args = args.Select(this.Expand).ToList();
-                // Expand the macro body itself
-                var expanded = macro.Expand(args).ToList();
+                // Just call the macro expansion, it will deal with parameter expansion
+                var expanded = macro.Expand(this, args).ToList();
                 // Add to the front
                 // We need to go in reverse order to get the proper ordering by adding to the front
                 for (var i = expanded.Count - 1; i >= 0; --i)
@@ -130,6 +130,8 @@ namespace Yoakke.C.Syntax
             // Just consume
             return this.Skip();
         }
+
+        public IEnumerable<CToken> Expand(IEnumerable<CToken> tokens) => this.Expand(tokens.ToList());
 
         private void HandleDirective(CToken directive)
         {

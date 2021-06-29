@@ -31,9 +31,10 @@ namespace Yoakke.C.Syntax
         /// <summary>
         /// Calls the <see cref="IMacro"/> with the given arguments.
         /// </summary>
+        /// <param name="preProcessor">The <see cref="IPreProcessor"/> that called the expansion.</param>
         /// <param name="arguments">The list of token sequences that are considered arguments for this <see cref="IMacro"/>.
         /// We need a list of lists because an argument can consist of multiple tokens - or even 0.</param>
         /// <returns>The <see cref="CToken"/>s that result from this macro expansion.</returns>
-        public IEnumerable<CToken> Expand(IReadOnlyList<IReadOnlyList<CToken>> arguments);
+        public IEnumerable<CToken> Expand(IPreProcessor preProcessor, IReadOnlyList<IReadOnlyList<CToken>> arguments);
     }
 }

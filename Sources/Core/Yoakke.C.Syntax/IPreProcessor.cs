@@ -16,6 +16,11 @@ namespace Yoakke.C.Syntax
     public interface IPreProcessor
     {
         /// <summary>
+        /// The <see cref="IMacro"/>s defined in this <see cref="IPreProcessor"/>.
+        /// </summary>
+        public IReadOnlyDictionary<string, IMacro> Macros { get; }
+
+        /// <summary>
         /// Defines the given <see cref="IMacro"/> for usage.
         /// </summary>
         /// <param name="macro">The <see cref="IMacro"/> to define.</param>
@@ -42,5 +47,12 @@ namespace Yoakke.C.Syntax
         /// </summary>
         /// <returns>The next upcoming <see cref="CToken"/>.</returns>
         public CToken Next();
+
+        /// <summary>
+        /// Expands the given sequence of <see cref="CToken"/>s a single time.
+        /// </summary>
+        /// <param name="tokens">The sequence of <see cref="CToken"/>s to expand.</param>
+        /// <returns>The expanded sequence of <see cref="CToken"/>s.</returns>
+        public IEnumerable<CToken> Expand(IEnumerable<CToken> tokens);
     }
 }
