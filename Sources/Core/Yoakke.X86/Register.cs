@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 
 namespace Yoakke.X86
 {
+    // TODO: This does not differentiate AL from AH
+    // Maybe we should stick to reference semantics
+
     /// <summary>
     /// Represents a single x86 register.
     /// </summary>
