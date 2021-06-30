@@ -74,7 +74,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.C.Syntax", "Core\Yoa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.C.Syntax.Tests", "Tests\Yoakke.C.Syntax.Tests\Yoakke.C.Syntax.Tests.csproj", "{74634FE8-0D46-46ED-B32D-AF78DAEE305C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yoakke.C.Syntax.Sample", "Examples\Yoakke.C.Syntax.Sample\Yoakke.C.Syntax.Sample.csproj", "{2FDE8C48-D2FB-4B0C-8ADF-EAB8EE7C591D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.C.Syntax.Sample", "Examples\Yoakke.C.Syntax.Sample\Yoakke.C.Syntax.Sample.csproj", "{2FDE8C48-D2FB-4B0C-8ADF-EAB8EE7C591D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "X86", "X86", "{091B19BD-789E-4358-A2DE-250DF39C8ADA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yoakke.X86", "Core\Yoakke.X86\Yoakke.X86.csproj", "{D9966D0F-EF13-435C-8E15-45E980E6586E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yoakke.X86.Sample", "Examples\Yoakke.X86.Sample\Yoakke.X86.Sample.csproj", "{00BEF940-0FE1-4E3F-AF91-1BEC9857262F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -190,6 +196,14 @@ Global
 		{2FDE8C48-D2FB-4B0C-8ADF-EAB8EE7C591D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2FDE8C48-D2FB-4B0C-8ADF-EAB8EE7C591D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2FDE8C48-D2FB-4B0C-8ADF-EAB8EE7C591D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9966D0F-EF13-435C-8E15-45E980E6586E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9966D0F-EF13-435C-8E15-45E980E6586E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9966D0F-EF13-435C-8E15-45E980E6586E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9966D0F-EF13-435C-8E15-45E980E6586E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00BEF940-0FE1-4E3F-AF91-1BEC9857262F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00BEF940-0FE1-4E3F-AF91-1BEC9857262F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00BEF940-0FE1-4E3F-AF91-1BEC9857262F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00BEF940-0FE1-4E3F-AF91-1BEC9857262F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -215,6 +229,8 @@ Global
 		{4A9A90B2-FA50-44D9-9B91-88B0638A7286} = {AE60AFB2-F9EE-4850-9F04-7D184B8475A9}
 		{74634FE8-0D46-46ED-B32D-AF78DAEE305C} = {AE60AFB2-F9EE-4850-9F04-7D184B8475A9}
 		{2FDE8C48-D2FB-4B0C-8ADF-EAB8EE7C591D} = {AE60AFB2-F9EE-4850-9F04-7D184B8475A9}
+		{D9966D0F-EF13-435C-8E15-45E980E6586E} = {091B19BD-789E-4358-A2DE-250DF39C8ADA}
+		{00BEF940-0FE1-4E3F-AF91-1BEC9857262F} = {091B19BD-789E-4358-A2DE-250DF39C8ADA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1EDE8F07-AE3A-4556-AEF0-3AC518F18F92}
