@@ -10,14 +10,16 @@ using System.Threading.Tasks;
 
 namespace Yoakke.X86
 {
-    // TODO: This does not differentiate AL from AH
-    // Maybe we should stick to reference semantics
-
     /// <summary>
     /// Represents a single x86 register.
     /// </summary>
-    public class Register : IEquatable<Register>
+    public class Register
     {
+        /// <summary>
+        /// The name of this <see cref="Register"/>.
+        /// </summary>
+        public string Name { get; }
+
         /// <summary>
         /// The width of this <see cref="Register"/> in bytes.
         /// </summary>
@@ -31,27 +33,14 @@ namespace Yoakke.X86
         /// <summary>
         /// Initializes a new instance of the <see cref="Register"/> class.
         /// </summary>
+        /// <param name="name">The name of the register.</param>
         /// <param name="width">The width of the register in bytes.</param>
         /// <param name="contained">The contained registers of this one.</param>
-        public Register(int width, params Register[] contained)
+        public Register(string name, int width, params Register[] contained)
         {
+            this.Name = name;
             this.Width = width;
             this.Contained = contained;
-        }
-
-        public override bool Equals(object? obj) => this.Equals(obj as Register);
-
-        public bool Equals(Register? other) =>
-               other is not null
-            && this.Width == other.Width
-            && this.Contained.SequenceEqual(other.Contained);
-
-        public override int GetHashCode()
-        {
-            var hash = default(HashCode);
-            hash.Add(this.Width);
-            foreach (var reg in this.Contained) hash.Add(reg);
-            return hash.ToHashCode();
         }
     }
 }
