@@ -13,27 +13,27 @@ namespace Yoakke.X86
     /// <summary>
     /// An x86 address specification.
     /// </summary>
-    public struct Address : IOperand
+    public readonly struct Address : IOperand
     {
         /// <summary>
         /// The optional <see cref="X86.Segment"/> override.
         /// </summary>
-        public Segment? Segment { get; }
+        public Segment? Segment { get; init; }
 
         /// <summary>
         /// The base address <see cref="Register"/>.
         /// </summary>
-        public Register? Base { get; }
+        public Register? Base { get; init; }
 
         /// <summary>
         /// A scaled offset.
         /// </summary>
-        public ScaledIndex? ScaledIndex { get; }
+        public ScaledIndex? ScaledIndex { get; init; }
 
         /// <summary>
         /// A displacement constant.
         /// </summary>
-        public int Displacement { get; }
+        public int Displacement { get; init; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Address"/> struct.

@@ -13,22 +13,22 @@ namespace Yoakke.X86
     /// <summary>
     /// Represents a single x86 register.
     /// </summary>
-    public struct Register : IOperand
+    public readonly struct Register : IOperand
     {
         /// <summary>
         /// The name of this <see cref="Register"/>.
         /// </summary>
-        public string Name { get; }
+        public readonly string Name;
 
         /// <summary>
         /// The width of this <see cref="Register"/> in bytes.
         /// </summary>
-        public DataWidth Size { get; }
+        public readonly DataWidth Size;
 
         /// <summary>
         /// The contained <see cref="Register"/> or <see cref="Register"/>s of this one.
         /// </summary>
-        public IReadOnlyList<Register> Contained { get; }
+        public readonly IReadOnlyList<Register> Contained;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Register"/> struct.

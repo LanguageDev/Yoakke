@@ -13,12 +13,12 @@ namespace Yoakke.X86
     /// <summary>
     /// Represents an x86 segment register.
     /// </summary>
-    public struct Segment : IOperand
+    public readonly struct Segment : IOperand
     {
         /// <summary>
         /// The name of this <see cref="Segment"/>.
         /// </summary>
-        public string Name { get; }
+        public readonly string Name;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Segment"/> struct.
