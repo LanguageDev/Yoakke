@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Yoakke.X86
+namespace Yoakke.X86.Operands
 {
     /// <summary>
     /// Represents an x86 segment register.

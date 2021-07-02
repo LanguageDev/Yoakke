@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Yoakke.X86
+namespace Yoakke.X86.Operands
 {
     /// <summary>
     /// The possible widths of the x86 operands, reads or writes.

@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Yoakke.X86
+namespace Yoakke.X86.Operands
 {
     /// <summary>
     /// The default x86 <see cref="Register"/>s.

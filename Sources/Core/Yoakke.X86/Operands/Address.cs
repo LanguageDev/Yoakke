@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Yoakke.X86
+namespace Yoakke.X86.Operands
 {
     /// <summary>
     /// An x86 address specification.
@@ -143,7 +143,7 @@ namespace Yoakke.X86
         /// </summary>
         /// <param name="index">The index <see cref="Register"/>.</param>
         /// <param name="scale">The index stacke.</param>
-        public ScaledIndex(Register index, int scale)
+        public ScaledIndex(Register index, int scale = 1)
         {
             if (scale != 1 && scale != 2 && scale != 4 && scale != 8)
             {
