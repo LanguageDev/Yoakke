@@ -16,6 +16,8 @@ namespace Yoakke.X86
     /// </summary>
     public readonly struct Label : IOperand, IAssemblyElement
     {
+        public bool IsMemory => true;
+
         /// <summary>
         /// The name of this <see cref="Label"/>.
         /// </summary>

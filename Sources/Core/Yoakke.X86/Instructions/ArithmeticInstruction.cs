@@ -27,6 +27,8 @@ namespace Yoakke.X86.Instructions
             }
         }
 
+        public string? Comment { get; init; }
+
         /// <summary>
         /// The destination <see cref="IOperand"/>.
         /// </summary>

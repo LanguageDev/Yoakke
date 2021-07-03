@@ -25,5 +25,10 @@ namespace Yoakke.X86.Instructions
         /// The <see cref="IOperand"/>s this <see cref="IInstruction"/> needs.
         /// </summary>
         public IEnumerable<IOperand> Operands { get; }
+
+        /// <summary>
+        /// Optional inline comment.
+        /// </summary>
+        public string? Comment { get; }
     }
 }

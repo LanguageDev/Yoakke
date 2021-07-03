@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Yoakke.X86.Instructions;
 using Yoakke.X86.Operands;
 
 namespace Yoakke.X86
@@ -56,10 +57,13 @@ namespace Yoakke.X86
         /// </summary>
         /// <param name="element">The <see cref="IAssemblyElement"/> to write.</param>
         /// <returns>This instance to chain calls.</returns>
-        public AssemblyBuilder Write(IAssemblyElement element)
+        public AssemblyBuilder WriteElement(IAssemblyElement element)
         {
             this.elements.Insert(this.position++, element);
             return this;
         }
+
+        public AssemblyBuilder Add(IOperand dest, IOperand src, string? comment = null) =>
+            this.WriteElement(new Add(dest, src) { Comment = comment });
     }
 }
