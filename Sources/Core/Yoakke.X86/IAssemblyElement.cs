@@ -8,16 +8,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Yoakke.X86.Operands
+namespace Yoakke.X86
 {
     /// <summary>
-    /// Operands for x86 instructions.
+    /// Anything that belongs inside an <see cref="Assembly"/>.
     /// </summary>
-    public interface IOperand
+    public interface IAssemblyElement
     {
-        /// <summary>
-        /// True, if this operand involves memory read/write.
-        /// </summary>
-        public bool IsMemory { get; }
     }
 }

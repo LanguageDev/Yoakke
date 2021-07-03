@@ -15,6 +15,8 @@ namespace Yoakke.X86.Operands
     /// </summary>
     public readonly struct Indirect : IOperand
     {
+        public bool IsMemory => true;
+
         /// <summary>
         /// The width of the accessed data.
         /// </summary>

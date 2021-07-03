@@ -15,6 +15,8 @@ namespace Yoakke.X86.Operands
     /// </summary>
     public readonly struct Constant : IOperand
     {
+        public bool IsMemory => false;
+
         /// <summary>
         /// The value of this <see cref="Constant"/>.
         /// </summary>

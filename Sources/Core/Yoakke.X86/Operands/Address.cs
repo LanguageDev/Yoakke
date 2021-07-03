@@ -15,6 +15,8 @@ namespace Yoakke.X86.Operands
     /// </summary>
     public readonly struct Address : IOperand
     {
+        public bool IsMemory => true;
+
         /// <summary>
         /// The optional <see cref="X86.Segment"/> override.
         /// </summary>

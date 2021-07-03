@@ -15,6 +15,8 @@ namespace Yoakke.X86.Operands
     /// </summary>
     public readonly struct Register : IOperand
     {
+        public bool IsMemory => false;
+
         /// <summary>
         /// The name of this <see cref="Register"/>.
         /// </summary>

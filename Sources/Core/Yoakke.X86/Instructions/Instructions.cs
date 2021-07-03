@@ -7,13 +7,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Yoakke.X86.Operands;
 
-namespace Yoakke.X86
+namespace Yoakke.X86.Instructions
 {
-    /// <summary>
-    /// The different x86 opcodes for instructions.
-    /// </summary>
-    public enum Opcode
+    public class Add : ArithmeticInstruction
     {
+        public Add(IOperand dest, IOperand src)
+            : base(Opcode.Add, dest, src)
+        {
+        }
     }
 }

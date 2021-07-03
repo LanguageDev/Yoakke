@@ -8,16 +8,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Yoakke.X86.Operands
+namespace Yoakke.X86.Instructions
 {
     /// <summary>
-    /// Operands for x86 instructions.
+    /// The different x86 opcodes for instructions.
     /// </summary>
-    public interface IOperand
+    public enum Opcode
     {
-        /// <summary>
-        /// True, if this operand involves memory read/write.
-        /// </summary>
-        public bool IsMemory { get; }
+        Add,
     }
 }
