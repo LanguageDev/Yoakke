@@ -71,7 +71,7 @@ namespace Yoakke.X86.Writers
                 break;
 
             case Indirect indirect:
-                this.TextWriter.Write(indirect.Width.ToString().ToUpper());
+                this.TextWriter.Write(indirect.Size.ToString().ToUpper());
                 this.TextWriter.Write(" PTR ");
                 this.WriteAddress(indirect.Address);
                 break;

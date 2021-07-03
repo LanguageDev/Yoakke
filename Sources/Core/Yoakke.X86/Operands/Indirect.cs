@@ -17,10 +17,12 @@ namespace Yoakke.X86.Operands
     {
         public bool IsMemory => true;
 
+        DataWidth? IOperand.Size => this.Size;
+
         /// <summary>
         /// The width of the accessed data.
         /// </summary>
-        public readonly DataWidth Width;
+        public readonly DataWidth Size;
 
         /// <summary>
         /// The <see cref="X86.Address"/> to read from.
@@ -30,11 +32,11 @@ namespace Yoakke.X86.Operands
         /// <summary>
         /// Initializes a new instance of the <see cref="Indirect"/> struct.
         /// </summary>
-        /// <param name="width">The width of the accessed data.</param>
+        /// <param name="size">The width - or size - of the accessed data.</param>
         /// <param name="address">The <see cref="X86.Address"/> to read from.</param>
-        public Indirect(DataWidth width, Address address)
+        public Indirect(DataWidth size, Address address)
         {
-            this.Width = width;
+            this.Size = size;
             this.Address = address;
         }
     }

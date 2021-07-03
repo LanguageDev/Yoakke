@@ -13,7 +13,7 @@ namespace Yoakke.X86
     /// <summary>
     /// Anything that belongs inside an <see cref="Assembly"/>.
     /// </summary>
-    public interface IAssemblyElement
+    public interface ICodeElement
     {
     }
 }

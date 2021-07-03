@@ -18,7 +18,7 @@ namespace Yoakke.X86
     /// </summary>
     public class AssemblyBuilder
     {
-        private readonly List<IAssemblyElement> elements = new();
+        private readonly List<ICodeElement> elements = new();
         private int position;
 
         /// <summary>
@@ -53,11 +53,11 @@ namespace Yoakke.X86
         }
 
         /// <summary>
-        /// Writes an <see cref="IAssemblyElement"/> to the current <see cref="Position"/>.
+        /// Writes an <see cref="ICodeElement"/> to the current <see cref="Position"/>.
         /// </summary>
-        /// <param name="element">The <see cref="IAssemblyElement"/> to write.</param>
+        /// <param name="element">The <see cref="ICodeElement"/> to write.</param>
         /// <returns>This instance to chain calls.</returns>
-        public AssemblyBuilder WriteElement(IAssemblyElement element)
+        public AssemblyBuilder WriteElement(ICodeElement element)
         {
             this.elements.Insert(this.position++, element);
             return this;

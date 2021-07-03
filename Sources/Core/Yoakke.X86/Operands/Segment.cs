@@ -17,6 +17,8 @@ namespace Yoakke.X86.Operands
     {
         public bool IsMemory => false;
 
+        public DataWidth? Size => null;
+
         /// <summary>
         /// The name of this <see cref="Segment"/>.
         /// </summary>

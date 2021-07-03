@@ -43,6 +43,7 @@ namespace Yoakke.X86.Instructions
         {
             if (dest.IsMemory && src.IsMemory) throw new ArgumentException("arithmetic operations require at least one non-memory argument");
             if (dest is Constant) throw new ArgumentException("destination cannot be a constant", nameof(dest));
+            if (src.Size is not null && dest.Size is not null && src.Size != dest.Size) throw new ArgumentException("argument size mismatch");
 
             this.Destination = dest;
             this.Source = src;

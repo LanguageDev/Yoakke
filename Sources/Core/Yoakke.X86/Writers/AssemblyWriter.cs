@@ -28,7 +28,7 @@ namespace Yoakke.X86.Writers
             this.TextWriter = textWriter;
         }
 
-        protected virtual void WriteElement(IAssemblyElement element)
+        protected virtual void WriteElement(ICodeElement element)
         {
             switch (element)
             {

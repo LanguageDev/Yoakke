@@ -19,5 +19,10 @@ namespace Yoakke.X86.Operands
         /// True, if this operand involves memory read/write.
         /// </summary>
         public bool IsMemory { get; }
+
+        /// <summary>
+        /// The <see cref="DataWidth"/> - or size - of this <see cref="IOperand"/>, if can be determined.
+        /// </summary>
+        public DataWidth? Size { get; }
     }
 }

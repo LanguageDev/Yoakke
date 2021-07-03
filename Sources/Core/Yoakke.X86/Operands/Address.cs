@@ -17,6 +17,8 @@ namespace Yoakke.X86.Operands
     {
         public bool IsMemory => true;
 
+        public DataWidth? Size => null;
+
         /// <summary>
         /// The optional <see cref="X86.Segment"/> override.
         /// </summary>

@@ -14,7 +14,7 @@ namespace Yoakke.X86.Instructions
     /// <summary>
     /// A single x86 instruction.
     /// </summary>
-    public interface IInstruction : IAssemblyElement
+    public interface IInstruction : ICodeElement
     {
         /// <summary>
         /// The <see cref="X86.Opcode"/> the <see cref="IInstruction"/> executes.

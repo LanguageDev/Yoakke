@@ -17,6 +17,8 @@ namespace Yoakke.X86.Operands
     {
         public bool IsMemory => false;
 
+        public DataWidth? Size { get; }
+
         /// <summary>
         /// The value of this <see cref="Constant"/>.
         /// </summary>
@@ -25,9 +27,11 @@ namespace Yoakke.X86.Operands
         /// <summary>
         /// Initializes a new instance of the <see cref="Constant"/> struct.
         /// </summary>
+        /// <param name="size">The <see cref="DataWidth"/> of this constant.</param>
         /// <param name="value">The value object.</param>
-        private Constant(object value)
+        private Constant(DataWidth size, object value)
         {
+            this.Size = size;
             this.Value = value;
         }
 
@@ -36,7 +40,7 @@ namespace Yoakke.X86.Operands
         /// </summary>
         /// <param name="value">The integer value.</param>
         public Constant(int value)
-            : this((object)value)
+            : this(DataWidth.Dword, value)
         {
         }
 
@@ -45,7 +49,7 @@ namespace Yoakke.X86.Operands
         /// </summary>
         /// <param name="value">The long value.</param>
         public Constant(long value)
-            : this((object)value)
+            : this(DataWidth.Qword, value)
         {
         }
     }

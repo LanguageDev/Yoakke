@@ -13,7 +13,7 @@ namespace Yoakke.X86
     /// <summary>
     /// A comment in between assembly lines.
     /// </summary>
-    public readonly struct Comment : IAssemblyElement
+    public readonly struct Comment : ICodeElement
     {
         /// <summary>
         /// The text of the <see cref="Comment"/>.
