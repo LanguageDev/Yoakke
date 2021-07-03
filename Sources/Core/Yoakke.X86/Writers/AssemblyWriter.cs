@@ -77,5 +77,7 @@ namespace Yoakke.X86.Writers
         /// </summary>
         /// <param name="comment">The <see cref="Comment"/> to write.</param>
         public abstract void Write(Comment comment);
+
+        protected abstract void WriteInlineComment(string comment);
     }
 }

@@ -13,8 +13,10 @@ namespace Yoakke.X86.Instructions
 {
     public class Add : ArithmeticInstruction
     {
+        public override Opcode Opcode => Opcode.Add;
+
         public Add(IOperand dest, IOperand src)
-            : base(Opcode.Add, dest, src)
+            : base(dest, src)
         {
         }
     }

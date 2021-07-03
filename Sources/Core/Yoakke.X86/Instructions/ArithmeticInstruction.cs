@@ -16,7 +16,7 @@ namespace Yoakke.X86.Instructions
     /// </summary>
     public abstract class ArithmeticInstruction : IInstruction
     {
-        public Opcode Opcode { get; }
+        public abstract Opcode Opcode { get; }
 
         public IEnumerable<IOperand> Operands
         {
@@ -39,12 +39,11 @@ namespace Yoakke.X86.Instructions
         /// </summary>
         public IOperand Source { get; }
 
-        protected ArithmeticInstruction(Opcode opcode, IOperand dest, IOperand src)
+        protected ArithmeticInstruction(IOperand dest, IOperand src)
         {
             if (dest.IsMemory && src.IsMemory) throw new ArgumentException("arithmetic operations require at least one non-memory argument");
             if (dest is Constant) throw new ArgumentException("destination cannot be a constant", nameof(dest));
 
-            this.Opcode = opcode;
             this.Destination = dest;
             this.Source = src;
         }
