@@ -11,7 +11,13 @@ namespace Yoakke.X86.Sample
         static void Main(string[] args)
         {
             var writer = new AssemblyWriter();
-            writer.Write(new Add(Registers.Eax, Registers.Ecx)).Write(' ').WriteComment("Hello\nWorld");
+            writer.SyntaxFlavor = SyntaxFlavor.ATnT;
+            // writer.SegmentSelectorInBrackets = true;
+            writer.Write(
+                new Add(
+                    Registers.Eax,
+                    /* new Indirect(DataWidth.Dword, */new Address(Registers.Ss, Registers.Ecx, new ScaledIndex(Registers.Edx, 4), 23))//)
+                ).Write(' ').WriteComment("Hello\nWorld");
             Console.WriteLine(writer.Result);
         }
     }

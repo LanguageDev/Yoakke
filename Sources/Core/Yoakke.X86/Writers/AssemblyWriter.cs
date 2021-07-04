@@ -240,6 +240,7 @@ namespace Yoakke.X86.Writers
         {
             Register r => this.Write(r),
             Segment s => this.Write(s),
+            Address a => this.Write(a),
 
             _ => throw new NotSupportedException(),
         };
@@ -266,6 +267,17 @@ namespace Yoakke.X86.Writers
             // Write instruction
             var ins = instruction.Opcode.ToString();
             this.Write(this.InstructionsUpperCase ? ins.ToUpper() : ins.ToLower());
+
+            if (this.SyntaxFlavor == SyntaxFlavor.ATnT)
+            {
+                // AT&T syntax wants a suffix to determine operand
+                var operandSize = operands.Select(op => op.Size).FirstOrDefault(op => op is not null);
+                if (operandSize is not null)
+                {
+                    var suffix = this.GetATnTSuffix(operandSize.Value);
+                    this.Write(this.InstructionsUpperCase ? suffix.ToUpper() : suffix);
+                }
+            }
 
             // Write operands
             var first = true;
@@ -297,9 +309,101 @@ namespace Yoakke.X86.Writers
         /// <returns>This instance to be able to chain calls.</returns>
         public virtual AssemblyWriter Write(Segment segment) => this.WriteRegister(segment.Name);
 
+        /// <summary>
+        /// Writes an <see cref="Address"/> to the underlying <see cref="StringBuilder"/>.
+        /// </summary>
+        /// <param name="address">The <see cref="Address"/> to write.</param>
+        /// <returns>This instance to be able to chain calls.</returns>
+        public virtual AssemblyWriter Write(Address address)
+        {
+            if (this.SyntaxFlavor == SyntaxFlavor.Intel)
+            {
+                // Intel, means
+                // segment:[base + index * scale + displacement]
+                // or
+                // [segment: base + index * scale + displacement]
+
+                // Segment selector and bracket dance
+                if (this.SegmentSelectorInBrackets) this.Write('[');
+                if (address.Segment is not null)
+                {
+                    this.Write(address.Segment.Value).Write(':');
+                    if (this.SegmentSelectorInBrackets) this.Write(' ');
+                }
+                if (!this.SegmentSelectorInBrackets) this.Write('[');
+
+                var written = false;
+
+                // Base address
+                if (address.Base is not null)
+                {
+                    written = true;
+                    this.Write(address.Base.Value);
+                }
+
+                // Scaled index
+                if (address.ScaledIndex is not null)
+                {
+                    if (written) this.Write(" + ");
+                    written = true;
+
+                    var (index, scale) = address.ScaledIndex.Value;
+                    this.Write(index).Write(" * ").Write(scale);
+                }
+
+                // Displacement
+                if (!written || address.Displacement != 0)
+                {
+                    if (written) this.Write(" + ");
+                    this.Write(address.Displacement);
+                }
+
+                this.Write(']');
+            }
+            else
+            {
+                // AT&T
+                // segment:displacement(base, index, scale)
+                // who came up with this???
+
+                // Segment selector
+                if (address.Segment is not null) this.Write(address.Segment.Value).Write(':');
+
+                // Displacement
+                this.Write(address.Displacement);
+
+                this.Write('(');
+                // Base
+                if (address.Base is not null) this.Write(address.Base.Value);
+                this.Write(',');
+                // Index, scale
+                if (address.ScaledIndex is not null)
+                {
+                    var (index, scale) = address.ScaledIndex.Value;
+                    this.Write(' ').Write(index).Write(", ").Write(scale);
+                }
+                else
+                {
+                    this.Write(',');
+                }
+                this.Write(')');
+            }
+            return this;
+        }
+
         private AssemblyWriter WriteRegister(string name) => this
             .Write(this.SyntaxFlavor == SyntaxFlavor.ATnT ? "%" : string.Empty)
             .Write(this.RegistersUpperCase ? name.ToUpper() : name);
+
+        private string GetATnTSuffix(DataWidth size) => size switch
+        {
+            DataWidth.Byte => "b",
+            DataWidth.Word => "w",
+            DataWidth.Dword => "l",
+            DataWidth.Qword => "q",
+
+            _ => throw new NotSupportedException(),
+        };
 
         private string GetLastLinePrefix()
         {
