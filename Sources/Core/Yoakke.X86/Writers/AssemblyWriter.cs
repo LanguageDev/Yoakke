@@ -170,7 +170,7 @@ namespace Yoakke.X86.Writers
         /// <param name="str">The keyword string to write.</param>
         /// <returns>This instance to be able to chain calls.</returns>
         public virtual AssemblyWriter WriteKeyword(string str) =>
-            this.Write(this.KeywordsUpperCase ? str.ToUpper() : str);
+            this.Write(this.KeywordsUpperCase ? str.ToUpper() : str.ToLower());
 
         /// <summary>
         /// Writes a keyword to the underlying <see cref="StringBuilder"/> and starts a new line.
@@ -241,6 +241,7 @@ namespace Yoakke.X86.Writers
             Register r => this.Write(r),
             Segment s => this.Write(s),
             Address a => this.Write(a),
+            Indirect i => this.Write(i),
 
             _ => throw new NotSupportedException(),
         };
@@ -308,6 +309,28 @@ namespace Yoakke.X86.Writers
         /// <param name="segment">The <see cref="Segment"/> to write.</param>
         /// <returns>This instance to be able to chain calls.</returns>
         public virtual AssemblyWriter Write(Segment segment) => this.WriteRegister(segment.Name);
+
+        /// <summary>
+        /// Writes an <see cref="Indirect"/> to the underlying <see cref="StringBuilder"/>.
+        /// </summary>
+        /// <param name="indirect">The <see cref="Indirect"/> to write.</param>
+        /// <returns>This instance to be able to chain calls.</returns>
+        public virtual AssemblyWriter Write(Indirect indirect)
+        {
+            if (this.SyntaxFlavor == SyntaxFlavor.Intel)
+            {
+                // Intel
+                // Write the size prefix
+                this.WriteKeyword($"{indirect.Size} ptr").Write(' ').Write(indirect.Address);
+            }
+            else
+            {
+                // AT&T
+                // Just write out the address
+                this.Write(indirect.Address);
+            }
+            return this;
+        }
 
         /// <summary>
         /// Writes an <see cref="Address"/> to the underlying <see cref="StringBuilder"/>.
@@ -390,6 +413,36 @@ namespace Yoakke.X86.Writers
             }
             return this;
         }
+
+        /// <summary>
+        /// Writes a <see cref="Label"/> to the underlying <see cref="StringBuilder"/>.
+        /// </summary>
+        /// <param name="label">The <see cref="Label"/> to write.</param>
+        /// <returns>This instance to be able to chain calls.</returns>
+        public virtual AssemblyWriter Write(Label label) => this.Write(label.Name).Write(':');
+
+        /// <summary>
+        /// Writes a <see cref="Label"/> to the underlying <see cref="StringBuilder"/> and starts a new line.
+        /// </summary>
+        /// <param name="label">The <see cref="Label"/> to write.</param>
+        /// <returns>This instance to be able to chain calls.</returns>
+        public virtual AssemblyWriter WriteLine(Label label) => this.Write(label).WriteLine();
+
+        /// <summary>
+        /// Writes a <see cref="Label"/> to the underlying <see cref="StringBuilder"/> as an operand.
+        /// </summary>
+        /// <param name="label">The <see cref="Label"/> to write.</param>
+        /// <returns>This instance to be able to chain calls.</returns>
+        public virtual AssemblyWriter WriteAsOperand(Label label) => this.Write(label.Name);
+
+        /// <summary>
+        /// Writes a <see cref="Label"/> to the underlying <see cref="StringBuilder"/> as an operand
+        /// and starts a new line.
+        /// </summary>
+        /// <param name="label">The <see cref="Label"/> to write.</param>
+        /// <returns>This instance to be able to chain calls.</returns>
+        public virtual AssemblyWriter WriteAsOperandLine(Label label) =>
+            this.WriteAsOperand(label).WriteLine();
 
         private AssemblyWriter WriteRegister(string name) => this
             .Write(this.SyntaxFlavor == SyntaxFlavor.ATnT ? "%" : string.Empty)
