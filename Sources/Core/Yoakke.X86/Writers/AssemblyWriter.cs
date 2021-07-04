@@ -295,6 +295,9 @@ namespace Yoakke.X86.Writers
                 this.Write(op);
             }
 
+            // If there is a comment, append it
+            if (instruction.Comment is not null) this.Write(' ').WriteComment(instruction.Comment);
+
             return this;
         }
 

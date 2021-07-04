@@ -15,5 +15,11 @@ namespace Yoakke.X86
     /// </summary>
     public class Assembly
     {
+        // TODO: Sections?
+
+        /// <summary>
+        /// The <see cref="ICodeElement"/>s this <see cref="Assembly"/>s code consists of.
+        /// </summary>
+        public IReadOnlyList<ICodeElement> Elements { get; init; } = Array.Empty<ICodeElement>();
     }
 }
