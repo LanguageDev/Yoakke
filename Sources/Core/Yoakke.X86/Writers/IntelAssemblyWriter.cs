@@ -13,17 +13,13 @@ using Yoakke.X86.Operands;
 
 namespace Yoakke.X86.Writers
 {
+#if false
     /// <summary>
     /// An <see cref="AssemblyWriter"/> that only implements <see cref="IInstruction"/> and <see cref="IOperand"/>
     /// writing in the Intel Assembly syntax.
     /// </summary>
     public class IntelAssemblyWriter : AssemblyWriter
     {
-        /// <summary>
-        /// True, if the segment selector should go insige the brackets.
-        /// </summary>
-        public bool SegmentSelectorInBrackets { get; set; } = false;
-
         public IntelAssemblyWriter(TextWriter textWriter)
             : base(textWriter)
         {
@@ -146,4 +142,5 @@ namespace Yoakke.X86.Writers
             this.TextWriter.Write(']');
         }
     }
+#endif
 }

@@ -14,70 +14,310 @@ using Yoakke.X86.Operands;
 namespace Yoakke.X86.Writers
 {
     /// <summary>
-    /// Base class for writers that emit textual assembly code.
+    /// Basic class for writers that emit textual assembly code.
     /// </summary>
-    public abstract class AssemblyWriter
+    public class AssemblyWriter
     {
         /// <summary>
-        /// The underlying <see cref="TextWriter"/> this <see cref="AssemblyWriter"/> writes to.
+        /// The underlying <see cref="StringBuilder"/> this <see cref="AssemblyWriter"/> writes to.
         /// </summary>
-        public TextWriter TextWriter { get; }
+        public StringBuilder Result { get; }
 
-        protected AssemblyWriter(TextWriter textWriter)
+        /// <summary>
+        /// The <see cref="X86.SyntaxFlavor"/> to default to.
+        /// </summary>
+        public SyntaxFlavor SyntaxFlavor { get; set; } = SyntaxFlavor.Intel;
+
+        /// <summary>
+        /// The sequence to indent the instructions with.
+        /// </summary>
+        public string InstructionIndentation { get; set; } = "  ";
+
+        /// <summary>
+        /// True, if the segment selector should go insige the brackets.
+        /// </summary>
+        public bool SegmentSelectorInBrackets { get; set; } = false;
+
+        /// <summary>
+        /// True, if the instructions should be upper-cased.
+        /// </summary>
+        public bool InstructionsUpperCase { get; set; } = false;
+
+        /// <summary>
+        /// True, if the keywords should be upper-cased.
+        /// </summary>
+        public bool KeywordsUpperCase { get; set; } = false;
+
+        /// <summary>
+        /// True, if the registers should be upper-cased.
+        /// </summary>
+        public bool RegistersUpperCase { get; set; } = false;
+
+        /// <summary>
+        /// The prefix of line-comments.
+        /// </summary>
+        public string CommentPrefix { get; set; } = "; ";
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AssemblyWriter"/> class.
+        /// </summary>
+        /// <param name="result">The <see cref="StringBuilder"/> to write the code to.</param>
+        public AssemblyWriter(StringBuilder result)
         {
-            this.TextWriter = textWriter;
+            this.Result = result;
         }
 
-        protected virtual void WriteElement(ICodeElement element)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AssemblyWriter"/> class.
+        /// </summary>
+        public AssemblyWriter()
+            : this(new StringBuilder())
         {
-            switch (element)
+        }
+
+        /// <summary>
+        /// Writes a character to the underlying <see cref="StringBuilder"/>.
+        /// </summary>
+        /// <param name="c">The character to write.</param>
+        /// <returns>This instance to be able to chain calls.</returns>
+        public AssemblyWriter Write(char c)
+        {
+            this.Result.Append(c);
+            return this;
+        }
+
+        /// <summary>
+        /// Writes a string to the underlying <see cref="StringBuilder"/>.
+        /// </summary>
+        /// <param name="str">The string to write.</param>
+        /// <returns>This instance to be able to chain calls.</returns>
+        public AssemblyWriter Write(string str)
+        {
+            this.Result.Append(str);
+            return this;
+        }
+
+        /// <summary>
+        /// Starts a new line for the underlying <see cref="StringBuilder"/>.
+        /// </summary>
+        /// <returns>This instance to be able to chain calls.</returns>
+        public AssemblyWriter WriteLine()
+        {
+            this.Result.AppendLine();
+            return this;
+        }
+
+        /// <summary>
+        /// Writes a string to the underlying <see cref="StringBuilder"/> and goes to the next line.
+        /// </summary>
+        /// <param name="str">The string to write.</param>
+        /// <returns>This instance to be able to chain calls.</returns>
+        public AssemblyWriter WriteLine(string str) => this.Write(str).WriteLine();
+
+        /// <summary>
+        /// Writes an object to the underlying <see cref="StringBuilder"/>. Handles <see cref="ICodeElement"/>s
+        /// and <see cref="IOperand"/>s.
+        /// </summary>
+        /// <param name="obj">The object to write.</param>
+        /// <returns>This instance to be able to chain calls.</returns>
+        public AssemblyWriter Write(object? obj) => obj switch
+        {
+            IOperand op => this.Write(op),
+            ICodeElement elem => this.Write(elem),
+            _ => this.Write(obj?.ToString() ?? "null"),
+        };
+
+        /// <summary>
+        /// Writes an object to the underlying <see cref="StringBuilder"/> and goes to the next line.
+        /// Handles <see cref="ICodeElement"/>s and <see cref="IOperand"/>s.
+        /// </summary>
+        /// <param name="obj">The object to write.</param>
+        /// <returns>This instance to be able to chain calls.</returns>
+        public AssemblyWriter WriteLine(object? obj) => this.Write(obj).WriteLine();
+
+        /// <summary>
+        /// Writes a separated sequence of objects to the underlying <see cref="StringBuilder"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the separated elements.</typeparam>
+        /// <param name="separator">The separator sequence to insert between elements.</param>
+        /// <param name="items">The sequence of elements to write.</param>
+        /// <returns>This instance to be able to chain calls.</returns>
+        public AssemblyWriter Write<T>(string separator, IEnumerable<T> items)
+        {
+            var first = true;
+            foreach (var item in items)
             {
-            case IInstruction instruction:
-                this.Write(instruction);
-                break;
-
-            case Label label:
-                this.Write(label);
-                break;
-
-            case Comment comment:
-                this.Write(comment);
-                break;
-
-            default: throw new NotSupportedException();
+                if (!first) this.Write(separator);
+                first = false;
+                this.Write(item);
             }
+            return this;
         }
 
         /// <summary>
-        /// Writes the given <see cref="Assembly"/> to the underlying <see cref="TextWriter"/>.
+        /// Writes a separated sequence of objects to the underlying <see cref="StringBuilder"/> and starts a new line.
         /// </summary>
-        /// <param name="assembly">The <see cref="Assembly"/> to write.</param>
-        public abstract void Write(Assembly assembly);
+        /// <typeparam name="T">The type of the separated elements.</typeparam>
+        /// <param name="separator">The separator sequence to insert between elements.</param>
+        /// <param name="items">The sequence of elements to write.</param>
+        /// <returns>This instance to be able to chain calls.</returns>
+        public AssemblyWriter WriteLine<T>(string separator, IEnumerable<T> items) =>
+            this.Write(separator, items).WriteLine();
 
         /// <summary>
-        /// Writes the given <see cref="IInstruction"/> to the underlying <see cref="TextWriter"/>.
+        /// Writes a keyword to the underlying <see cref="StringBuilder"/>.
         /// </summary>
-        /// <param name="instruction">The <see cref="IInstruction"/> to write.</param>
-        public abstract void Write(IInstruction instruction);
+        /// <param name="str">The keyword string to write.</param>
+        /// <returns>This instance to be able to chain calls.</returns>
+        public virtual AssemblyWriter WriteKeyword(string str) =>
+            this.Write(this.KeywordsUpperCase ? str.ToUpper() : str);
 
         /// <summary>
-        /// Writes the given <see cref="IOperand"/> to the underlying <see cref="TextWriter"/>.
+        /// Writes a keyword to the underlying <see cref="StringBuilder"/> and starts a new line.
+        /// </summary>
+        /// <param name="str">The keyword string to write.</param>
+        /// <returns>This instance to be able to chain calls.</returns>
+        public AssemblyWriter WriteKeywordLine(string str) => this.WriteKeyword(str).WriteLine();
+
+        /// <summary>
+        /// Writes a comment to the underlying <see cref="StringBuilder"/>.
+        /// </summary>
+        /// <param name="str">The comment string to write.</param>
+        /// <returns>This instance to be able to chain calls.</returns>
+        public virtual AssemblyWriter WriteComment(string str)
+        {
+            // First we count how far off we are from the line start
+            // This is so we can align other lines nicely with this one
+            // We build a prefix of characters
+            var linePrefix = this.GetLastLinePrefix();
+            // Now write the comment line-by-line
+            var reader = new StringReader(str);
+            var first = true;
+            while (true)
+            {
+                var line = reader.ReadLine();
+                if (line is null) break;
+
+                if (!first) this.WriteLine().Write(linePrefix);
+                first = false;
+                this.Write(this.CommentPrefix).Write(line);
+            }
+            return this;
+        }
+
+        /// <summary>
+        /// Writes a comment to the underlying <see cref="StringBuilder"/> and starts a new line.
+        /// </summary>
+        /// <param name="str">The comment string to write.</param>
+        /// <returns>This instance to be able to chain calls.</returns>
+        public AssemblyWriter WriteCommentLine(string str) => this.WriteComment(str).WriteLine();
+
+        /// <summary>
+        /// Writes an <see cref="ICodeElement"/> to the underlying <see cref="StringBuilder"/>.
+        /// </summary>
+        /// <param name="element">The <see cref="ICodeElement"/> to write.</param>
+        /// <returns>This instance to be able to chain calls.</returns>
+        public virtual AssemblyWriter Write(ICodeElement element) => element switch
+        {
+            IInstruction instruction => this.Write(instruction),
+
+            _ => throw new NotSupportedException(),
+        };
+
+        /// <summary>
+        /// Writes an <see cref="ICodeElement"/> to the underlying <see cref="StringBuilder"/> and starts a new line.
+        /// </summary>
+        /// <param name="element">The <see cref="ICodeElement"/> to write.</param>
+        /// <returns>This instance to be able to chain calls.</returns>
+        public AssemblyWriter WriteLine(ICodeElement element) => this.Write(element).WriteLine();
+
+        /// <summary>
+        /// Writes an <see cref="IOperand"/> to the underlying <see cref="StringBuilder"/>.
         /// </summary>
         /// <param name="operand">The <see cref="IOperand"/> to write.</param>
-        public abstract void Write(IOperand operand);
+        /// <returns>This instance to be able to chain calls.</returns>
+        public virtual AssemblyWriter Write(IOperand operand) => operand switch
+        {
+            Register r => this.Write(r),
+            Segment s => this.Write(s),
+
+            _ => throw new NotSupportedException(),
+        };
 
         /// <summary>
-        /// Writes the given <see cref="Label"/> to the underlying <see cref="TextWriter"/>.
+        /// Writes an <see cref="IOperand"/> to the underlying <see cref="StringBuilder"/> and starts a new line.
         /// </summary>
-        /// <param name="label">The <see cref="Label"/> to write.</param>
-        public abstract void Write(Label label);
+        /// <param name="operand">The <see cref="IOperand"/> to write.</param>
+        /// <returns>This instance to be able to chain calls.</returns>
+        public AssemblyWriter WriteLine(IOperand operand) => this.Write(operand).WriteLine();
 
         /// <summary>
-        /// Writes the given <see cref="Comment"/> to the underlying <see cref="TextWriter"/>.
+        /// Writes an <see cref="IInstruction"/> to the underlying <see cref="StringBuilder"/>.
         /// </summary>
-        /// <param name="comment">The <see cref="Comment"/> to write.</param>
-        public abstract void Write(Comment comment);
+        /// <param name="instruction">The <see cref="IInstruction"/> to write.</param>
+        /// <returns>This instance to be able to chain calls.</returns>
+        public virtual AssemblyWriter Write(IInstruction instruction)
+        {
+            // We reverse args for AT&T
+            var operands = this.SyntaxFlavor == SyntaxFlavor.ATnT
+                ? instruction.Operands.Reverse()
+                : instruction.Operands;
 
-        protected abstract void WriteInlineComment(string comment);
+            // Write instruction
+            var ins = instruction.Opcode.ToString();
+            this.Write(this.InstructionsUpperCase ? ins.ToUpper() : ins.ToLower());
+
+            // Write operands
+            var first = true;
+            foreach (var op in operands)
+            {
+                // Separator
+                if (first) this.Write(' ');
+                else this.Write(", ");
+                first = false;
+
+                // Operand
+                this.Write(op);
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Writes a <see cref="Register"/> to the underlying <see cref="StringBuilder"/>.
+        /// </summary>
+        /// <param name="register">The <see cref="Register"/> to write.</param>
+        /// <returns>This instance to be able to chain calls.</returns>
+        public virtual AssemblyWriter Write(Register register) => this.WriteRegister(register.Name);
+
+        /// <summary>
+        /// Writes a <see cref="Segment"/> to the underlying <see cref="StringBuilder"/>.
+        /// </summary>
+        /// <param name="segment">The <see cref="Segment"/> to write.</param>
+        /// <returns>This instance to be able to chain calls.</returns>
+        public virtual AssemblyWriter Write(Segment segment) => this.WriteRegister(segment.Name);
+
+        private AssemblyWriter WriteRegister(string name) => this
+            .Write(this.SyntaxFlavor == SyntaxFlavor.ATnT ? "%" : string.Empty)
+            .Write(this.RegistersUpperCase ? name.ToUpper() : name);
+
+        private string GetLastLinePrefix()
+        {
+            static bool IsNewline(char ch) => ch == '\r' || ch == '\n';
+
+            if (this.Result.Length == 0 || IsNewline(this.Result[this.Result.Length - 1])) return string.Empty;
+
+            var result = new StringBuilder();
+            var i = this.Result.Length - 1;
+            for (; i >= 0; --i)
+            {
+                var current = this.Result[i];
+                if (IsNewline(current)) break;
+
+                if (char.IsWhiteSpace(current)) result.Insert(0, current);
+                else if (!char.IsControl(current)) result.Insert(0, ' ');
+            }
+            return result.ToString();
+        }
     }
 }

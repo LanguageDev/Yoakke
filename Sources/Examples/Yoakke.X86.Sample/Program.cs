@@ -10,12 +10,9 @@ namespace Yoakke.X86.Sample
     {
         static void Main(string[] args)
         {
-            var sw = new StringWriter();
-            var writer = new IntelAssemblyWriter(sw);
-            writer.Write(new Add(
-                Registers.Eax,
-                new Indirect(DataWidth.Dword, new Address(Registers.Ecx, new ScaledIndex(Registers.Edx, 4), 23))));
-            Console.WriteLine(sw);
+            var writer = new AssemblyWriter();
+            writer.Write(new Add(Registers.Eax, Registers.Ecx)).Write(' ').WriteComment("Hello\nWorld");
+            Console.WriteLine(writer.Result);
         }
     }
 }
