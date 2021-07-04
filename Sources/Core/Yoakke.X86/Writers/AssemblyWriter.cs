@@ -243,7 +243,7 @@ namespace Yoakke.X86.Writers
             Segment s => this.Write(s),
             Address a => this.Write(a),
             Indirect i => this.Write(i),
-            LabelRef l => this.Write(l),
+            LabelRef l => this.Write((IOperand)l),
 
             _ => throw new NotSupportedException(),
         };
@@ -435,7 +435,7 @@ namespace Yoakke.X86.Writers
         /// </summary>
         /// <param name="label">The <see cref="LabelRef"/> to write.</param>
         /// <returns>This instance to be able to chain calls.</returns>
-        public virtual AssemblyWriter WriteAsOperand(LabelRef label) => this.Write(label.Label.Name);
+        public virtual AssemblyWriter Write(LabelRef label) => this.Write(label.Label.Name);
 
         /// <summary>
         /// Writes a <see cref="LabelRef"/> to the underlying <see cref="StringBuilder"/> as an operand
@@ -443,8 +443,8 @@ namespace Yoakke.X86.Writers
         /// </summary>
         /// <param name="label">The <see cref="LabelRef"/> to write.</param>
         /// <returns>This instance to be able to chain calls.</returns>
-        public virtual AssemblyWriter WriteAsOperandLine(LabelRef label) =>
-            this.WriteAsOperand(label).WriteLine();
+        public virtual AssemblyWriter WriteLine(LabelRef label) =>
+            this.Write(label).WriteLine();
 
         private AssemblyWriter WriteRegister(string name) => this
             .Write(this.SyntaxFlavor == SyntaxFlavor.ATnT ? "%" : string.Empty)
