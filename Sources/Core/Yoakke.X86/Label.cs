@@ -14,12 +14,8 @@ namespace Yoakke.X86
     /// <summary>
     /// A single label to be able to address the place by name.
     /// </summary>
-    public readonly struct Label : IOperand, ICodeElement
+    public readonly struct Label : ICodeElement
     {
-        public bool IsMemory => true;
-
-        public DataWidth? Size => null;
-
         /// <summary>
         /// The name of this <see cref="Label"/>.
         /// </summary>

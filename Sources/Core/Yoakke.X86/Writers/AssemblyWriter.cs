@@ -220,6 +220,7 @@ namespace Yoakke.X86.Writers
         public virtual AssemblyWriter Write(ICodeElement element) => element switch
         {
             IInstruction instruction => this.Write(instruction),
+            Label label => this.Write(label),
 
             _ => throw new NotSupportedException(),
         };
@@ -242,6 +243,7 @@ namespace Yoakke.X86.Writers
             Segment s => this.Write(s),
             Address a => this.Write(a),
             Indirect i => this.Write(i),
+            LabelRef l => this.Write(l),
 
             _ => throw new NotSupportedException(),
         };
@@ -429,19 +431,19 @@ namespace Yoakke.X86.Writers
         public virtual AssemblyWriter WriteLine(Label label) => this.Write(label).WriteLine();
 
         /// <summary>
-        /// Writes a <see cref="Label"/> to the underlying <see cref="StringBuilder"/> as an operand.
+        /// Writes a <see cref="LabelRef"/> to the underlying <see cref="StringBuilder"/> as an operand.
         /// </summary>
-        /// <param name="label">The <see cref="Label"/> to write.</param>
+        /// <param name="label">The <see cref="LabelRef"/> to write.</param>
         /// <returns>This instance to be able to chain calls.</returns>
-        public virtual AssemblyWriter WriteAsOperand(Label label) => this.Write(label.Name);
+        public virtual AssemblyWriter WriteAsOperand(LabelRef label) => this.Write(label.Label.Name);
 
         /// <summary>
-        /// Writes a <see cref="Label"/> to the underlying <see cref="StringBuilder"/> as an operand
+        /// Writes a <see cref="LabelRef"/> to the underlying <see cref="StringBuilder"/> as an operand
         /// and starts a new line.
         /// </summary>
-        /// <param name="label">The <see cref="Label"/> to write.</param>
+        /// <param name="label">The <see cref="LabelRef"/> to write.</param>
         /// <returns>This instance to be able to chain calls.</returns>
-        public virtual AssemblyWriter WriteAsOperandLine(Label label) =>
+        public virtual AssemblyWriter WriteAsOperandLine(LabelRef label) =>
             this.WriteAsOperand(label).WriteLine();
 
         private AssemblyWriter WriteRegister(string name) => this
