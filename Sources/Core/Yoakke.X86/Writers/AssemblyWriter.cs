@@ -243,7 +243,7 @@ namespace Yoakke.X86.Writers
             Segment s => this.Write(s),
             Address a => this.Write(a),
             Indirect i => this.Write(i),
-            LabelRef l => this.Write((IOperand)l),
+            LabelRef l => this.Write(l),
 
             _ => throw new NotSupportedException(),
         };
