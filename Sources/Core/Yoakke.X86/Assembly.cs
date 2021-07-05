@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Yoakke.X86.Validation;
 
 namespace Yoakke.X86
 {
@@ -21,5 +22,16 @@ namespace Yoakke.X86
         /// The <see cref="ICodeElement"/>s this <see cref="Assembly"/>s code consists of.
         /// </summary>
         public IReadOnlyList<ICodeElement> Elements { get; init; } = Array.Empty<ICodeElement>();
+
+        private readonly ValidatorCache validatorCache = new();
+
+        public void Validate(AssemblyContext context)
+        {
+            foreach (var instruction in this.Elements.OfType<IInstruction>())
+            {
+                var validator = this.validatorCache.GetInstructionValidator(instruction);
+                validator.Validate(context, instruction);
+            }
+        }
     }
 }

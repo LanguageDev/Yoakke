@@ -41,22 +41,25 @@ namespace Yoakke.X86.Validation
                 var validatorAttrib = instructionType.GetCustomAttribute<ValidatorAttribute>();
                 if (validatorAttrib is null)
                 {
-                    throw new InvalidOperationException($"the instruction {instructionType.Name} has no associated validator");
+                    // No validator provided, we assume that it doesn't need any
+                    validator = NullInstructionValidator.Default;
                 }
-
-                // Check if this validator is already in the cache
-                var validatorType = validatorAttrib.ValidatorType;
-                if (!this.cachedValidators.TryGetValue(validatorType, out validator))
+                else
                 {
-                    // No instance of this validator yet, instantiate
-                    var newValidator = Activator.CreateInstance(instructionType);
-                    if (newValidator is null)
+                    // Check if this validator is already in the cache
+                    var validatorType = validatorAttrib.ValidatorType;
+                    if (!this.cachedValidators.TryGetValue(validatorType, out validator))
                     {
-                        throw new InvalidOperationException($"could not instantiate validator {validatorType.Name}");
+                        // No instance of this validator yet, instantiate
+                        var newValidator = Activator.CreateInstance(validatorType);
+                        if (newValidator is null)
+                        {
+                            throw new InvalidOperationException($"could not instantiate validator {validatorType.Name}");
+                        }
+                        // Store it in the validator cache
+                        validator = (IInstructionValidator)newValidator;
+                        this.cachedValidators.Add(validatorType, validator);
                     }
-                    // Store it in the validator cache
-                    validator = (IInstructionValidator)newValidator;
-                    this.cachedValidators.Add(validatorType, validator);
                 }
 
                 // Now that we figured out the validator, cache it for this type

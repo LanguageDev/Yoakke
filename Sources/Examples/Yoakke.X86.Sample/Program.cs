@@ -12,18 +12,17 @@ namespace Yoakke.X86.Sample
             var builder = new AssemblyBuilder()
                 .Add(
                     new Indirect(DataWidth.Dword, new Address(Registers.Ss, Registers.Ecx, new ScaledIndex(Registers.Edx, 4), 23)),
-                    Registers.Eax,
+                    Registers.Ax,
                     "just some test\nthis is the next line"
                 );
+            var assembly = builder.Assembly;
+            var context = new AssemblyContext { AddressSize = DataWidth.Dword };
+            assembly.Validate(context);
 
             var writer = new AssemblyWriter();
             writer.Settings = new AssemblyWriterSettings
             {
                 SyntaxFlavor = SyntaxFlavor.Intel,
-                //SegmentSelectorInBrackets = true,
-                //InstructionsUpperCase = true,
-                //RegistersUpperCase = true,
-                //KeywordsUpperCase = true,
             };
             writer.Write(builder.Assembly);
             Console.WriteLine(writer.Result);

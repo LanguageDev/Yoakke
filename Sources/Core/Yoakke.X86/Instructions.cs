@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Yoakke.X86.Operands;
+using Yoakke.X86.Validation;
 
 namespace Yoakke.X86
 {
@@ -16,6 +17,7 @@ namespace Yoakke.X86
     /// </summary>
     public static class Instructions
     {
+        [Validator(typeof(ArithmeticInstructionValidator))]
         public abstract class ArithmeticInstruction : IInstruction
         {
             public IEnumerable<IOperand> Operands
@@ -53,7 +55,7 @@ namespace Yoakke.X86
                 this.Comment = comment;
             }
         }
-
+        
         public class Add : ArithmeticInstruction
         {
             public Add(IOperand destination, IOperand source, string? comment = null)
