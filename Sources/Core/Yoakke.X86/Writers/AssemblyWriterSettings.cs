@@ -16,6 +16,11 @@ namespace Yoakke.X86.Writers
     public class AssemblyWriterSettings
     {
         /// <summary>
+        /// Returns a default instance with some reasonable settings.
+        /// </summary>
+        public static AssemblyWriterSettings Default => new();
+
+        /// <summary>
         /// The <see cref="X86.SyntaxFlavor"/> to default to.
         /// </summary>
         public SyntaxFlavor SyntaxFlavor { get; set; } = SyntaxFlavor.Intel;

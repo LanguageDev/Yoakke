@@ -9,18 +9,13 @@ using System.Text;
 using System.Threading.Tasks;
 using Yoakke.X86.Operands;
 
-namespace Yoakke.X86.Instructions
+namespace Yoakke.X86
 {
     /// <summary>
     /// A single x86 instruction.
     /// </summary>
     public interface IInstruction : ICodeElement
     {
-        /// <summary>
-        /// The <see cref="X86.Opcode"/> the <see cref="IInstruction"/> executes.
-        /// </summary>
-        public Opcode Opcode { get; }
-
         /// <summary>
         /// The <see cref="IOperand"/>s this <see cref="IInstruction"/> needs.
         /// </summary>

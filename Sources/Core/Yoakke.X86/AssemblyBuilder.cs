@@ -8,7 +8,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Yoakke.X86.Instructions;
 using Yoakke.X86.Operands;
 
 namespace Yoakke.X86
@@ -74,6 +73,6 @@ namespace Yoakke.X86
         }
 
         public AssemblyBuilder Add(IOperand dest, IOperand src, string? comment = null) =>
-            this.WriteElement(new Add(dest, src) { Comment = comment });
+            this.WriteElement(new Instructions.Add(dest, src, comment));
     }
 }
