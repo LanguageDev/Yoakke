@@ -21,8 +21,18 @@ namespace Yoakke.X86.Operands
         public bool IsMemory { get; }
 
         /// <summary>
-        /// The <see cref="DataWidth"/> - or size - of this <see cref="IOperand"/>, if can be determined.
+        /// Retrieves the <see cref="DataWidth"/> - or size - of the resulting valud of this <see cref="IOperand"/>
+        /// without any context.
         /// </summary>
-        public DataWidth? Size { get; }
+        /// <returns>The <see cref="DataWidth"/> that corresponds to the size of this operand, or null
+        /// if it cannot be determined without context.</returns>
+        public DataWidth? GetSize();
+
+        /// <summary>
+        /// Retrieves the <see cref="DataWidth"/> - or size - of the resulting valud of this <see cref="IOperand"/>.
+        /// </summary>
+        /// <param name="context">The <see cref="AssemblyContext"/> that contains contextual information.</param>
+        /// <returns>The <see cref="DataWidth"/> that corresponds to the size of this operand.</returns>
+        public DataWidth GetSize(AssemblyContext context);
     }
 }
