@@ -194,6 +194,7 @@ namespace Yoakke.Reporting.Present
             }
 
             // Write a single separator line
+            this.buffer.ForegroundColor = this.Style.DefaultColor;
             this.buffer.WriteLine($"{lineNumberPadding} │");
         }
 
