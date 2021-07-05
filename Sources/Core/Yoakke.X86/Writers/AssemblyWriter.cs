@@ -24,39 +24,9 @@ namespace Yoakke.X86.Writers
         public StringBuilder Result { get; }
 
         /// <summary>
-        /// The <see cref="X86.SyntaxFlavor"/> to default to.
+        /// Settings for this <see cref="AssemblyWriter"/>.
         /// </summary>
-        public SyntaxFlavor SyntaxFlavor { get; set; } = SyntaxFlavor.Intel;
-
-        /// <summary>
-        /// The sequence to indent the instructions with.
-        /// </summary>
-        public string InstructionIndentation { get; set; } = "  ";
-
-        /// <summary>
-        /// True, if the segment selector should go insige the brackets.
-        /// </summary>
-        public bool SegmentSelectorInBrackets { get; set; } = false;
-
-        /// <summary>
-        /// True, if the instructions should be upper-cased.
-        /// </summary>
-        public bool InstructionsUpperCase { get; set; } = false;
-
-        /// <summary>
-        /// True, if the keywords should be upper-cased.
-        /// </summary>
-        public bool KeywordsUpperCase { get; set; } = false;
-
-        /// <summary>
-        /// True, if the registers should be upper-cased.
-        /// </summary>
-        public bool RegistersUpperCase { get; set; } = false;
-
-        /// <summary>
-        /// The prefix of line-comments.
-        /// </summary>
-        public string CommentPrefix { get; set; } = "; ";
+        public AssemblyWriterSettings Settings { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AssemblyWriter"/> class.
@@ -170,7 +140,7 @@ namespace Yoakke.X86.Writers
         /// <param name="str">The keyword string to write.</param>
         /// <returns>This instance to be able to chain calls.</returns>
         public virtual AssemblyWriter WriteKeyword(string str) =>
-            this.Write(this.KeywordsUpperCase ? str.ToUpper() : str.ToLower());
+            this.Write(this.Settings.KeywordsUpperCase ? str.ToUpper() : str.ToLower());
 
         /// <summary>
         /// Writes a keyword to the underlying <see cref="StringBuilder"/> and starts a new line.
@@ -200,7 +170,7 @@ namespace Yoakke.X86.Writers
 
                 if (!first) this.WriteLine().Write(linePrefix);
                 first = false;
-                this.Write(this.CommentPrefix).Write(line);
+                this.Write(this.Settings.CommentPrefix).Write(line);
             }
             return this;
         }
@@ -263,22 +233,22 @@ namespace Yoakke.X86.Writers
         public virtual AssemblyWriter Write(IInstruction instruction)
         {
             // We reverse args for AT&T
-            var operands = this.SyntaxFlavor == SyntaxFlavor.ATnT
+            var operands = this.Settings.SyntaxFlavor == SyntaxFlavor.ATnT
                 ? instruction.Operands.Reverse()
                 : instruction.Operands;
 
             // Write instruction
             var ins = instruction.Opcode.ToString();
-            this.Write(this.InstructionsUpperCase ? ins.ToUpper() : ins.ToLower());
+            this.Write(this.Settings.InstructionsUpperCase ? ins.ToUpper() : ins.ToLower());
 
-            if (this.SyntaxFlavor == SyntaxFlavor.ATnT)
+            if (this.Settings.SyntaxFlavor == SyntaxFlavor.ATnT)
             {
                 // AT&T syntax wants a suffix to determine operand
                 var operandSize = operands.Select(op => op.Size).FirstOrDefault(op => op is not null);
                 if (operandSize is not null)
                 {
                     var suffix = this.GetATnTSuffix(operandSize.Value);
-                    this.Write(this.InstructionsUpperCase ? suffix.ToUpper() : suffix);
+                    this.Write(this.Settings.InstructionsUpperCase ? suffix.ToUpper() : suffix);
                 }
             }
 
@@ -322,7 +292,7 @@ namespace Yoakke.X86.Writers
         /// <returns>This instance to be able to chain calls.</returns>
         public virtual AssemblyWriter Write(Indirect indirect)
         {
-            if (this.SyntaxFlavor == SyntaxFlavor.Intel)
+            if (this.Settings.SyntaxFlavor == SyntaxFlavor.Intel)
             {
                 // Intel
                 // Write the size prefix
@@ -344,7 +314,7 @@ namespace Yoakke.X86.Writers
         /// <returns>This instance to be able to chain calls.</returns>
         public virtual AssemblyWriter Write(Address address)
         {
-            if (this.SyntaxFlavor == SyntaxFlavor.Intel)
+            if (this.Settings.SyntaxFlavor == SyntaxFlavor.Intel)
             {
                 // Intel, means
                 // segment:[base + index * scale + displacement]
@@ -352,13 +322,13 @@ namespace Yoakke.X86.Writers
                 // [segment: base + index * scale + displacement]
 
                 // Segment selector and bracket dance
-                if (this.SegmentSelectorInBrackets) this.Write('[');
+                if (this.Settings.SegmentSelectorInBrackets) this.Write('[');
                 if (address.Segment is not null)
                 {
                     this.Write(address.Segment.Value).Write(':');
-                    if (this.SegmentSelectorInBrackets) this.Write(' ');
+                    if (this.Settings.SegmentSelectorInBrackets) this.Write(' ');
                 }
-                if (!this.SegmentSelectorInBrackets) this.Write('[');
+                if (!this.Settings.SegmentSelectorInBrackets) this.Write('[');
 
                 var written = false;
 
@@ -427,31 +397,26 @@ namespace Yoakke.X86.Writers
         public virtual AssemblyWriter Write(Label label) => this.Write(label.Name).Write(':');
 
         /// <summary>
-        /// Writes a <see cref="Label"/> to the underlying <see cref="StringBuilder"/> and starts a new line.
-        /// </summary>
-        /// <param name="label">The <see cref="Label"/> to write.</param>
-        /// <returns>This instance to be able to chain calls.</returns>
-        public virtual AssemblyWriter WriteLine(Label label) => this.Write(label).WriteLine();
-
-        /// <summary>
-        /// Writes a <see cref="LabelRef"/> to the underlying <see cref="StringBuilder"/> as an operand.
+        /// Writes a <see cref="LabelRef"/> to the underlying <see cref="StringBuilder"/>.
         /// </summary>
         /// <param name="label">The <see cref="LabelRef"/> to write.</param>
         /// <returns>This instance to be able to chain calls.</returns>
         public virtual AssemblyWriter Write(LabelRef label) => this.Write(label.Label.Name);
 
         /// <summary>
-        /// Writes a <see cref="LabelRef"/> to the underlying <see cref="StringBuilder"/> as an operand
-        /// and starts a new line.
+        /// Writes the whole <see cref="Assembly"/> to the underlying <see cref="StringBuilder"/>.
         /// </summary>
-        /// <param name="label">The <see cref="LabelRef"/> to write.</param>
+        /// <param name="assembly">The <see cref="Assembly"/> to write.</param>
         /// <returns>This instance to be able to chain calls.</returns>
-        public virtual AssemblyWriter WriteLine(LabelRef label) =>
-            this.Write(label).WriteLine();
+        public virtual AssemblyWriter Write(Assembly assembly)
+        {
+            foreach (var element in assembly.Elements) this.WriteLine(element);
+            return this;
+        }
 
         private AssemblyWriter WriteRegister(string name) => this
-            .Write(this.SyntaxFlavor == SyntaxFlavor.ATnT ? "%" : string.Empty)
-            .Write(this.RegistersUpperCase ? name.ToUpper() : name);
+            .Write(this.Settings.SyntaxFlavor == SyntaxFlavor.ATnT ? "%" : string.Empty)
+            .Write(this.Settings.RegistersUpperCase ? name.ToUpper() : name);
 
         private string GetATnTSuffix(DataWidth size) => size switch
         {

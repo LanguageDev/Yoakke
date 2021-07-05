@@ -10,17 +10,23 @@ namespace Yoakke.X86.Sample
     {
         static void Main(string[] args)
         {
-            var writer = new AssemblyWriter();
-            writer.SyntaxFlavor = SyntaxFlavor.Intel;
-            // writer.SegmentSelectorInBrackets = true;
-            // writer.InstructionsUpperCase = true;
-            // writer.RegistersUpperCase = true;
-            // writer.KeywordsUpperCase = true;
-            writer.Write(
-                new Add(
+            var builder = new AssemblyBuilder()
+                .Add(
+                    new Indirect(DataWidth.Dword, new Address(Registers.Ss, Registers.Ecx, new ScaledIndex(Registers.Edx, 4), 23)),
                     Registers.Eax,
-                    new Indirect(DataWidth.Dword, new Address(Registers.Ss, Registers.Ecx, new ScaledIndex(Registers.Edx, 4), 23)))
-                ).Write(' ').WriteComment("Hello\nWorld");
+                    "just some test"
+                );
+
+            var writer = new AssemblyWriter();
+            writer.Settings = new AssemblyWriterSettings
+            {
+                SyntaxFlavor = SyntaxFlavor.Intel,
+                //SegmentSelectorInBrackets = true,
+                //InstructionsUpperCase = true,
+                //RegistersUpperCase = true,
+                //KeywordsUpperCase = true,
+            };
+            writer.Write(builder.Assembly);
             Console.WriteLine(writer.Result);
         }
     }
