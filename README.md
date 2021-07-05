@@ -56,3 +56,11 @@ Work in progress...
 ## Sample projects
 
 Work in progress...
+
+## Using Yoakke Badge
+
+If you use Yoakke and would be willing to show it, here is a badge you can copy-paste into your readme:</br>
+<a href="#" alt="Using Yoakke"><img src="https://raw.githubusercontent.com/LanguageDev/Yoakke/master/.github/resources/UsingYoakke.svg" title="Using Yoakke" alt="Using Yoakke"></a>
+```html
+<a href="https://github.com/LanguageDev/Yoakke" alt="Using Yoakke"><img src="https://raw.githubusercontent.com/LanguageDev/Yoakke/master/.github/resources/UsingYoakke.svg" title="Using Yoakke" alt="Using Yoakke"></a>
+```
