@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -61,6 +61,28 @@ namespace Yoakke.Reporting.Present
         {
             this.Writer = writer;
             this.buffer = new ColoredBuffer();
+        }
+
+        private static IEnumerable<LinePrimitive> TrimEmptySourceLinesAtEdges(List<LinePrimitive> linePrimitives)
+        {
+            static bool IsEmptySourceLine(LinePrimitive line)
+            {
+                if (line is SourceLine sourceLine)
+                {
+                    var contents = sourceLine.Source!.GetLine(sourceLine.Line);
+                    return string.IsNullOrWhiteSpace(contents);
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return linePrimitives
+                .SkipWhile(IsEmptySourceLine)
+                .Reverse()
+                .SkipWhile(IsEmptySourceLine)
+                .Reverse();
         }
 
         public void Present(Diagnostics diagnostic)
@@ -126,6 +148,11 @@ namespace Yoakke.Reporting.Present
 
             // Generate all line primitives
             var linePrimitives = this.CollectLinePrimitives(infos).ToList();
+            // Trim empty source lines at edges
+            if (this.Style.TrimEmptySourceLinesAtEdges)
+            {
+                linePrimitives = TrimEmptySourceLinesAtEdges(linePrimitives).ToList();
+            }
             // Find the largest line index printed
             var maxLineIndex = linePrimitives.OfType<SourceLine>().Select(l => l.Line).Max();
             // Create a padding to fit all line numbers from the largest of the group

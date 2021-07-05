@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -58,6 +58,12 @@ namespace Yoakke.Reporting.Present
         /// How big of a gap can we connect up between annotated lines.
         /// </summary>
         public int ConnectUpLines { get; set; } = 1;
+
+        /// <summary>
+        /// If <see langword="true"/>, source lines that only contain whitespace at the beginning or end of blocks will not be printed.
+        /// </summary>
+        /// <remarks>
+        public bool TrimEmptySourceLinesAtEdges { get; set; } = true;
 
         public ConsoleColor GetSeverityColor(Severity severity) =>
             this.SeverityColors.TryGetValue(severity, out var col) ? col : this.DefaultColor;
