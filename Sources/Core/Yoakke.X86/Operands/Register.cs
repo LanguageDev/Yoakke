@@ -17,7 +17,9 @@ namespace Yoakke.X86.Operands
     {
         public bool IsMemory => false;
 
-        DataWidth? IOperand.Size => this.Size;
+        public DataWidth? GetSize() => this.Size;
+
+        public DataWidth GetSize(AssemblyContext context) => this.Size;
 
         /// <summary>
         /// The name of this <see cref="Register"/>.

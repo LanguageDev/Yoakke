@@ -8,7 +8,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Yoakke.X86.Instructions;
 using Yoakke.X86.Operands;
 
 namespace Yoakke.X86.Writers
@@ -26,7 +25,7 @@ namespace Yoakke.X86.Writers
         /// <summary>
         /// Settings for this <see cref="AssemblyWriter"/>.
         /// </summary>
-        public AssemblyWriterSettings Settings { get; set; }
+        public AssemblyWriterSettings Settings { get; set; } = AssemblyWriterSettings.Default;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AssemblyWriter"/> class.
@@ -238,13 +237,13 @@ namespace Yoakke.X86.Writers
                 : instruction.Operands;
 
             // Write instruction
-            var ins = instruction.Opcode.ToString();
+            var ins = instruction.GetType().Name.ToString();
             this.Write(this.Settings.InstructionsUpperCase ? ins.ToUpper() : ins.ToLower());
 
             if (this.Settings.SyntaxFlavor == SyntaxFlavor.ATnT)
             {
                 // AT&T syntax wants a suffix to determine operand
-                var operandSize = operands.Select(op => op.Size).FirstOrDefault(op => op is not null);
+                var operandSize = operands.Select(op => op.GetSize()).FirstOrDefault(op => op is not null);
                 if (operandSize is not null)
                 {
                     var suffix = this.GetATnTSuffix(operandSize.Value);

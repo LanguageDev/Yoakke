@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using Yoakke.X86.Instructions;
 using Yoakke.X86.Operands;
 using Yoakke.X86.Writers;
 
@@ -14,7 +13,7 @@ namespace Yoakke.X86.Sample
                 .Add(
                     new Indirect(DataWidth.Dword, new Address(Registers.Ss, Registers.Ecx, new ScaledIndex(Registers.Edx, 4), 23)),
                     Registers.Eax,
-                    "just some test"
+                    "just some test\nthis is the next line"
                 );
 
             var writer = new AssemblyWriter();

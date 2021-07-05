@@ -17,7 +17,14 @@ namespace Yoakke.X86.Operands
     {
         public bool IsMemory => false;
 
-        public DataWidth? Size { get; }
+        public DataWidth? GetSize() => this.Size;
+
+        public DataWidth GetSize(AssemblyContext context) => this.Size;
+
+        /// <summary>
+        /// The width of the constant.
+        /// </summary>
+        public readonly DataWidth Size;
 
         /// <summary>
         /// The value of this <see cref="Constant"/>.
