@@ -1,11 +1,11 @@
-﻿<Project>
+<Project>
   <PropertyGroup>
     <!-- Language-level settings -->
     <LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
 
     <!-- Analysis -->
-    <CodeAnalysisRuleSet>Yoakke.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)/Yoakke.ruleset</CodeAnalysisRuleSet>
     <AnalysisLevel>latest</AnalysisLevel>
     <WarningLevel>5</WarningLevel>
   </PropertyGroup>
