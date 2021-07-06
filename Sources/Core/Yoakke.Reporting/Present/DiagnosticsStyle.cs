@@ -62,7 +62,6 @@ namespace Yoakke.Reporting.Present
         /// <summary>
         /// If <see langword="true"/>, source lines that only contain whitespace at the beginning or end of blocks will not be printed.
         /// </summary>
-        /// <remarks>
         public bool TrimEmptySourceLinesAtEdges { get; set; } = true;
 
         public ConsoleColor GetSeverityColor(Severity severity) =>
