@@ -6,8 +6,6 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
-  <Import Project="$(SolutionDir)/ProjectBase.props" />
-
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
     <PackageReference Include="MSTest.TestAdapter" Version="2.1.1" />

@@ -7,8 +7,6 @@
     <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
 
-  <Import Project="$(SolutionDir)/ProjectBase.props" />
-
   <ItemGroup>
     <ProjectReference Include="$(SolutionDir)\Core\Yoakke.Lsp.Server\Yoakke.Lsp.Server.csproj" />
   </ItemGroup>
