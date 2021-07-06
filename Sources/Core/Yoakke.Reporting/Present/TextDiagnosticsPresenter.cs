@@ -63,28 +63,6 @@ namespace Yoakke.Reporting.Present
             this.buffer = new ColoredBuffer();
         }
 
-        private static IEnumerable<LinePrimitive> TrimEmptySourceLinesAtEdges(List<LinePrimitive> linePrimitives)
-        {
-            static bool IsEmptySourceLine(LinePrimitive line)
-            {
-                if (line is SourceLine sourceLine)
-                {
-                    var contents = sourceLine.Source!.GetLine(sourceLine.Line);
-                    return string.IsNullOrWhiteSpace(contents);
-                }
-                else
-                {
-                    return false;
-                }
-            }
-
-            return linePrimitives
-                .SkipWhile(IsEmptySourceLine)
-                .Reverse()
-                .SkipWhile(IsEmptySourceLine)
-                .Reverse();
-        }
-
         public void Present(Diagnostics diagnostic)
         {
             // Clear the buffer
@@ -148,11 +126,6 @@ namespace Yoakke.Reporting.Present
 
             // Generate all line primitives
             var linePrimitives = this.CollectLinePrimitives(infos).ToList();
-            // Trim empty source lines at edges
-            if (this.Style.TrimEmptySourceLinesAtEdges)
-            {
-                linePrimitives = TrimEmptySourceLinesAtEdges(linePrimitives).ToList();
-            }
             // Find the largest line index printed
             var maxLineIndex = linePrimitives.OfType<SourceLine>().Select(l => l.Line).Max();
             // Create a padding to fit all line numbers from the largest of the group
@@ -350,6 +323,18 @@ namespace Yoakke.Reporting.Present
                 var currentLineIndex = infoGroup.Key;
                 var minLineIndex = Math.Max(lastLineIndex ?? 0, currentLineIndex - this.Style.SurroundingLines);
                 var maxLineIndex = Math.Min(sourceFile.AvailableLines, currentLineIndex + this.Style.SurroundingLines + 1);
+                // Trim empty source lines at edges
+                if (this.Style.TrimEmptySourceLinesAtEdges)
+                {
+                    for (var i = minLineIndex; i < currentLineIndex && string.IsNullOrWhiteSpace(sourceFile.GetLine(i)); ++i)
+                    {
+                        ++minLineIndex;
+                    }
+                    for (var i = maxLineIndex - 1; i > currentLineIndex && string.IsNullOrWhiteSpace(sourceFile.GetLine(i)); --i)
+                    {
+                        --maxLineIndex;
+                    }
+                }
                 if (j < groupedInfos.Count - 1)
                 {
                     // There's a chance we step over to the next annotation
