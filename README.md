@@ -47,7 +47,7 @@ Documentation is very much work-in-progress, but you can always find the latest 
 
 ## Developer documentation
 
-Work in progress...
+Make sure to read our [contributing document](https://github.com/LanguageDev/Yoakke/blob/master/CONTRIBUTING.md)! Some developer documents about describing the projects is - hopefully - coming soon aswell.
 
 ## Examples
 
