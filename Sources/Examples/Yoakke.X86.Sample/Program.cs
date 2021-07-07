@@ -10,12 +10,11 @@ namespace Yoakke.X86.Sample
         static void Main(string[] args)
         {
             var builder = new AssemblyBuilder()
-                .Label("start", out var lbl)
-                .Push(Registers.Ecx)
-                .Add(
-                    new Indirect(DataWidth.Dword, new Address(Registers.Ss, Registers.Ecx, new ScaledIndex(Registers.Edx, 4), lbl, 23)),
-                    Registers.Eax,
-                    "just some test\nthis is the next line");
+                .Label("main")
+                .Push(Registers.Ebp)
+                .Mov(Registers.Ebp, Registers.Esp)
+                .Sub(Registers.Esp, new Constant(16))
+                .Mov(new Indirect(DataWidth.Dword, new Address(Registers.Ebp, -4)), new Constant(0));
             var assembly = builder.Assembly;
             var context = new AssemblyContext { AddressSize = DataWidth.Dword };
             assembly.Validate(context);
@@ -24,6 +23,7 @@ namespace Yoakke.X86.Sample
             writer.Settings = new AssemblyWriterSettings
             {
                 SyntaxFlavor = SyntaxFlavor.Intel,
+                InstructionPadding = 5,
             };
             writer.Write(builder.Assembly);
             Console.WriteLine(writer.Result);

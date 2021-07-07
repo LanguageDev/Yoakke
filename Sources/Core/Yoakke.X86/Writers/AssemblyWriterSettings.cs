@@ -31,6 +31,11 @@ namespace Yoakke.X86.Writers
         public string InstructionIndentation { get; set; } = "  ";
 
         /// <summary>
+        /// Padding for instructions to align operands.
+        /// </summary>
+        public int InstructionPadding { get; set; } = 0;
+
+        /// <summary>
         /// True, if the segment selector should go insige the brackets.
         /// </summary>
         public bool SegmentSelectorInBrackets { get; set; } = false;

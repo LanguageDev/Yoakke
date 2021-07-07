@@ -211,8 +211,10 @@ namespace Yoakke.X86.Writers
             Register r => this.Write(r),
             Segment s => this.Write(s),
             Address a => this.Write(a),
+            FarAddress f => this.Write(f),
             Indirect i => this.Write(i),
             LabelRef l => this.Write(l),
+            Constant c => this.Write(c),
 
             _ => throw new NotSupportedException(),
         };
@@ -238,6 +240,8 @@ namespace Yoakke.X86.Writers
 
             // Write instruction
             var ins = instruction.GetType().Name.ToString();
+            // Pad the name
+            ins = ins.PadRight(this.Settings.InstructionPadding);
             this.Write(this.Settings.InstructionsUpperCase ? ins.ToUpper() : ins.ToLower());
 
             if (this.Settings.SyntaxFlavor == SyntaxFlavor.ATnT)
@@ -354,13 +358,13 @@ namespace Yoakke.X86.Writers
                     if (written) this.Write(" + ");
                     var labelRef = address.DisplacementLabel.Value;
                     this.Write(labelRef.Label.Name);
-                    var displacementConstant = labelRef.Offset + address.Displacement;
-                    if (displacementConstant != 0) this.Write(" + ").Write(displacementConstant);
+                    var disp = labelRef.Offset + address.Displacement;
+                    if (disp != 0) this.Write(disp > 0 ? " + " : " - ").Write(Math.Abs(disp));
                 }
                 else if (!written || address.Displacement != 0)
                 {
-                    if (written) this.Write(" + ");
-                    this.Write(address.Displacement);
+                    if (written) this.Write(address.Displacement > 0 ? " + " : " - ");
+                    this.Write(Math.Abs(address.Displacement));
                 }
 
                 this.Write(']');
@@ -379,8 +383,8 @@ namespace Yoakke.X86.Writers
                 {
                     var labelRef = address.DisplacementLabel.Value;
                     this.Write(labelRef.Label.Name);
-                    var displacementConstant = labelRef.Offset + address.Displacement;
-                    if (displacementConstant != 0) this.Write(" + ").Write(displacementConstant);
+                    var disp = labelRef.Offset + address.Displacement;
+                    if (disp != 0) this.Write(disp > 0 ? " + " : " - ").Write(Math.Abs(disp));
                 }
                 else
                 {
@@ -405,6 +409,21 @@ namespace Yoakke.X86.Writers
             }
             return this;
         }
+
+        /// <summary>
+        /// Writes a <see cref="FarAddress"/> to the underlying <see cref="StringBuilder"/>.
+        /// </summary>
+        /// <param name="farAddress">The <see cref="FarAddress"/> to write.</param>
+        /// <returns>This instance to be able to chain calls.</returns>
+        public virtual AssemblyWriter Write(FarAddress farAddress) =>
+            this.Write(farAddress.Segment).Write(':').Write(farAddress.Address);
+
+        /// <summary>
+        /// Writes a <see cref="Constant"/> to the underlying <see cref="StringBuilder"/>.
+        /// </summary>
+        /// <param name="constant">The <see cref="Constant"/> to write.</param>
+        /// <returns>This instance to be able to chain calls.</returns>
+        public virtual AssemblyWriter Write(Constant constant) => this.Write(constant.Value.ToString() ?? string.Empty);
 
         /// <summary>
         /// Writes a <see cref="Label"/> to the underlying <see cref="StringBuilder"/>.

@@ -119,7 +119,13 @@ namespace Yoakke.X86
         public AssemblyBuilder Add(IOperand dest, IOperand src, string? comment = null) =>
             this.Write(new Instructions.Add(dest, src, comment));
 
+        public AssemblyBuilder Sub(IOperand dest, IOperand src, string? comment = null) =>
+            this.Write(new Instructions.Sub(dest, src, comment));
+
         public AssemblyBuilder Mov(IOperand dest, IOperand src, string? comment = null) =>
             this.Write(new Instructions.Mov(dest, src, comment));
+
+        public AssemblyBuilder Jmp(IOperand target, string? comment = null) =>
+            this.Write(new Instructions.Jmp(target, comment));
     }
 }

@@ -20,6 +20,7 @@ namespace Yoakke.X86.Validation
         public void Validate(AssemblyContext context, IInstruction instruction)
         {
             var arith = (Instructions.ArithmeticInstruction)instruction;
+            if (arith.Source is FarAddress || arith.Destination is FarAddress) throw new InvalidOperationException("operands can not be farjump addresses");
             var destSize = arith.Destination.GetSize(context);
             var srcSize = arith.Source.GetSize(context);
             if (destSize != srcSize) throw new InvalidOperationException("operand size mismatch");

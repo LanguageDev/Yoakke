@@ -19,6 +19,7 @@ namespace Yoakke.X86
     {
         /* Base classes */
 
+        [Validator(typeof(OneOperandInstructionValidator))]
         public abstract class OneOperandInstruction : IInstruction
         {
             public IEnumerable<IOperand> Operands
@@ -44,6 +45,36 @@ namespace Yoakke.X86
             public OneOperandInstruction(IOperand operand, string? comment = null)
             {
                 this.Operand = operand;
+                this.Comment = comment;
+            }
+        }
+
+        public abstract class JumpInstruction : IInstruction
+        {
+            public IEnumerable<IOperand> Operands
+            {
+                get
+                {
+                    yield return this.Target;
+                }
+            }
+
+            public string? Comment { get; init; }
+
+            /// <summary>
+            /// The target for this jump.
+            /// </summary>
+            public IOperand Target { get; }
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="JumpInstruction"/> class.
+            /// </summary>
+            /// <param name="target">The target for this jump.</param>
+            /// <param name="comment">The optional inline comment.</param>
+            public JumpInstruction(IOperand target, string? comment = null)
+            {
+                this.Target = target;
+                this.Comment = comment;
             }
         }
 
@@ -104,11 +135,27 @@ namespace Yoakke.X86
             }
         }
 
+        public class Sub : ArithmeticInstruction
+        {
+            public Sub(IOperand destination, IOperand source, string? comment = null)
+                : base(destination, source, comment)
+            {
+            }
+        }
+
         // NOTE: For now we treat MOV as an arithmetic instruction, maybe it's good enough
         public class Mov : ArithmeticInstruction
         {
             public Mov(IOperand destination, IOperand source, string? comment = null)
                 : base(destination, source, comment)
+            {
+            }
+        }
+
+        public class Jmp : JumpInstruction
+        {
+            public Jmp(IOperand target, string? comment = null)
+                : base(target, comment)
             {
             }
         }
