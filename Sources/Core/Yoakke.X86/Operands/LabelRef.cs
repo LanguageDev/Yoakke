@@ -15,6 +15,20 @@ namespace Yoakke.X86.Operands
     /// </summary>
     public readonly struct LabelRef : IOperand
     {
+        /// <summary>
+        /// Utility to create a new <see cref="LabelRef"/>, before the <see cref="Label"/> is ever
+        /// added to the code.
+        /// </summary>
+        /// <param name="name">The name of the <see cref="Label"/> to create.</param>
+        /// <param name="label">The created <see cref="Label"/> gets written here, so it can be added
+        /// to the <see cref="Assembly"/> at a later point.</param>
+        /// <returns>A new <see cref="LabelRef"/>, that references <paramref name="label"/>.</returns>
+        public static LabelRef Forward(string name, out Label label)
+        {
+            label = new Label(name);
+            return new(label);
+        }
+
         public bool IsMemory => true;
 
         public DataWidth? GetSize() => null;
