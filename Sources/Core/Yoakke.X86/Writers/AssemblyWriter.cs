@@ -349,7 +349,15 @@ namespace Yoakke.X86.Writers
                 }
 
                 // Displacement
-                if (!written || address.Displacement != 0)
+                if (address.DisplacementLabel is not null)
+                {
+                    if (written) this.Write(" + ");
+                    var labelRef = address.DisplacementLabel.Value;
+                    this.Write(labelRef.Label.Name);
+                    var displacementConstant = labelRef.Offset + address.Displacement;
+                    if (displacementConstant != 0) this.Write(" + ").Write(displacementConstant);
+                }
+                else if (!written || address.Displacement != 0)
                 {
                     if (written) this.Write(" + ");
                     this.Write(address.Displacement);
@@ -367,7 +375,17 @@ namespace Yoakke.X86.Writers
                 if (address.Segment is not null) this.Write(address.Segment.Value).Write(':');
 
                 // Displacement
-                this.Write(address.Displacement);
+                if (address.DisplacementLabel is not null)
+                {
+                    var labelRef = address.DisplacementLabel.Value;
+                    this.Write(labelRef.Label.Name);
+                    var displacementConstant = labelRef.Offset + address.Displacement;
+                    if (displacementConstant != 0) this.Write(" + ").Write(displacementConstant);
+                }
+                else
+                {
+                    this.Write(address.Displacement);
+                }
 
                 this.Write('(');
                 // Base
@@ -400,7 +418,12 @@ namespace Yoakke.X86.Writers
         /// </summary>
         /// <param name="label">The <see cref="LabelRef"/> to write.</param>
         /// <returns>This instance to be able to chain calls.</returns>
-        public virtual AssemblyWriter Write(LabelRef label) => this.Write(label.Label.Name);
+        public virtual AssemblyWriter Write(LabelRef label)
+        {
+            this.Write(label.Label.Name);
+            if (label.Offset != 0) this.Write(" + ").Write(label.Offset);
+            return this;
+        }
 
         /// <summary>
         /// Writes the whole <see cref="Assembly"/> to the underlying <see cref="StringBuilder"/>.

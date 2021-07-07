@@ -22,7 +22,7 @@ namespace Yoakke.X86.Operands
         public DataWidth GetSize(AssemblyContext context) => context.AddressSize;
 
         /// <summary>
-        /// The optional <see cref="X86.Segment"/> override.
+        /// The optional <see cref="Operands.Segment"/> override.
         /// </summary>
         public Segment? Segment { get; init; }
 
@@ -37,6 +37,11 @@ namespace Yoakke.X86.Operands
         public ScaledIndex? ScaledIndex { get; init; }
 
         /// <summary>
+        /// A <see cref="LabelRef"/> displacement value.
+        /// </summary>
+        public LabelRef? DisplacementLabel { get; init; }
+
+        /// <summary>
         /// A displacement constant.
         /// </summary>
         public int Displacement { get; init; }
@@ -44,15 +49,22 @@ namespace Yoakke.X86.Operands
         /// <summary>
         /// Initializes a new instance of the <see cref="Address"/> struct.
         /// </summary>
-        /// <param name="segment">The optional <see cref="X86.Segment"/> override.</param>
+        /// <param name="segment">The optional <see cref="Operands.Segment"/> override.</param>
         /// <param name="base">The base address <see cref="Register"/>.</param>
         /// <param name="scaledIndex">A scaled offset.</param>
+        /// <param name="displacementLabel">A <see cref="LabelRef"/> displacement value.</param>
         /// <param name="displacement">A displacement constant.</param>
-        public Address(Segment? segment = null, Register? @base = null, ScaledIndex? scaledIndex = null, int displacement = 0)
+        public Address(
+            Segment? segment = null,
+            Register? @base = null,
+            ScaledIndex? scaledIndex = null,
+            LabelRef? displacementLabel = null,
+            int displacement = 0)
         {
             this.Segment = segment;
             this.Base = @base;
             this.ScaledIndex = scaledIndex;
+            this.DisplacementLabel = displacementLabel;
             this.Displacement = displacement;
         }
 
@@ -61,9 +73,14 @@ namespace Yoakke.X86.Operands
         /// </summary>
         /// <param name="base">The base address <see cref="Register"/>.</param>
         /// <param name="scaledIndex">A scaled offset.</param>
+        /// <param name="displacementLabel">A <see cref="LabelRef"/> displacement value.</param>
         /// <param name="displacement">A displacement constant.</param>
-        public Address(Register? @base, ScaledIndex? scaledIndex = null, int displacement = 0)
-            : this(null, @base, scaledIndex, displacement)
+        public Address(
+            Register? @base,
+            ScaledIndex? scaledIndex = null,
+            LabelRef? displacementLabel = null,
+            int displacement = 0)
+            : this(null, @base, scaledIndex, displacementLabel, displacement)
         {
         }
 
@@ -71,9 +88,25 @@ namespace Yoakke.X86.Operands
         /// Initializes a new instance of the <see cref="Address"/> struct.
         /// </summary>
         /// <param name="scaledIndex">A scaled offset.</param>
+        /// <param name="displacementLabel">A <see cref="LabelRef"/> displacement value.</param>
         /// <param name="displacement">A displacement constant.</param>
-        public Address(ScaledIndex scaledIndex, int displacement = 0)
-            : this(null, null, scaledIndex, displacement)
+        public Address(
+            ScaledIndex? scaledIndex,
+            LabelRef? displacementLabel = null,
+            int displacement = 0)
+            : this(null, null, scaledIndex, displacementLabel, displacement)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Address"/> struct.
+        /// </summary>
+        /// <param name="displacementLabel">A <see cref="LabelRef"/> displacement value.</param>
+        /// <param name="displacement">A displacement constant.</param>
+        public Address(
+            LabelRef? displacementLabel,
+            int displacement = 0)
+            : this(null, null, null, displacementLabel, displacement)
         {
         }
 
@@ -82,7 +115,63 @@ namespace Yoakke.X86.Operands
         /// </summary>
         /// <param name="displacement">A displacement constant.</param>
         public Address(int displacement)
-            : this(null, null, null, displacement)
+            : this(null, null, null, null, displacement)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Address"/> struct.
+        /// </summary>
+        /// <param name="scaledIndex">A scaled offset.</param>
+        /// <param name="displacement">A displacement constant.</param>
+        public Address(ScaledIndex? scaledIndex, int displacement)
+            : this(null, null, scaledIndex, null, displacement)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Address"/> struct.
+        /// </summary>
+        /// <param name="segment">The optional <see cref="Operands.Segment"/> override.</param>
+        /// <param name="scaledIndex">A scaled offset.</param>
+        /// <param name="displacementLabel">A <see cref="LabelRef"/> displacement value.</param>
+        /// <param name="displacement">A displacement constant.</param>
+        public Address(
+            Segment? segment,
+            ScaledIndex? scaledIndex,
+            LabelRef? displacementLabel = null,
+            int displacement = 0)
+            : this(segment, null, scaledIndex, displacementLabel, displacement)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Address"/> struct.
+        /// </summary>
+        /// <param name="base">The base address <see cref="Register"/>.</param>
+        /// <param name="displacementLabel">A <see cref="LabelRef"/> displacement value.</param>
+        /// <param name="displacement">A displacement constant.</param>
+        public Address(
+            Register? @base,
+            LabelRef? displacementLabel,
+            int displacement = 0)
+            : this(null, @base, null, displacementLabel, displacement)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Address"/> struct.
+        /// </summary>
+        /// <param name="segment">The optional <see cref="Operands.Segment"/> override.</param>
+        /// <param name="base">The base address <see cref="Register"/>.</param>
+        /// <param name="displacementLabel">A <see cref="LabelRef"/> displacement value.</param>
+        /// <param name="displacement">A displacement constant.</param>
+        public Address(
+            Segment? segment,
+            Register? @base,
+            LabelRef? displacementLabel,
+            int displacement = 0)
+            : this(segment, @base, null, displacementLabel, displacement)
         {
         }
 
@@ -91,40 +180,78 @@ namespace Yoakke.X86.Operands
         /// </summary>
         /// <param name="base">The base address <see cref="Register"/>.</param>
         /// <param name="displacement">A displacement constant.</param>
-        public Address(Register @base, int displacement)
-            : this(@base, null, displacement)
+        public Address(Register? @base, int displacement)
+            : this(null, @base, null, null, displacement)
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Address"/> struct.
         /// </summary>
-        /// <param name="segment">The optional <see cref="X86.Segment"/> override.</param>
-        /// <param name="displacement">A displacement constant.</param>
-        public Address(Segment? segment, int displacement)
-            : this(segment, null, null, displacement)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Address"/> struct.
-        /// </summary>
-        /// <param name="segment">The optional <see cref="X86.Segment"/> override.</param>
+        /// <param name="base">The base address <see cref="Register"/>.</param>
         /// <param name="scaledIndex">A scaled offset.</param>
         /// <param name="displacement">A displacement constant.</param>
-        public Address(Segment? segment, ScaledIndex? scaledIndex, int displacement = 0)
-            : this(segment, null, scaledIndex, displacement)
+        public Address(Register? @base, ScaledIndex? scaledIndex, int displacement)
+            : this(null, @base, scaledIndex, null, displacement)
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Address"/> struct.
         /// </summary>
-        /// <param name="segment">The optional <see cref="X86.Segment"/> override.</param>
+        /// <param name="segment">The optional <see cref="Operands.Segment"/> override.</param>
+        /// <param name="displacementLabel">A <see cref="LabelRef"/> displacement value.</param>
+        /// <param name="displacement">A displacement constant.</param>
+        public Address(Segment? segment, LabelRef? displacementLabel, int displacement = 0)
+            : this(segment, null, null, displacementLabel, displacement)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Address"/> struct.
+        /// </summary>
+        /// <param name="segment">The optional <see cref="Operands.Segment"/> override.</param>
+        /// <param name="displacement">A displacement constant.</param>
+        public Address(Segment? segment, int displacement)
+            : this(segment, null, null, null, displacement)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Address"/> struct.
+        /// </summary>
+        /// <param name="segment">The optional <see cref="Operands.Segment"/> override.</param>
+        /// <param name="scaledIndex">A scaled offset.</param>
+        /// <param name="displacement">A displacement constant.</param>
+        public Address(Segment? segment, ScaledIndex? scaledIndex, int displacement)
+            : this(segment, null, scaledIndex, null, displacement)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Address"/> struct.
+        /// </summary>
+        /// <param name="segment">The optional <see cref="Operands.Segment"/> override.</param>
         /// <param name="base">The base address <see cref="Register"/>.</param>
         /// <param name="displacement">A displacement constant.</param>
         public Address(Segment? segment, Register? @base, int displacement)
-            : this(segment, @base, null, displacement)
+            : this(segment, @base, null, null, displacement)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Address"/> struct.
+        /// </summary>
+        /// <param name="segment">The optional <see cref="Operands.Segment"/> override.</param>
+        /// <param name="base">The base address <see cref="Register"/>.</param>
+        /// <param name="scaledIndex">A scaled offset.</param>
+        /// <param name="displacement">A displacement constant.</param>
+        public Address(
+            Segment? segment,
+            Register? @base,
+            ScaledIndex? scaledIndex,
+            int displacement)
+            : this(segment, @base, scaledIndex, null, displacement)
         {
         }
     }

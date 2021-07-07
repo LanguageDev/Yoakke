@@ -41,12 +41,19 @@ namespace Yoakke.X86.Operands
         public readonly Label Label;
 
         /// <summary>
+        /// An offset from the label.
+        /// </summary>
+        public readonly int Offset;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="LabelRef"/> struct.
         /// </summary>
         /// <param name="label">The referenced <see cref="Label"/>.</param>
-        public LabelRef(Label label)
+        /// <param name="offset">An optional offset.</param>
+        public LabelRef(Label label, int offset = 0)
         {
             this.Label = label;
+            this.Offset = offset;
         }
     }
 }

@@ -10,10 +10,10 @@ namespace Yoakke.X86.Sample
         static void Main(string[] args)
         {
             var builder = new AssemblyBuilder()
-                .Label("start")
+                .Label("start", out var lbl)
                 .Push(Registers.Ecx)
                 .Add(
-                    new Indirect(DataWidth.Dword, new Address(Registers.Ss, Registers.Ecx, new ScaledIndex(Registers.Edx, 4), 23)),
+                    new Indirect(DataWidth.Dword, new Address(Registers.Ss, Registers.Ecx, new ScaledIndex(Registers.Edx, 4), lbl, 23)),
                     Registers.Eax,
                     "just some test\nthis is the next line");
             var assembly = builder.Assembly;
