@@ -17,6 +17,36 @@ namespace Yoakke.X86
     /// </summary>
     public static class Instructions
     {
+        /* Base classes */
+
+        public abstract class OneOperandInstruction : IInstruction
+        {
+            public IEnumerable<IOperand> Operands
+            {
+                get
+                {
+                    yield return this.Operand;
+                }
+            }
+
+            public string? Comment { get; init; }
+
+            /// <summary>
+            /// The single <see cref="IOperand"/> for this instruction.
+            /// </summary>
+            public IOperand Operand { get; }
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="OneOperandInstruction"/> class.
+            /// </summary>
+            /// <param name="operand">The single <see cref="IOperand"/> for this instruction.</param>
+            /// <param name="comment">The optional inline comment.</param>
+            public OneOperandInstruction(IOperand operand, string? comment = null)
+            {
+                this.Operand = operand;
+            }
+        }
+
         [Validator(typeof(ArithmeticInstructionValidator))]
         public abstract class ArithmeticInstruction : IInstruction
         {
@@ -55,10 +85,29 @@ namespace Yoakke.X86
                 this.Comment = comment;
             }
         }
-        
+
+        /* Actual instructions */
+
+        public class Push : OneOperandInstruction
+        {
+            public Push(IOperand operand, string? comment = null)
+                : base(operand, comment)
+            {
+            }
+        }
+
         public class Add : ArithmeticInstruction
         {
             public Add(IOperand destination, IOperand source, string? comment = null)
+                : base(destination, source, comment)
+            {
+            }
+        }
+
+        // NOTE: For now we treat MOV as an arithmetic instruction, maybe it's good enough
+        public class Mov : ArithmeticInstruction
+        {
+            public Mov(IOperand destination, IOperand source, string? comment = null)
                 : base(destination, source, comment)
             {
             }

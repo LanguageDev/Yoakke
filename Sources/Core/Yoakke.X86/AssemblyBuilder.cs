@@ -66,7 +66,7 @@ namespace Yoakke.X86
         /// </summary>
         /// <param name="element">The <see cref="ICodeElement"/> to write.</param>
         /// <returns>This instance to chain calls.</returns>
-        public AssemblyBuilder WriteElement(ICodeElement element)
+        public AssemblyBuilder Write(ICodeElement element)
         {
             this.elements.Insert(this.position++, element);
             return this;
@@ -108,12 +108,18 @@ namespace Yoakke.X86
         public AssemblyBuilder Label(Label label, out LabelRef labelReference)
         {
             labelReference = new(label);
-            return this.WriteElement(label);
+            return this.Write(label);
         }
 
         /* Instructions */
 
+        public AssemblyBuilder Push(IOperand op, string? comment = null) =>
+            this.Write(new Instructions.Push(op, comment));
+
         public AssemblyBuilder Add(IOperand dest, IOperand src, string? comment = null) =>
-            this.WriteElement(new Instructions.Add(dest, src, comment));
+            this.Write(new Instructions.Add(dest, src, comment));
+
+        public AssemblyBuilder Mov(IOperand dest, IOperand src, string? comment = null) =>
+            this.Write(new Instructions.Mov(dest, src, comment));
     }
 }

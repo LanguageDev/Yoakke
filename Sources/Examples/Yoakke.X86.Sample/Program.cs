@@ -11,6 +11,7 @@ namespace Yoakke.X86.Sample
         {
             var builder = new AssemblyBuilder()
                 .Label("start")
+                .Push(Registers.Ecx)
                 .Add(
                     new Indirect(DataWidth.Dword, new Address(Registers.Ss, Registers.Ecx, new ScaledIndex(Registers.Edx, 4), 23)),
                     Registers.Eax,
