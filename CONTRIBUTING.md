@@ -35,7 +35,7 @@ If a module does not have a feature you would like to see, you can open an issue
 If you would like to see an entirely new module or library, please open an issue about that. One of our goals is provide all the necessary tooling for writing compilers, so there can never be enough modules! Make sure to use the appropriate issue template!
 
 ### Code contribution
-If you would like to contribute with code, you could start out with the issues tagged with `help-wanted` or `contributor-friendly`. That does not mean you can not take on any issue that is not being worked on!
+If you would like to contribute with code, you could start out with the issues tagged with `help-wanted` or `good-first-issue`. That does not mean you can not take on any issue that is not being worked on!
 
 If you finished a feature, open a Pull-Request referencing the issue it resolves - hopefully there is one. Make sure your contribution addresses a single issue - or maybe a few related or duplicate ones.
 
