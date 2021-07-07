@@ -72,6 +72,47 @@ namespace Yoakke.X86
             return this;
         }
 
+        /* Adding a label */
+
+        /// <summary>
+        /// Adds a new <see cref="X86.Label"/> with the given name to the code, which can be used as a jump target.
+        /// </summary>
+        /// <param name="name">The name for the <see cref="X86.Label"/> to add.</param>
+        /// <returns>This instance to chain calls.</returns>
+        public AssemblyBuilder Label(string name) => this.Label(new Label(name));
+
+        /// <summary>
+        /// Adds a new <see cref="X86.Label"/> with the given name to the code, which can be used as a jump target.
+        /// </summary>
+        /// <param name="name">The name for the <see cref="X86.Label"/> to add.</param>
+        /// <param name="labelReference">A <see cref="Operands.LabelRef"/> gets written here, that references
+        /// the created label, so you can use it as an operand target later.</param>
+        /// <returns>This instance to chain calls.</returns>
+        public AssemblyBuilder Label(string name, out LabelRef labelReference) =>
+            this.Label(new Label(name), out labelReference);
+
+        /// <summary>
+        /// Adds a <see cref="X86.Label"/> to the code, which can be used as a jump target.
+        /// </summary>
+        /// <param name="label">The <see cref="X86.Label"/> to add.</param>
+        /// <returns>This instance to chain calls.</returns>
+        public AssemblyBuilder Label(Label label) => this.Label(label, out var _);
+
+        /// <summary>
+        /// Adds a <see cref="X86.Label"/> to the code, which can be used as a jump target.
+        /// </summary>
+        /// <param name="label">The <see cref="X86.Label"/> to add.</param>
+        /// <param name="labelReference">A <see cref="Operands.LabelRef"/> gets written here, that references
+        /// <paramref name="label"/>, so you can use it as an operand target later.</param>
+        /// <returns>This instance to chain calls.</returns>
+        public AssemblyBuilder Label(Label label, out LabelRef labelReference)
+        {
+            labelReference = new(label);
+            return this.WriteElement(label);
+        }
+
+        /* Instructions */
+
         public AssemblyBuilder Add(IOperand dest, IOperand src, string? comment = null) =>
             this.WriteElement(new Instructions.Add(dest, src, comment));
     }

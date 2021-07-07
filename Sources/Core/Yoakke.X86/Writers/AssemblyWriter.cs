@@ -409,7 +409,11 @@ namespace Yoakke.X86.Writers
         /// <returns>This instance to be able to chain calls.</returns>
         public virtual AssemblyWriter Write(Assembly assembly)
         {
-            foreach (var element in assembly.Elements) this.WriteLine(element);
+            foreach (var element in assembly.Elements)
+            {
+                if (element is IInstruction) this.Write(this.Settings.InstructionIndentation);
+                this.WriteLine(element);
+            }
             return this;
         }
 

@@ -10,11 +10,11 @@ namespace Yoakke.X86.Sample
         static void Main(string[] args)
         {
             var builder = new AssemblyBuilder()
+                .Label("start")
                 .Add(
                     new Indirect(DataWidth.Dword, new Address(Registers.Ss, Registers.Ecx, new ScaledIndex(Registers.Edx, 4), 23)),
-                    Registers.Ax,
-                    "just some test\nthis is the next line"
-                );
+                    Registers.Eax,
+                    "just some test\nthis is the next line");
             var assembly = builder.Assembly;
             var context = new AssemblyContext { AddressSize = DataWidth.Dword };
             assembly.Validate(context);

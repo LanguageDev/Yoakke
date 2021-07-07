@@ -14,15 +14,15 @@ namespace Yoakke.X86
     /// <summary>
     /// A single label to be able to address the place by name.
     /// </summary>
-    public readonly struct Label : ICodeElement
+    public class Label : ICodeElement
     {
         /// <summary>
         /// The name of this <see cref="Label"/>.
         /// </summary>
-        public readonly string Name;
+        public string Name { get; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Label"/> struct.
+        /// Initializes a new instance of the <see cref="Label"/> class.
         /// </summary>
         /// <param name="name">The name of the label.</param>
         public Label(string name)
