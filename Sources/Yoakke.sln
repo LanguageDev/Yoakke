@@ -66,6 +66,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 		Directory.Build.props = Directory.Build.props
 		Core\Directory.Build.props = Core\Directory.Build.props
+		Core\SourceGenerator.props = Core\SourceGenerator.props
 		Yoakke.ruleset = Yoakke.ruleset
 	EndProjectSection
 EndProject
@@ -79,9 +80,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.C.Syntax.Sample", "E
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "X86", "X86", "{091B19BD-789E-4358-A2DE-250DF39C8ADA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yoakke.X86", "Core\Yoakke.X86\Yoakke.X86.csproj", "{D9966D0F-EF13-435C-8E15-45E980E6586E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.X86", "Core\Yoakke.X86\Yoakke.X86.csproj", "{D9966D0F-EF13-435C-8E15-45E980E6586E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yoakke.X86.Sample", "Examples\Yoakke.X86.Sample\Yoakke.X86.Sample.csproj", "{00BEF940-0FE1-4E3F-AF91-1BEC9857262F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.X86.Sample", "Examples\Yoakke.X86.Sample\Yoakke.X86.Sample.csproj", "{00BEF940-0FE1-4E3F-AF91-1BEC9857262F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
