@@ -3,6 +3,24 @@
   <Import Project="$(MSBuildThisFileDirectory)/../Directory.Build.props" />
 
   <PropertyGroup>
-    <DocumentationFile>$(MSBuildProjectDirectory)/bin/$(MSBuildProjectName).xml</DocumentationFile>
+    <DocumentationFile>$(MSBuildProjectDirectory)/doc/$(MSBuildProjectName).xml</DocumentationFile>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>$(MSBuildProjectName)</PackageId>
+    <PackageIcon>YoakkeLogo.png</PackageIcon>
+    <Authors>LanguageDev team</Authors>
+    <Description>A collection of .NET libraries to help compiler development.</Description>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageTags>Yoakke, library, framework, infrastructure, lexer, parser, compiler, interpreter</PackageTags>
+    <PackageProjectUrl></PackageProjectUrl>
+    <Copyright>Copyright (c) 2021 LanguageDev team</Copyright>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/LanguageDev/Yoakke</RepositoryUrl>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\..\.github\resources\YoakkeLogo.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
 </Project>
