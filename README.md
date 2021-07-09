@@ -1,7 +1,4 @@
 <p align="center">
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-6-orange.svg?style=flat-square)](#contributors-)
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
 	<a href="#"><img src="https://github.com/LanguageDev/Yoakke/blob/master/.github/resources/YoakkeLogoAnimated.svg?raw=true" height="200"></a>
 </p>
 
@@ -12,6 +9,7 @@
 
 ![BuildSolution workflow](https://github.com/LanguageDev/Yoakke/actions/workflows/BuildSolution.yml/badge.svg)
 ![RunTests workflow](https://github.com/LanguageDev/Yoakke/actions/workflows/RunTests.yml/badge.svg)
+[![All Contributors](https://img.shields.io/badge/all_contributors-6-orange.svg?style=flat-square)](#contributors-)
 
 ## What is Yoakke?
 
