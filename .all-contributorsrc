@@ -1,0 +1,33 @@
+{
+  "projectName": "Yoakke",
+  "projectOwner": "LanguageDev",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": true,
+  "commitConvention": "none",
+  "contributors": [
+    {
+      "login": "LPeter1997",
+      "name": "LPeter1997",
+      "avatar_url": "https://avatars.githubusercontent.com/u/7904867?v=4",
+      "profile": "https://github.com/LPeter1997",
+      "contributions": [
+        "code",
+        "doc",
+        "example",
+        "ideas",
+        "maintenance",
+        "infra",
+        "review",
+        "test",
+        "research",
+        "projectManagement"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7
+}
