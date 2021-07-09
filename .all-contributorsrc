@@ -16,16 +16,24 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/7904867?v=4",
       "profile": "https://github.com/LPeter1997",
       "contributions": [
+        "projectManagement",
+        "ideas",
         "code",
         "doc",
-        "example",
-        "ideas",
         "maintenance",
         "infra",
         "review",
-        "test",
-        "research",
-        "projectManagement"
+        "test"
+      ]
+    },
+    {
+      "login": "WhiteBlackGoose",
+      "name": "WhiteBlackGoose",
+      "avatar_url": "https://avatars.githubusercontent.com/u/31178401?v=4",
+      "profile": "https://angouri.org/",
+      "contributions": [
+        "infra",
+        "doc"
       ]
     },
     {
@@ -34,7 +42,8 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/3385986?v=4",
       "profile": "https://github.com/ZacharyPatten",
       "contributions": [
-        "design"
+        "design",
+        "infra"
       ]
     },
     {
@@ -62,16 +71,6 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/35396043?v=4",
       "profile": "https://github.com/lucyelle",
       "contributions": [
-        "doc"
-      ]
-    },
-    {
-      "login": "WhiteBlackGoose",
-      "name": "WhiteBlackGoose",
-      "avatar_url": "https://avatars.githubusercontent.com/u/31178401?v=4",
-      "profile": "https://angouri.org/",
-      "contributions": [
-        "infra",
         "doc"
       ]
     }
