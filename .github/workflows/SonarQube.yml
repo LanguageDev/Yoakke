@@ -1,5 +1,6 @@
 name: Sonar Qube
 on:
+  workflow_dispatch:
   push:
     branches:
       - master
