@@ -75,12 +75,7 @@ If you use Yoakke and would be willing to show it, here is a badge you can copy-
 <a href="#" alt="Using Yoakke"><img src="https://raw.githubusercontent.com/LanguageDev/Yoakke/master/.github/resources/UsingYoakke.svg" title="Using Yoakke" alt="Using Yoakke"></a>
 
 ```html
-<a href="https://github.com/LanguageDev/Yoakke" alt="Using Yoakke"
-  ><img
-    src="https://raw.githubusercontent.com/LanguageDev/Yoakke/master/.github/resources/UsingYoakke.svg"
-    title="Using Yoakke"
-    alt="Using Yoakke"
-/></a>
+<a href="https://github.com/LanguageDev/Yoakke" alt="Using Yoakke"><img src="https://raw.githubusercontent.com/LanguageDev/Yoakke/master/.github/resources/UsingYoakke.svg" title="Using Yoakke" alt="Using Yoakke"/></a>
 ```
 
 ## Contributors ✨
