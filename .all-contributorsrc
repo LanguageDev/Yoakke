@@ -64,6 +64,16 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "WhiteBlackGoose",
+      "name": "WhiteBlackGoose",
+      "avatar_url": "https://avatars.githubusercontent.com/u/31178401?v=4",
+      "profile": "https://angouri.org/",
+      "contributions": [
+        "infra",
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7

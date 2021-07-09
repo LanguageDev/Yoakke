@@ -1,6 +1,6 @@
 <p align="center">
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-5-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-6-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 	<a href="#"><img src="https://github.com/LanguageDev/Yoakke/blob/master/.github/resources/YoakkeLogoAnimated.svg?raw=true" height="200"></a>
 </p>
@@ -99,6 +99,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="http://skneko.moe/"><img src="https://avatars.githubusercontent.com/u/13376606?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Neko</b></sub></a><br /><a href="#ideas-skneko" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/LanguageDev/Yoakke/commits?author=skneko" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/hantatsang"><img src="https://avatars.githubusercontent.com/u/11912225?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Sang</b></sub></a><br /><a href="https://github.com/LanguageDev/Yoakke/commits?author=hantatsang" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/lucyelle"><img src="https://avatars.githubusercontent.com/u/35396043?v=4?s=100" width="100px;" alt=""/><br /><sub><b>lucyelle</b></sub></a><br /><a href="https://github.com/LanguageDev/Yoakke/commits?author=lucyelle" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://angouri.org/"><img src="https://avatars.githubusercontent.com/u/31178401?v=4?s=100" width="100px;" alt=""/><br /><sub><b>WhiteBlackGoose</b></sub></a><br /><a href="#infra-WhiteBlackGoose" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="https://github.com/LanguageDev/Yoakke/commits?author=WhiteBlackGoose" title="Documentation">📖</a></td>
   </tr>
 </table>
 
