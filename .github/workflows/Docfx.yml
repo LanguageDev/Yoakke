@@ -1,0 +1,26 @@
+name: 'Docfx generation'
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'Documentation/docfx_project'
+
+jobs:
+  documentation:
+    runs-on: windows-latest
+    steps:
+    - name: Clone the repo
+      uses: actions/checkout@v2
+    - name: Setup .NET 5
+      uses: actions/setup-dotnet@v1
+    - name: Run DocFx
+      uses: nikeee/docfx-action@v1.0.0
+      with:
+        args: Documentation/docfx_project/docfx.json
+    - name: Publish to Github Pages
+      uses: maxheld83/ghpages@master
+      env:
+        BUILD_DIR: Documentation/docfx_project/_site
+        GH_PAT: ${{ secrets.GH_PAT }}
