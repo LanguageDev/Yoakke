@@ -73,7 +73,18 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "FP5i",
+      "name": "Péter Fónad",
+      "avatar_url": "https://avatars.githubusercontent.com/u/11299637?v=4",
+      "profile": "https://github.com/FP5i",
+      "contributions": [
+        "doc",
+        "infra"
+      ]
     }
   ],
-  "contributorsPerLine": 7
+  "contributorsPerLine": 7,
+  "skipCi": true
 }
