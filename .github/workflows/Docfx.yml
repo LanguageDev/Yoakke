@@ -10,7 +10,7 @@ on:
 
 jobs:
   documentation:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
     - name: Clone the repo
       uses: actions/checkout@v2
