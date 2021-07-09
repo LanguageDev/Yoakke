@@ -1,6 +1,6 @@
 <p align="center">
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-4-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 	<a href="#"><img src="https://github.com/LanguageDev/Yoakke/blob/master/.github/resources/YoakkeLogoAnimated.svg?raw=true" height="200"></a>
 </p>
@@ -97,6 +97,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/LPeter1997"><img src="https://avatars.githubusercontent.com/u/7904867?v=4?s=100" width="100px;" alt=""/><br /><sub><b>LPeter1997</b></sub></a><br /><a href="https://github.com/LanguageDev/Yoakke/commits?author=LPeter1997" title="Code">💻</a> <a href="https://github.com/LanguageDev/Yoakke/commits?author=LPeter1997" title="Documentation">📖</a> <a href="#example-LPeter1997" title="Examples">💡</a> <a href="#ideas-LPeter1997" title="Ideas, Planning, & Feedback">🤔</a> <a href="#maintenance-LPeter1997" title="Maintenance">🚧</a> <a href="#infra-LPeter1997" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="https://github.com/LanguageDev/Yoakke/pulls?q=is%3Apr+reviewed-by%3ALPeter1997" title="Reviewed Pull Requests">👀</a> <a href="https://github.com/LanguageDev/Yoakke/commits?author=LPeter1997" title="Tests">⚠️</a> <a href="#research-LPeter1997" title="Research">🔬</a> <a href="#projectManagement-LPeter1997" title="Project Management">📆</a></td>
     <td align="center"><a href="https://github.com/ZacharyPatten"><img src="https://avatars.githubusercontent.com/u/3385986?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Zachary Patten</b></sub></a><br /><a href="#design-ZacharyPatten" title="Design">🎨</a></td>
     <td align="center"><a href="http://skneko.moe/"><img src="https://avatars.githubusercontent.com/u/13376606?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Neko</b></sub></a><br /><a href="#ideas-skneko" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/LanguageDev/Yoakke/commits?author=skneko" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/hantatsang"><img src="https://avatars.githubusercontent.com/u/11912225?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Sang</b></sub></a><br /><a href="https://github.com/LanguageDev/Yoakke/commits?author=hantatsang" title="Code">💻</a></td>
   </tr>
 </table>
 
