@@ -11,7 +11,7 @@
 <a href="https://github.com/LanguageDev/Yoakke/actions"><img src="https://github.com/LanguageDev/Yoakke/actions/workflows/BuildSolution.yml/badge.svg" title="Go To GitHub Actions"></a>
 <a href="https://github.com/LanguageDev/Yoakke/actions"><img src="https://github.com/LanguageDev/Yoakke/actions/workflows/RunTests.yml/badge.svg" title="Go To GitHub Actions"></a>
 <a href="https://docs.microsoft.com/en-us/dotnet/csharp/"><img src="https://img.shields.io/badge/language-C%23-%23178600" title="Go To C# Documentation"></a>
-<a href="https://dotnet.microsoft.com/download"><img src="https://img.shields.io/badge/dynamic/xml?color=%23512bd4&label=target&query=%2F%2FTargetFramework%5B1%5D&url=https%3A%2F%2Fraw.githubusercontent.com%2FZacharyPatten%2FTowel%2Fmain%2FSources%2FTowel%2FTowel.csproj&logo=.net" title="Go To .NET Download"></a>
+<a href="https://www.nuget.org/packages?q=Yoakke+owner%3ALanguageDev"><img src="https://img.shields.io/nuget/v/Yoakke.Lexer.svg?logo=nuget" title="Go To Nuget Package" /></a>
 <a href="https://languagedev.github.io/Yoakke"><img src="https://github.com/LanguageDev/Yoakke/blob/master/.github/resources/DocfxBadge.svg?raw=true" title="Go To Docfx Documentation"></a><!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-7-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
