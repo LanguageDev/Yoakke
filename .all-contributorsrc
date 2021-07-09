@@ -1,0 +1,79 @@
+{
+  "projectName": "Yoakke",
+  "projectOwner": "LanguageDev",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": true,
+  "commitConvention": "none",
+  "contributors": [
+    {
+      "login": "LPeter1997",
+      "name": "LPeter1997",
+      "avatar_url": "https://avatars.githubusercontent.com/u/7904867?v=4",
+      "profile": "https://github.com/LPeter1997",
+      "contributions": [
+        "projectManagement",
+        "ideas",
+        "code",
+        "doc",
+        "maintenance",
+        "infra",
+        "review",
+        "test"
+      ]
+    },
+    {
+      "login": "WhiteBlackGoose",
+      "name": "WhiteBlackGoose",
+      "avatar_url": "https://avatars.githubusercontent.com/u/31178401?v=4",
+      "profile": "https://angouri.org/",
+      "contributions": [
+        "infra",
+        "doc"
+      ]
+    },
+    {
+      "login": "ZacharyPatten",
+      "name": "Zachary Patten",
+      "avatar_url": "https://avatars.githubusercontent.com/u/3385986?v=4",
+      "profile": "https://github.com/ZacharyPatten",
+      "contributions": [
+        "design",
+        "infra"
+      ]
+    },
+    {
+      "login": "skneko",
+      "name": "Neko",
+      "avatar_url": "https://avatars.githubusercontent.com/u/13376606?v=4",
+      "profile": "http://skneko.moe/",
+      "contributions": [
+        "ideas",
+        "code"
+      ]
+    },
+    {
+      "login": "hantatsang",
+      "name": "Sang",
+      "avatar_url": "https://avatars.githubusercontent.com/u/11912225?v=4",
+      "profile": "https://github.com/hantatsang",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "lucyelle",
+      "name": "lucyelle",
+      "avatar_url": "https://avatars.githubusercontent.com/u/35396043?v=4",
+      "profile": "https://github.com/lucyelle",
+      "contributions": [
+        "doc"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7
+}
