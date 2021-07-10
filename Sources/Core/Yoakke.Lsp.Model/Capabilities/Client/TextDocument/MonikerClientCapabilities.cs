@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -10,7 +10,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
     {
         /// <summary>
         /// Whether implementation supports dynamic registration. If this is set to
-        /// `true` the client supports the new `(TextDocumentRegistrationOptions &
+        /// `true` the client supports the new `(TextDocumentRegistrationOptions &amp;
         /// StaticRegistrationOptions)` return value for the corresponding server
         /// capability as well.
         /// </summary>

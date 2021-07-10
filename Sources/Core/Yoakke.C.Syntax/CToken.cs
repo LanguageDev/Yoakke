@@ -4,7 +4,6 @@
 
 using System;
 using Yoakke.Lexer;
-using Yoakke.Text;
 
 namespace Yoakke.C.Syntax
 {

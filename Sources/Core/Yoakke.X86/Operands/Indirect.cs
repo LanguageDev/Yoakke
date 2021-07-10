@@ -2,12 +2,6 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Yoakke.X86.Operands
 {
     /// <summary>
@@ -27,7 +21,7 @@ namespace Yoakke.X86.Operands
         public readonly DataWidth Size;
 
         /// <summary>
-        /// The <see cref="X86.Address"/> to read from.
+        /// The <see cref="Operands.Address"/> to read from.
         /// </summary>
         public readonly Address Address;
 
@@ -35,7 +29,7 @@ namespace Yoakke.X86.Operands
         /// Initializes a new instance of the <see cref="Indirect"/> struct.
         /// </summary>
         /// <param name="size">The width - or size - of the accessed data.</param>
-        /// <param name="address">The <see cref="X86.Address"/> to read from.</param>
+        /// <param name="address">The <see cref="Operands.Address"/> to read from.</param>
         public Indirect(DataWidth size, Address address)
         {
             this.Size = size;

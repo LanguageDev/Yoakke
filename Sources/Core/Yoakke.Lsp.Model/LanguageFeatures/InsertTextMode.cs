@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -25,7 +25,7 @@ namespace Yoakke.Lsp.Model.LanguageFeatures
         /// they match the indentation up to the cursor of the line for
         /// which the item is accepted.
         ///
-        /// Consider a line like this: <2tabs><cursor><3tabs>foo. Accepting a
+        /// Consider a line like this: &lt;2tabs&gt;&lt;cursor&gt;&lt;3tabs@gt;foo. Accepting a
         /// multi line completion item is indented using 2 tabs and all
         /// following lines inserted will be indented using 2 tabs as well.
         /// </summary>

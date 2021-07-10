@@ -4,9 +4,6 @@
 
 using System;
 using System.IO;
-using System.Text;
-using Yoakke.Utilities;
-using Yoakke.Text;
 using Range = Yoakke.Text.Range;
 
 namespace Yoakke.Lexer
@@ -39,7 +36,6 @@ namespace Yoakke.Lexer
         /// <summary>
         /// Skips characters in the input and builds a <see cref="IToken{T}"/> with a given factory function.
         /// </summary>
-        /// <typeparam name="TToken">The exact token type to produce.</typeparam>
         /// <param name="length">The amount of characters to skip.</param>
         /// <param name="makeToken">The factory function that receives the source <see cref="Range"/> of the skipped characters
         /// and the skipped characters themselves concatenated as a string, and produces an <see cref="IToken{T}"/> from them.</param>
@@ -50,9 +46,9 @@ namespace Yoakke.Lexer
         IToken ILexer.Next() => this.Next();
 
         /// <summary>
-        /// Lexes the next <see cref="TToken"/> in the input.
+        /// Lexes the next <typeparamref name="TToken"/> in the input.
         /// </summary>
-        /// <returns>The lexed <see cref="TToken"/>.</returns>
+        /// <returns>The lexed <typeparamref name="TToken"/>.</returns>
         public abstract TToken Next();
     }
 }

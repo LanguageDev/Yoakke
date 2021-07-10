@@ -2,12 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
-using System;
 using System.IO;
-using System.Text;
-using Yoakke.Utilities;
-using Yoakke.Text;
-using Range = Yoakke.Text.Range;
 
 namespace Yoakke.Lexer
 {

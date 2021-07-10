@@ -4,7 +4,6 @@
 
 using System;
 using Newtonsoft.Json;
-using Yoakke.Lsp.Model.Basic;
 
 namespace Yoakke.Lsp.Model.Serialization
 {

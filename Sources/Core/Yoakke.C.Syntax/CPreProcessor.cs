@@ -7,8 +7,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Yoakke.Lexer;
 using Yoakke.Text;
 using Yoakke.Utilities;
@@ -56,7 +54,7 @@ namespace Yoakke.C.Syntax
         private readonly Stack<Condition> conditionStack;
 
         /// <summary>
-        /// The last consumed <see cref="CToken"/> from the <see cref="inputBuffer"/>.
+        /// The last consumed <see cref="CToken"/> from the <see cref="outputBuffer"/>.
         /// </summary>
         private CToken? lastInputToken;
 

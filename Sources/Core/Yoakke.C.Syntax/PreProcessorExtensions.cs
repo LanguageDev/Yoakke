@@ -3,10 +3,6 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Yoakke.C.Syntax.Macros;
 
 namespace Yoakke.C.Syntax

@@ -2,12 +2,6 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Yoakke.Lexer
 {
     /// <summary>
@@ -19,10 +13,10 @@ namespace Yoakke.Lexer
         where TToken : IToken
     {
         /// <summary>
-        /// Lexes the next <see cref="TToken"/>. If the source text has been depleted, it should produce some default
-        /// end-signaling <see cref="TToken"/>.
+        /// Lexes the next <typeparamref name="TToken"/>. If the source text has been depleted, it should produce some default
+        /// end-signaling <typeparamref name="TToken"/>.
         /// </summary>
-        /// <returns>The lexed <see cref="TToken"/>.</returns>
+        /// <returns>The lexed <typeparamref name="TToken"/>.</returns>
         public new TToken Next();
     }
 }
