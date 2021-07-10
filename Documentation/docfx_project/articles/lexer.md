@@ -1,4 +1,4 @@
-# Using the Lexer libraries
+# Using the Lexer library
 There are 2 libraries for lexing:
 -   `Yoakke.Lexer`: Basic structures for lexing, abstraction for a hand-written lexer.
 -   `Yoakke.Lexer.Generator`: A source generator that can generate a lexer from attribute annotations on token-types.
