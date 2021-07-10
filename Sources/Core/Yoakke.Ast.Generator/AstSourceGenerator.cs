@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -13,6 +13,9 @@ using Yoakke.Utilities.Compatibility;
 
 namespace Yoakke.Ast.Generator
 {
+    /// <summary>
+    /// Generator for AST functionality.
+    /// </summary>
     [Generator]
     public class AstSourceGenerator : GeneratorBase
     {
@@ -41,6 +44,9 @@ namespace Yoakke.Ast.Generator
         private Dictionary<string, MetaNode> rootNodes = new();
         private Dictionary<string, MetaNode> allNodes = new();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AstSourceGenerator"/> class.
+        /// </summary>
         public AstSourceGenerator()
             : base("Yoakke.Ast.Generator")
         {
@@ -71,7 +77,7 @@ namespace Yoakke.Ast.Generator
         private void BuildMetaNodes(IList<ClassDeclarationSyntax> classDeclarations)
         {
             // Collect only the classes that have the AstAttribute
-            var astNodeSymbols = new HashSet<INamedTypeSymbol>();
+            var astNodeSymbols = new HashSet<INamedTypeSymbol>(SymbolEqualityComparer.Default);
             foreach (var syntax in classDeclarations)
             {
                 var model = this.Context.Compilation.GetSemanticModel(syntax.SyntaxTree);
@@ -100,7 +106,7 @@ namespace Yoakke.Ast.Generator
             // Now loop until all nodes could be attached somewhere
             while (astNodeSymbols.Count > 0)
             {
-                var toRemove = new HashSet<INamedTypeSymbol>();
+                var toRemove = new HashSet<INamedTypeSymbol>(SymbolEqualityComparer.Default);
                 foreach (var symbol in astNodeSymbols)
                 {
                     if (!this.allNodes.TryGetValue(symbol.BaseType!.Name, out var parentNode)) continue;

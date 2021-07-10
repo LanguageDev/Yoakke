@@ -23,6 +23,7 @@ namespace Yoakke.Utilities.Intervals
         /// <summary>
         /// Constructs a new interval that contains the single value that was passed.
         /// </summary>
+        /// <param name="value">The single contained value in the interval.</param>
         /// <returns>The constructed interval.</returns>
         public static Interval<T> Singleton(T value) => new(LowerBound<T>.Inclusive(value), UpperBound<T>.Inclusive(value));
 

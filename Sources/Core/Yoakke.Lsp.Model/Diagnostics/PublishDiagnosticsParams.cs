@@ -8,6 +8,9 @@ using Yoakke.Lsp.Model.Basic;
 
 namespace Yoakke.Lsp.Model.Diagnostics
 {
+    /// <summary>
+    /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#publishDiagnosticsParams.
+    /// </summary>
     public class PublishDiagnosticsParams
     {
         /// <summary>

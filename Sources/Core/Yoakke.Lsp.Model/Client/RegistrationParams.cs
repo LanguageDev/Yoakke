@@ -7,6 +7,9 @@ using Newtonsoft.Json;
 
 namespace Yoakke.Lsp.Model.Client
 {
+    /// <summary>
+    /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#registrationParams.
+    /// </summary>
     public class RegistrationParams
     {
         [JsonProperty("registrations")]

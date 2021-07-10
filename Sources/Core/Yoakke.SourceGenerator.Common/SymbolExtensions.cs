@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -9,17 +9,45 @@ using Microsoft.CodeAnalysis;
 
 namespace Yoakke.SourceGenerator.Common
 {
+    /// <summary>
+    /// Extension functionalities for <see cref="ISymbol"/>s.
+    /// </summary>
     public static class SymbolExtensions
     {
+        /// <summary>
+        /// Checks, if a <see cref="ISymbol"/> is a nested type.
+        /// </summary>
+        /// <param name="symbol">The <see cref="ISymbol"/> to check.</param>
+        /// <returns>True, if <paramref name="symbol"/> is a nested type.</returns>
         public static bool IsNested(this ISymbol symbol) =>
             !SymbolEqualityComparer.Default.Equals(symbol.ContainingSymbol, symbol.ContainingNamespace);
 
+        /// <summary>
+        /// Checks, if a <see cref="ISymbol"/> implements a given interface.
+        /// </summary>
+        /// <param name="symbol">The <see cref="ISymbol"/> to check the interface for.</param>
+        /// <param name="interf">The interface symbol to search for.</param>
+        /// <returns>True, if <paramref name="symbol"/> implements <paramref name="interf"/>.</returns>
         public static bool ImplementsInterface(this ITypeSymbol symbol, INamedTypeSymbol interf) =>
             symbol.AllInterfaces.Any(i => SymbolEqualityComparer.Default.Equals(i, interf));
 
+        /// <summary>
+        /// Checks, if a <see cref="ISymbol"/> implements a generic interface.
+        /// </summary>
+        /// <param name="symbol">The <see cref="ISymbol"/> to check the interface for.</param>
+        /// <param name="interf">The generic interface symbol to search for.</param>
+        /// <returns>True, if <paramref name="symbol"/> implements <paramref name="interf"/>.</returns>
         public static bool ImplementsGenericInterface(this ITypeSymbol symbol, INamedTypeSymbol interf) =>
             ImplementsGenericInterface(symbol, interf, out var _);
 
+        /// <summary>
+        /// Checks, if a <see cref="ISymbol"/> implements a generic interface.
+        /// </summary>
+        /// <param name="symbol">The <see cref="ISymbol"/> to check the interface for.</param>
+        /// <param name="interf">The generic interface symbol to search for.</param>
+        /// <param name="genericArgs">The passed in type-arguments for <paramref name="interf"/> are written here,
+        /// in case <paramref name="symbol"/> implements it.</param>
+        /// <returns>True, if <paramref name="symbol"/> implements <paramref name="interf"/>.</returns>
         public static bool ImplementsGenericInterface(
             this ITypeSymbol symbol,
             INamedTypeSymbol interf,

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -8,10 +8,19 @@ using Yoakke.Lsp.Model.Capabilities.Client.TextDocument;
 
 namespace Yoakke.Lsp.Model.Capabilities.Client
 {
+    /// <summary>
+    /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#clientCapabilities.
+    /// </summary>
     public class ClientCapabilities
     {
+        /// <summary>
+        /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#clientCapabilities.
+        /// </summary>
         public class WorkspaceCapabilities
         {
+            /// <summary>
+            /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#clientCapabilities.
+            /// </summary>
             public class FileOperationsCapabilities
             {
                 /// <summary>
@@ -61,13 +70,13 @@ namespace Yoakke.Lsp.Model.Capabilities.Client
             /// <summary>
             /// The client supports applying batch edits
             /// to the workspace by supporting the request
-            /// 'workspace/applyEdit'
+            /// 'workspace/applyEdit'.
             /// </summary>
             [JsonProperty("applyEdit", NullValueHandling = NullValueHandling.Ignore)]
             public bool? ApplyEdit { get; set; }
 
             /// <summary>
-            /// Capabilities specific to `WorkspaceEdit`s
+            /// Capabilities specific to `WorkspaceEdit`s.
             /// </summary>
             [JsonProperty("workspaceEdit", NullValueHandling = NullValueHandling.Ignore)]
             public WorkspaceEditClientCapabilities? WorkspaceEdit { get; set; }
@@ -136,6 +145,9 @@ namespace Yoakke.Lsp.Model.Capabilities.Client
             public FileOperationsCapabilities? FileOperations { get; set; }
         }
 
+        /// <summary>
+        /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#clientCapabilities.
+        /// </summary>
         public class WindowCapabilities
         {
             /// <summary>
@@ -148,7 +160,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Client
             public bool? WorkDoneProgress { get; set; }
 
             /// <summary>
-            /// Capabilities specific to the showMessage request
+            /// Capabilities specific to the showMessage request.
             /// </summary>
             [Since(3, 16, 0)]
             [JsonProperty("showMessage", NullValueHandling = NullValueHandling.Ignore)]
@@ -162,8 +174,14 @@ namespace Yoakke.Lsp.Model.Capabilities.Client
             public ShowDocumentClientCapabilities? ShowDocument { get; set; }
         }
 
+        /// <summary>
+        /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#clientCapabilities.
+        /// </summary>
         public class GeneralCapabilities
         {
+            /// <summary>
+            /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#clientCapabilities.
+            /// </summary>
             public class StaleRequestSupportCapabilities
             {
                 /// <summary>
@@ -175,7 +193,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Client
                 /// <summary>
                 /// The list of requests for which the client
                 /// will retry the request if it receives a
-                /// response with error code `ContentModified``
+                /// response with error code `ContentModified`.
                 /// </summary>
                 [JsonProperty("retryOnContentModified")]
                 public IReadOnlyList<string> RetryOnContentModified { get; set; }

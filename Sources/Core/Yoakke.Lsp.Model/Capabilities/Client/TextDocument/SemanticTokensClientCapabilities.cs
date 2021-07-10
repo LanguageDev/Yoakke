@@ -8,14 +8,26 @@ using Yoakke.Lsp.Model.LanguageFeatures;
 
 namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
 {
+    /// <summary>
+    /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#semanticTokensClientCapabilities.
+    /// </summary>
     public class SemanticTokensClientCapabilities
     {
+        /// <summary>
+        /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#semanticTokensClientCapabilities.
+        /// </summary>
         public class RequestsCapabilities
         {
+            /// <summary>
+            /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#semanticTokensClientCapabilities.
+            /// </summary>
             public class RangeCapabilities
             {
             }
 
+            /// <summary>
+            /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#semanticTokensClientCapabilities.
+            /// </summary>
             public class FullCapabilities
             {
                 /// <summary>

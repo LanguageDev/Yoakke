@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -9,10 +9,19 @@ using Yoakke.Lsp.Model.LanguageFeatures;
 
 namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
 {
+    /// <summary>
+    /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#completionClientCapabilities.
+    /// </summary>
     public class CompletionClientCapabilities
     {
+        /// <summary>
+        /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#completionClientCapabilities.
+        /// </summary>
         public class CompletionItemCapabilities
         {
+            /// <summary>
+            /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#completionClientCapabilities.
+            /// </summary>
             public class TagSupportCapabilities
             {
                 /// <summary>
@@ -22,6 +31,9 @@ namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
                 public IReadOnlyList<CompletionItemTag> ValueSet { get; set; }
             }
 
+            /// <summary>
+            /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#completionClientCapabilities.
+            /// </summary>
             public class ResolveSupportCapabilities
             {
                 /// <summary>
@@ -31,6 +43,9 @@ namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
                 public IReadOnlyList<string> Properties { get; set; }
             }
 
+            /// <summary>
+            /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#completionClientCapabilities.
+            /// </summary>
             public class InsertTextModeSupportCapabilities
             {
                 [JsonProperty("valueSet")]
@@ -118,6 +133,9 @@ namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
             public bool? LabelDetailsSupport { get; set; }
         }
 
+        /// <summary>
+        /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#completionClientCapabilities.
+        /// </summary>
         public class CompletionItemKindCapabilities
         {
             /// <summary>
@@ -147,6 +165,9 @@ namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
         [JsonProperty("completionItem", NullValueHandling = NullValueHandling.Ignore)]
         public CompletionItemCapabilities? CompletionItem { get; set; }
 
+        /// <summary>
+        /// The completion kind capabilities.
+        /// </summary>
         [JsonProperty("completionItemKind", NullValueHandling = NullValueHandling.Ignore)]
         public CompletionItemKindCapabilities? CompletionItemKind { get; set; }
 

@@ -37,6 +37,9 @@ namespace Yoakke.Utilities.FiniteAutomata
         /// <inheritdoc/>
         IEnumerable<State> IFiniteAutomata<TSymbol>.AcceptingStates => this.AcceptingStates;
 
+        /// <summary>
+        /// The set of accepting <see cref="State"/>s.
+        /// </summary>
         public ISet<State> AcceptingStates { get; } = new HashSet<State>();
 
         /// <inheritdoc/>
@@ -113,6 +116,10 @@ namespace Yoakke.Utilities.FiniteAutomata
         /// <inheritdoc/>
         IDeterministicFiniteAutomata<TSymbol> INondeterministicFiniteAutomata<TSymbol>.Determinize() => this.Determinize();
 
+        /// <summary>
+        /// Determinizes this <see cref="DenseNfa{TSymbol}"/> to a <see cref="DenseDfa{TSymbol}"/>.
+        /// </summary>
+        /// <returns>The <see cref="DenseDfa{TSymbol}"/> equivalent to this.</returns>
         public DenseDfa<TSymbol> Determinize()
         {
             var dfa = new DenseDfa<TSymbol>();

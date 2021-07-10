@@ -6,6 +6,9 @@ using Newtonsoft.Json;
 
 namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
 {
+    /// <summary>
+    /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_linkedEditingRange.
+    /// </summary>
     public class LinkedEditingRangeClientCapabilities
     {
         /// <summary>

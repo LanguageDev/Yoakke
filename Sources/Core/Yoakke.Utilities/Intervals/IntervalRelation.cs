@@ -14,6 +14,13 @@ namespace Yoakke.Utilities.Intervals
     /// <typeparam name="T">The type of the interval values.</typeparam>
     public abstract class IntervalRelation<T> : IEquatable<IntervalRelation<T>>
     {
+        /// <summary>
+        /// Compares this <see cref="IntervalRelation{T}"/> for equality with another one,
+        /// using the given primitive comparer.
+        /// </summary>
+        /// <param name="other">The other <see cref="IntervalRelation{T}"/> to compare.</param>
+        /// <param name="comparer">The primitive comparer to use.</param>
+        /// <returns>True, if this is equivalent to <paramref name="other"/>.</returns>
         public abstract bool Equals(IntervalRelation<T> other, IComparer<T> comparer);
 
         /// <inheritdoc/>
@@ -25,8 +32,20 @@ namespace Yoakke.Utilities.Intervals
         /// <inheritdoc/>
         public bool Equals(IntervalRelation<T> other) => this.Equals(other, Comparer<T>.Default);
 
+        /// <summary>
+        /// Compares two <see cref="IntervalRelation{T}"/>s for equality.
+        /// </summary>
+        /// <param name="a">The first <see cref="IntervalRelation{T}"/> to compare.</param>
+        /// <param name="b">The second <see cref="IntervalRelation{T}"/> to compare.</param>
+        /// <returns>True, if <paramref name="a"/> and <paramref name="b"/> are equal.</returns>
         public static bool operator ==(IntervalRelation<T> a, IntervalRelation<T> b) => a.Equals(b);
 
+        /// <summary>
+        /// Compares two <see cref="IntervalRelation{T}"/>s for inequality.
+        /// </summary>
+        /// <param name="a">The first <see cref="IntervalRelation{T}"/> to compare.</param>
+        /// <param name="b">The second <see cref="IntervalRelation{T}"/> to compare.</param>
+        /// <returns>True, if <paramref name="a"/> and <paramref name="b"/> are not equal.</returns>
         public static bool operator !=(IntervalRelation<T> a, IntervalRelation<T> b) => !a.Equals(b);
 
         /// <summary>
@@ -44,6 +63,11 @@ namespace Yoakke.Utilities.Intervals
             /// </summary>
             public Interval<T> Second { get; }
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Disjunct"/> class.
+            /// </summary>
+            /// <param name="first">The first disjunct <see cref="Interval{T}"/>.</param>
+            /// <param name="second">The second disjunct <see cref="Interval{T}"/>.</param>
             public Disjunct(Interval<T> first, Interval<T> second)
             {
                 this.First = first;
@@ -73,6 +97,11 @@ namespace Yoakke.Utilities.Intervals
             /// </summary>
             public Interval<T> Second { get; }
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Touching"/> class.
+            /// </summary>
+            /// <param name="first">The first touching <see cref="Interval{T}"/>.</param>
+            /// <param name="second">The second touching <see cref="Interval{T}"/>.</param>
             public Touching(Interval<T> first, Interval<T> second)
             {
                 this.First = first;
@@ -107,6 +136,12 @@ namespace Yoakke.Utilities.Intervals
             /// </summary>
             public Interval<T> SecondDisjunct { get; }
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Overlapping"/> class.
+            /// </summary>
+            /// <param name="firstDisjunct">The first disjunct <see cref="Interval{T}"/>.</param>
+            /// <param name="overlap">The overlapping <see cref="Interval{T}"/>.</param>
+            /// <param name="secondDisjunct">The second disjunct <see cref="Interval{T}"/>.</param>
             public Overlapping(Interval<T> firstDisjunct, Interval<T> overlap, Interval<T> secondDisjunct)
             {
                 this.FirstDisjunct = firstDisjunct;
@@ -145,6 +180,12 @@ namespace Yoakke.Utilities.Intervals
             /// </summary>
             public Interval<T> SecondDisjunct { get; }
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Containing"/> class.
+            /// </summary>
+            /// <param name="firstDisjunct">The first disjunct <see cref="Interval{T}"/>.</param>
+            /// <param name="contained">The contained <see cref="Interval{T}"/>.</param>
+            /// <param name="secondDisjunct">The second disjunct <see cref="Interval{T}"/>.</param>
             public Containing(Interval<T> firstDisjunct, Interval<T> contained, Interval<T> secondDisjunct)
             {
                 this.FirstDisjunct = firstDisjunct;
@@ -178,6 +219,11 @@ namespace Yoakke.Utilities.Intervals
             /// </summary>
             public new Interval<T> Disjunct { get; }
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Starting"/> class.
+            /// </summary>
+            /// <param name="overlap">The overlapping <see cref="Interval{T}"/>.</param>
+            /// <param name="disjunct">The disjunct <see cref="Interval{T}"/>.</param>
             public Starting(Interval<T> overlap, Interval<T> disjunct)
             {
                 this.Overlap = overlap;
@@ -207,6 +253,11 @@ namespace Yoakke.Utilities.Intervals
             /// </summary>
             public Interval<T> Overlap { get; }
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Finishing"/> class.
+            /// </summary>
+            /// <param name="disjunct">The disjunct <see cref="Interval{T}"/>.</param>
+            /// <param name="overlap">The overlapping <see cref="Interval{T}"/>.</param>
             public Finishing(Interval<T> disjunct, Interval<T> overlap)
             {
                 this.Disjunct = disjunct;
@@ -231,6 +282,10 @@ namespace Yoakke.Utilities.Intervals
             /// </summary>
             public Interval<T> Interval { get; }
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Equal"/> class.
+            /// </summary>
+            /// <param name="interval">The equaling <see cref="Interval{T}"/>.</param>
             public Equal(Interval<T> interval)
             {
                 this.Interval = interval;

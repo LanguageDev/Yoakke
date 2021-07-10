@@ -7,6 +7,9 @@ using Newtonsoft.Json;
 
 namespace Yoakke.Lsp.Model.Basic
 {
+    /// <summary>
+    /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocumentRegistrationOptions.
+    /// </summary>
     public class TextDocumentRegistrationOptions : ITextDocumentRegistrationOptions
     {
         /// <inheritdoc/>

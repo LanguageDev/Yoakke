@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -8,8 +8,14 @@ using Yoakke.Lsp.Model.Workspace;
 
 namespace Yoakke.Lsp.Model.Capabilities.Client
 {
+    /// <summary>
+    /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#workspaceEditClientCapabilities.
+    /// </summary>
     public class WorkspaceEditClientCapabilities
     {
+        /// <summary>
+        /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#workspaceEditClientCapabilities.
+        /// </summary>
         public class ChangeAnnotationSupportCapabilities
         {
             /// <summary>
@@ -22,7 +28,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Client
         }
 
         /// <summary>
-        /// The client supports versioned document changes in `WorkspaceEdit`s
+        /// The client supports versioned document changes in `WorkspaceEdit`s.
         /// </summary>
         [JsonProperty("documentChanges", NullValueHandling = NullValueHandling.Ignore)]
         public bool? DocumentChanges { get; set; }

@@ -15,8 +15,14 @@ namespace Yoakke.Lexer
     /// </summary>
     public abstract class LexerBaseCommon
     {
+        /// <summary>
+        /// The current <see cref="Position"/> the lexer is at.
+        /// </summary>
         public Position Position { get; private set; }
 
+        /// <summary>
+        /// True, if the end of the source has been reached.
+        /// </summary>
         public bool IsEnd => !this.TryPeek(out var _);
 
         private readonly TextReader reader;

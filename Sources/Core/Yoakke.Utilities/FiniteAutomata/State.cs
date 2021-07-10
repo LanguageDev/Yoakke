@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -14,17 +14,29 @@ namespace Yoakke.Utilities.FiniteAutomata
     /// </summary>
     public sealed class State : IEquatable<State>, IComparable<State>
     {
+        /// <summary>
+        /// Denites an invalid <see cref="State"/>.
+        /// </summary>
         public static readonly State Invalid = new(Enumerable.Empty<State>());
 
         private readonly int[] indices;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="State"/> class.
+        /// </summary>
+        /// <param name="index">The indicies identifying this <see cref="State"/>.</param>
         public State(params int[] index)
         {
             this.indices = index;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="State"/> class.
+        /// </summary>
+        /// <param name="parentStates">The <see cref="State"/>s that are the parents of this one.</param>
         public State(IEnumerable<State> parentStates)
         {
+            // TODO: Very ineffective statement.
             this.indices = parentStates.SelectMany(s => s.indices).Distinct().OrderBy(i => i).ToArray();
         }
 
@@ -58,10 +70,27 @@ namespace Yoakke.Utilities.FiniteAutomata
         /// <inheritdoc/>
         public override string ToString() => this.indices.Length == 0 ? "INVALID STATE" : $"q{string.Join("_", this.indices)}";
 
+        /// <summary>
+        /// Compares two <see cref="State"/>s for equality.
+        /// </summary>
+        /// <param name="s1">The first <see cref="State"/> to compare.</param>
+        /// <param name="s2">The second <see cref="State"/> to compare.</param>
+        /// <returns>True, if <paramref name="s1"/> and <paramref name="s2"/> are equal.</returns>
         public static bool operator ==(State s1, State s2) => s1.Equals(s2);
 
+        /// <summary>
+        /// Compares two <see cref="State"/>s for inequality.
+        /// </summary>
+        /// <param name="s1">The first <see cref="State"/> to compare.</param>
+        /// <param name="s2">The second <see cref="State"/> to compare.</param>
+        /// <returns>True, if <paramref name="s1"/> and <paramref name="s2"/> are not equal.</returns>
         public static bool operator !=(State s1, State s2) => !s1.Equals(s2);
 
+        /// <summary>
+        /// Checks, if this <see cref="State"/> is a substate of another.
+        /// </summary>
+        /// <param name="other">The other <see cref="State"/>.</param>
+        /// <returns>True, if this is a substate of <paramref name="other"/>.</returns>
         public bool IsSubstateOf(State other) => this.indices.All(i => other.indices.Contains(i));
     }
 }

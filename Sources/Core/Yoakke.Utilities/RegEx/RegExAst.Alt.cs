@@ -24,6 +24,11 @@ namespace Yoakke.Utilities.RegEx
             /// </summary>
             public RegExAst Second { get; }
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Alt"/> class.
+            /// </summary>
+            /// <param name="first">The first alternative construct to try.</param>
+            /// <param name="second">The second alternative construct to try.</param>
             public Alt(RegExAst first, RegExAst second)
             {
                 this.First = first;

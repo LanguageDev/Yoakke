@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -11,6 +11,9 @@ namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
     /// </summary>
     public class TextDocumentClientCapabilities
     {
+        /// <summary>
+        /// Text synchronization capabilities.
+        /// </summary>
         [JsonProperty("synchronization", NullValueHandling = NullValueHandling.Ignore)]
         public TextDocumentSyncClientCapabilities? Synchronization { get; set; }
 

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -8,8 +8,14 @@ using Yoakke.Lsp.Model.LanguageFeatures;
 
 namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
 {
+    /// <summary>
+    /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#documentSymbolClientCapabilities.
+    /// </summary>
     public class DocumentSymbolClientCapabilities
     {
+        /// <summary>
+        /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#documentSymbolClientCapabilities.
+        /// </summary>
         public class SymbolKindCapabilities
         {
             /// <summary>
@@ -26,6 +32,9 @@ namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
             public IReadOnlyList<SymbolKind>? ValueSet { get; set; }
         }
 
+        /// <summary>
+        /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#documentSymbolClientCapabilities.
+        /// </summary>
         public class TagSupportCapabilities
         {
             /// <summary>

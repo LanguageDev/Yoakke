@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -13,6 +13,9 @@ namespace Yoakke.Lsp.Model.Capabilities.Server
     /// </summary>
     public class CompletionOptions : IWorkDoneProgressOptions
     {
+        /// <summary>
+        /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#completionOptions.
+        /// </summary>
         public class CompletionItemOptions
         {
             /// <summary>

@@ -17,6 +17,7 @@ namespace Yoakke.Lsp.Model.Basic
         /// instead of having an error squiggle.
         /// </summary>
         Unnecessary = 1,
+
         /// <summary>
         /// Deprecated or obsolete code.
         ///

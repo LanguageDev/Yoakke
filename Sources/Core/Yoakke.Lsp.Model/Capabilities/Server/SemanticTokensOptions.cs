@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -7,12 +7,21 @@ using Yoakke.Lsp.Model.Basic;
 
 namespace Yoakke.Lsp.Model.Capabilities.Server
 {
+    /// <summary>
+    /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#semanticTokensOptions.
+    /// </summary>
     public class SemanticTokensOptions : IWorkDoneProgressOptions
     {
+        /// <summary>
+        /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#semanticTokensOptions.
+        /// </summary>
         public class RangeOptions
         {
         }
 
+        /// <summary>
+        /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#semanticTokensOptions.
+        /// </summary>
         public class FullOptions
         {
             /// <summary>

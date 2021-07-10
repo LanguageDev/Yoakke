@@ -28,7 +28,7 @@ namespace Yoakke.Lexer
         /// </summary>
         /// <param name="range">The <see cref="Text.Range"/> of the <see cref="Token{TKind}"/> in the source.</param>
         /// <param name="text">The text the <see cref="Token{TKind}"/> was parsed from.</param>
-        /// <param name="kind">The <see cref="TKind"/> of the <see cref="Token{TKind}"/>.</param>
+        /// <param name="kind">The <typeparamref name="TKind"/> of the <see cref="Token{TKind}"/>.</param>
         public Token(Range range, string text, TKind kind)
         {
             this.Range = range;

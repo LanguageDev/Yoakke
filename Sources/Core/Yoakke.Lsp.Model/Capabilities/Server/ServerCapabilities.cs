@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -8,10 +8,19 @@ using Yoakke.Lsp.Model.TextSynchronization;
 
 namespace Yoakke.Lsp.Model.Capabilities.Server
 {
+    /// <summary>
+    /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#serverCapabilities.
+    /// </summary>
     public class ServerCapabilities
     {
+        /// <summary>
+        /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#serverCapabilities.
+        /// </summary>
         public class WorkspaceCapabilities
         {
+            /// <summary>
+            /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#serverCapabilities.
+            /// </summary>
             public class FileOperationsCapabilities
             {
                 /// <summary>
@@ -250,7 +259,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Server
         public Either<bool, WorkspaceSymbolOptions>? WorkspaceSymbolProvider { get; set; }
 
         /// <summary>
-        /// Workspace specific server capabilities
+        /// Workspace specific server capabilities.
         /// </summary>
         [JsonProperty("workspace", NullValueHandling = NullValueHandling.Ignore)]
         public WorkspaceCapabilities? Workspace { get; set; }
