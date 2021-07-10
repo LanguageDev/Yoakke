@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -80,8 +80,20 @@ namespace Yoakke.Text
         /// <returns>True, if the two <see cref="Range"/>s intersect.</returns>
         public bool Intersects(Range other) => !(this.Start >= other.End || other.Start >= this.End);
 
+        /// <summary>
+        /// Compares two <see cref="Range"/>s for equality.
+        /// </summary>
+        /// <param name="r1">The first <see cref="Range"/> to compare.</param>
+        /// <param name="r2">The second <see cref="Range"/> to compare.</param>
+        /// <returns>True, if <paramref name="r1"/> and <paramref name="r2"/> are equal.</returns>
         public static bool operator ==(Range r1, Range r2) => r1.Equals(r2);
 
+        /// <summary>
+        /// Compares two <see cref="Range"/>s for inequality.
+        /// </summary>
+        /// <param name="r1">The first <see cref="Range"/> to compare.</param>
+        /// <param name="r2">The second <see cref="Range"/> to compare.</param>
+        /// <returns>True, if <paramref name="r1"/> and <paramref name="r2"/> are not equal.</returns>
         public static bool operator !=(Range r1, Range r2) => !r1.Equals(r2);
     }
 }

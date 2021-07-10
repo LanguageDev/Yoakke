@@ -24,6 +24,11 @@ namespace Yoakke.Utilities.RegEx
             /// </summary>
             public RegExAst Second { get; }
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Seq"/> class.
+            /// </summary>
+            /// <param name="first">The construct to match first.</param>
+            /// <param name="second">The construct to match if <paramref name="first"/> matched successfully.</param>
             public Seq(RegExAst first, RegExAst second)
             {
                 this.First = first;

@@ -18,6 +18,10 @@ namespace Yoakke.Utilities.RegEx
             /// </summary>
             public char Char { get; }
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Literal"/> class.
+            /// </summary>
+            /// <param name="char">The character literal to match.</param>
             public Literal(char @char)
             {
                 this.Char = @char;

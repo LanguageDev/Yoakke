@@ -23,6 +23,9 @@ namespace Yoakke.Utilities.FiniteAutomata
         /// <inheritdoc/>
         IEnumerable<State> IFiniteAutomata<TSymbol>.AcceptingStates => this.AcceptingStates;
 
+        /// <summary>
+        /// The set of accepting <see cref="State"/>s.
+        /// </summary>
         public ISet<State> AcceptingStates { get; } = new HashSet<State>();
 
         /// <inheritdoc/>

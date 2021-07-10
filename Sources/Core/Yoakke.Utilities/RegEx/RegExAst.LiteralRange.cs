@@ -28,6 +28,11 @@ namespace Yoakke.Utilities.RegEx
             /// </summary>
             public IList<(char From, char To)> Ranges { get; }
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="LiteralRange"/> class.
+            /// </summary>
+            /// <param name="negate">True, if the ranges should be negated, to make this a not-match.</param>
+            /// <param name="ranges">The list of character ranges for matching.</param>
             public LiteralRange(bool negate, IList<(char From, char To)> ranges)
             {
                 this.Negate = negate;

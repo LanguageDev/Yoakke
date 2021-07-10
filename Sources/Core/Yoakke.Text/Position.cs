@@ -48,16 +48,54 @@ namespace Yoakke.Text
             return l == 0 ? this.Column.CompareTo(other.Column) : l;
         }
 
+        /// <summary>
+        /// Compares two <see cref="Position"/>s for equality.
+        /// </summary>
+        /// <param name="p1">The first <see cref="Position"/> to compare.</param>
+        /// <param name="p2">The second <see cref="Position"/> to compare.</param>
+        /// <returns>True, if <paramref name="p1"/> and <paramref name="p2"/> are equal.</returns>
         public static bool operator ==(Position p1, Position p2) => p1.CompareTo(p2) == 0;
 
+        /// <summary>
+        /// Compares two <see cref="Position"/>s for inequality.
+        /// </summary>
+        /// <param name="p1">The first <see cref="Position"/> to compare.</param>
+        /// <param name="p2">The second <see cref="Position"/> to compare.</param>
+        /// <returns>True, if <paramref name="p1"/> and <paramref name="p2"/> are not equal.</returns>
         public static bool operator !=(Position p1, Position p2) => p1.CompareTo(p2) != 0;
 
+        /// <summary>
+        /// Less-than compares two <see cref="Position"/>s.
+        /// </summary>
+        /// <param name="p1">The first <see cref="Position"/> to compare.</param>
+        /// <param name="p2">The second <see cref="Position"/> to compare.</param>
+        /// <returns>True, if <paramref name="p1"/> comes before <paramref name="p2"/> in a text.</returns>
         public static bool operator <(Position p1, Position p2) => p1.CompareTo(p2) < 0;
 
+        /// <summary>
+        /// Greater-than compares two <see cref="Position"/>s.
+        /// </summary>
+        /// <param name="p1">The first <see cref="Position"/> to compare.</param>
+        /// <param name="p2">The second <see cref="Position"/> to compare.</param>
+        /// <returns>True, if <paramref name="p1"/> comes after <paramref name="p2"/> in a text.</returns>
         public static bool operator >(Position p1, Position p2) => p1.CompareTo(p2) > 0;
 
+        /// <summary>
+        /// Less-than or equals compares two <see cref="Position"/>s.
+        /// </summary>
+        /// <param name="p1">The first <see cref="Position"/> to compare.</param>
+        /// <param name="p2">The second <see cref="Position"/> to compare.</param>
+        /// <returns>True, if <paramref name="p1"/> comes before <paramref name="p2"/> in a text, or they happen
+        /// to be the exact same <see cref="Position"/>.</returns>
         public static bool operator <=(Position p1, Position p2) => p1.CompareTo(p2) <= 0;
 
+        /// <summary>
+        /// Greater-than or equals compares two <see cref="Position"/>s.
+        /// </summary>
+        /// <param name="p1">The first <see cref="Position"/> to compare.</param>
+        /// <param name="p2">The second <see cref="Position"/> to compare.</param>
+        /// <returns>True, if <paramref name="p1"/> comes after <paramref name="p2"/> in a text, or they happen
+        /// to be the exact same <see cref="Position"/>.</returns>
         public static bool operator >=(Position p1, Position p2) => p1.CompareTo(p2) >= 0;
 
         /// <inheritdoc/>

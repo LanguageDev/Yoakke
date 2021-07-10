@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -7,6 +7,11 @@ using System.Collections.Generic;
 
 namespace Yoakke.Utilities
 {
+    /// <summary>
+    /// Utilities for binary searching with incompatible key types.
+    /// Mainly needed because <see cref="Intervals.LowerBound{T}"/> and <see cref="Intervals.UpperBound{T}"/>
+    /// are not the same type, but are comparable.
+    /// </summary>
     public static class BinarySearchExtension
     {
         /// <summary>

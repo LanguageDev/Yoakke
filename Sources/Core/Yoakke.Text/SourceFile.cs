@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -36,6 +36,11 @@ namespace Yoakke.Text
         // If we have been disposed already
         private bool disposed;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SourceFile"/> class.
+        /// </summary>
+        /// <param name="path">The path of the file. This does not actually have to exist, it's symbolic.</param>
+        /// <param name="underlying">The underlying <see cref="TextReader"/> to read the text from.</param>
         public SourceFile(string path, TextReader underlying)
         {
             this.Path = path;
@@ -44,6 +49,11 @@ namespace Yoakke.Text
             this.lineStarts = new List<int>();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SourceFile"/> class.
+        /// </summary>
+        /// <param name="path">The path of the file. This does not actually have to exist, it's symbolic.</param>
+        /// <param name="source">The source text itself.</param>
         public SourceFile(string path, string source)
             : this(path, new StringReader(source))
         {

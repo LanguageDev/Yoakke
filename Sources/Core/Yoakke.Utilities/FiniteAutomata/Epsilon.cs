@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -9,6 +9,9 @@ namespace Yoakke.Utilities.FiniteAutomata
     /// </summary>
     public struct Epsilon
     {
+        /// <summary>
+        /// A constant singleton value to not have to instantiate it all the time.
+        /// </summary>
         public static readonly Epsilon Default = new();
     }
 }

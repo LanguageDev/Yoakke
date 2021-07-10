@@ -18,6 +18,10 @@ namespace Yoakke.Utilities.RegEx
             /// </summary>
             public RegExAst Subexpr { get; }
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Opt"/> class.
+            /// </summary>
+            /// <param name="subexpr">The optional subexpression to match.</param>
             public Opt(RegExAst subexpr)
             {
                 this.Subexpr = subexpr;

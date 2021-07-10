@@ -18,6 +18,10 @@ namespace Yoakke.Utilities.RegEx
             /// </summary>
             public RegExAst Subexpr { get; }
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Rep0"/> class.
+            /// </summary>
+            /// <param name="subexpr">The subexpression to match 0 or more times.</param>
             public Rep0(RegExAst subexpr)
             {
                 this.Subexpr = subexpr;

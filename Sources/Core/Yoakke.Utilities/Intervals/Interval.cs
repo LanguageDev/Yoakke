@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -211,8 +211,20 @@ namespace Yoakke.Utilities.Intervals
             return $"{lower}; {upper}";
         }
 
+        /// <summary>
+        /// Compares two <see cref="Interval{T}"/>s for equality.
+        /// </summary>
+        /// <param name="a">The first <see cref="Interval{T}"/> to compare.</param>
+        /// <param name="b">The second <see cref="Interval{T}"/> to compare.</param>
+        /// <returns>True, if <paramref name="a"/> and <paramref name="b"/> are equal.</returns>
         public static bool operator ==(Interval<T> a, Interval<T> b) => a.Equals(b);
 
+        /// <summary>
+        /// Compares two <see cref="Interval{T}"/>s for inequality.
+        /// </summary>
+        /// <param name="a">The first <see cref="Interval{T}"/> to compare.</param>
+        /// <param name="b">The second <see cref="Interval{T}"/> to compare.</param>
+        /// <returns>True, if <paramref name="a"/> and <paramref name="b"/> are not equal.</returns>
         public static bool operator !=(Interval<T> a, Interval<T> b) => !a.Equals(b);
     }
 }

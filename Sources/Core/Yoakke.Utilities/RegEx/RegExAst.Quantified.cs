@@ -30,6 +30,13 @@ namespace Yoakke.Utilities.RegEx
             /// </summary>
             public int? AtMost { get; }
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Quantified"/> class.
+            /// </summary>
+            /// <param name="subexpr">The subexpression to match.</param>
+            /// <param name="atLeast">At least how many times <paramref name="subexpr"/> should be matched.</param>
+            /// <param name="atMost">At most how many times <paramref name="subexpr"/> should be matched.
+            /// Can be null, if there's no upper bound</param>
             public Quantified(RegExAst subexpr, int atLeast, int? atMost)
             {
                 if (atLeast < 0) throw new ArgumentOutOfRangeException(nameof(atLeast));
