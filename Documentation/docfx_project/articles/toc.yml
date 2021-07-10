@@ -1,2 +1,8 @@
 - name: Introduction
   href: intro.md
+- name: Lexing
+  href: lexer.md
+- name: Parsing
+  href: parser.md
+- name: Error reporting
+  href: reporting.md
