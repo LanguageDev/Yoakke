@@ -23,12 +23,16 @@ namespace Yoakke.Utilities.RegEx
                 this.Char = @char;
             }
 
+            /// <inheritdoc/>
             public override bool Equals(RegExAst other) => other is Literal lit && this.Char == lit.Char;
 
+            /// <inheritdoc/>
             public override int GetHashCode() => this.Char.GetHashCode();
 
+            /// <inheritdoc/>
             public override RegExAst Desugar() => this;
 
+            /// <inheritdoc/>
             public override (State Start, State End) ThompsonConstruct(DenseNfa<char> denseNfa)
             {
                 var start = denseNfa.NewState();

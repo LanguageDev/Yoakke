@@ -18,6 +18,7 @@ namespace Yoakke.Lsp.Model.Basic
             this.Value = value;
         }
 
+        /// <inheritdoc/>
         public bool Equals(Uri other) => this.Value.Equals(other.Value);
 
         public static implicit operator Uri(string value) => new(value);

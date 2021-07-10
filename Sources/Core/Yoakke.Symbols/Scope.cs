@@ -20,10 +20,13 @@ namespace Yoakke.Symbols
         /// </summary>
         public readonly TTag Tag;
 
+        /// <inheritdoc/>
         public IReadOnlyScope? ContainingScope { get; }
 
+        /// <inheritdoc/>
         public bool IsGlobal => this.ContainingScope is null;
 
+        /// <inheritdoc/>
         public IReadOnlyDictionary<string, ISymbol> Symbols => this.symbols;
 
         private readonly Dictionary<string, ISymbol> symbols = new();
@@ -48,12 +51,15 @@ namespace Yoakke.Symbols
         {
         }
 
+        /// <inheritdoc/>
         public IEnumerable<ISymbol> GetReachableSymbols() => this.ContainingScope is null
             ? this.Symbols.Values
             : this.Symbols.Values.Concat(this.ContainingScope.GetReachableSymbols());
 
+        /// <inheritdoc/>
         public ISymbol? ReferenceSymbol(string name) => this.ReferenceSymbol(name, _ => true);
 
+        /// <inheritdoc/>
         public ISymbol? ReferenceSymbol(string name, Predicate<IReadOnlyScope> canCross)
         {
             if (this.Symbols.TryGetValue(name, out var symbol)) return symbol;
@@ -61,6 +67,7 @@ namespace Yoakke.Symbols
             return null;
         }
 
+        /// <inheritdoc/>
         public void DefineSymbol(ISymbol symbol)
         {
             if (symbol.Scope != this)

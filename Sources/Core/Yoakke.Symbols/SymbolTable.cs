@@ -11,10 +11,13 @@ namespace Yoakke.Symbols
     /// </summary>
     public class SymbolTable : ISymbolTable
     {
+        /// <inheritdoc/>
         IReadOnlyScope IReadOnlySymbolTable.GlobalScope => this.GlobalScope;
 
+        /// <inheritdoc/>
         public IScope GlobalScope { get; }
 
+        /// <inheritdoc/>
         public IScope CurrentScope { get; set; }
 
         /// <summary>
@@ -27,8 +30,10 @@ namespace Yoakke.Symbols
             this.CurrentScope = globalScope;
         }
 
+        /// <inheritdoc/>
         public void PushScope(Func<IScope, IScope> makeScope) => this.PushScope(makeScope(this.CurrentScope));
 
+        /// <inheritdoc/>
         public void PushScope(IScope scope)
         {
             if (scope.ContainingScope != this.CurrentScope)
@@ -39,6 +44,7 @@ namespace Yoakke.Symbols
             this.CurrentScope = scope;
         }
 
+        /// <inheritdoc/>
         public void PopScope()
         {
             if (this.CurrentScope.ContainingScope is null)

@@ -31,12 +31,15 @@ namespace Yoakke.Parser.Generator.Ast
                 this.Method = method;
             }
 
+            /// <inheritdoc/>
             public override bool Equals(BnfAst other) => other is Transform tr
                 && this.Subexpr.Equals(tr.Subexpr)
                 && SymbolEqualityComparer.Default.Equals(this.Method, tr.Method);
 
+            /// <inheritdoc/>
             public override int GetHashCode() => HashCode.Combine(this.Subexpr, this.Method);
 
+            /// <inheritdoc/>
             public override BnfAst Desugar()
             {
                 // We sink Transform under alternation
@@ -45,6 +48,7 @@ namespace Yoakke.Parser.Generator.Ast
                 return new Transform(sub, this.Method);
             }
 
+            /// <inheritdoc/>
             public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens) =>
                 this.Method.ReturnType.ToDisplayString();
         }

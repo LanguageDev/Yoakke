@@ -13,10 +13,13 @@ namespace Yoakke.C.Syntax.Macros
     {
         private int count = 0;
 
+        /// <inheritdoc/>
         public string Name => "__COUNTER__";
 
+        /// <inheritdoc/>
         public IReadOnlyList<string>? Parameters => null;
 
+        /// <inheritdoc/>
         public IEnumerable<CToken> Expand(IPreProcessor preProcessor, IReadOnlyList<IReadOnlyList<CToken>> arguments)
         {
             var str = (this.count++).ToString();

@@ -10,9 +10,11 @@ namespace Yoakke.Lsp.Model.Serialization
 {
     public class DocumentUriConverter : JsonConverter<DocumentUri>
     {
+        /// <inheritdoc/>
         public override DocumentUri ReadJson(JsonReader reader, Type objectType, DocumentUri existingValue, bool hasExistingValue, JsonSerializer serializer) =>
             new((string)reader.Value);
 
+        /// <inheritdoc/>
         public override void WriteJson(JsonWriter writer, DocumentUri value, JsonSerializer serializer) =>
             writer.WriteValue(value.Value);
     }

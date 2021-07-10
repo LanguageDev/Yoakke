@@ -46,6 +46,7 @@ namespace Yoakke.C.Syntax
         {
         }
 
+        /// <inheritdoc/>
         public override CToken Next()
         {
             var offset = 0;

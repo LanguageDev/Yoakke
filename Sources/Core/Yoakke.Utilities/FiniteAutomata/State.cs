@@ -28,10 +28,13 @@ namespace Yoakke.Utilities.FiniteAutomata
             this.indices = parentStates.SelectMany(s => s.indices).Distinct().OrderBy(i => i).ToArray();
         }
 
+        /// <inheritdoc/>
         public override bool Equals(object obj) => obj is State s && this.Equals(s);
 
+        /// <inheritdoc/>
         public bool Equals(State other) => this.indices.SequenceEqual(other.indices);
 
+        /// <inheritdoc/>
         public override int GetHashCode()
         {
             var hash = default(HashCode);
@@ -39,6 +42,7 @@ namespace Yoakke.Utilities.FiniteAutomata
             return hash.ToHashCode();
         }
 
+        /// <inheritdoc/>
         public int CompareTo(State other)
         {
             for (var i = 0; i < Math.Min(this.indices.Length, other.indices.Length); ++i)
@@ -51,6 +55,7 @@ namespace Yoakke.Utilities.FiniteAutomata
             return 0;
         }
 
+        /// <inheritdoc/>
         public override string ToString() => this.indices.Length == 0 ? "INVALID STATE" : $"q{string.Join("_", this.indices)}";
 
         public static bool operator ==(State s1, State s2) => s1.Equals(s2);

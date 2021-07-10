@@ -21,13 +21,17 @@ namespace Yoakke.Parser.Generator.Ast
                 this.Name = name;
             }
 
+            /// <inheritdoc/>
             public override bool Equals(BnfAst other) => other is Call call
                 && this.Name.Equals(call.Name);
 
+            /// <inheritdoc/>
             public override int GetHashCode() => this.Name.GetHashCode();
 
+            /// <inheritdoc/>
             public override BnfAst Desugar() => this;
 
+            /// <inheritdoc/>
             public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens)
             {
                 var called = ruleSet.GetRule(this.Name);

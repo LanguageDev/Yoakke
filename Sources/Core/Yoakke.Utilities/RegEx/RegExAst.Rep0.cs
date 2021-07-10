@@ -23,12 +23,16 @@ namespace Yoakke.Utilities.RegEx
                 this.Subexpr = subexpr;
             }
 
+            /// <inheritdoc/>
             public override bool Equals(RegExAst other) => other is Rep0 r && this.Subexpr.Equals(r.Subexpr);
 
+            /// <inheritdoc/>
             public override int GetHashCode() => this.Subexpr.GetHashCode();
 
+            /// <inheritdoc/>
             public override RegExAst Desugar() => new Rep0(this.Subexpr.Desugar());
 
+            /// <inheritdoc/>
             public override (State Start, State End) ThompsonConstruct(DenseNfa<char> denseNfa)
             {
                 var (start, end) = this.Subexpr.ThompsonConstruct(denseNfa);

@@ -8,10 +8,10 @@ using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Yoakke.SourceGenerator.Common;
 using Yoakke.Utilities.FiniteAutomata;
 using Yoakke.Utilities.Intervals;
 using Yoakke.Utilities.RegEx;
-using Yoakke.SourceGenerator.Common;
 
 namespace Yoakke.Lexer.Generator
 {
@@ -37,10 +37,13 @@ namespace Yoakke.Lexer.Generator
         {
         }
 
+        /// <inheritdoc/>
         protected override ISyntaxReceiver CreateSyntaxReceiver(GeneratorInitializationContext context) => new SyntaxReceiver();
 
+        /// <inheritdoc/>
         protected override bool IsOwnSyntaxReceiver(ISyntaxReceiver syntaxReceiver) => syntaxReceiver is SyntaxReceiver;
 
+        /// <inheritdoc/>
         protected override void GenerateCode(ISyntaxReceiver syntaxReceiver)
         {
             var receiver = (SyntaxReceiver)syntaxReceiver;

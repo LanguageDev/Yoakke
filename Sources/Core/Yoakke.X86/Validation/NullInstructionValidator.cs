@@ -14,6 +14,7 @@ namespace Yoakke.X86.Validation
         /// </summary>
         public static readonly NullInstructionValidator Default = new();
 
+        /// <inheritdoc/>
         public void Validate(AssemblyContext context, IInstruction instruction)
         {
         }

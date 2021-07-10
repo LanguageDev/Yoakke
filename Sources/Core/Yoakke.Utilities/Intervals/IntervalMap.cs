@@ -17,10 +17,13 @@ namespace Yoakke.Utilities.Intervals
     /// <typeparam name="TValue">The associated value type.</typeparam>
     public class IntervalMap<TKey, TValue> : IIntervalMap<TKey, TValue>
     {
+        /// <inheritdoc/>
         public int Count => this.values.Count;
 
+        /// <inheritdoc/>
         public IEnumerable<Interval<TKey>> Intervals => this.values.Select(p => p.Key);
 
+        /// <inheritdoc/>
         public IEnumerable<TValue> Values => this.values.Select(p => p.Value);
 
         /// <summary>
@@ -33,6 +36,7 @@ namespace Yoakke.Utilities.Intervals
         /// </summary>
         public IEqualityComparer<TValue> ValueComparer { get; }
 
+        /// <inheritdoc/>
         public TValue this[TKey key]
         {
             get
@@ -72,10 +76,13 @@ namespace Yoakke.Utilities.Intervals
             this.ValueComparer = valueComparer;
         }
 
+        /// <inheritdoc/>
         public void Clear() => this.values.Clear();
 
+        /// <inheritdoc/>
         public bool ContainsKey(TKey key) => this.TryGetValue(key, out var _);
 
+        /// <inheritdoc/>
         public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue? value)
         {
             var interval = Interval<TKey>.Singleton(key);
@@ -92,6 +99,7 @@ namespace Yoakke.Utilities.Intervals
             }
         }
 
+        /// <inheritdoc/>
         public void AddAndUpdate(Interval<TKey> interval, TValue value, Func<TValue, TValue, TValue> updateFunc)
         {
             if (this.values.Count == 0)
@@ -141,6 +149,7 @@ namespace Yoakke.Utilities.Intervals
             }
         }
 
+        /// <inheritdoc/>
         public void MergeTouching()
         {
             for (var i = 0; i < this.values.Count - 1; )
@@ -162,8 +171,10 @@ namespace Yoakke.Utilities.Intervals
             }
         }
 
+        /// <inheritdoc/>
         public IEnumerator<KeyValuePair<Interval<TKey>, TValue>> GetEnumerator() => this.values.GetEnumerator();
 
+        /// <inheritdoc/>
         IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
         private void AddAndUpdateSingle(int idx, Interval<TKey> interval, TValue value, Func<TValue, TValue, TValue> updateFunc)

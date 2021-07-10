@@ -36,6 +36,7 @@ namespace Yoakke.C.Syntax
             public CToken Next() => new CToken(default, string.Empty, default, string.Empty, CTokenType.End);
         }
 
+        /// <inheritdoc/>
         public IReadOnlyDictionary<string, IMacro> Macros => this.macros;
 
         /// <summary>
@@ -83,8 +84,10 @@ namespace Yoakke.C.Syntax
             this.conditionStack = new();
         }
 
+        /// <inheritdoc/>
         public bool IsDefined(string name) => this.macros.ContainsKey(name);
 
+        /// <inheritdoc/>
         public IMacro? Define(IMacro macro)
         {
             this.macros.Remove(macro.Name, out var oldMacro);
@@ -92,10 +95,12 @@ namespace Yoakke.C.Syntax
             return oldMacro;
         }
 
+        /// <inheritdoc/>
         public IMacro? Undefine(string name) => this.macros.Remove(name, out var macro)
             ? macro
             : null;
 
+        /// <inheritdoc/>
         public CToken Next()
         {
         begin:
@@ -129,6 +134,7 @@ namespace Yoakke.C.Syntax
             return this.Skip();
         }
 
+        /// <inheritdoc/>
         public IEnumerable<CToken> Expand(IEnumerable<CToken> tokens) => this.Expand(tokens.ToList());
 
         private void HandleDirective(CToken directive)

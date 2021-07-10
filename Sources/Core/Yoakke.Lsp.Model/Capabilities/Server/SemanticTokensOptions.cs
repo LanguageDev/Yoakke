@@ -22,6 +22,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Server
             public bool? Delta { get; set; }
         }
 
+        /// <inheritdoc/>
         [JsonProperty("workDoneProgress", NullValueHandling = NullValueHandling.Ignore)]
         public bool? WorkDoneProgress { get; set; }
 

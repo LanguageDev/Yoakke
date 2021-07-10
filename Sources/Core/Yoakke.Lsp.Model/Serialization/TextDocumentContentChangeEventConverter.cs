@@ -11,6 +11,7 @@ namespace Yoakke.Lsp.Model.Serialization
 {
     public class TextDocumentContentChangeEventConverter : JsonConverter<TextDocumentContentChangeEvent>
     {
+        /// <inheritdoc/>
         public override TextDocumentContentChangeEvent ReadJson(JsonReader reader, Type objectType, TextDocumentContentChangeEvent existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             var obj = JObject.Load(reader);
@@ -18,6 +19,7 @@ namespace Yoakke.Lsp.Model.Serialization
             else return obj.ToObject<TextDocumentContentChangeEvent.Full>(serializer);
         }
 
+        /// <inheritdoc/>
         public override void WriteJson(JsonWriter writer, TextDocumentContentChangeEvent value, JsonSerializer serializer) =>
             serializer.Serialize(writer, value);
     }

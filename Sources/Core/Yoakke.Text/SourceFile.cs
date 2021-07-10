@@ -16,10 +16,13 @@ namespace Yoakke.Text
     /// </summary>
     public class SourceFile : TextReader, ISourceFile
     {
+        /// <inheritdoc/>
         public string Path { get; }
 
+        /// <inheritdoc/>
         public TextReader Reader => this;
 
+        /// <inheritdoc/>
         public int AvailableLines => this.lineStarts.Count;
 
         // The reader we read from
@@ -50,6 +53,7 @@ namespace Yoakke.Text
             this.index = 0;
         }
 
+        /// <inheritdoc/>
         public string GetLine(int index)
         {
             if (!this.EnsureLineCount(index + 1)) return string.Empty;
@@ -58,8 +62,10 @@ namespace Yoakke.Text
             else return this.sourceText.ToString(from, this.lineStarts[index + 1] - from);
         }
 
+        /// <inheritdoc/>
         public override void Close() => this.underlying.Close();
 
+        /// <inheritdoc/>
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
@@ -75,12 +81,14 @@ namespace Yoakke.Text
             this.disposed = true;
         }
 
+        /// <inheritdoc/>
         public override int Peek()
         {
             if (!this.EnsureLength(this.index + 1)) return -1;
             return this.sourceText[this.index];
         }
 
+        /// <inheritdoc/>
         public override int Read()
         {
             var ch = this.Peek();
@@ -88,6 +96,7 @@ namespace Yoakke.Text
             return ch;
         }
 
+        /// <inheritdoc/>
         public override int Read(Span<char> buffer)
         {
             this.EnsureLength(this.index + buffer.Length);
@@ -98,24 +107,32 @@ namespace Yoakke.Text
             return count;
         }
 
+        /// <inheritdoc/>
         public override int Read(char[] buffer, int index, int count) => this.Read(buffer.AsSpan(index, count));
 
+        /// <inheritdoc/>
         public override ValueTask<int> ReadAsync(Memory<char> buffer, CancellationToken cancellationToken = default) =>
             ValueTask.FromResult(this.Read(buffer.Span));
 
+        /// <inheritdoc/>
         public override Task<int> ReadAsync(char[] buffer, int index, int count) =>
             Task.FromResult(this.Read(buffer, index, count));
 
+        /// <inheritdoc/>
         public override int ReadBlock(Span<char> buffer) => this.Read(buffer);
 
+        /// <inheritdoc/>
         public override int ReadBlock(char[] buffer, int index, int count) => this.Read(buffer, index, count);
 
+        /// <inheritdoc/>
         public override ValueTask<int> ReadBlockAsync(Memory<char> buffer, CancellationToken cancellationToken = default) =>
             ValueTask.FromResult(this.Read(buffer.Span));
 
+        /// <inheritdoc/>
         public override Task<int> ReadBlockAsync(char[] buffer, int index, int count) =>
             Task.FromResult(this.Read(buffer, index, count));
 
+        /// <inheritdoc/>
         public override string? ReadLine()
         {
             if (this.index == this.sourceText.Length && !this.ReadNextLine()) return null;
@@ -128,8 +145,10 @@ namespace Yoakke.Text
             return result;
         }
 
+        /// <inheritdoc/>
         public override Task<string?> ReadLineAsync() => Task.FromResult(this.ReadLine());
 
+        /// <inheritdoc/>
         public override string ReadToEnd()
         {
             var wasAt = this.index;
@@ -140,6 +159,7 @@ namespace Yoakke.Text
             return this.sourceText.ToString(wasAt, this.index - wasAt);
         }
 
+        /// <inheritdoc/>
         public override Task<string> ReadToEndAsync() => Task.FromResult(this.ReadToEnd());
 
         private bool EnsureLineCount(int count)

@@ -9,10 +9,13 @@ namespace Yoakke.X86.Operands
     /// </summary>
     public readonly struct FarAddress : IOperand
     {
+        /// <inheritdoc/>
         public bool IsMemory => true;
 
+        /// <inheritdoc/>
         public DataWidth? GetSize() => null;
 
+        /// <inheritdoc/>
         public DataWidth GetSize(AssemblyContext context) => context.AddressSize;
 
         /// <summary>

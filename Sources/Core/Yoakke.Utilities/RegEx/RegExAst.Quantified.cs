@@ -40,13 +40,16 @@ namespace Yoakke.Utilities.RegEx
                 this.AtMost = atMost;
             }
 
+            /// <inheritdoc/>
             public override bool Equals(RegExAst other) => other is Quantified q
                 && this.Subexpr.Equals(q.Subexpr)
                 && this.AtLeast == q.AtLeast
                 && this.AtMost == q.AtMost;
 
+            /// <inheritdoc/>
             public override int GetHashCode() => HashCode.Combine(this.Subexpr, this.AtLeast, this.AtMost);
 
+            /// <inheritdoc/>
             public override RegExAst Desugar()
             {
                 if (this.AtLeast == 0)
@@ -84,6 +87,7 @@ namespace Yoakke.Utilities.RegEx
                 }
             }
 
+            /// <inheritdoc/>
             public override (State Start, State End) ThompsonConstruct(DenseNfa<char> denseNfa) =>
                 throw new NotSupportedException();
         }

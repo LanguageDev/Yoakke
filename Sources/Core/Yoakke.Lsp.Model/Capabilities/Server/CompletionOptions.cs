@@ -25,6 +25,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Server
             public bool? LabelDetailsSupport { get; set; }
         }
 
+        /// <inheritdoc/>
         [JsonProperty("workDoneProgress", NullValueHandling = NullValueHandling.Ignore)]
         public bool? WorkDoneProgress { get; set; }
 

@@ -13,6 +13,7 @@ namespace Yoakke.Utilities.Intervals
     /// <typeparam name="T">The interval value type.</typeparam>
     public class IntervalSet<T> : IIntervalSet<T>
     {
+        /// <inheritdoc/>
         public int Count => this.intervals.Count;
 
         private readonly List<Interval<T>> intervals = new();
@@ -35,14 +36,17 @@ namespace Yoakke.Utilities.Intervals
             this.comparer = comparer;
         }
 
+        /// <inheritdoc/>
         public void Clear() => this.intervals.Clear();
 
+        /// <inheritdoc/>
         public bool Contains(T value)
         {
             var (from, to) = this.IntersectingIndexRange(Interval<T>.Singleton(value));
             return from != to;
         }
 
+        /// <inheritdoc/>
         public void Add(Interval<T> interval)
         {
             if (this.intervals.Count == 0)
@@ -75,6 +79,7 @@ namespace Yoakke.Utilities.Intervals
             }
         }
 
+        /// <inheritdoc/>
         public void Invert()
         {
             if (this.intervals.Count == 0)
@@ -192,8 +197,10 @@ namespace Yoakke.Utilities.Intervals
             }
         }
 
+        /// <inheritdoc/>
         public IEnumerator<Interval<T>> GetEnumerator() => this.intervals.GetEnumerator();
 
+        /// <inheritdoc/>
         IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
         private (int, int) IntersectingIndexRange(Interval<T> interval)

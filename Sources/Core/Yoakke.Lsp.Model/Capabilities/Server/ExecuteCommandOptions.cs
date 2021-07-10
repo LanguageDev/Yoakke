@@ -10,6 +10,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Server
 {
     public class ExecuteCommandOptions : IWorkDoneProgressOptions
     {
+        /// <inheritdoc/>
         [JsonProperty("workDoneProgress", NullValueHandling = NullValueHandling.Ignore)]
         public bool? WorkDoneProgress { get; set; }
 

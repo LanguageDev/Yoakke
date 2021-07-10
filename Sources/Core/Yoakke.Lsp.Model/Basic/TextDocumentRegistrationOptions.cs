@@ -9,6 +9,7 @@ namespace Yoakke.Lsp.Model.Basic
 {
     public class TextDocumentRegistrationOptions : ITextDocumentRegistrationOptions
     {
+        /// <inheritdoc/>
         [JsonProperty("documentSelector")]
         public IReadOnlyList<DocumentFilter>? DocumentSelector { get; set; }
     }

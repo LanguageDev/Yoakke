@@ -31,12 +31,15 @@ namespace Yoakke.Utilities.FiniteAutomata
             }
         }
 
+        /// <inheritdoc/>
         public State InitalState { get; set; } = State.Invalid;
 
+        /// <inheritdoc/>
         IEnumerable<State> IFiniteAutomata<TSymbol>.AcceptingStates => this.AcceptingStates;
 
         public ISet<State> AcceptingStates { get; } = new HashSet<State>();
 
+        /// <inheritdoc/>
         public IEnumerable<State> States => this.transitions.Keys
             .Concat(this.transitions.Values.SelectMany(t => t.Values.SelectMany(v => v)))
             .Concat(this.epsilon.Keys)
@@ -68,8 +71,10 @@ namespace Yoakke.Utilities.FiniteAutomata
             this.comparer = comparer;
         }
 
+        /// <inheritdoc/>
         public bool IsAccepting(State state) => this.AcceptingStates.Contains(state);
 
+        /// <inheritdoc/>
         public IEnumerable<State> GetTransitions(State from, TSymbol on)
         {
             var fromClosure = this.EpsilonClosure(from);
@@ -83,6 +88,7 @@ namespace Yoakke.Utilities.FiniteAutomata
             });
         }
 
+        /// <inheritdoc/>
         public IEnumerable<State> EpsilonClosure(State state)
         {
             var touched = new HashSet<State>();
@@ -104,6 +110,7 @@ namespace Yoakke.Utilities.FiniteAutomata
             }
         }
 
+        /// <inheritdoc/>
         IDeterministicFiniteAutomata<TSymbol> INondeterministicFiniteAutomata<TSymbol>.Determinize() => this.Determinize();
 
         public DenseDfa<TSymbol> Determinize()
@@ -159,6 +166,7 @@ namespace Yoakke.Utilities.FiniteAutomata
             return dfa;
         }
 
+        /// <inheritdoc/>
         public string ToDebugDOT()
         {
             var sb = new StringBuilder();

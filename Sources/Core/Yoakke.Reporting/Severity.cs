@@ -39,12 +39,16 @@ namespace Yoakke.Reporting
             this.Priority = priority;
         }
 
+        /// <inheritdoc/>
         public override bool Equals(object? obj) => obj is Severity s && this.Equals(s);
 
+        /// <inheritdoc/>
         public bool Equals(Severity other) => this.Priority == other.Priority;
 
+        /// <inheritdoc/>
         public override int GetHashCode() => this.Priority.GetHashCode();
 
+        /// <inheritdoc/>
         public int CompareTo(Severity other) => this.Priority - other.Priority;
 
         public static bool operator ==(Severity left, Severity right) => left.Equals(right);

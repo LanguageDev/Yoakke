@@ -11,10 +11,13 @@ namespace Yoakke.X86.Operands
     /// </summary>
     public readonly struct Register : IOperand
     {
+        /// <inheritdoc/>
         public bool IsMemory => false;
 
+        /// <inheritdoc/>
         public DataWidth? GetSize() => this.Size;
 
+        /// <inheritdoc/>
         public DataWidth GetSize(AssemblyContext context) => this.Size;
 
         /// <summary>

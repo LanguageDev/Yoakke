@@ -10,8 +10,10 @@ namespace Yoakke.Lsp.Model.Serialization
 {
     public class EitherConverter : JsonConverter
     {
+        /// <inheritdoc/>
         public override bool CanConvert(Type objectType) => objectType.IsAssignableTo(typeof(IEither));
 
+        /// <inheritdoc/>
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             var typeArgs = objectType.GenericTypeArguments;
@@ -28,6 +30,7 @@ namespace Yoakke.Lsp.Model.Serialization
             throw new NotSupportedException();
         }
 
+        /// <inheritdoc/>
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) =>
             serializer.Serialize(writer, ((IEither)value).Value);
     }

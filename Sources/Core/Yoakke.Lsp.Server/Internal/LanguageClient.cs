@@ -32,6 +32,7 @@ namespace Yoakke.Lsp.Server.Internal
             this.jsonRpc = jsonRpc;
         }
 
+        /// <inheritdoc/>
         public string RegisterHandler(ITextDocumentSyncHandler handler)
         {
             var deregistrationKey = GenerateGuid();
@@ -95,6 +96,7 @@ namespace Yoakke.Lsp.Server.Internal
             return deregistrationKey;
         }
 
+        /// <inheritdoc/>
         public void PublishDiagnostics(PublishDiagnosticsParams diagnosticsParams) =>
             this.jsonRpc.NotifyWithParameterObjectAsync("textDocument/publishDiagnostics", diagnosticsParams).Wait();
 

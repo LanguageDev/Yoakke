@@ -31,9 +31,11 @@ namespace Yoakke.Parser.Generator.Ast
                 this.Elements = elements.ToArray();
             }
 
+            /// <inheritdoc/>
             public override bool Equals(BnfAst other) => other is Seq seq
                 && this.Elements.SequenceEqual(seq.Elements);
 
+            /// <inheritdoc/>
             public override int GetHashCode()
             {
                 var hash = default(HashCode);
@@ -41,6 +43,7 @@ namespace Yoakke.Parser.Generator.Ast
                 return hash.ToHashCode();
             }
 
+            /// <inheritdoc/>
             public override BnfAst Desugar()
             {
                 if (this.Elements.Count == 1) return this.Elements[0].Desugar();
@@ -75,6 +78,7 @@ namespace Yoakke.Parser.Generator.Ast
                 return new Seq(newElements);
             }
 
+            /// <inheritdoc/>
             public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens)
             {
                 if (this.Elements.Count == 1) return this.Elements[0].GetParsedType(ruleSet, tokens);

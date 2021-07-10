@@ -13,6 +13,7 @@ namespace Yoakke.X86.Validation
     /// </summary>
     public class ArithmeticInstructionValidator : IInstructionValidator
     {
+        /// <inheritdoc/>
         public void Validate(AssemblyContext context, IInstruction instruction)
         {
             var arith = (Instructions.ArithmeticInstruction)instruction;

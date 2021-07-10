@@ -10,9 +10,11 @@ namespace Yoakke.Lsp.Model.Capabilities.Server.RegistrationOptions
 {
     public class SelectionRangeRegistrationOptions : SelectionRangeOptions, ITextDocumentRegistrationOptions, IStaticRegistrationOptions
     {
+        /// <inheritdoc/>
         [JsonProperty("documentSelector")]
         public IReadOnlyList<DocumentFilter>? DocumentSelector { get; set; }
 
+        /// <inheritdoc/>
         [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
         public string? Id { get; set; }
     }

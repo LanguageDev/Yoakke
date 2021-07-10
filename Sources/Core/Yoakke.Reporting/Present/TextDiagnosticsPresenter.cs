@@ -42,8 +42,10 @@ namespace Yoakke.Reporting.Present
         /// </summary>
         public static readonly TextDiagnosticsPresenter Default = new(Console.Error);
 
+        /// <inheritdoc/>
         public DiagnosticsStyle Style { get; set; } = DiagnosticsStyle.Default;
 
+        /// <inheritdoc/>
         public ISyntaxHighlighter SyntaxHighlighter { get; set; } = ISyntaxHighlighter.Null;
 
         /// <summary>
@@ -63,6 +65,7 @@ namespace Yoakke.Reporting.Present
             this.buffer = new ColoredBuffer();
         }
 
+        /// <inheritdoc/>
         public void Present(Diagnostics diagnostic)
         {
             // Clear the buffer

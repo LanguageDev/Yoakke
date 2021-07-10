@@ -36,6 +36,7 @@ namespace Yoakke.Lsp.Model.Basic
         {
         }
 
+        /// <inheritdoc/>
         public bool Equals(ProgressToken other) => this.Value.Equals(other.Value);
 
         public static implicit operator ProgressToken(string value) => new(value);

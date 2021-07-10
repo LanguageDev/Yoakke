@@ -9,6 +9,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Server
 {
     public class ReferenceOptions : IWorkDoneProgressOptions
     {
+        /// <inheritdoc/>
         [JsonProperty("workDoneProgress", NullValueHandling = NullValueHandling.Ignore)]
         public bool? WorkDoneProgress { get; set; }
     }

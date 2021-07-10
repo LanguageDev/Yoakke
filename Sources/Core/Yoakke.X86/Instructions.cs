@@ -18,6 +18,7 @@ namespace Yoakke.X86
         [Validator(typeof(OneOperandInstructionValidator))]
         public abstract class OneOperandInstruction : IInstruction
         {
+            /// <inheritdoc/>
             public IEnumerable<IOperand> Operands
             {
                 get
@@ -26,6 +27,7 @@ namespace Yoakke.X86
                 }
             }
 
+            /// <inheritdoc/>
             public string? Comment { get; init; }
 
             /// <summary>
@@ -47,6 +49,7 @@ namespace Yoakke.X86
 
         public abstract class JumpInstruction : IInstruction
         {
+            /// <inheritdoc/>
             public IEnumerable<IOperand> Operands
             {
                 get
@@ -55,6 +58,7 @@ namespace Yoakke.X86
                 }
             }
 
+            /// <inheritdoc/>
             public string? Comment { get; init; }
 
             /// <summary>
@@ -77,6 +81,7 @@ namespace Yoakke.X86
         [Validator(typeof(ArithmeticInstructionValidator))]
         public abstract class ArithmeticInstruction : IInstruction
         {
+            /// <inheritdoc/>
             public IEnumerable<IOperand> Operands
             {
                 get
@@ -86,6 +91,7 @@ namespace Yoakke.X86
                 }
             }
 
+            /// <inheritdoc/>
             public string? Comment { get; init; }
 
             /// <summary>

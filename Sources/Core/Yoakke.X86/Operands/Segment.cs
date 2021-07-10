@@ -9,10 +9,13 @@ namespace Yoakke.X86.Operands
     /// </summary>
     public readonly struct Segment : IOperand
     {
+        /// <inheritdoc/>
         public bool IsMemory => false;
 
+        /// <inheritdoc/>
         public DataWidth? GetSize() => null;
 
+        /// <inheritdoc/>
         public DataWidth GetSize(AssemblyContext context) => context.AddressSize;
 
         /// <summary>

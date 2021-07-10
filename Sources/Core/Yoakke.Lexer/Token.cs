@@ -14,10 +14,13 @@ namespace Yoakke.Lexer
     public sealed class Token<TKind> : IToken<TKind>, IEquatable<Token<TKind>>
         where TKind : notnull
     {
+        /// <inheritdoc/>
         public Range Range { get; }
 
+        /// <inheritdoc/>
         public string Text { get; }
 
+        /// <inheritdoc/>
         public TKind Kind { get; }
 
         /// <summary>
@@ -33,18 +36,23 @@ namespace Yoakke.Lexer
             this.Kind = kind;
         }
 
+        /// <inheritdoc/>
         public override bool Equals(object? obj) => this.Equals(obj as Token<TKind>);
 
+        /// <inheritdoc/>
         public bool Equals(IToken? other) => this.Equals(other as Token<TKind>);
 
+        /// <inheritdoc/>
         public bool Equals(IToken<TKind>? other) => this.Equals(other as Token<TKind>);
 
+        /// <inheritdoc/>
         public bool Equals(Token<TKind>? other) =>
                other is not null
             && this.Range == other.Range
             && this.Text == other.Text
             && this.Kind.Equals(other.Kind);
 
+        /// <inheritdoc/>
         public override int GetHashCode() => HashCode.Combine(this.Range, this.Text, this.Kind);
     }
 }

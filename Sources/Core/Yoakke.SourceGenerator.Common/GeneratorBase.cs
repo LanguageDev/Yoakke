@@ -23,9 +23,11 @@ namespace Yoakke.SourceGenerator.Common
             this.symbolCache = new();
         }
 
+        /// <inheritdoc/>
         public void Initialize(GeneratorInitializationContext context) =>
             context.RegisterForSyntaxNotifications(() => this.CreateSyntaxReceiver(context));
 
+        /// <inheritdoc/>
         public void Execute(GeneratorExecutionContext context)
         {
             if (context.SyntaxReceiver is null) return;

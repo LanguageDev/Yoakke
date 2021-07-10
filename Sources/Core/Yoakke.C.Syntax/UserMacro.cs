@@ -17,8 +17,10 @@ namespace Yoakke.C.Syntax
     {
         private const string EmptyStringLiteral = "\"\"";
 
+        /// <inheritdoc/>
         public string Name { get; }
 
+        /// <inheritdoc/>
         public IReadOnlyList<string>? Parameters { get; }
 
         private readonly IReadOnlyList<MacroElement> body;
@@ -30,6 +32,7 @@ namespace Yoakke.C.Syntax
             this.body = body;
         }
 
+        /// <inheritdoc/>
         public IEnumerable<CToken> Expand(IPreProcessor preProcessor, IReadOnlyList<IReadOnlyList<CToken>> arguments)
         {
             var isVariadic = this.Parameters is not null

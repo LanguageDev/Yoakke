@@ -98,10 +98,13 @@ namespace Yoakke.Utilities.Intervals
             _ => null,
         };
 
+        /// <inheritdoc/>
         public override bool Equals(object obj) => obj is UpperBound<T> ub && this.Equals(ub);
 
+        /// <inheritdoc/>
         public bool Equals(UpperBound<T> other) => this.CompareTo(other) == 0;
 
+        /// <inheritdoc/>
         public override int GetHashCode() => HashCode.Combine(this.Type, this.Value);
 
         /// <summary>

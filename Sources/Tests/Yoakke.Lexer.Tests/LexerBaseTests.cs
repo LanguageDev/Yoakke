@@ -28,6 +28,7 @@ namespace Yoakke.Lexer.Tests
             {
             }
 
+            /// <inheritdoc/>
             public override Token<TokenType> Next()
             {
                 begin:

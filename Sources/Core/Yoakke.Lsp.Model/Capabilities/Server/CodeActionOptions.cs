@@ -11,6 +11,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Server
 {
     public class CodeActionOptions : IWorkDoneProgressOptions
     {
+        /// <inheritdoc/>
         [JsonProperty("workDoneProgress", NullValueHandling = NullValueHandling.Ignore)]
         public bool? WorkDoneProgress { get; set; }
 

@@ -104,10 +104,13 @@ namespace Yoakke.Utilities.Intervals
             _ => null,
         };
 
+        /// <inheritdoc/>
         public override bool Equals(object obj) => obj is LowerBound<T> lb && this.Equals(lb);
 
+        /// <inheritdoc/>
         public bool Equals(LowerBound<T> other) => this.CompareTo(other) == 0;
 
+        /// <inheritdoc/>
         public override int GetHashCode() => HashCode.Combine(this.Type, this.Value);
 
         /// <summary>

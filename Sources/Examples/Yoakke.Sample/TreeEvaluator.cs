@@ -41,25 +41,30 @@ namespace Yoakke.Sample
 
         // Statement related ///////////////////////////////////////////////////
 
+        /// <inheritdoc/>
         protected override void Visit(Statement.Var vars)
         {
             var symbol = this.symbolResolution.Symbols[vars];
             this.Bind(symbol, this.Visit(vars.Value));
         }
 
+        /// <inheritdoc/>
         protected override void Visit(Statement.Func func)
         { /* no-op */
         }
 
+        /// <inheritdoc/>
         protected override void Visit(Statement.Return ret) =>
             throw new Return(ret.Value == null ? null : this.Visit(ret.Value));
 
+        /// <inheritdoc/>
         protected override void Visit(Statement.If iff)
         {
             if ((bool)this.Visit(iff.Condition)) this.Visit(iff.Then);
             else if (iff.Else != null) this.Visit(iff.Else);
         }
 
+        /// <inheritdoc/>
         protected override void Visit(Statement.While whil)
         {
             while ((bool)this.Visit(whil.Condition)) this.Visit(whil.Body);
@@ -67,6 +72,7 @@ namespace Yoakke.Sample
 
         // Expression related //////////////////////////////////////////////////
 
+        /// <inheritdoc/>
         protected override object? Visit(Expression.Call call)
         {
             var func = this.Visit(call.Function);
@@ -112,6 +118,7 @@ namespace Yoakke.Sample
             }
         }
 
+        /// <inheritdoc/>
         protected override object Visit(Expression.Unary ury) => ury.Op switch
         {
             UnaryOp.Negate => -(int)this.Visit(ury.Subexpr),
@@ -121,6 +128,7 @@ namespace Yoakke.Sample
             _ => throw new NotSupportedException(),
         };
 
+        /// <inheritdoc/>
         protected override object Visit(Expression.Binary bin) => bin.Op switch
         {
             BinOp.Add => this.PerformAdd(this.Visit(bin.Left), (int)this.Visit(bin.Right)),
@@ -147,6 +155,7 @@ namespace Yoakke.Sample
             _ => throw new NotSupportedException(),
         };
 
+        /// <inheritdoc/>
         protected override object? Visit(Expression.Ident ident)
         {
             var symbol = this.symbolResolution.Symbols[ident];
@@ -163,8 +172,10 @@ namespace Yoakke.Sample
             }
         }
 
+        /// <inheritdoc/>
         protected override object Visit(Expression.StringLit strLit) => strLit.Value;
 
+        /// <inheritdoc/>
         protected override object Visit(Expression.IntLit intLit) => intLit.Value;
 
         // Runtime drivers /////////////////////////////////////////////////////

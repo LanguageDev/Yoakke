@@ -34,10 +34,12 @@ namespace Yoakke.Utilities.RegEx
                 this.Ranges = ranges;
             }
 
+            /// <inheritdoc/>
             public override bool Equals(RegExAst other) => other is LiteralRange r
                 && this.Negate == r.Negate
                 && this.Ranges.SequenceEqual(r.Ranges);
 
+            /// <inheritdoc/>
             public override int GetHashCode()
             {
                 var hash = default(HashCode);
@@ -46,8 +48,10 @@ namespace Yoakke.Utilities.RegEx
                 return hash.ToHashCode();
             }
 
+            /// <inheritdoc/>
             public override RegExAst Desugar() => this;
 
+            /// <inheritdoc/>
             public override (State Start, State End) ThompsonConstruct(DenseNfa<char> denseNfa)
             {
                 // Build the range

@@ -9,9 +9,11 @@ namespace Yoakke.Lsp.Model.Serialization
 {
     public class UriConverter : JsonConverter<Basic.Uri>
     {
+        /// <inheritdoc/>
         public override Basic.Uri ReadJson(JsonReader reader, Type objectType, Basic.Uri existingValue, bool hasExistingValue, JsonSerializer serializer) =>
             new((string)reader.Value);
 
+        /// <inheritdoc/>
         public override void WriteJson(JsonWriter writer, Basic.Uri value, JsonSerializer serializer) =>
             writer.WriteValue(value.Value);
     }

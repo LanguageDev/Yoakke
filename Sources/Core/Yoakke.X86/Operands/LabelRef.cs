@@ -23,10 +23,13 @@ namespace Yoakke.X86.Operands
             return new(label);
         }
 
+        /// <inheritdoc/>
         public bool IsMemory => true;
 
+        /// <inheritdoc/>
         public DataWidth? GetSize() => null;
 
+        /// <inheritdoc/>
         public DataWidth GetSize(AssemblyContext context) => context.AddressSize;
 
         /// <summary>

@@ -17,12 +17,15 @@ namespace Yoakke.Utilities.FiniteAutomata
     /// <typeparam name="TSymbol">The symbol type the automata steps on.</typeparam>
     public class DenseDfa<TSymbol> : IDeterministicFiniteAutomata<TSymbol>
     {
+        /// <inheritdoc/>
         public State InitalState { get; set; } = State.Invalid;
 
+        /// <inheritdoc/>
         IEnumerable<State> IFiniteAutomata<TSymbol>.AcceptingStates => this.AcceptingStates;
 
         public ISet<State> AcceptingStates { get; } = new HashSet<State>();
 
+        /// <inheritdoc/>
         public IEnumerable<State> States =>
             this.transitions.Keys.Concat(this.transitions.Values.SelectMany(t => t.Values)).Append(this.InitalState).Distinct();
 
@@ -48,23 +51,28 @@ namespace Yoakke.Utilities.FiniteAutomata
             this.transitions = new Dictionary<State, IntervalMap<TSymbol, State>>();
         }
 
+        /// <inheritdoc/>
         public bool IsAccepting(State state) => this.AcceptingStates.Contains(state);
 
+        /// <inheritdoc/>
         public IEnumerable<State> GetTransitions(State from, TSymbol on)
         {
             var to = this.GetTransition(from, on);
             if (to is not null) yield return to;
         }
 
+        /// <inheritdoc/>
         public State? GetTransition(State from, TSymbol on) =>
             this.transitions.TryGetValue(from, out var map) && map.TryGetValue(on, out var state)
                 ? state
                 : null;
 
+        /// <inheritdoc/>
         public IDeterministicFiniteAutomata<TSymbol> Minify() =>
             // TODO
             throw new NotImplementedException();
 
+        /// <inheritdoc/>
         public string ToDebugDOT()
         {
             var sb = new StringBuilder();

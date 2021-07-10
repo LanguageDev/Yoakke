@@ -11,8 +11,10 @@ namespace Yoakke.Reporting
     /// </summary>
     public class SourceDiagnosticInfo : IDiagnosticInfo
     {
+        /// <inheritdoc/>
         public Severity? Severity { get; set; }
 
+        /// <inheritdoc/>
         public string? Message { get; set; }
 
         /// <summary>

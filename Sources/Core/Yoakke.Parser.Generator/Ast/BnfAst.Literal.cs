@@ -21,13 +21,17 @@ namespace Yoakke.Parser.Generator.Ast
                 this.Value = value;
             }
 
+            /// <inheritdoc/>
             public override bool Equals(BnfAst other) => other is Literal lit
                 && this.Value.Equals(lit.Value);
 
+            /// <inheritdoc/>
             public override int GetHashCode() => this.Value.GetHashCode();
 
+            /// <inheritdoc/>
             public override BnfAst Desugar() => this;
 
+            /// <inheritdoc/>
             public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens)
             {
                 if (tokens.EnumType == null) return TypeNames.IToken;

@@ -16,8 +16,10 @@ namespace Yoakke.Lsp.Sample
 {
     internal class SyncHandler : ITextDocumentSyncHandler
     {
+        /// <inheritdoc/>
         public TextDocumentSyncKind SyncKind => TextDocumentSyncKind.Incremental;
 
+        /// <inheritdoc/>
         public IReadOnlyList<DocumentFilter>? DocumentSelector { get; } = new DocumentFilter[]
         {
             new DocumentFilter
@@ -33,6 +35,7 @@ namespace Yoakke.Lsp.Sample
             this.client = client;
         }
 
+        /// <inheritdoc/>
         public void DidChange(DidChangeTextDocumentParams changeParams)
         {
             Console.Error.WriteLine("CHANGE");
@@ -74,18 +77,21 @@ namespace Yoakke.Lsp.Sample
             Console.Error.WriteLine("BBBBBBB");
         }
 
+        /// <inheritdoc/>
         public void DidClose(DidCloseTextDocumentParams closeParams)
         {
             Console.Error.WriteLine("CLOSE");
             Console.Error.WriteLine($"  Uri: {closeParams.TextDocument.Uri.Value}");
         }
 
+        /// <inheritdoc/>
         public void DidOpen(DidOpenTextDocumentParams openParams)
         {
             Console.Error.WriteLine("OPEN");
             Console.Error.WriteLine($"  Uri: {openParams.TextDocument.Uri.Value}");
         }
 
+        /// <inheritdoc/>
         public void DidSave(DidSaveTextDocumentParams saveParams)
         {
             Console.Error.WriteLine("SAVE");

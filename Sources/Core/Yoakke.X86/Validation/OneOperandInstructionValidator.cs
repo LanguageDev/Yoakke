@@ -12,6 +12,7 @@ namespace Yoakke.X86.Validation
     /// </summary>
     public class OneOperandInstructionValidator : IInstructionValidator
     {
+        /// <inheritdoc/>
         public void Validate(AssemblyContext context, IInstruction instruction)
         {
             var one = (Instructions.OneOperandInstruction)instruction;

@@ -29,8 +29,10 @@ namespace Yoakke.Parser
             .Select(e => e.Punctuation)
             .OfType<TPunct>();
 
+        /// <inheritdoc/>
         public int Count => this.underlying.Count;
 
+        /// <inheritdoc/>
         public PunctuatedValue<TValue, TPunct> this[int index] => this.underlying[index];
 
         public Punctuated()
@@ -48,8 +50,10 @@ namespace Yoakke.Parser
             this.underlying = elements.ToArray();
         }
 
+        /// <inheritdoc/>
         public IEnumerator<PunctuatedValue<TValue, TPunct>> GetEnumerator() => this.underlying.GetEnumerator();
 
+        /// <inheritdoc/>
         IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
         // 0 or more without trailing

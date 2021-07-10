@@ -72,8 +72,10 @@ namespace Yoakke.Lsp.Server.Internal
 
         // Lifecycle ///////////////////////////////////////////////////////////
 
+        /// <inheritdoc/>
         public void Dispose() => this.jsonRpc.Dispose();
 
+        /// <inheritdoc/>
         public Task StartAsync(CancellationToken cancellationToken)
         {
             this.SetServerState(ServerState.WaitingForInitializeRequest);
@@ -82,6 +84,7 @@ namespace Yoakke.Lsp.Server.Internal
         }
 
         // TODO: Cancellation?
+        /// <inheritdoc/>
         public Task StopAsync(CancellationToken cancellationToken) => this.jsonRpc.Completion;
 
         // Messages ////////////////////////////////////////////////////////////

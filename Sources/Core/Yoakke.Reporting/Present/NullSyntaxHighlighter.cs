@@ -18,8 +18,10 @@ namespace Yoakke.Reporting.Present
         /// </summary>
         public static readonly NullSyntaxHighlighter Default = new();
 
+        /// <inheritdoc/>
         public SyntaxHighlightStyle Style { get; set; } = SyntaxHighlightStyle.Default;
 
+        /// <inheritdoc/>
         public IReadOnlyList<ColoredToken> GetHighlightingForLine(ISourceFile sourceFile, int line) =>
             Array.Empty<ColoredToken>();
     }

@@ -15,6 +15,7 @@ namespace Yoakke.Lsp.Model
     [JsonConverter(typeof(EitherConverter))]
     public class Either<T1, T2> : IEither
     {
+        /// <inheritdoc/>
         public object Value { get; }
 
         public bool IsFirst => this.Value is T1;
@@ -48,6 +49,7 @@ namespace Yoakke.Lsp.Model
     [JsonConverter(typeof(EitherConverter))]
     public class Either<T1, T2, T3> : IEither
     {
+        /// <inheritdoc/>
         public object Value { get; }
 
         public bool IsFirst => this.Value is T1;

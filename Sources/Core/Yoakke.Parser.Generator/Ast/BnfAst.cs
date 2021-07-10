@@ -11,10 +11,13 @@ namespace Yoakke.Parser.Generator.Ast
     /// </summary>
     internal abstract partial class BnfAst : IEquatable<BnfAst>
     {
+        /// <inheritdoc/>
         public override bool Equals(object obj) => obj is BnfAst bnf && this.Equals(bnf);
 
+        /// <inheritdoc/>
         public abstract bool Equals(BnfAst other);
 
+        /// <inheritdoc/>
         public override abstract int GetHashCode();
 
         /// <summary>

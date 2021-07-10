@@ -21,15 +21,19 @@ namespace Yoakke.Parser.Generator.Ast
                 this.Subexpr = subexpr;
             }
 
+            /// <inheritdoc/>
             public override bool Equals(BnfAst other) => other is Group group
                && this.Subexpr.Equals(group.Subexpr);
 
+            /// <inheritdoc/>
             public override int GetHashCode() => this.Subexpr.GetHashCode();
 
+            /// <inheritdoc/>
             public override BnfAst Desugar() => this.Subexpr is Seq
                 ? new Group(this.Subexpr.Desugar())
                 : this.Subexpr.Desugar();
 
+            /// <inheritdoc/>
             public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens) =>
                 this.Subexpr.GetParsedType(ruleSet, tokens);
         }

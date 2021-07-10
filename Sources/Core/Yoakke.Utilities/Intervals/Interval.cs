@@ -47,8 +47,10 @@ namespace Yoakke.Utilities.Intervals
             this.Upper = upper;
         }
 
+        /// <inheritdoc/>
         public override bool Equals(object obj) => obj is Interval<T> iv && this.Equals(iv);
 
+        /// <inheritdoc/>
         public bool Equals(Interval<T> other) => this.Equals(other, Comparer<T>.Default);
 
         /// <summary>
@@ -61,6 +63,7 @@ namespace Yoakke.Utilities.Intervals
                this.Lower.CompareTo(other.Lower, comparer) == 0
             && this.Upper.CompareTo(other.Upper, comparer) == 0;
 
+        /// <inheritdoc/>
         public override int GetHashCode() => HashCode.Combine(this.Lower, this.Upper);
 
         /// <summary>
@@ -188,6 +191,7 @@ namespace Yoakke.Utilities.Intervals
                 new Interval<T>(first.Upper.GetTouching()!.Value, second.Upper));
         }
 
+        /// <inheritdoc/>
         public override string ToString()
         {
             var lower = this.Lower.Type switch

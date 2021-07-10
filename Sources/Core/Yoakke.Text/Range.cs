@@ -54,12 +54,16 @@ namespace Yoakke.Text
         {
         }
 
+        /// <inheritdoc/>
         public override bool Equals(object? obj) => obj is Range r && this.Equals(r);
 
+        /// <inheritdoc/>
         public bool Equals(Range other) => this.Start == other.Start && this.End == other.End;
 
+        /// <inheritdoc/>
         public override int GetHashCode() => HashCode.Combine(this.Start, this.End);
 
+        /// <inheritdoc/>
         public override string ToString() => $"from {this.Start} to {this.End}";
 
         /// <summary>

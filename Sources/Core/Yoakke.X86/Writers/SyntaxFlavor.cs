@@ -15,7 +15,7 @@ namespace Yoakke.X86.Writers
         Intel,
 
         /// <summary>
-        /// AT&T syntax with source, destination ordering.
+        /// AT&amp;T syntax with source, destination ordering.
         /// </summary>
         ATnT,
     }

@@ -11,8 +11,10 @@ namespace Yoakke.Reporting.Sample
 {
     internal class MyHighlighter : ISyntaxHighlighter
     {
+        /// <inheritdoc/>
         public SyntaxHighlightStyle Style { get; set; } = SyntaxHighlightStyle.Default;
 
+        /// <inheritdoc/>
         public IReadOnlyList<ColoredToken> GetHighlightingForLine(ISourceFile sourceFile, int line)
         {
             if (line == 1)

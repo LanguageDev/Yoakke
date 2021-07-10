@@ -30,14 +30,18 @@ namespace Yoakke.Utilities.RegEx
                 this.Second = second;
             }
 
+            /// <inheritdoc/>
             public override bool Equals(RegExAst other) => other is Alt alt
                 && this.First.Equals(alt.First)
                 && this.Second.Equals(alt.Second);
 
+            /// <inheritdoc/>
             public override int GetHashCode() => HashCode.Combine(this.First, this.Second);
 
+            /// <inheritdoc/>
             public override RegExAst Desugar() => new Alt(this.First.Desugar(), this.Second.Desugar());
 
+            /// <inheritdoc/>
             public override (State Start, State End) ThompsonConstruct(DenseNfa<char> denseNfa)
             {
                 var newStart = denseNfa.NewState();

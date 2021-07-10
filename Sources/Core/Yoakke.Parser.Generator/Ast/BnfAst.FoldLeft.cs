@@ -38,15 +38,19 @@ namespace Yoakke.Parser.Generator.Ast
                 this.Method = method;
             }
 
+            /// <inheritdoc/>
             public override bool Equals(BnfAst other) => other is FoldLeft fl
                 && this.First.Equals(fl.First)
                 && this.Second.Equals(fl.Second)
                 && SymbolEqualityComparer.Default.Equals(this.Method, fl.Method);
 
+            /// <inheritdoc/>
             public override int GetHashCode() => HashCode.Combine(this.First, this.Second, this.Method);
 
+            /// <inheritdoc/>
             public override BnfAst Desugar() => new FoldLeft(this.First.Desugar(), this.Second.Desugar(), this.Method);
 
+            /// <inheritdoc/>
             public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens)
             {
                 var firstType = this.First.GetParsedType(ruleSet, tokens);

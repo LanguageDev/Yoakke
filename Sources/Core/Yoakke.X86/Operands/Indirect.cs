@@ -9,10 +9,13 @@ namespace Yoakke.X86.Operands
     /// </summary>
     public readonly struct Indirect : IOperand
     {
+        /// <inheritdoc/>
         public bool IsMemory => true;
 
+        /// <inheritdoc/>
         public DataWidth? GetSize() => this.Size;
 
+        /// <inheritdoc/>
         public DataWidth GetSize(AssemblyContext context) => this.Size;
 
         /// <summary>

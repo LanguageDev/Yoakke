@@ -9,6 +9,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Server
 {
     public class CallHierarchyOptions : IWorkDoneProgressOptions
     {
+        /// <inheritdoc/>
         [JsonProperty("workDoneProgress", NullValueHandling = NullValueHandling.Ignore)]
         public bool? WorkDoneProgress { get; set; }
     }

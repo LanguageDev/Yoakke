@@ -14,6 +14,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Server.RegistrationOptions
     /// </summary>
     public class TextDocumentChangeRegistrationOptions : ITextDocumentRegistrationOptions
     {
+        /// <inheritdoc/>
         [JsonProperty("documentSelector")]
         public IReadOnlyList<DocumentFilter>? DocumentSelector { get; set; }
 

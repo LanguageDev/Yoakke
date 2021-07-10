@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -32,12 +32,16 @@ namespace Yoakke.Text
             this.Column = column;
         }
 
+        /// <inheritdoc/>
         public override bool Equals(object? obj) => obj is Position position && this.Equals(position);
 
+        /// <inheritdoc/>
         public bool Equals(Position other) => this.CompareTo(other) == 0;
 
+        /// <inheritdoc/>
         public override int GetHashCode() => HashCode.Combine(this.Line, this.Column);
 
+        /// <inheritdoc/>
         public int CompareTo(Position other)
         {
             var l = this.Line.CompareTo(other.Line);
@@ -56,6 +60,7 @@ namespace Yoakke.Text
 
         public static bool operator >=(Position p1, Position p2) => p1.CompareTo(p2) >= 0;
 
+        /// <inheritdoc/>
         public override string ToString() => $"line {this.Line + 1}, column {this.Column + 1}";
 
         /// <summary>

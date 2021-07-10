@@ -16,18 +16,23 @@ namespace Yoakke.Utilities
     {
         private const int DefaultCapacity = 16;
 
+        /// <inheritdoc/>
         public int Capacity
         {
             get => this.storage == null ? 0 : this.storage.Length;
             set => this.SetCapacity(value);
         }
 
+        /// <inheritdoc/>
         public int Count { get; private set; }
 
+        /// <inheritdoc/>
         public int Head { get; private set; }
 
+        /// <inheritdoc/>
         public int Tail => this.ToStorageIndex(this.Head + this.Count);
 
+        /// <inheritdoc/>
         public T this[int index]
         {
             get
@@ -43,6 +48,7 @@ namespace Yoakke.Utilities
             }
         }
 
+        /// <inheritdoc/>
         T IReadOnlyList<T>.this[int index] => this[index];
 
         private T?[]? storage;
@@ -65,6 +71,7 @@ namespace Yoakke.Utilities
         {
         }
 
+        /// <inheritdoc/>
         public void AddFront(T item)
         {
             this.EnsureExtraCapacity(1);
@@ -73,6 +80,7 @@ namespace Yoakke.Utilities
             ++this.Count;
         }
 
+        /// <inheritdoc/>
         public void AddBack(T item)
         {
             this.EnsureExtraCapacity(1);
@@ -80,6 +88,7 @@ namespace Yoakke.Utilities
             ++this.Count;
         }
 
+        /// <inheritdoc/>
         public T RemoveFront()
         {
             this.CheckNonEmpty();
@@ -90,6 +99,7 @@ namespace Yoakke.Utilities
             return result!;
         }
 
+        /// <inheritdoc/>
         public T RemoveBack()
         {
             this.CheckNonEmpty();
@@ -100,6 +110,7 @@ namespace Yoakke.Utilities
             return result!;
         }
 
+        /// <inheritdoc/>
         public void Clear()
         {
             var ((hstart, hlen), (tstart, tlen)) = this.GetSlices();
@@ -109,6 +120,7 @@ namespace Yoakke.Utilities
             this.Count = 0;
         }
 
+        /// <inheritdoc/>
         public IEnumerator<T> GetEnumerator()
         {
             var ((hstart, hlen), (tstart, tlen)) = this.GetSlices();
@@ -116,6 +128,7 @@ namespace Yoakke.Utilities
             for (var i = tstart; i < tstart + tlen; ++i) yield return this.storage![i]!;
         }
 
+        /// <inheritdoc/>
         IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
         private void EnsureExtraCapacity(int amount)

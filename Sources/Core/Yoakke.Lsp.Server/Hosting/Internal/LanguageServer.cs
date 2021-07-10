@@ -18,12 +18,16 @@ namespace Yoakke.Lsp.Server.Hosting.Internal
             this.host = host;
         }
 
+        /// <inheritdoc/>
         public void Dispose() => this.host.Dispose();
 
+        /// <inheritdoc/>
         public void Start() => this.host.Start();
 
+        /// <inheritdoc/>
         public Task StartAsync(CancellationToken cancellationToken) => this.host.StartAsync(cancellationToken);
 
+        /// <inheritdoc/>
         public async Task<int> StopAsync(CancellationToken cancellationToken)
         {
             var lspService = (LanguageServerService?)this.host.Services.GetService(typeof(LanguageServerService))!;

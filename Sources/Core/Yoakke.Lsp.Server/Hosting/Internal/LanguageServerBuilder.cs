@@ -27,14 +27,17 @@ namespace Yoakke.Lsp.Server.Hosting.Internal
             this.settings = new();
         }
 
+        /// <inheritdoc/>
         public ILanguageServer Build() => new LanguageServer(this.hostBuilder.Build());
 
+        /// <inheritdoc/>
         public ILanguageServerBuilder ConfigureServices(Action<LanguageServerBuilderContext, IServiceCollection> configureServices)
         {
             this.hostBuilder.ConfigureServices((_, serviceCollection) => configureServices(this.builderContext, serviceCollection));
             return this;
         }
 
+        /// <inheritdoc/>
         public ILanguageServerBuilder UseInputStream(Stream stream)
         {
             this.inputStream = stream;
@@ -42,6 +45,7 @@ namespace Yoakke.Lsp.Server.Hosting.Internal
             return this;
         }
 
+        /// <inheritdoc/>
         public ILanguageServerBuilder UseOutputStream(Stream stream)
         {
             this.outputStream = stream;
@@ -49,6 +53,7 @@ namespace Yoakke.Lsp.Server.Hosting.Internal
             return this;
         }
 
+        /// <inheritdoc/>
         public ILanguageServerBuilder UseDuplexStream(Stream stream)
         {
             this.duplexStream = stream;
@@ -57,12 +62,14 @@ namespace Yoakke.Lsp.Server.Hosting.Internal
             return this;
         }
 
+        /// <inheritdoc/>
         public ILanguageServerBuilder UseSetting(string key, string? value)
         {
             this.settings[key] = value;
             return this;
         }
 
+        /// <inheritdoc/>
         public string? GetSetting(string key) => this.settings.TryGetValue(key, out var value)
             ? value
             : null;

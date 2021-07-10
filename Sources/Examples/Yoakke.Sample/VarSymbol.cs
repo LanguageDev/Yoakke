@@ -9,10 +9,13 @@ namespace Yoakke.Sample
 {
     public class VarSymbol : ISymbol
     {
+        /// <inheritdoc/>
         public IReadOnlyScope Scope { get; }
 
+        /// <inheritdoc/>
         public string Name { get; }
 
+        /// <inheritdoc/>
         public Location? Definition { get; }
 
         public VarSymbol(IReadOnlyScope scope, string name, Location? definition = null)

@@ -5,8 +5,8 @@
 using System;
 using System.IO;
 using System.Text;
-using Yoakke.Utilities;
 using Yoakke.Text;
+using Yoakke.Utilities;
 
 namespace Yoakke.Lexer
 {
@@ -138,7 +138,7 @@ namespace Yoakke.Lexer
         /// </summary>
         /// <typeparam name="TToken">The exact token type to produce.</typeparam>
         /// <param name="length">The amount of characters to skip.</param>
-        /// <param name="makeToken">The factory function that receives the source <see cref="Range"/> of the skipped characters
+        /// <param name="makeToken">The factory function that receives the source <see cref="Text.Range"/> of the skipped characters
         /// and the skipped characters themselves concatenated as a string, and produces an <see cref="IToken"/> from them.</param>
         /// <returns>The constructed <see cref="IToken{TKind}"/> returned from <paramref name="makeToken"/>.</returns>
         protected TToken TakeToken<TToken>(int length, Func<Text.Range, string, TToken> makeToken)

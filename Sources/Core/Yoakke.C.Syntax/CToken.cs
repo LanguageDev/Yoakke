@@ -12,10 +12,13 @@ namespace Yoakke.C.Syntax
     /// </summary>
     public sealed class CToken : IToken<CTokenType>, IEquatable<CToken>
     {
+        /// <inheritdoc/>
         public Text.Range Range { get; }
 
+        /// <inheritdoc/>
         public string Text { get; }
 
+        /// <inheritdoc/>
         public CTokenType Kind { get; }
 
         /// <summary>
@@ -66,12 +69,16 @@ namespace Yoakke.C.Syntax
         {
         }
 
+        /// <inheritdoc/>
         public override bool Equals(object? obj) => this.Equals(obj as CToken);
 
+        /// <inheritdoc/>
         public bool Equals(IToken? other) => this.Equals(other as CToken);
 
+        /// <inheritdoc/>
         public bool Equals(IToken<CTokenType>? other) => this.Equals(other as CToken);
 
+        /// <inheritdoc/>
         public bool Equals(CToken? other) =>
                other is not null
             && this.Range == other.Range
@@ -80,6 +87,7 @@ namespace Yoakke.C.Syntax
             && this.LogicalRange == other.LogicalRange
             && this.LogicalText == other.LogicalText;
 
+        /// <inheritdoc/>
         public override int GetHashCode() =>
             HashCode.Combine(this.Range, this.Text, this.Kind, this.LogicalRange, this.LogicalText);
     }

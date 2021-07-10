@@ -43,6 +43,7 @@ namespace Yoakke.Lexer
         protected TToken TakeToken(int length, Func<Range, string, TToken> makeToken) =>
             base.TakeToken<TToken>(length, makeToken);
 
+        /// <inheritdoc/>
         IToken ILexer.Next() => this.Next();
 
         /// <summary>
