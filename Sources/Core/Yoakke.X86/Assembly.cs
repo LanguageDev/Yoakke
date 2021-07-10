@@ -23,6 +23,10 @@ namespace Yoakke.X86
 
         private readonly ValidatorCache validatorCache = new();
 
+        /// <summary>
+        /// Validates this <see cref="Assembly"/>.
+        /// </summary>
+        /// <param name="context">The <see cref="AssemblyContext"/> to use for validation.</param>
         public void Validate(AssemblyContext context)
         {
             foreach (var instruction in this.Elements.OfType<IInstruction>())

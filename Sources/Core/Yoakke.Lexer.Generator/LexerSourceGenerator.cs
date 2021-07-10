@@ -36,6 +36,9 @@ namespace Yoakke.Lexer.Generator
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LexerSourceGenerator"/> class.
+        /// </summary>
         public LexerSourceGenerator()
             : base("Yoakke.Lexer.Generator")
         {

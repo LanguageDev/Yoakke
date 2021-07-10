@@ -15,6 +15,9 @@ namespace Yoakke.X86
     {
         /* Base classes */
 
+        /// <summary>
+        /// Base-class for single-operand instructions.
+        /// </summary>
         [Validator(typeof(OneOperandInstructionValidator))]
         public abstract class OneOperandInstruction : IInstruction
         {
@@ -47,6 +50,9 @@ namespace Yoakke.X86
             }
         }
 
+        /// <summary>
+        /// Base-class for jump instructions.
+        /// </summary>
         public abstract class JumpInstruction : IInstruction
         {
             /// <inheritdoc/>
@@ -78,6 +84,9 @@ namespace Yoakke.X86
             }
         }
 
+        /// <summary>
+        /// Base-class for arithmetic instructions.
+        /// </summary>
         [Validator(typeof(ArithmeticInstructionValidator))]
         public abstract class ArithmeticInstruction : IInstruction
         {
@@ -121,24 +130,50 @@ namespace Yoakke.X86
 
         /* Actual instructions */
 
+        /// <summary>
+        /// PUSH instruction.
+        /// </summary>
         public class Push : OneOperandInstruction
         {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Push"/> class.
+            /// </summary>
+            /// <param name="operand">The operand to push.</param>
+            /// <param name="comment">An optional line-comment.</param>
             public Push(IOperand operand, string? comment = null)
                 : base(operand, comment)
             {
             }
         }
 
+        /// <summary>
+        /// ADD instruction.
+        /// </summary>
         public class Add : ArithmeticInstruction
         {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Add"/> class.
+            /// </summary>
+            /// <param name="destination">The operand to add to.</param>
+            /// <param name="source">The operand to add.</param>
+            /// <param name="comment">An optional line-comment.</param>
             public Add(IOperand destination, IOperand source, string? comment = null)
                 : base(destination, source, comment)
             {
             }
         }
 
+        /// <summary>
+        /// SUB instruction.
+        /// </summary>
         public class Sub : ArithmeticInstruction
         {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Sub"/> class.
+            /// </summary>
+            /// <param name="destination">The operand to subtract from.</param>
+            /// <param name="source">The operand to subtract.</param>
+            /// <param name="comment">An optional line-comment.</param>
             public Sub(IOperand destination, IOperand source, string? comment = null)
                 : base(destination, source, comment)
             {
@@ -146,16 +181,34 @@ namespace Yoakke.X86
         }
 
         // NOTE: For now we treat MOV as an arithmetic instruction, maybe it's good enough
+
+        /// <summary>
+        /// MOV instruction.
+        /// </summary>
         public class Mov : ArithmeticInstruction
         {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Mov"/> class.
+            /// </summary>
+            /// <param name="destination">The operand to move to.</param>
+            /// <param name="source">The operand to move.</param>
+            /// <param name="comment">An optional line-comment.</param>
             public Mov(IOperand destination, IOperand source, string? comment = null)
                 : base(destination, source, comment)
             {
             }
         }
 
+        /// <summary>
+        /// JMP instruction.
+        /// </summary>
         public class Jmp : JumpInstruction
         {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Jmp"/> class.
+            /// </summary>
+            /// <param name="target">The target operand to jump to.</param>
+            /// <param name="comment">An optional line-comment.</param>
             public Jmp(IOperand target, string? comment = null)
                 : base(target, comment)
             {

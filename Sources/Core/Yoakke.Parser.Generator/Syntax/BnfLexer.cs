@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -12,6 +12,11 @@ namespace Yoakke.Parser.Generator.Syntax
     /// </summary>
     internal class BnfLexer
     {
+        /// <summary>
+        /// Lexer the given BNF grammar text into <see cref="BnfToken"/>s.
+        /// </summary>
+        /// <param name="source">The source text to lex.</param>
+        /// <returns>The list of <see cref="BnfToken"/>s.</returns>
         public static IList<BnfToken> Lex(string source)
         {
             var result = new List<BnfToken>();
@@ -28,11 +33,19 @@ namespace Yoakke.Parser.Generator.Syntax
         private readonly string source;
         private int index;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BnfLexer"/> class.
+        /// </summary>
+        /// <param name="source">The source text to lex.</param>
         public BnfLexer(string source)
         {
             this.source = source;
         }
 
+        /// <summary>
+        /// Lexes the next token from the input.
+        /// </summary>
+        /// <returns>The next <see cref="BnfToken"/> lexed from the input.</returns>
         public BnfToken Next()
         {
             begin:

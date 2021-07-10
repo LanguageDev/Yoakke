@@ -12,24 +12,74 @@ namespace Yoakke.Parser.Generator
         private const string ParserNamespace = "Yoakke.Parser";
         private const string LexerNamespace = "Yoakke.Lexer";
 
+        /// <summary>
+        /// System.Collections.Generic.IReadOnlyList.
+        /// </summary>
+        public const string IReadOnlyList = "System.Collections.Generic.IReadOnlyList";
+
+        /// <summary>
+        /// System.Collections.Generic.IList.
+        /// </summary>
+        public const string IList = "System.Collections.Generic.IList";
+
+        /// <summary>
+        /// System.Collections.Generic.List.
+        /// </summary>
+        public const string List = "System.Collections.Generic.List";
+
+        /// <summary>
+        /// System.Collections.Generic.IEnumerable.
+        /// </summary>
+        public const string IEnumerable = "System.Collections.Generic.IEnumerable";
+
+        /// <summary>
+        /// System.Diagnostics.CodeAnalysis.MaybeNullWhen.
+        /// </summary>
+        public const string MaybeNullWhen = "System.Diagnostics.CodeAnalysis.MaybeNullWhen";
+
+        /// <summary>
+        /// The attribute that makes the Source Generator look for rule annotations in a class.
+        /// </summary>
         public static readonly string ParserAttribute = $"{ParserNamespace}.Attributes.ParserAttribute";
+
+        /// <summary>
+        /// The annotation for a grammar rule over the transformer method.
+        /// </summary>
         public static readonly string RuleAttribute = $"{ParserNamespace}.Attributes.RuleAttribute";
+
+        /// <summary>
+        /// Annotation for a left-associative precedence level.
+        /// </summary>
         public static readonly string LeftAttribute = $"{ParserNamespace}.Attributes.LeftAttribute";
+
+        /// <summary>
+        /// Annotation for a right-associative precedence level.
+        /// </summary>
         public static readonly string RightAttribute = $"{ParserNamespace}.Attributes.RightAttribute";
 
+        /// <summary>
+        /// Base class for parsers.
+        /// </summary>
         public static readonly string ParserBase = $"{ParserNamespace}.ParserBase";
+
+        /// <summary>
+        /// Parse error type.
+        /// </summary>
         public static readonly string ParseError = $"{ParserNamespace}.ParseError";
-        public static readonly string ParseErrorElement = $"{ParserNamespace}.ParseErrorElement";
-        public static readonly string ParseSuccess = $"{ParserNamespace}.ParseSuccess";
+
+        /// <summary>
+        /// Parse result type.
+        /// </summary>
         public static readonly string ParseResult = $"{ParserNamespace}.ParseResult";
 
+        /// <summary>
+        /// Token interface type.
+        /// </summary>
         public static readonly string IToken = $"{LexerNamespace}.IToken";
-        public static readonly string ILexer = $"{LexerNamespace}.ILexer";
 
-        public const string IReadOnlyList = "System.Collections.Generic.IReadOnlyList";
-        public const string IList = "System.Collections.Generic.IList";
-        public const string List = "System.Collections.Generic.List";
-        public const string IEnumerable = "System.Collections.Generic.IEnumerable";
-        public const string MaybeNullWhen = "System.Diagnostics.CodeAnalysis.MaybeNullWhen";
+        /// <summary>
+        /// Lexer interface type.
+        /// </summary>
+        public static readonly string ILexer = $"{LexerNamespace}.ILexer";   
     }
 }

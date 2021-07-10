@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -22,10 +22,25 @@ namespace Yoakke.Parser.Generator
 
         private readonly Dictionary<string, IList<PrecedenceEntry>> precedences = new();
 
+        /// <summary>
+        /// Tries to retrieve a <see cref="Rule"/> from this <see cref="RuleSet"/> with a given name.
+        /// </summary>
+        /// <param name="name">The name of the <see cref="Rule"/> to retrieve.</param>
+        /// <param name="rule">The <see cref="Rule"/> gets written here, if found.</param>
+        /// <returns>True, if a <see cref="Rule"/> with the name <paramref name="name"/> was found.</returns>
         public bool TryGetRule(string name, out Rule rule) => this.Rules.TryGetValue(name, out rule);
 
+        /// <summary>
+        /// Retrieves a <see cref="Rule"/> from this <see cref="RuleSet"/> with a given name.
+        /// </summary>
+        /// <param name="name">The name of the <see cref="Rule"/> to retrieve.</param>
+        /// <returns>The <see cref="Rule"/> with the name <paramref name="name"/>.</returns>
         public Rule GetRule(string name) => this.Rules[name];
 
+        /// <summary>
+        /// Adds a <see cref="Rule"/> to this <see cref="RuleSet"/>.
+        /// </summary>
+        /// <param name="rule">The <see cref="Rule"/> to add.</param>
         public void Add(Rule rule)
         {
             if (this.Rules.TryGetValue(rule.Name, out var existingRule))
@@ -39,6 +54,12 @@ namespace Yoakke.Parser.Generator
             }
         }
 
+        /// <summary>
+        /// Adds a precedence table to this <see cref="RuleSet"/>.
+        /// </summary>
+        /// <param name="ruleName">The name of the rule that will parse this precedence hierarchy.</param>
+        /// <param name="precs">The list of precedence descriptions.</param>
+        /// <param name="method">The method that transforms each parse into the primitive.</param>
         public void AddPrecedence(string ruleName, IList<(bool Left, HashSet<object> Operators)> precs, IMethodSymbol method)
         {
             if (!this.precedences.TryGetValue(ruleName, out var precList))
@@ -49,6 +70,10 @@ namespace Yoakke.Parser.Generator
             foreach (var (l, p) in precs) precList.Add(new PrecedenceEntry(l, p, method));
         }
 
+        /// <summary>
+        /// Desugars everything into their simplest form.
+        /// This means transforming precedence tables into <see cref="Rule"/>s and normalizing all <see cref="Rule"/>.
+        /// </summary>
         public void Desugar()
         {
             // Generate precedence rules

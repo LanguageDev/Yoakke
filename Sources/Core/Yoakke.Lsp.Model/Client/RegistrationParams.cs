@@ -12,6 +12,9 @@ namespace Yoakke.Lsp.Model.Client
     /// </summary>
     public class RegistrationParams
     {
+        /// <summary>
+        /// The list of <see cref="Registration"/>s.
+        /// </summary>
         [JsonProperty("registrations")]
         public IReadOnlyList<Registration> Registrations { get; set; }
     }

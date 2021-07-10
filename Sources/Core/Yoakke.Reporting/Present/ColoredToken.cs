@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -24,6 +24,12 @@ namespace Yoakke.Reporting.Present
         /// </summary>
         public readonly TokenKind Kind;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ColoredToken"/> struct.
+        /// </summary>
+        /// <param name="start">The starting index of the token in the line.</param>
+        /// <param name="length">The length of the token in characters.</param>
+        /// <param name="kind">The <see cref="TokenKind"/> of the token.</param>
         public ColoredToken(int start, int length, TokenKind kind)
         {
             this.Start = start;

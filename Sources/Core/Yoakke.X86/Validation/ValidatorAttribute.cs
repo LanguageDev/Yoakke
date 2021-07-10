@@ -8,7 +8,7 @@ namespace Yoakke.X86.Validation
 {
     /// <summary>
     /// An attribute to attach a validator to an element requiring semantic validation.
-    /// For example this could be an <see cref="IInstructionValidator"/> on an <see cref="Instructions.IInstruction"/>.
+    /// For example this could be an <see cref="IInstructionValidator"/> on an <see cref="IInstruction"/>.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = false, Inherited = true)]
     public class ValidatorAttribute : Attribute

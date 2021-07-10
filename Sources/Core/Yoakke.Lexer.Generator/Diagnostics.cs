@@ -11,8 +11,6 @@ namespace Yoakke.Lexer.Generator
     /// </summary>
     internal static class Diagnostics
     {
-        // TODO: Not sure what this would be good for, consider it
-
 #pragma warning disable RS2008 // Enable analyzer release tracking
 
         /// <summary>

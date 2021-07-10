@@ -48,6 +48,9 @@ namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
             /// </summary>
             public class InsertTextModeSupportCapabilities
             {
+                /// <summary>
+                /// The supported <see cref="InsertTextMode"/>s.
+                /// </summary>
                 [JsonProperty("valueSet")]
                 public IReadOnlyList<InsertTextMode> ValueSet { get; set; }
             }

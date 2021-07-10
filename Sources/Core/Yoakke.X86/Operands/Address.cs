@@ -285,6 +285,11 @@ namespace Yoakke.X86.Operands
             this.Scale = scale;
         }
 
+        /// <summary>
+        /// Deconstructs this <see cref="ScaledIndex"/>.
+        /// </summary>
+        /// <param name="index">The <see cref="Index"/> gets written here.</param>
+        /// <param name="scale">The <see cref="Scale"/> gets written here.</param>
         public void Deconstruct(out Register index, out int scale)
         {
             index = this.Index;

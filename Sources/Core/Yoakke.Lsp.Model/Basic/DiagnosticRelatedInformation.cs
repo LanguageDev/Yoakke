@@ -18,6 +18,7 @@ namespace Yoakke.Lsp.Model.Basic
         /// </summary>
         [JsonProperty("location")]
         public Location Location { get; set; }
+
         /// <summary>
         /// The message of this related diagnostic information.
         /// </summary>

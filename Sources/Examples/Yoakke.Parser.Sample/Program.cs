@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -60,10 +60,10 @@ namespace Yoakke.Parser.Sample
 
         public void Synchronize()
         {
-            for (; TryPeek(0, out var t) && t!.Text != ";"; TryConsume(1))
+            for (; this.TryPeek(0, out var t) && t!.Text != ";"; this.TryConsume(1))
             {
             }
-            TryConsume(1);
+            this.TryConsume(1);
         }
     }
 

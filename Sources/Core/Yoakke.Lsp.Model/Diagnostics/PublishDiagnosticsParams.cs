@@ -18,6 +18,7 @@ namespace Yoakke.Lsp.Model.Diagnostics
         /// </summary>
         [JsonProperty("uri")]
         public DocumentUri Uri { get; set; }
+
         /// <summary>
         /// Optional the version number of the document the diagnostics are published
         /// for.
@@ -25,6 +26,7 @@ namespace Yoakke.Lsp.Model.Diagnostics
         [Since(3, 15, 0)]
         [JsonProperty("version", NullValueHandling = NullValueHandling.Ignore)]
         public uint? Version { get; set; }
+
         /// <summary>
         /// An array of diagnostic information items.
         /// </summary>

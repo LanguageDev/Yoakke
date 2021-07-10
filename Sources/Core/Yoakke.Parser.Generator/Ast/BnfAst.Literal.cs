@@ -16,6 +16,10 @@ namespace Yoakke.Parser.Generator.Ast
             /// </summary>
             public readonly object Value;
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Literal"/> class.
+            /// </summary>
+            /// <param name="value">The literal value to match.</param>
             public Literal(object value)
             {
                 this.Value = value;

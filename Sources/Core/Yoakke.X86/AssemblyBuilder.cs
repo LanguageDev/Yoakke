@@ -111,18 +111,51 @@ namespace Yoakke.X86
 
         /* Instructions */
 
+        /// <summary>
+        /// Writes a PUSH instruction.
+        /// </summary>
+        /// <param name="op">The pushed operand.</param>
+        /// <param name="comment">The optional instruction comment.</param>
+        /// <returns>This instance to chain calls.</returns>
         public AssemblyBuilder Push(IOperand op, string? comment = null) =>
             this.Write(new Instructions.Push(op, comment));
 
+        /// <summary>
+        /// Writes an ADD instruction.
+        /// </summary>
+        /// <param name="dest">The operand to add to.</param>
+        /// <param name="src">The operand to add.</param>
+        /// <param name="comment">The optional instruction comment.</param>
+        /// <returns>This instance to chain calls.</returns>
         public AssemblyBuilder Add(IOperand dest, IOperand src, string? comment = null) =>
             this.Write(new Instructions.Add(dest, src, comment));
 
+        /// <summary>
+        /// Writes a SUB instruction.
+        /// </summary>
+        /// <param name="dest">The operand to subtract from.</param>
+        /// <param name="src">The operand to subtract.</param>
+        /// <param name="comment">The optional instruction comment.</param>
+        /// <returns>This instance to chain calls.</returns>
         public AssemblyBuilder Sub(IOperand dest, IOperand src, string? comment = null) =>
             this.Write(new Instructions.Sub(dest, src, comment));
 
+        /// <summary>
+        /// Writes a MOV instruction.
+        /// </summary>
+        /// <param name="dest">The operand to move to.</param>
+        /// <param name="src">The operand to move.</param>
+        /// <param name="comment">The optional instruction comment.</param>
+        /// <returns>This instance to chain calls.</returns>
         public AssemblyBuilder Mov(IOperand dest, IOperand src, string? comment = null) =>
             this.Write(new Instructions.Mov(dest, src, comment));
 
+        /// <summary>
+        /// Writes an unconditional JMP instruction.
+        /// </summary>
+        /// <param name="target">The target operant to jump to.</param>
+        /// <param name="comment">The optional instruction comment.</param>
+        /// <returns>This instance to chain calls.</returns>
         public AssemblyBuilder Jmp(IOperand target, string? comment = null) =>
             this.Write(new Instructions.Jmp(target, comment));
     }

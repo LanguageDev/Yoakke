@@ -64,6 +64,12 @@ namespace Yoakke.Reporting.Present
         /// </summary>
         public bool TrimEmptySourceLinesAtEdges { get; set; } = true;
 
+        /// <summary>
+        /// Retrieves the appropriate color for the given <see cref="Severity"/>.
+        /// </summary>
+        /// <param name="severity">The <see cref="Severity"/> to get the color for.</param>
+        /// <returns>The <see cref="ConsoleColor"/> associated with <paramref name="severity"/>, or
+        /// <see cref="DefaultColor"/>, if none is associated with it.</returns>
         public ConsoleColor GetSeverityColor(Severity severity) =>
             this.SeverityColors.TryGetValue(severity, out var col) ? col : this.DefaultColor;
     }

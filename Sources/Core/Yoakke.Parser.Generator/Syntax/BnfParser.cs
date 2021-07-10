@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -14,9 +14,23 @@ namespace Yoakke.Parser.Generator.Syntax
     /// </summary>
     internal class BnfParser
     {
+        /// <summary>
+        /// Parses a BNF grammar text into a <see cref="BnfAst"/>.
+        /// </summary>
+        /// <param name="source">The source text to parse.</param>
+        /// <param name="tokenKinds">The <see cref="TokenKindSet"/> to use when determining what certain identifiers
+        /// should mean (is it a token-type match, or a rule invocation).</param>
+        /// <returns>The pair of the rule name and its <see cref="BnfAst"/>.</returns>
         public static (string Name, BnfAst? Ast) Parse(string source, TokenKindSet tokenKinds) =>
             Parse(BnfLexer.Lex(source), tokenKinds);
 
+        /// <summary>
+        /// Parses <see cref="BnfToken"/>s into a <see cref="BnfAst"/>.
+        /// </summary>
+        /// <param name="tokens">The <see cref="BnfToken"/>s to parse.</param>
+        /// <param name="tokenKinds">The <see cref="TokenKindSet"/> to use when determining what certain identifiers
+        /// should mean (is it a token-type match, or a rule invocation).</param>
+        /// <returns>The pair of the rule name and its <see cref="BnfAst"/>.</returns>
         public static (string Name, BnfAst? Ast) Parse(IList<BnfToken> tokens, TokenKindSet tokenKinds) =>
             new BnfParser(tokens, tokenKinds).ParseRule();
 
@@ -24,12 +38,22 @@ namespace Yoakke.Parser.Generator.Syntax
         private readonly TokenKindSet tokenKinds;
         private int index;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BnfParser"/> class.
+        /// </summary>
+        /// <param name="tokens">The list of <see cref="BnfToken"/>s to parse.</param>
+        /// <param name="tokenKinds">The <see cref="TokenKindSet"/> to use when determining what certain identifiers
+        /// should mean (is it a token-type match, or a rule invocation).</param>
         public BnfParser(IList<BnfToken> tokens, TokenKindSet tokenKinds)
         {
             this.tokens = tokens;
             this.tokenKinds = tokenKinds;
         }
 
+        /// <summary>
+        /// Parses a single rule into a <see cref="BnfAst"/>.
+        /// </summary>
+        /// <returns>The name of the parsed rule along with its <see cref="BnfAst"/>.</returns>
         public (string Name, BnfAst? Ast) ParseRule()
         {
             var name = this.Expect(BnfTokenType.Identifier);
