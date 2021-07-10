@@ -33,7 +33,7 @@ namespace Yoakke.C.Syntax
 
             IToken ILexer.Next() => this.Next();
 
-            public CToken Next() => new CToken(default, string.Empty, default, string.Empty, CTokenType.End);
+            public CToken Next() => new(default, string.Empty, default, string.Empty, CTokenType.End);
         }
 
         /// <inheritdoc/>

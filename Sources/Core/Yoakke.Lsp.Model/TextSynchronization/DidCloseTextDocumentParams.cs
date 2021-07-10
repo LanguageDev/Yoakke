@@ -16,6 +16,6 @@ namespace Yoakke.Lsp.Model.TextSynchronization
         /// The document that was closed.
         /// </summary>
         [JsonProperty("textDocument")]
-        public TextDocumentIdentifier TextDocument { get; set; }
+        public TextDocumentIdentifier TextDocument { get; set; } = new();
     }
 }
