@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -14,12 +14,12 @@ namespace Yoakke.Parser
         /// <summary>
         /// The expected possible inputs.
         /// </summary>
-        public readonly IReadOnlySet<object> Expected;
+        public IReadOnlySet<object> Expected { get; }
 
         /// <summary>
         /// The context in which the error occurred.
         /// </summary>
-        public readonly string Context;
+        public string Context { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ParseErrorElement"/> class.

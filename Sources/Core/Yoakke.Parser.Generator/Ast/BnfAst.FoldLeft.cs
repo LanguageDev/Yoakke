@@ -19,17 +19,17 @@ namespace Yoakke.Parser.Generator.Ast
             /// <summary>
             /// The sub-element to apply.
             /// </summary>
-            public readonly BnfAst First;
+            public BnfAst First { get; }
 
             /// <summary>
             /// The element to apply repeatedly after.
             /// </summary>
-            public readonly BnfAst Second;
+            public BnfAst Second { get; }
 
             /// <summary>
             /// The transformation method that does the folding.
             /// </summary>
-            public readonly IMethodSymbol Method;
+            public IMethodSymbol Method { get; }
 
             /// <summary>
             /// Initializes a new instance of the <see cref="FoldLeft"/> class.

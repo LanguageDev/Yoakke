@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
+using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Yoakke.Lsp.Model.LanguageFeatures;
@@ -73,25 +74,25 @@ namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
         /// even decide to not show any semantic tokens at all.
         /// </summary>
         [JsonProperty("requests")]
-        public RequestsCapabilities Requests { get; set; }
+        public RequestsCapabilities Requests { get; set; } = new();
 
         /// <summary>
         /// The token types that the client supports.
         /// </summary>
         [JsonProperty("tokenTypes")]
-        public IReadOnlyList<string> TokenTypes { get; set; }
+        public IReadOnlyList<string> TokenTypes { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// The token modifiers that the client supports.
         /// </summary>
         [JsonProperty("tokenModifiers")]
-        public IReadOnlyList<string> TokenModifiers { get; set; }
+        public IReadOnlyList<string> TokenModifiers { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// The formats the clients supports.
         /// </summary>
         [JsonProperty("formats")]
-        public IReadOnlyList<TokenFormat> Formats { get; set; }
+        public IReadOnlyList<TokenFormat> Formats { get; set; } = Array.Empty<TokenFormat>();
 
         /// <summary>
         /// Whether the client supports tokens that can overlap each other.

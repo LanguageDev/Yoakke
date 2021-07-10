@@ -16,13 +16,13 @@ namespace Yoakke.Lsp.Model.Client
         /// the request again.
         /// </summary>
         [JsonProperty("id")]
-        public string Id { get; set; }
+        public string Id { get; set; } = string.Empty;
 
         /// <summary>
         /// The method / capability to register for.
         /// </summary>
         [JsonProperty("method")]
-        public string Method { get; set; }
+        public string Method { get; set; } = string.Empty;
 
         /// <summary>
         /// Options necessary for the registration.

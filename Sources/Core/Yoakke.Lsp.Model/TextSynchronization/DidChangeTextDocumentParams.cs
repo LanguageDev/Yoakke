@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
+using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Yoakke.Lsp.Model.Basic;
@@ -19,7 +20,7 @@ namespace Yoakke.Lsp.Model.TextSynchronization
         /// been applied.
         /// </summary>
         [JsonProperty("textDocument")]
-        public VersionedTextDocumentIdentifier TextDocument { get; set; }
+        public VersionedTextDocumentIdentifier TextDocument { get; set; } = new();
 
         /// <summary>
         /// The actual content changes. The content changes describe single state
@@ -37,6 +38,6 @@ namespace Yoakke.Lsp.Model.TextSynchronization
         /// in the order you receive them.
         /// </summary>
         [JsonProperty("contentChanges")]
-        public IReadOnlyList<TextDocumentContentChangeEvent> ContentChanges { get; set; }
+        public IReadOnlyList<TextDocumentContentChangeEvent> ContentChanges { get; set; } = Array.Empty<TextDocumentContentChangeEvent>();
     }
 }

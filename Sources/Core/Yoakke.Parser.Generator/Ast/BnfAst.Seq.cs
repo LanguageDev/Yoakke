@@ -19,7 +19,7 @@ namespace Yoakke.Parser.Generator.Ast
             /// <summary>
             /// The sequence of rules.
             /// </summary>
-            public readonly IReadOnlyList<BnfAst> Elements;
+            public IReadOnlyList<BnfAst> Elements { get; }
 
             /// <summary>
             /// Initializes a new instance of the <see cref="Seq"/> class.

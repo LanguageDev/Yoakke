@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -15,7 +15,7 @@ namespace Yoakke.Parser.Attributes
         /// <summary>
         /// The token kind type to use as a parser element.
         /// </summary>
-        public readonly Type? TokenType;
+        public Type? TokenType { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ParserAttribute"/> class.

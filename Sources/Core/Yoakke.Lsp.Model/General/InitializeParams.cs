@@ -25,7 +25,7 @@ namespace Yoakke.Lsp.Model.General
             /// The name of the client as defined by the client.
             /// </summary>
             [JsonProperty("name")]
-            public string Name { get; set; }
+            public string Name { get; set; } = string.Empty;
 
             /// <summary>
             /// The client's version as defined by the client.
@@ -95,7 +95,7 @@ namespace Yoakke.Lsp.Model.General
         /// The capabilities provided by the client (editor or tool).
         /// </summary>
         [JsonProperty("capabilities")]
-        public ClientCapabilities Capabilities { get; set; }
+        public ClientCapabilities Capabilities { get; set; } = new();
 
         /// <summary>
         /// The initial trace setting. If omitted trace is disabled ('off').

@@ -80,6 +80,6 @@ namespace Yoakke.Parser.Generator
         /// <summary>
         /// Lexer interface type.
         /// </summary>
-        public static readonly string ILexer = $"{LexerNamespace}.ILexer";   
+        public static readonly string ILexer = $"{LexerNamespace}.ILexer";
     }
 }

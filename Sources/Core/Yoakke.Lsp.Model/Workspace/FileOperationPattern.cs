@@ -27,7 +27,7 @@ namespace Yoakke.Lsp.Model.Workspace
         /// not `example.0`).
         /// </summary>
         [JsonProperty("glob")]
-        public string Glob { get; set; }
+        public string Glob { get; set; } = string.Empty;
 
         /// <summary>
         /// Whether to match files or folders with this pattern.

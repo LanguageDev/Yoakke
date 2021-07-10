@@ -16,7 +16,7 @@ namespace Yoakke.Lsp.Model.TextSynchronization
         /// The document that was saved.
         /// </summary>
         [JsonProperty("textDocument")]
-        public TextDocumentIdentifier TextDocument { get; set; }
+        public TextDocumentIdentifier TextDocument { get; set; } = new();
 
         /// <summary>
         /// Optional the content when saved. Depends on the includeText value

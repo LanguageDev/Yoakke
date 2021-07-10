@@ -14,7 +14,7 @@ namespace Yoakke.Parser.Generator
         /// <summary>
         /// The name of the <see cref="Rule"/>. This is on the left-hand side of the rule-definition, before the colon.
         /// </summary>
-        public readonly string Name;
+        public string Name { get; }
 
         /// <summary>
         /// The AST of the grammar to match.
@@ -24,7 +24,7 @@ namespace Yoakke.Parser.Generator
         /// <summary>
         /// True, if this <see cref="Rule"/> should be part of the public API.
         /// </summary>
-        public readonly bool PublicApi;
+        public bool PublicApi { get; }
 
         /// <summary>
         /// The visual name of this <see cref="Rule"/>.

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -16,7 +16,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Client
         /// The name of the parser.
         /// </summary>
         [JsonProperty("parser")]
-        public string Parser { get; set; }
+        public string Parser { get; set; } = string.Empty;
 
         /// <summary>
         /// The version of the parser.

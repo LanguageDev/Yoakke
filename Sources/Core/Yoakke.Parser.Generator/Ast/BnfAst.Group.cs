@@ -14,7 +14,7 @@ namespace Yoakke.Parser.Generator.Ast
             /// <summary>
             /// The sub-rule that won't be unwrapped when transformed.
             /// </summary>
-            public readonly BnfAst Subexpr;
+            public BnfAst Subexpr { get; }
 
             /// <summary>
             /// Initializes a new instance of the <see cref="Group"/> class.

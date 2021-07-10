@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -18,7 +18,7 @@ namespace Yoakke.Symbols
         /// <summary>
         /// The tag associated with the scope.
         /// </summary>
-        public readonly TTag Tag;
+        public TTag Tag { get; }
 
         /// <inheritdoc/>
         public IReadOnlyScope? ContainingScope { get; }

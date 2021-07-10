@@ -14,7 +14,7 @@ namespace Yoakke.Parser.Generator.Ast
             /// <summary>
             /// The value to match.
             /// </summary>
-            public readonly object Value;
+            public object Value { get; }
 
             /// <summary>
             /// Initializes a new instance of the <see cref="Literal"/> class.

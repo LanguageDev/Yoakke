@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
+using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Yoakke.Lsp.Model.LanguageFeatures;
@@ -30,7 +31,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
                 /// to a default value when unknown.
                 /// </summary>
                 [JsonProperty("valueSet")]
-                public IReadOnlyList<CodeActionKind> ValueSet { get; set; }
+                public IReadOnlyList<CodeActionKind> ValueSet { get; set; } = Array.Empty<CodeActionKind>();
             }
 
             /// <summary>
@@ -38,7 +39,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
             /// set.
             /// </summary>
             [JsonProperty("codeActionKind")]
-            public CodeActionKindCapabilities CodeActionKind { get; set; }
+            public CodeActionKindCapabilities CodeActionKind { get; set; } = new();
         }
 
         /// <summary>
@@ -50,7 +51,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
             /// The properties that a client can resolve lazily.
             /// </summary>
             [JsonProperty("properties")]
-            public IReadOnlyList<string> Properties { get; set; }
+            public IReadOnlyList<string> Properties { get; set; } = Array.Empty<string>();
         }
 
         /// <summary>

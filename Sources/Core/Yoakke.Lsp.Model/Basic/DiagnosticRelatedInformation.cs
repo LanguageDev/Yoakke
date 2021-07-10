@@ -23,6 +23,6 @@ namespace Yoakke.Lsp.Model.Basic
         /// The message of this related diagnostic information.
         /// </summary>
         [JsonProperty("message")]
-        public string Message { get; set; }
+        public string Message { get; set; } = string.Empty;
     }
 }

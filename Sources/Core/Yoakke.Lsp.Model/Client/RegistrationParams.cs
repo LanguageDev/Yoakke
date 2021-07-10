@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
+using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
@@ -16,6 +17,6 @@ namespace Yoakke.Lsp.Model.Client
         /// The list of <see cref="Registration"/>s.
         /// </summary>
         [JsonProperty("registrations")]
-        public IReadOnlyList<Registration> Registrations { get; set; }
+        public IReadOnlyList<Registration> Registrations { get; set; } = Array.Empty<Registration>();
     }
 }

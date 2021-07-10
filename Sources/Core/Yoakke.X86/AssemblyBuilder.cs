@@ -16,14 +16,13 @@ namespace Yoakke.X86
     public class AssemblyBuilder
     {
         // TODO: Sections?
-
         private readonly List<ICodeElement> elements = new();
         private int position;
 
         /// <summary>
         /// Returns a new <see cref="X86.Assembly"/> constructed from the contents of this <see cref="AssemblyBuilder"/>.
         /// </summary>
-        public Assembly Assembly => new Assembly
+        public Assembly Assembly => new()
         {
             Elements = this.elements.ToList(),
         };

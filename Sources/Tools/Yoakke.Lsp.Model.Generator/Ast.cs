@@ -13,7 +13,9 @@ namespace Yoakke.LSP.Generator
     internal class InterfaceDef : DefBase
     {
         public string Name { get; }
+
         public IReadOnlyList<string> Bases { get; }
+
         public IReadOnlyList<InterfaceField> Fields { get; }
 
         public string? Docs { get; set; }
@@ -29,6 +31,7 @@ namespace Yoakke.LSP.Generator
     internal class NamespaceDef : DefBase
     {
         public string Name { get; }
+
         public IReadOnlyList<NamespaceField> Fields { get; }
 
         public string? Docs { get; set; }
@@ -43,7 +46,9 @@ namespace Yoakke.LSP.Generator
     internal class InterfaceField
     {
         public string Name { get; }
+
         public bool Optional { get; }
+
         public TypeNode Type { get; }
 
         public string? Docs { get; set; }
@@ -59,6 +64,7 @@ namespace Yoakke.LSP.Generator
     internal class NamespaceField
     {
         public string Name { get; }
+
         public object Value { get; }
 
         public string? Docs { get; set; }

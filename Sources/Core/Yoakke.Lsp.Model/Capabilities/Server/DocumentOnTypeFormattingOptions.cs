@@ -16,7 +16,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Server
         /// A character on which formatting should be triggered, like `}`.
         /// </summary>
         [JsonProperty("firstTriggerCharacter")]
-        public string FirstTriggerCharacter { get; set; }
+        public string FirstTriggerCharacter { get; set; } = string.Empty;
 
         /// <summary>
         /// More trigger characters.

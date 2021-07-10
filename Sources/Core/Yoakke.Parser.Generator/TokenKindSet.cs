@@ -16,12 +16,12 @@ namespace Yoakke.Parser.Generator
         /// <summary>
         /// The enum that defines the token-kinds.
         /// </summary>
-        public readonly INamedTypeSymbol? EnumType;
+        public INamedTypeSymbol? EnumType { get; }
 
         /// <summary>
         /// The fields (token-kinds) defined in the kind-enum <see cref="EnumType"/>.
         /// </summary>
-        public readonly IReadOnlyDictionary<string, IFieldSymbol> Fields;
+        public IReadOnlyDictionary<string, IFieldSymbol> Fields { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TokenKindSet"/> class.
@@ -38,7 +38,10 @@ namespace Yoakke.Parser.Generator
         public TokenKindSet(INamedTypeSymbol enumType)
         {
             this.EnumType = enumType;
+            // NOTE: False-positive, symbol is not a key-type
+#pragma warning disable RS1024 // Compare symbols correctly
             this.Fields = enumType.GetMembers().OfType<IFieldSymbol>().ToDictionary(s => s.Name);
+#pragma warning restore RS1024 // Compare symbols correctly
         }
 
         /// <summary>

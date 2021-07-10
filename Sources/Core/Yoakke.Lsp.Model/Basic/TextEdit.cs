@@ -23,6 +23,6 @@ namespace Yoakke.Lsp.Model.Basic
         /// empty string.
         /// </summary>
         [JsonProperty("newText")]
-        public string NewText { get; set; }
+        public string NewText { get; set; } = string.Empty;
     }
 }

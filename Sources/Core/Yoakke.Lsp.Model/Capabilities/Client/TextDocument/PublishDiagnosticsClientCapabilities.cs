@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
+using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Yoakke.Lsp.Model.Basic;
@@ -22,7 +23,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
             /// The tags supported by the client.
             /// </summary>
             [JsonProperty("valueSet")]
-            public IReadOnlyList<DiagnosticTag> ValueSet { get; set; }
+            public IReadOnlyList<DiagnosticTag> ValueSet { get; set; } = Array.Empty<DiagnosticTag>();
         }
 
         /// <summary>

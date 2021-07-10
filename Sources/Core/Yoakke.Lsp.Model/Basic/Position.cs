@@ -9,13 +9,13 @@ namespace Yoakke.Lsp.Model.Basic
     /// <summary>
     /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#position.
     /// </summary>
-    public class Position
+    public readonly struct Position
     {
         /// <summary>
         /// Line position in a document (zero-based).
         /// </summary>
         [JsonProperty("line")]
-        public uint Line { get; set; }
+        public readonly uint Line;
 
         /// <summary>
         /// Character offset on a line in a document (zero-based). Assuming that
@@ -26,6 +26,17 @@ namespace Yoakke.Lsp.Model.Basic
         /// to the line length.
         /// </summary>
         [JsonProperty("character")]
-        public uint Character { get; set; }
+        public readonly uint Character;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Position"/> struct.
+        /// </summary>
+        /// <param name="line">The line index.</param>
+        /// <param name="character">The column index.</param>
+        public Position(uint line, uint character)
+        {
+            this.Line = line;
+            this.Character = character;
+        }
     }
 }

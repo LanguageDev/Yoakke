@@ -18,12 +18,12 @@ namespace Yoakke.Parser.Generator.Ast
             /// <summary>
             /// The rule that needs its results transformed.
             /// </summary>
-            public readonly BnfAst Subexpr;
+            public BnfAst Subexpr { get; }
 
             /// <summary>
             /// The transformation method.
             /// </summary>
-            public readonly IMethodSymbol Method;
+            public IMethodSymbol Method { get; }
 
             /// <summary>
             /// Initializes a new instance of the <see cref="Transform"/> class.

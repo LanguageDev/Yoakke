@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
+using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Yoakke.Lsp.Model.General;
@@ -28,7 +29,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
                 /// The tags supported by the client.
                 /// </summary>
                 [JsonProperty("valueSet")]
-                public IReadOnlyList<CompletionItemTag> ValueSet { get; set; }
+                public IReadOnlyList<CompletionItemTag> ValueSet { get; set; } = Array.Empty<CompletionItemTag>();
             }
 
             /// <summary>
@@ -40,7 +41,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
                 /// The properties that a client can resolve lazily.
                 /// </summary>
                 [JsonProperty("properties")]
-                public IReadOnlyList<string> Properties { get; set; }
+                public IReadOnlyList<string> Properties { get; set; } = Array.Empty<string>();
             }
 
             /// <summary>
@@ -52,7 +53,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
                 /// The supported <see cref="InsertTextMode"/>s.
                 /// </summary>
                 [JsonProperty("valueSet")]
-                public IReadOnlyList<InsertTextMode> ValueSet { get; set; }
+                public IReadOnlyList<InsertTextMode> ValueSet { get; set; } = Array.Empty<InsertTextMode>();
             }
 
             /// <summary>

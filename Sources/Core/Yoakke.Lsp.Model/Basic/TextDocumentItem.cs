@@ -21,7 +21,7 @@ namespace Yoakke.Lsp.Model.Basic
         /// The text document's language identifier.
         /// </summary>
         [JsonProperty("languageId")]
-        public string LanguageId { get; set; }
+        public string LanguageId { get; set; } = string.Empty;
 
         /// <summary>
         /// The version number of this document (it will increase after each
@@ -34,6 +34,6 @@ namespace Yoakke.Lsp.Model.Basic
         /// The content of the opened text document.
         /// </summary>
         [JsonProperty("text")]
-        public string Text { get; set; }
+        public string Text { get; set; } = string.Empty;
     }
 }

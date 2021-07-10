@@ -14,7 +14,7 @@ namespace Yoakke.Parser.Generator.Ast
             /// <summary>
             /// The name of the sub-rule.
             /// </summary>
-            public readonly string Name;
+            public string Name { get; }
 
             /// <summary>
             /// Initializes a new instance of the <see cref="Call"/> class.

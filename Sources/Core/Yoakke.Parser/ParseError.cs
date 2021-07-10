@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -16,12 +16,12 @@ namespace Yoakke.Parser
         /// <summary>
         /// The error cases in different parse contexts.
         /// </summary>
-        public readonly IReadOnlyDictionary<string, ParseErrorElement> Elements;
+        public IReadOnlyDictionary<string, ParseErrorElement> Elements { get; }
 
         /// <summary>
         /// The input that was found, if any.
         /// </summary>
-        public readonly IToken? Got;
+        public IToken? Got { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ParseError"/> class.

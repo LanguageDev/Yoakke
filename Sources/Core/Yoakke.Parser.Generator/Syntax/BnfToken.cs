@@ -12,17 +12,17 @@ namespace Yoakke.Parser.Generator.Syntax
         /// <summary>
         /// 0-based index in the BNF source.
         /// </summary>
-        public readonly int Index;
+        public int Index { get; }
 
         /// <summary>
         /// The textual value of this <see cref="BnfToken"/>.
         /// </summary>
-        public readonly string Value;
+        public string Value { get; }
 
         /// <summary>
         /// The kind of this <see cref="BnfToken"/>.
         /// </summary>
-        public readonly BnfTokenType Type;
+        public BnfTokenType Type { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BnfToken"/> class.

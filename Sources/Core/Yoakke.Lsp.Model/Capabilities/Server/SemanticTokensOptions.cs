@@ -39,7 +39,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Server
         /// The legend used by the server.
         /// </summary>
         [JsonProperty("legend")]
-        public SemanticTokensLegend Legend { get; set; }
+        public SemanticTokensLegend Legend { get; set; } = new();
 
         /// <summary>
         /// Server supports providing semantic tokens for a specific range

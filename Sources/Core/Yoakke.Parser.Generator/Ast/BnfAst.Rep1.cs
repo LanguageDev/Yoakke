@@ -14,7 +14,7 @@ namespace Yoakke.Parser.Generator.Ast
             /// <summary>
             /// The sub-rule to repeat.
             /// </summary>
-            public readonly BnfAst Subexpr;
+            public BnfAst Subexpr { get; }
 
             /// <summary>
             /// Initializes a new instance of the <see cref="Rep1"/> class.

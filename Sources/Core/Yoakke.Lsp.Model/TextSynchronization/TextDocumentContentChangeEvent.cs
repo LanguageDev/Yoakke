@@ -39,7 +39,7 @@ namespace Yoakke.Lsp.Model.TextSynchronization
             /// The new text for the provided range.
             /// </summary>
             [JsonProperty("text")]
-            public string Text { get; set; }
+            public string Text { get; set; } = string.Empty;
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace Yoakke.Lsp.Model.TextSynchronization
             /// The new text of the whole document.
             /// </summary>
             [JsonProperty("text")]
-            public string Text { get; set; }
+            public string Text { get; set; } = string.Empty;
         }
     }
 }

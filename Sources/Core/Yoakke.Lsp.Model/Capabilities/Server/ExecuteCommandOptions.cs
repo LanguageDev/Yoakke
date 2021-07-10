@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
+using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Yoakke.Lsp.Model.Basic;
@@ -21,6 +22,6 @@ namespace Yoakke.Lsp.Model.Capabilities.Server
         /// The commands to be executed on the server.
         /// </summary>
         [JsonProperty("commands")]
-        public IReadOnlyList<string> Commands { get; set; }
+        public IReadOnlyList<string> Commands { get; set; } = Array.Empty<string>();
     }
 }

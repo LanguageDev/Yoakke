@@ -23,6 +23,6 @@ namespace Yoakke.Lsp.Model.Workspace
         /// workspace folder in the user interface.
         /// </summary>
         [JsonProperty("name")]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
     }
 }

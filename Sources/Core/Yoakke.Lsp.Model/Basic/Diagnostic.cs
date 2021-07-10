@@ -49,7 +49,7 @@ namespace Yoakke.Lsp.Model.Basic
         /// The diagnostic's message.
         /// </summary>
         [JsonProperty("message")]
-        public string Message { get; set; }
+        public string Message { get; set; } = string.Empty;
 
         /// <summary>
         /// Additional metadata about the diagnostic.

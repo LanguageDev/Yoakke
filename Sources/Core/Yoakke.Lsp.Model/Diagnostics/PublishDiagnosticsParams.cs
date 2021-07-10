@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
+using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Yoakke.Lsp.Model.Basic;
@@ -31,6 +32,6 @@ namespace Yoakke.Lsp.Model.Diagnostics
         /// An array of diagnostic information items.
         /// </summary>
         [JsonProperty("diagnostics")]
-        public IReadOnlyList<Diagnostic> Diagnostics { get; set; }
+        public IReadOnlyList<Diagnostic> Diagnostics { get; set; } = Array.Empty<Diagnostic>();
     }
 }

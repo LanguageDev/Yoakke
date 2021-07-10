@@ -59,16 +59,8 @@ namespace Yoakke.Lsp.Sample
                         Message = "Hello diagnosics",
                         Range = new Model.Basic.Range
                         {
-                            Start = new Position
-                            {
-                                Line = 0,
-                                Character = 0,
-                            },
-                            End = new Position
-                            {
-                                Line = 0,
-                                Character = 1,
-                            },
+                            Start = new Position(0, 0),
+                            End = new Position(0, 1),
                         },
                         Severity = DiagnosticSeverity.Error,
                     },
