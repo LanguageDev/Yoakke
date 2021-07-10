@@ -11,6 +11,9 @@ using Nerdbank.Streams;
 
 namespace Yoakke.Lsp.Server.Hosting.Internal
 {
+    /// <summary>
+    /// A simple <see cref="ILanguageServerBuilder"/> implementation.
+    /// </summary>
     internal class LanguageServerBuilder : ILanguageServerBuilder
     {
         private readonly IHostBuilder hostBuilder;
@@ -20,6 +23,10 @@ namespace Yoakke.Lsp.Server.Hosting.Internal
         private Stream? inputStream;
         private Stream? outputStream;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LanguageServerBuilder"/> class.
+        /// </summary>
+        /// <param name="hostBuilder">The <see cref="IHostBuilder"/> to wrap.</param>
         public LanguageServerBuilder(IHostBuilder hostBuilder)
         {
             this.hostBuilder = hostBuilder;
@@ -40,6 +47,7 @@ namespace Yoakke.Lsp.Server.Hosting.Internal
         /// <inheritdoc/>
         public ILanguageServerBuilder UseInputStream(Stream stream)
         {
+            if (!stream.CanRead) throw new ArgumentException("the stream does not support reading", nameof(stream));
             this.inputStream = stream;
             this.duplexStream = null;
             return this;
@@ -48,6 +56,7 @@ namespace Yoakke.Lsp.Server.Hosting.Internal
         /// <inheritdoc/>
         public ILanguageServerBuilder UseOutputStream(Stream stream)
         {
+            if (!stream.CanWrite) throw new ArgumentException("the stream does not support writing", nameof(stream));
             this.outputStream = stream;
             this.duplexStream = null;
             return this;
@@ -56,6 +65,7 @@ namespace Yoakke.Lsp.Server.Hosting.Internal
         /// <inheritdoc/>
         public ILanguageServerBuilder UseDuplexStream(Stream stream)
         {
+            if (!stream.CanRead || !stream.CanWrite) throw new ArgumentException("the stream does not support both reading and writing", nameof(stream));
             this.duplexStream = stream;
             this.inputStream = null;
             this.outputStream = null;
@@ -74,6 +84,10 @@ namespace Yoakke.Lsp.Server.Hosting.Internal
             ? value
             : null;
 
+        /// <summary>
+        /// Constructs a duplex communication <see cref="Stream"/> from the current configuration.
+        /// </summary>
+        /// <returns>The constructed duplex <see cref="Stream"/>.</returns>
         internal Stream GetCommunicationStream()
         {
             if (this.duplexStream is not null) return this.duplexStream;

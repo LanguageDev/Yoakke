@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -31,6 +31,12 @@ namespace Yoakke.Parser.Generator.Ast
             /// </summary>
             public readonly IMethodSymbol Method;
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="FoldLeft"/> class.
+            /// </summary>
+            /// <param name="first">The first element of the fold.</param>
+            /// <param name="second">The second element of the fold, that will be repeated.</param>
+            /// <param name="method">The folding transformation.</param>
             public FoldLeft(BnfAst first, BnfAst second, IMethodSymbol method)
             {
                 this.First = first;

@@ -36,7 +36,7 @@ namespace Yoakke.Lsp.Model.Basic
         /// (e.g., `example.[0-9]` to match on `example.0`, `example.1`, .)
         /// - `[!...]` to negate a range of characters to match in a path segment
         /// (e.g., `example.[!0-9]` to match on `example.a`, `example.b`, but
-        /// not `example.0`)
+        /// not `example.0`).
         /// </summary>
         [JsonProperty("pattern", NullValueHandling = NullValueHandling.Ignore)]
         public string? Pattern { get; set; }

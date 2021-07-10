@@ -12,7 +12,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Server
     public class WorkspaceFoldersServerCapabilities
     {
         /// <summary>
-        /// The server has support for workspace folders
+        /// The server has support for workspace folders.
         /// </summary>
         [JsonProperty("supported", NullValueHandling = NullValueHandling.Ignore)]
         public bool? Supported { get; set; }

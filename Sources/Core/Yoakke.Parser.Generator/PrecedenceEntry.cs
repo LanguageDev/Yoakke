@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -28,6 +28,12 @@ namespace Yoakke.Parser.Generator
         /// </summary>
         public readonly IMethodSymbol Method;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PrecedenceEntry"/> class.
+        /// </summary>
+        /// <param name="left">True, if the level is left-associative.</param>
+        /// <param name="operators">The operators on the level.</param>
+        /// <param name="method">The method that transforms the parsed elements of the precedence level.</param>
         public PrecedenceEntry(bool left, ISet<object> operators, IMethodSymbol method)
         {
             this.Left = left;

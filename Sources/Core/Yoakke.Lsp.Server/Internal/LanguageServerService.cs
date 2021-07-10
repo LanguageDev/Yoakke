@@ -21,6 +21,9 @@ using Yoakke.Lsp.Server.Hosting;
 
 namespace Yoakke.Lsp.Server.Internal
 {
+    /// <summary>
+    /// The background service that dispatches messages from the language client to the language server.
+    /// </summary>
     internal class LanguageServerService : IHostedService, IDisposable
     {
         private static readonly JsonRpcTargetOptions JsonRpcTargetOptions = new()
@@ -42,18 +45,32 @@ namespace Yoakke.Lsp.Server.Internal
 
         // TODO: Interlocked anywhere? This is not thread-safe
 
+        /// <summary>
+        /// The name of the language server.
+        /// </summary>
         public string? Name { get; set; }
 
+        /// <summary>
+        /// The version of the language server.
+        /// </summary>
         public string? Version { get; set; }
 
+        /// <summary>
+        /// The exit code of the language server.
+        /// </summary>
         public int ExitCode { get; private set; }
 
         private readonly JsonRpc jsonRpc;
-        private ServerState state;
         private readonly ILanguageClient languageClient;
         private readonly ITextDocumentSyncHandler textDocumentSyncHandler;
+        private ServerState state;
         private ClientCapabilities clientCapabilities;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LanguageServerService"/> class.
+        /// </summary>
+        /// <param name="serviceProvider">The service provider containing the services and handles for the server.</param>
+        /// <param name="builder">The builder that built the language server.</param>
         public LanguageServerService(IServiceProvider serviceProvider, ILanguageServerBuilder builder)
         {
             this.jsonRpc = serviceProvider.GetRequiredService<JsonRpc>();
@@ -84,12 +101,13 @@ namespace Yoakke.Lsp.Server.Internal
         }
 
         // TODO: Cancellation?
+
         /// <inheritdoc/>
         public Task StopAsync(CancellationToken cancellationToken) => this.jsonRpc.Completion;
 
         // Messages ////////////////////////////////////////////////////////////
 
-        // General /////////////////////
+        /* General */
 
         [JsonRpcMethod("initialize", UseSingleObjectParameterDeserialization = true)]
         private InitializeResult Initialize(InitializeParams initializeParams)
@@ -198,7 +216,7 @@ namespace Yoakke.Lsp.Server.Internal
             this.textDocumentSyncHandler.DidClose(didCloseParams);
         }
 
-        // State modification //////////////////////////////////////////////////
+        /* State modification */
 
         private void SetServerState(ServerState toState)
         {
@@ -226,7 +244,7 @@ namespace Yoakke.Lsp.Server.Internal
             }
         }
 
-        // Capability construction
+        /* Capability construction */
 
         private Either<TextDocumentSyncOptions, TextDocumentSyncKind>? GetStaticTextDocumentSyncCapability() =>
             this.RegisterTextDocumentSyncDynamically()

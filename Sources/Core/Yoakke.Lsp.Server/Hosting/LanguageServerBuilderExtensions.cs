@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -19,7 +19,7 @@ namespace Yoakke.Lsp.Server.Hosting
         /// </summary>
         /// <param name="builder">The language server builder.</param>
         /// <param name="name">The new name to assign to the language server.</param>
-        /// <returns>>The language server builder to chain method calls.</returns>
+        /// <returns>The <see cref="ILanguageServerBuilder"/> to chain method calls.</returns>
         public static ILanguageServerBuilder UseName(this ILanguageServerBuilder builder, string name) =>
             builder.UseSetting("name", name);
 
@@ -28,7 +28,7 @@ namespace Yoakke.Lsp.Server.Hosting
         /// </summary>
         /// <param name="builder">The language server builder.</param>
         /// <param name="version">The new version to assign to the language server.</param>
-        /// <returns>>The language server builder to chain method calls.</returns>
+        /// <returns>>The <see cref="ILanguageServerBuilder"/> to chain method calls.</returns>
         public static ILanguageServerBuilder UseVersion(this ILanguageServerBuilder builder, string version) =>
             builder.UseSetting("version", version);
 
@@ -38,7 +38,7 @@ namespace Yoakke.Lsp.Server.Hosting
         /// <param name="builder">The language server builder.</param>
         /// <param name="name">The new name to assign to the language server.</param>
         /// <param name="version">The new version to assign to the language server.</param>
-        /// <returns>>The language server builder to chain method calls.</returns>
+        /// <returns>>The <see cref="ILanguageServerBuilder"/> to chain method calls.</returns>
         public static ILanguageServerBuilder UseNameAndVersion(this ILanguageServerBuilder builder, string name, string version) =>
             builder.UseName(name).UseVersion(version);
 
@@ -48,7 +48,7 @@ namespace Yoakke.Lsp.Server.Hosting
         /// <param name="builder">The language server builder.</param>
         /// <param name="inputStream">The input stream to set.</param>
         /// <param name="outputStream">The output stream to set.</param>
-        /// <returns>The language server builder to chain method calls.</returns>
+        /// <returns>The <see cref="ILanguageServerBuilder"/> to chain method calls.</returns>
         public static ILanguageServerBuilder UseInputAndOutputStream(
             this ILanguageServerBuilder builder,
             Stream inputStream,
@@ -60,7 +60,7 @@ namespace Yoakke.Lsp.Server.Hosting
         /// </summary>
         /// <param name="builder">The language server builder.</param>
         /// <param name="configureServices">The delegate to configure with.</param>
-        /// <returns>The language server builder to chain method calls.</returns>
+        /// <returns>The <see cref="ILanguageServerBuilder"/> to chain method calls.</returns>
         public static ILanguageServerBuilder ConfigureServices(
             this ILanguageServerBuilder builder,
             Action<IServiceCollection> configureServices) =>
@@ -68,8 +68,13 @@ namespace Yoakke.Lsp.Server.Hosting
 
         // Handler registration ////////////////////////////////////////////////
 
-        // TODO: Doc
-
+        /// <summary>
+        /// Registers a request handler for the language server.
+        /// </summary>
+        /// <typeparam name="THandler">The type of the request handler interface.</typeparam>
+        /// <typeparam name="TImplementation">The implementation type of the request handler.</typeparam>
+        /// <param name="builder">The <see cref="ILanguageServerBuilder"/> to register the handler into.</param>
+        /// <returns>The <see cref="ILanguageServerBuilder"/> to chain method calls.</returns>
         public static ILanguageServerBuilder UseHandler<THandler, TImplementation>(this ILanguageServerBuilder builder)
             where THandler : class, IHandler
             where TImplementation : class, THandler =>

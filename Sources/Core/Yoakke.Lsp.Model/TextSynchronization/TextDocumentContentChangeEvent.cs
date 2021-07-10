@@ -16,6 +16,9 @@ namespace Yoakke.Lsp.Model.TextSynchronization
     [JsonConverter(typeof(TextDocumentContentChangeEventConverter))]
     public abstract class TextDocumentContentChangeEvent
     {
+        /// <summary>
+        /// Incremental content change event.
+        /// </summary>
         [JsonConverter(typeof(DisabledConverter))]
         public class Incremental : TextDocumentContentChangeEvent
         {
@@ -39,6 +42,9 @@ namespace Yoakke.Lsp.Model.TextSynchronization
             public string Text { get; set; }
         }
 
+        /// <summary>
+        /// Full content change event.
+        /// </summary>
         [JsonConverter(typeof(DisabledConverter))]
         public class Full : TextDocumentContentChangeEvent
         {

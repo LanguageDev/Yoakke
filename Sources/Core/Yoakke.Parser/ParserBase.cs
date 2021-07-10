@@ -140,6 +140,7 @@ namespace Yoakke.Parser
         /// <typeparam name="T">The parsed value type.</typeparam>
         /// <param name="value">The parsed value.</param>
         /// <param name="offset">The offset in the number of tokens.</param>
+        /// <param name="furthestError">The furthest advanced <see cref="ParseError"/>, if any.</param>
         /// <returns>The created <see cref="ParseOk{T}"/>.</returns>
         protected static ParseOk<T> Ok<T>(T value, int offset, ParseError? furthestError = null) =>
             new(value, offset, furthestError);
@@ -154,7 +155,13 @@ namespace Yoakke.Parser
         protected static ParseError Error(object expected, IToken? got, string context) =>
             new(expected, got, context);
 
-        // TODO: Doc
+        /// <summary>
+        /// Merges alternative <see cref="ParseResult{T}"/>s that happened from the same starting position.
+        /// </summary>
+        /// <typeparam name="T">The element type of the parse.</typeparam>
+        /// <param name="first">The first alternative result.</param>
+        /// <param name="second">The second alternative result.</param>
+        /// <returns>The chosen/constructed <see cref="ParseResult{T}"/> constructed from the alternatives.</returns>
         protected static ParseResult<T> MergeAlternatives<T>(ParseResult<T> first, ParseResult<T> second)
         {
             if (first.IsOk && second.IsOk)
@@ -169,11 +176,24 @@ namespace Yoakke.Parser
             return new ParseResult<T>(ParseError.Unify(first.Error, second.Error)!);
         }
 
-        // TODO: Doc
+        /// <summary>
+        /// Merges a <see cref="ParseError"/> into a <see cref="ParseResult{T}"/>.
+        /// </summary>
+        /// <typeparam name="T">The element type of the parse.</typeparam>
+        /// <param name="result">The <see cref="ParseResult{T}"/> to merge into.</param>
+        /// <param name="error">The <see cref="ParseError"/> to merge.</param>
+        /// <returns>A new <see cref="ParseResult{T}"/> that has the <see cref="ParseError"/> merged in.</returns>
         protected static ParseResult<T> MergeError<T>(ParseResult<T> result, ParseError error) =>
             result.IsOk ? MergeError(result.Ok, error) : ParseError.Unify(result.Error, error)!;
 
-        // TODO: Doc
+        /// <summary>
+        /// Merges a <see cref="ParseError"/> with a <see cref="ParseOk{T}"/>.
+        /// </summary>
+        /// <typeparam name="T">The element type of the parse.</typeparam>
+        /// <param name="ok">The <see cref="ParseOk{T}"/> to merge.</param>
+        /// <param name="error">The <see cref="ParseError"/> to merge.</param>
+        /// <returns>A new <see cref="ParseResult{T}"/> that has the <see cref="ParseOk{T}"/>
+        /// and the <see cref="ParseError"/> merged.</returns>
         protected static ParseResult<T> MergeError<T>(ParseOk<T> ok, ParseError? error)
         {
             if (error is null) return ok;

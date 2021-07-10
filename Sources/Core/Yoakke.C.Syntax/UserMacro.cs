@@ -25,6 +25,13 @@ namespace Yoakke.C.Syntax
 
         private readonly IReadOnlyList<MacroElement> body;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserMacro"/> class.
+        /// </summary>
+        /// <param name="name">The name of the macro.</param>
+        /// <param name="parameters">The list of macro parameter names, or null, if this macro needs to be invoked
+        /// without parenthesis.</param>
+        /// <param name="body">The list of <see cref="MacroElement"/>s that describes the expansion.</param>
         public UserMacro(string name, IReadOnlyList<string>? parameters, IReadOnlyList<MacroElement> body)
         {
             this.Name = name;

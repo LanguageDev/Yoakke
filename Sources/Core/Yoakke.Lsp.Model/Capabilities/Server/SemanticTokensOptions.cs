@@ -36,7 +36,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Server
         public bool? WorkDoneProgress { get; set; }
 
         /// <summary>
-        /// The legend used by the server
+        /// The legend used by the server.
         /// </summary>
         [JsonProperty("legend")]
         public SemanticTokensLegend Legend { get; set; }

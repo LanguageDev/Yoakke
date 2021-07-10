@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -16,6 +16,10 @@ namespace Yoakke.Parser.Generator.Ast
             /// </summary>
             public readonly BnfAst Subexpr;
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Opt"/> class.
+            /// </summary>
+            /// <param name="subexpr">The optional subexpression.</param>
             public Opt(BnfAst subexpr)
             {
                 this.Subexpr = subexpr;

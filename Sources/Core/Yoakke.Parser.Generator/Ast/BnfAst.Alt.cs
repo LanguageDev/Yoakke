@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -21,11 +21,20 @@ namespace Yoakke.Parser.Generator.Ast
             /// </summary>
             public readonly IReadOnlyList<BnfAst> Elements;
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Alt"/> class.
+            /// </summary>
+            /// <param name="first">The first alternative.</param>
+            /// <param name="second">The second alternative.</param>
             public Alt(BnfAst first, BnfAst second)
             {
                 this.Elements = new BnfAst[] { first, second };
             }
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Alt"/> class.
+            /// </summary>
+            /// <param name="elements">The sequence of alternatives.</param>
             public Alt(IEnumerable<BnfAst> elements)
             {
                 this.Elements = elements.ToArray();

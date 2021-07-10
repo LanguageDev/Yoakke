@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -16,6 +16,10 @@ namespace Yoakke.Parser.Generator.Ast
             /// </summary>
             public readonly string Name;
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Call"/> class.
+            /// </summary>
+            /// <param name="name">The name of the sub-rule to call.</param>
             public Call(string name)
             {
                 this.Name = name;

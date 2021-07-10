@@ -15,6 +15,10 @@ using Yoakke.Utilities.RegEx;
 
 namespace Yoakke.Lexer.Generator
 {
+    /// <summary>
+    /// Source generator for lexers.
+    /// Generates a DFA-driven lexer from annotated token types.
+    /// </summary>
     [Generator]
     public class LexerSourceGenerator : GeneratorBase
     {

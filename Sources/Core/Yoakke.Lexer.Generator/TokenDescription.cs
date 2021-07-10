@@ -26,6 +26,12 @@ namespace Yoakke.Lexer.Generator
         /// </summary>
         public bool Ignore { get; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TokenDescription"/> class.
+        /// </summary>
+        /// <param name="symbol">The corresponding token type symbol.</param>
+        /// <param name="regex">The regex that matches this token.</param>
+        /// <param name="ignore">True, if this token should be ignored, when matched.</param>
         public TokenDescription(IFieldSymbol symbol, string regex, bool ignore)
         {
             this.Symbol = symbol;

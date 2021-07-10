@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -55,8 +55,16 @@ namespace Yoakke.Parser
             this.value = error;
         }
 
+        /// <summary>
+        /// Implicitly converts a <see cref="ParseOk{T}"/> into a <see cref="ParseResult{T}"/>.
+        /// </summary>
+        /// <param name="ok">The <see cref="ParseOk{T}"/> to convert.</param>
         public static implicit operator ParseResult<T>(ParseOk<T> ok) => new(ok);
 
+        /// <summary>
+        /// Implicitly converts a <see cref="ParseError"/> into a <see cref="ParseResult{T}"/>.
+        /// </summary>
+        /// <param name="error">The <see cref="ParseError"/> to convert.</param>
         public static implicit operator ParseResult<T>(ParseError error) => new(error);
     }
 }

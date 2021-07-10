@@ -15,6 +15,9 @@ using Yoakke.Utilities.Compatibility;
 
 namespace Yoakke.Parser.Generator
 {
+    /// <summary>
+    /// A source generator that generates a parser from rule annotations over transformer functions.
+    /// </summary>
     [Generator]
     public class ParserSourceGenerator : GeneratorBase
     {
@@ -37,6 +40,9 @@ namespace Yoakke.Parser.Generator
         private TokenKindSet? tokenKinds;
         private INamedTypeSymbol? parserType;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ParserSourceGenerator"/> class.
+        /// </summary>
         public ParserSourceGenerator()
             : base("Yoakke.Parser.Generator")
         {
@@ -168,7 +174,7 @@ namespace {namespaceName}
 ";
         }
 
-        // Sanity-checks ///////////////////////////////////////////////////////
+        /* Sanity-checks */
 
         private bool CheckRuleSet() => this.ruleSet!.Rules.Values.All(this.CheckRule);
 
@@ -203,7 +209,7 @@ namespace {namespaceName}
             return false;
         }
 
-        // Code-generation /////////////////////////////////////////////////////
+        /* Code-generation */
 
         private string GenerateRuleParser(Rule rule)
         {

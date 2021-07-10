@@ -9,10 +9,17 @@ using Yoakke.Lsp.Server.Internal;
 
 namespace Yoakke.Lsp.Server.Hosting.Internal
 {
+    /// <summary>
+    /// A default <see cref="ILanguageServer"/> implementation.
+    /// </summary>
     internal class LanguageServer : ILanguageServer
     {
         private readonly IHost host;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LanguageServer"/> class.
+        /// </summary>
+        /// <param name="host">The <see cref="IHost"/> that hosts this server.</param>
         public LanguageServer(IHost host)
         {
             this.host = host;

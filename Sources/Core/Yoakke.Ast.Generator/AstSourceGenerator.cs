@@ -110,7 +110,7 @@ namespace Yoakke.Ast.Generator
                 foreach (var symbol in astNodeSymbols)
                 {
                     if (!this.allNodes.TryGetValue(symbol.BaseType!.Name, out var parentNode)) continue;
-                    // We found this node's parent in out existing nodes
+                    // We found this node's parent in our existing nodes
                     var node = this.MakeMetaNode(symbol, parentNode);
                     this.allNodes.Add(node.Name, node);
                     toRemove.Add(symbol);

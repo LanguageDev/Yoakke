@@ -36,6 +36,8 @@ namespace Yoakke.C.Syntax
         /// <summary>
         /// Defines the __COUNTER__ macro extension.
         /// </summary>
+        /// <param name="preProcessor">The <see cref="IPreProcessor"/> to define the macro in.</param>
+        /// <returns>The <see cref="IPreProcessor"/> to be able to chain calls.</returns>
         public static IPreProcessor DefineCounter(this IPreProcessor preProcessor) =>
             preProcessor.Define<CounterMacro>();
     }

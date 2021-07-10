@@ -36,11 +36,19 @@ namespace Yoakke.C.Syntax
         /// </summary>
         public bool AllowTrigraphs { get; set; } = true;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CLexer"/> class.
+        /// </summary>
+        /// <param name="reader">The <see cref="TextReader"/> to read the source from.</param>
         public CLexer(TextReader reader)
             : base(reader)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CLexer"/> class.
+        /// </summary>
+        /// <param name="source">The text to read.</param>
         public CLexer(string source)
             : base(source)
         {

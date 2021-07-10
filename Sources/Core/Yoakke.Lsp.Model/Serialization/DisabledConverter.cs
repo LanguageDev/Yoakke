@@ -7,21 +7,26 @@ using Newtonsoft.Json;
 
 namespace Yoakke.Lsp.Model.Serialization
 {
+    /// <summary>
+    /// A converter to disable custom converters. Useful for subclasses that inherit the parent converter,
+    /// but do not require it.
+    /// </summary>
     public class DisabledConverter : JsonConverter
     {
         /// <inheritdoc/>
         public override bool CanRead => false;
+
         /// <inheritdoc/>
         public override bool CanWrite => false;
 
         /// <inheritdoc/>
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc/>
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
         {
             throw new NotImplementedException();
         }

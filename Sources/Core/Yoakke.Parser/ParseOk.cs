@@ -38,6 +38,10 @@ namespace Yoakke.Parser
             this.FurthestError = furthestError;
         }
 
+        /// <summary>
+        /// Implicit conversion to extract the resulting value.
+        /// </summary>
+        /// <param name="ok">The <see cref="ParseOk{T}"/> to cast.</param>
         public static implicit operator T(ParseOk<T> ok) => ok.Value;
     }
 }

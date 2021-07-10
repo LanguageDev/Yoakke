@@ -15,6 +15,9 @@ using Yoakke.Lsp.Server.Handlers;
 
 namespace Yoakke.Lsp.Server.Internal
 {
+    /// <summary>
+    /// An <see cref="ILanguageClient"/> implementation.
+    /// </summary>
     internal class LanguageClient : ILanguageClient
     {
         private readonly JsonRpc jsonRpc;
@@ -27,9 +30,14 @@ namespace Yoakke.Lsp.Server.Internal
         /// </summary>
         private readonly Dictionary<string, string[]> unregisterKeys;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LanguageClient"/> class.
+        /// </summary>
+        /// <param name="jsonRpc">The <see cref="JsonRpc"/> connection to use for communication.</param>
         public LanguageClient(JsonRpc jsonRpc)
         {
             this.jsonRpc = jsonRpc;
+            this.unregisterKeys = new();
         }
 
         /// <inheritdoc/>

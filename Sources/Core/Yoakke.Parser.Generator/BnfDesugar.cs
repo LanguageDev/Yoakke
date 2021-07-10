@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -43,7 +43,6 @@ namespace Yoakke.Parser.Generator
             // RULE_N : (RULE_N OP RULE_(N+1)) {TR} | RULE_(N+1) for left-associative
             // RULE_N : (RULE_(N+1) OP RULE_N) {TR} | RULE_(N+1) for right-associative
             // And simply the passed-in rule as atomic
-
             var result = new List<Rule>();
             var atom = new Rule($"{rule.Name}_atomic", rule.Ast, false);
             result.Add(atom);

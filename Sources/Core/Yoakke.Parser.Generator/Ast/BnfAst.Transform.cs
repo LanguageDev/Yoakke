@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -25,6 +25,11 @@ namespace Yoakke.Parser.Generator.Ast
             /// </summary>
             public readonly IMethodSymbol Method;
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Transform"/> class.
+            /// </summary>
+            /// <param name="subexpr">The subexpression to match.</param>
+            /// <param name="method">The method to transform the result with.</param>
             public Transform(BnfAst subexpr, IMethodSymbol method)
             {
                 this.Subexpr = subexpr;

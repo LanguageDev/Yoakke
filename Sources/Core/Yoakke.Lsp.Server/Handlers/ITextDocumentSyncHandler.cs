@@ -37,6 +37,7 @@ namespace Yoakke.Lsp.Server.Handlers
         /// <param name="changeParams">The change parameters.</param>
         public void DidChange(DidChangeTextDocumentParams changeParams);
 
+#if false
         // TODO: Support these?
         /// <summary>
         /// Signals that a text document is about to be saved.
@@ -52,6 +53,7 @@ namespace Yoakke.Lsp.Server.Handlers
         /// <param name="saveParams">The save parameters.</param>
         /// <returns>An array of text edits, or null, if none is needed.</returns>
         // public IReadOnlyList<TextEdit>? WillSaveWaitUntil(WillSaveTextDocumentParams saveParams);
+#endif
 
         /// <summary>
         /// Signals that a text document is saved.

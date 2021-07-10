@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -21,11 +21,20 @@ namespace Yoakke.Parser.Generator.Ast
             /// </summary>
             public readonly IReadOnlyList<BnfAst> Elements;
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Seq"/> class.
+            /// </summary>
+            /// <param name="first">The first subexpression to match.</param>
+            /// <param name="second">The subexpression to match after <paramref name="first"/>.</param>
             public Seq(BnfAst first, BnfAst second)
             {
                 this.Elements = new BnfAst[] { first, second };
             }
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Seq"/> class.
+            /// </summary>
+            /// <param name="elements">The subexpressions to match in sequence.</param>
             public Seq(IEnumerable<BnfAst> elements)
             {
                 this.Elements = elements.ToArray();

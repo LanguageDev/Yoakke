@@ -48,7 +48,7 @@ namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
         public bool? VersionSupport { get; set; }
 
         /// <summary>
-        /// Client supports a codeDescription property
+        /// Client supports a codeDescription property.
         /// </summary>
         [Since(3, 16, 0)]
         [JsonProperty("codeDescriptionSupport", NullValueHandling = NullValueHandling.Ignore)]

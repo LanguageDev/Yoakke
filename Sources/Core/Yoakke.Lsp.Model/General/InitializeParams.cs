@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -11,8 +11,14 @@ using Yoakke.Lsp.Model.Workspace;
 
 namespace Yoakke.Lsp.Model.General
 {
+    /// <summary>
+    /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#initializeParams.
+    /// </summary>
     public class InitializeParams : IWorkDoneProgressParams
     {
+        /// <summary>
+        /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#initializeParams.
+        /// </summary>
         public class ClientInformation
         {
             /// <summary>
@@ -44,7 +50,7 @@ namespace Yoakke.Lsp.Model.General
         public int? ProcessId { get; set; }
 
         /// <summary>
-        /// Information about the client
+        /// Information about the client.
         /// </summary>
         [Since(3, 15, 0)]
         [JsonProperty("clientInfo", NullValueHandling = NullValueHandling.Ignore)]
@@ -56,7 +62,7 @@ namespace Yoakke.Lsp.Model.General
         /// system.
         ///
         /// Uses IETF language tags as the value's syntax
-        /// (See https://en.wikipedia.org/wiki/IETF_language_tag)
+        /// (See https://en.wikipedia.org/wiki/IETF_language_tag).
         /// </summary>
         [Since(3, 16, 0)]
         [JsonProperty("locale", NullValueHandling = NullValueHandling.Ignore)]
@@ -86,7 +92,7 @@ namespace Yoakke.Lsp.Model.General
         public object? InitializationOptions { get; set; }
 
         /// <summary>
-        /// The capabilities provided by the client (editor or tool)
+        /// The capabilities provided by the client (editor or tool).
         /// </summary>
         [JsonProperty("capabilities")]
         public ClientCapabilities Capabilities { get; set; }
