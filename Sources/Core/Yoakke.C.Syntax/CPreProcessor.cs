@@ -579,6 +579,6 @@ namespace Yoakke.C.Syntax
 
         private static bool IsIdentifier(CTokenType tokenType) =>
                tokenType == CTokenType.Identifier
-            || ((int)CTokenType.KeywordAuto <= (int)tokenType && (int)tokenType <= (int)CTokenType.KeywordWhile);
+            || ((int)tokenType >= (int)CTokenType.KeywordAuto && (int)tokenType <= (int)CTokenType.KeywordWhile);
     }
 }

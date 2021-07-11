@@ -9,7 +9,9 @@ namespace Yoakke.LSP.Generator
     /// <summary>
     /// Base class for all defititions.
     /// </summary>
+#pragma warning disable SA1649 // File name should match first type name
     internal abstract class DefBase
+#pragma warning restore SA1649 // File name should match first type name
     {
     }
 

@@ -77,7 +77,10 @@ namespace Yoakke.Ast.Generator
         private void BuildMetaNodes(IList<ClassDeclarationSyntax> classDeclarations)
         {
             // Collect only the classes that have the AstAttribute
+            // NOTE: False positive since 3.3.2 update
+#pragma warning disable RS1024 // Compare symbols correctly
             var astNodeSymbols = new HashSet<INamedTypeSymbol>(SymbolEqualityComparer.Default);
+#pragma warning restore RS1024 // Compare symbols correctly
             foreach (var syntax in classDeclarations)
             {
                 var model = this.Context.Compilation.GetSemanticModel(syntax.SyntaxTree);
@@ -106,7 +109,10 @@ namespace Yoakke.Ast.Generator
             // Now loop until all nodes could be attached somewhere
             while (astNodeSymbols.Count > 0)
             {
+                // NOTE: False positive since 3.3.2 update
+#pragma warning disable RS1024 // Compare symbols correctly
                 var toRemove = new HashSet<INamedTypeSymbol>(SymbolEqualityComparer.Default);
+#pragma warning restore RS1024 // Compare symbols correctly
                 foreach (var symbol in astNodeSymbols)
                 {
                     if (!this.allNodes.TryGetValue(symbol.BaseType!.Name, out var parentNode)) continue;
@@ -213,7 +219,7 @@ public {node.Name}({string.Join(", ", fields.Select(f => $"{f.Symbol.Type.ToDisp
                 {
                     // Override equality and hash
                     var lastEquality = LastParentThat(node, n => n.ImplementEquality)!.Symbol.ToDisplayString();
-                    var (eqCmp, hash) = this.GenerateEqualityElements(node.Symbol, fields);
+                    var (eqCmp, hash) = GenerateEqualityElements(fields);
 
                     var comparisons = string.Join(" && ", eqCmp);
                     extraDefinitions.AppendLine($"public override bool Equals({lastEquality} o) =>");
@@ -315,11 +321,10 @@ namespace {surroundingNamespace} {{
             }
 
             var members = this.CategorizeAllFields(node.Symbol);
-            foreach (var visitor in newVisitors.Values)
+            foreach (var (root, content, returnType) in newVisitors.Values)
             {
-                var content = visitor.Content;
-                var returnType = visitor.ReturnType.ToDisplayString();
-                content.AppendLine($"protected virtual {returnType} Visit({node.Symbol.ToDisplayString()} node) {{");
+                var returnTypeStr = returnType.ToDisplayString();
+                content.AppendLine($"protected virtual {returnTypeStr} Visit({node.Symbol.ToDisplayString()} node) {{");
                 if (node.Children.Count == 0)
                 {
                     // No subtypes
@@ -350,7 +355,7 @@ namespace {surroundingNamespace} {{
                     {
                         var subnodeType = child.Symbol.ToDisplayString();
                         content.AppendLine($"case {subnodeType} sub{i}:");
-                        if (returnType == "void")
+                        if (returnTypeStr == "void")
                         {
                             content.AppendLine($"    Visit(sub{i});");
                             content.AppendLine("    break;");
@@ -363,7 +368,7 @@ namespace {surroundingNamespace} {{
                     }
                     content.AppendLine("}");
                 }
-                if (returnType != "void") content.AppendLine("    return default;");
+                if (returnTypeStr != "void") content.AppendLine("    return default;");
                 content.AppendLine("}");
             }
 
@@ -381,25 +386,24 @@ namespace {surroundingNamespace} {{
             return unified;
         }
 
-        private (List<string> Equality, List<string> Hash) GenerateEqualityElements(
-            ISymbol symbol,
+        private static (List<string> Equality, List<string> Hash) GenerateEqualityElements(
             List<(IFieldSymbol Symbol, FieldKind Kind)> fields)
         {
             var equality = new List<string>();
             var hash = new List<string>();
-            foreach (var field in fields)
+            foreach (var (symbol, kind) in fields)
             {
-                if (field.Kind == FieldKind.LeafList || field.Kind == FieldKind.SubnodeList)
+                if (kind == FieldKind.LeafList || kind == FieldKind.SubnodeList)
                 {
                     // Use .SequenceEquals and add each element to hash one by one
-                    equality.Add($"this.{field.Symbol.Name}.Count == other.{field.Symbol.Name}.Count && this.{field.Symbol.Name}.SequenceEqual(other.{field.Symbol.Name})");
-                    hash.Add($"foreach (var item in this.{field.Symbol.Name}) hash.Add(item);");
+                    equality.Add($"this.{symbol.Name}.Count == other.{symbol.Name}.Count && this.{symbol.Name}.SequenceEqual(other.{symbol.Name})");
+                    hash.Add($"foreach (var item in this.{symbol.Name}) hash.Add(item);");
                 }
                 else
                 {
                     // Just call Equals and add to hash
-                    equality.Add($"this.{field.Symbol.Name}.Equals(other.{field.Symbol.Name})");
-                    hash.Add($"hash.Add(this.{field.Symbol.Name});");
+                    equality.Add($"this.{symbol.Name}.Equals(other.{symbol.Name})");
+                    hash.Add($"hash.Add(this.{symbol.Name});");
                 }
             }
             return (equality, hash);

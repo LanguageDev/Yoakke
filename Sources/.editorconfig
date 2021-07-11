@@ -6,6 +6,9 @@ insert_final_newline = true
 trim_trailing_whitespace = true
 charset = utf-8
 
+[*.{csproj,props}]
+indent_style = space
+
 [*.cs]
 
 # File header template
@@ -166,10 +169,11 @@ dotnet_diagnostic.SA1601.severity = none
 dotnet_diagnostic.SA1623.severity = none
 dotnet_diagnostic.SA1633.severity = none
 
-#[Tests/**.cs]
-## Analyzer settings
-#dotnet_diagnostic.SA1116.severity = none
-#dotnet_diagnostic.SA1117.severity = none
-#dotnet_diagnostic.SA1118.severity = none
-#dotnet_diagnostic.SA1137.severity = none
-#dotnet_diagnostic.SA1600.severity = none
+# We have some weird interaction between source generators and included sources when
+# trying to put this in Tests/.editorconfig
+[Tests/**.cs]
+dotnet_diagnostic.SA1116.severity = none
+dotnet_diagnostic.SA1117.severity = none
+dotnet_diagnostic.SA1118.severity = none
+dotnet_diagnostic.SA1137.severity = none
+dotnet_diagnostic.SA1600.severity = none

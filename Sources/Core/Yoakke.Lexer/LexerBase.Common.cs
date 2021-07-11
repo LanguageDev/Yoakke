@@ -13,7 +13,9 @@ namespace Yoakke.Lexer
     /// <summary>
     /// For internal use only, use <see cref="LexerBase"/> or <see cref="LexerBase{TKind}"/> instead.
     /// </summary>
+#pragma warning disable SA1649 // File name should match first type name
     public abstract class LexerBaseCommon
+#pragma warning restore SA1649 // File name should match first type name
     {
         /// <summary>
         /// The current <see cref="Position"/> the lexer is at.
