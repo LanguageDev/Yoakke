@@ -3,13 +3,6 @@
   <Import Project="$(MSBuildThisFileDirectory)/../SourceGenerator.props"/>
 
   <ItemGroup>
-    <PackageReference Include="Nullable" Version="1.3.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Include="$(SolutionDir)/Core/Yoakke.Utilities/**/*.cs" Link="Yoakke.Utilities"/>
     <Compile Remove="$(SolutionDir)/Core/Yoakke.Utilities/obj/**/*.cs"/>
 

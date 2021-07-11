@@ -14,6 +14,8 @@ namespace Yoakke.LSP.Generator
     [Parser(typeof(TokenType))]
     internal partial class TsParser
     {
+#pragma warning disable SA1117 // Parameters should be on same line or separate lines
+
         [Rule("definition : namespace | interface")]
         private static DefBase Definition(DefBase db) => db;
 
@@ -88,6 +90,8 @@ namespace Yoakke.LSP.Generator
 
         [Rule("type_atom : '{' i_field* '}'")]
         private static TypeNode Object(IToken _1, IReadOnlyList<InterfaceField> fs, IToken _2) => new TypeNode.Object(fs);
+
+#pragma warning restore SA1117 // Parameters should be on same line or separate lines
 
         private static NamespaceField StringLitToNamespaceField(IToken<TokenType> t)
         {

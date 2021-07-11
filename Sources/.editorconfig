@@ -143,3 +143,33 @@ dotnet_style_qualification_for_field = true:suggestion
 dotnet_style_qualification_for_method = true:suggestion
 #prefer properties to be prefaced with this. in C# or Me. in Visual Basic
 dotnet_style_qualification_for_property = true:suggestion
+
+# Analyzer settings
+dotnet_diagnostic.SA0001.severity = none
+dotnet_diagnostic.SA1000.severity = none
+dotnet_diagnostic.SA1008.severity = none
+dotnet_diagnostic.SA1009.severity = none
+dotnet_diagnostic.SA1011.severity = none
+dotnet_diagnostic.SA1100.severity = none
+dotnet_diagnostic.SA1134.severity = none
+dotnet_diagnostic.SA1200.severity = none
+dotnet_diagnostic.SA1201.severity = none
+dotnet_diagnostic.SA1202.severity = none
+dotnet_diagnostic.SA1204.severity = none
+dotnet_diagnostic.SA1313.severity = none
+dotnet_diagnostic.SA1402.severity = none
+dotnet_diagnostic.SA1501.severity = none
+dotnet_diagnostic.SA1503.severity = none
+dotnet_diagnostic.SA1513.severity = none
+dotnet_diagnostic.SA1515.severity = none
+dotnet_diagnostic.SA1601.severity = none
+dotnet_diagnostic.SA1623.severity = none
+dotnet_diagnostic.SA1633.severity = none
+
+#[Tests/**.cs]
+## Analyzer settings
+#dotnet_diagnostic.SA1116.severity = none
+#dotnet_diagnostic.SA1117.severity = none
+#dotnet_diagnostic.SA1118.severity = none
+#dotnet_diagnostic.SA1137.severity = none
+#dotnet_diagnostic.SA1600.severity = none

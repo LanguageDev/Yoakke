@@ -5,7 +5,6 @@
     <Nullable>enable</Nullable>
 
     <!-- Analysis -->
-    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)/Yoakke.ruleset</CodeAnalysisRuleSet>
     <AnalysisLevel>latest</AnalysisLevel>
     <WarningLevel>5</WarningLevel>
   </PropertyGroup>

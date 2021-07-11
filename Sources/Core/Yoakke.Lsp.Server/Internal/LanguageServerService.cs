@@ -87,7 +87,7 @@ namespace Yoakke.Lsp.Server.Internal
             this.textDocumentSyncHandler = serviceProvider.GetRequiredService<ITextDocumentSyncHandler>();
         }
 
-        // Lifecycle ///////////////////////////////////////////////////////////
+        /* Lifecycle */
 
         /// <inheritdoc/>
         public void Dispose() => this.jsonRpc.Dispose();
@@ -105,7 +105,7 @@ namespace Yoakke.Lsp.Server.Internal
         /// <inheritdoc/>
         public Task StopAsync(CancellationToken cancellationToken) => this.jsonRpc.Completion;
 
-        // Messages ////////////////////////////////////////////////////////////
+        /* Messages */
 
         /* General */
 
@@ -169,7 +169,7 @@ namespace Yoakke.Lsp.Server.Internal
             if (this.jsonRpc != null) this.jsonRpc.Dispose();
         }
 
-        // Text synchronization ////////
+        /* Text synchronization */
 
         [JsonRpcMethod("textDocument/didOpen", UseSingleObjectParameterDeserialization = true)]
         private void TextDocument_DidOpen(DidOpenTextDocumentParams didOpenParams)

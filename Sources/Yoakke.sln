@@ -68,7 +68,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Core\Directory.Build.props = Core\Directory.Build.props
 		Examples\Directory.Build.props = Examples\Directory.Build.props
 		Core\SourceGenerator.props = Core\SourceGenerator.props
-		Yoakke.ruleset = Yoakke.ruleset
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "C", "C", "{AE60AFB2-F9EE-4850-9F04-7D184B8475A9}"
