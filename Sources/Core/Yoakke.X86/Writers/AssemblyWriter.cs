@@ -232,27 +232,30 @@ namespace Yoakke.X86.Writers
         /// <returns>This instance to be able to chain calls.</returns>
         public virtual AssemblyWriter Write(IInstruction instruction)
         {
-            // We reverse args for AT&T
-            var operands = this.Settings.SyntaxFlavor == SyntaxFlavor.ATnT
-                ? instruction.Operands.Reverse()
-                : instruction.Operands;
-
-            // Write instruction
+            // Get the instruction name from it's type
             var ins = instruction.GetType().Name.ToString();
-            // Pad the name
-            ins = ins.PadRight(this.Settings.InstructionPadding);
-            this.Write(this.Settings.InstructionsUpperCase ? ins.ToUpper() : ins.ToLower());
 
             if (this.Settings.SyntaxFlavor == SyntaxFlavor.ATnT)
             {
                 // AT&T syntax wants a suffix to determine operand
-                var operandSize = operands.Select(op => op.GetSize()).FirstOrDefault(op => op is not null);
+                var operandSize = instruction.Operands.Select(op => op.GetSize()).FirstOrDefault(op => op is not null);
                 if (operandSize is not null)
                 {
                     var suffix = this.GetATnTSuffix(operandSize.Value);
-                    this.Write(this.Settings.InstructionsUpperCase ? suffix.ToUpper() : suffix);
+                    ins = $"{ins}{suffix}";
                 }
             }
+
+            // Pad the name
+            ins = ins.PadRight(this.Settings.InstructionPadding);
+
+            // The instruction name is complete
+            this.Write(this.Settings.InstructionsUpperCase ? ins.ToUpper() : ins.ToLower());
+
+            // We reverse args for AT&T
+            var operands = this.Settings.SyntaxFlavor == SyntaxFlavor.ATnT
+                ? instruction.Operands.Reverse()
+                : instruction.Operands;
 
             // Write operands
             var first = true;
@@ -393,16 +396,16 @@ namespace Yoakke.X86.Writers
                 this.Write('(');
                 // Base
                 if (address.Base is not null) this.Write(address.Base.Value);
-                this.Write(',');
                 // Index, scale
                 if (address.ScaledIndex is not null)
                 {
+                    this.Write(',');
                     var (index, scale) = address.ScaledIndex.Value;
                     this.Write(' ').Write(index).Write(", ").Write(scale);
                 }
                 else
                 {
-                    this.Write(',');
+                    if (address.Base is null) this.Write(",,");
                 }
                 this.Write(')');
             }
@@ -422,7 +425,11 @@ namespace Yoakke.X86.Writers
         /// </summary>
         /// <param name="constant">The <see cref="Constant"/> to write.</param>
         /// <returns>This instance to be able to chain calls.</returns>
-        public virtual AssemblyWriter Write(Constant constant) => this.Write(constant.Value.ToString() ?? string.Empty);
+        public virtual AssemblyWriter Write(Constant constant)
+        {
+            if (this.Settings.SyntaxFlavor == SyntaxFlavor.ATnT) this.Write('$');
+            return this.Write(constant.Value.ToString() ?? string.Empty);
+        }
 
         /// <summary>
         /// Writes a <see cref="Label"/> to the underlying <see cref="StringBuilder"/>.

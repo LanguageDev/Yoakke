@@ -2,7 +2,9 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
+using System;
 using System.Collections.Generic;
+using Yoakke.X86;
 using Yoakke.X86.Operands;
 using Yoakke.X86.Validation;
 
@@ -16,203 +18,122 @@ namespace Yoakke.X86
         /* Base classes */
 
         /// <summary>
+        /// Base-class for <see cref="IInstruction"/>s.
+        /// </summary>
+        public abstract record InstructionBase(IReadOnlyList<IOperand> Operands, string? Comment = null) : IInstruction;
+
+        /// <summary>
+        /// Base-class for zero-operand instructions.
+        /// </summary>
+        public abstract record ZeroOperandInstruction(string? Comment = null)
+            : InstructionBase(Array.Empty<IOperand>(), Comment);
+
+        /// <summary>
         /// Base-class for single-operand instructions.
         /// </summary>
         [Validator(typeof(OneOperandInstructionValidator))]
-        public abstract class OneOperandInstruction : IInstruction
+        public abstract record OneOperandInstruction(IOperand Operand, string? Comment = null)
+            : InstructionBase(new[] { Operand }, Comment)
         {
-            /// <inheritdoc/>
-            public IEnumerable<IOperand> Operands
-            {
-                get
-                {
-                    yield return this.Operand;
-                }
-            }
-
-            /// <inheritdoc/>
-            public string? Comment { get; init; }
-
             /// <summary>
-            /// The single <see cref="IOperand"/> for this instruction.
+            /// The singular <see cref="IOperand"/> of this instruction.
             /// </summary>
-            public IOperand Operand { get; }
-
-            /// <summary>
-            /// Initializes a new instance of the <see cref="OneOperandInstruction"/> class.
-            /// </summary>
-            /// <param name="operand">The single <see cref="IOperand"/> for this instruction.</param>
-            /// <param name="comment">The optional inline comment.</param>
-            public OneOperandInstruction(IOperand operand, string? comment = null)
-            {
-                this.Operand = operand;
-                this.Comment = comment;
-            }
+            public IOperand Operand => this.Operands[0];
         }
 
         /// <summary>
         /// Base-class for jump instructions.
         /// </summary>
-        public abstract class JumpInstruction : IInstruction
+        public abstract record JumpInstruction(IOperand Target, string? Comment = null)
+            : InstructionBase(new[] { Target }, Comment)
         {
-            /// <inheritdoc/>
-            public IEnumerable<IOperand> Operands
-            {
-                get
-                {
-                    yield return this.Target;
-                }
-            }
-
-            /// <inheritdoc/>
-            public string? Comment { get; init; }
-
             /// <summary>
             /// The target for this jump.
             /// </summary>
-            public IOperand Target { get; }
-
-            /// <summary>
-            /// Initializes a new instance of the <see cref="JumpInstruction"/> class.
-            /// </summary>
-            /// <param name="target">The target for this jump.</param>
-            /// <param name="comment">The optional inline comment.</param>
-            public JumpInstruction(IOperand target, string? comment = null)
-            {
-                this.Target = target;
-                this.Comment = comment;
-            }
+            public IOperand Target => this.Operands[0];
         }
 
         /// <summary>
         /// Base-class for arithmetic instructions.
         /// </summary>
         [Validator(typeof(ArithmeticInstructionValidator))]
-        public abstract class ArithmeticInstruction : IInstruction
+        public abstract record ArithmeticInstruction(IOperand Destination, IOperand Source, string? Comment = null)
+            : InstructionBase(new[] { Destination, Source }, Comment)
         {
-            /// <inheritdoc/>
-            public IEnumerable<IOperand> Operands
-            {
-                get
-                {
-                    yield return this.Destination;
-                    yield return this.Source;
-                }
-            }
-
-            /// <inheritdoc/>
-            public string? Comment { get; init; }
-
             /// <summary>
             /// The <see cref="IOperand"/> where the result is written. Also acts as the left-hand side operand.
             /// </summary>
-            public IOperand Destination { get; }
+            public IOperand Destination => this.Operands[0];
 
             /// <summary>
             /// The right-hand side <see cref="IOperand"/>.
             /// </summary>
-            public IOperand Source { get; }
-
-            /// <summary>
-            /// Initializes a new instance of the <see cref="ArithmeticInstruction"/> class.
-            /// </summary>
-            /// <param name="destination">The <see cref="IOperand"/> where the result is written.
-            /// Also acts as the left-hand side operand.</param>
-            /// <param name="source">The right-hand side <see cref="IOperand"/>.</param>
-            /// <param name="comment">The optional inline comment.</param>
-            public ArithmeticInstruction(IOperand destination, IOperand source, string? comment = null)
-            {
-                this.Destination = destination;
-                this.Source = source;
-                this.Comment = comment;
-            }
+            public IOperand Source => this.Operands[1];
         }
 
         /* Actual instructions */
 
         /// <summary>
+        /// LEAVE instruction.
+        /// </summary>
+        public record Leave(string? Comment = null) : ZeroOperandInstruction(Comment);
+
+        /// <summary>
+        /// RET instruction.
+        /// </summary>
+        public record Ret(string? Comment = null) : ZeroOperandInstruction(Comment);
+
+        /// <summary>
         /// PUSH instruction.
         /// </summary>
-        public class Push : OneOperandInstruction
-        {
-            /// <summary>
-            /// Initializes a new instance of the <see cref="Push"/> class.
-            /// </summary>
-            /// <param name="operand">The operand to push.</param>
-            /// <param name="comment">An optional line-comment.</param>
-            public Push(IOperand operand, string? comment = null)
-                : base(operand, comment)
-            {
-            }
-        }
+        public record Push(IOperand Operand, string? Comment = null) : OneOperandInstruction(Operand, Comment);
 
         /// <summary>
         /// ADD instruction.
         /// </summary>
-        public class Add : ArithmeticInstruction
-        {
-            /// <summary>
-            /// Initializes a new instance of the <see cref="Add"/> class.
-            /// </summary>
-            /// <param name="destination">The operand to add to.</param>
-            /// <param name="source">The operand to add.</param>
-            /// <param name="comment">An optional line-comment.</param>
-            public Add(IOperand destination, IOperand source, string? comment = null)
-                : base(destination, source, comment)
-            {
-            }
-        }
+        public record Add(IOperand Destination, IOperand Source, string? Comment = null)
+            : ArithmeticInstruction(Destination, Source, Comment);
 
         /// <summary>
         /// SUB instruction.
         /// </summary>
-        public class Sub : ArithmeticInstruction
-        {
-            /// <summary>
-            /// Initializes a new instance of the <see cref="Sub"/> class.
-            /// </summary>
-            /// <param name="destination">The operand to subtract from.</param>
-            /// <param name="source">The operand to subtract.</param>
-            /// <param name="comment">An optional line-comment.</param>
-            public Sub(IOperand destination, IOperand source, string? comment = null)
-                : base(destination, source, comment)
-            {
-            }
-        }
+        public record Sub(IOperand Destination, IOperand Source, string? Comment = null)
+            : ArithmeticInstruction(Destination, Source, Comment);
 
         // NOTE: For now we treat MOV as an arithmetic instruction, maybe it's good enough
 
         /// <summary>
         /// MOV instruction.
         /// </summary>
-        public class Mov : ArithmeticInstruction
-        {
-            /// <summary>
-            /// Initializes a new instance of the <see cref="Mov"/> class.
-            /// </summary>
-            /// <param name="destination">The operand to move to.</param>
-            /// <param name="source">The operand to move.</param>
-            /// <param name="comment">An optional line-comment.</param>
-            public Mov(IOperand destination, IOperand source, string? comment = null)
-                : base(destination, source, comment)
-            {
-            }
-        }
+        public record Mov(IOperand Destination, IOperand Source, string? Comment = null)
+            : ArithmeticInstruction(Destination, Source, Comment);
 
         /// <summary>
         /// JMP instruction.
         /// </summary>
-        public class Jmp : JumpInstruction
+        public record Jmp(IOperand Target, string? Comment = null) : JumpInstruction(Target, Comment);
+
+        /// <summary>
+        /// JLE (jump if less or equal) instruction.
+        /// </summary>
+        public record Jle(IOperand Target, string? Comment = null) : JumpInstruction(Target, Comment);
+
+        /// <summary>
+        /// CMP instruction.
+        /// </summary>
+        [Validator(typeof(ArithmeticInstructionValidator))]
+        public record Cmp(IOperand Left, IOperand Right, string? Comment = null)
+            : InstructionBase(new[] { Left, Right }, Comment)
         {
             /// <summary>
-            /// Initializes a new instance of the <see cref="Jmp"/> class.
+            /// The left <see cref="IOperand"/>.
             /// </summary>
-            /// <param name="target">The target operand to jump to.</param>
-            /// <param name="comment">An optional line-comment.</param>
-            public Jmp(IOperand target, string? comment = null)
-                : base(target, comment)
-            {
-            }
+            public IOperand Left => this.Operands[0];
+
+            /// <summary>
+            /// The right <see cref="IOperand"/>.
+            /// </summary>
+            public IOperand Right => this.Operands[1];
         }
     }
 }

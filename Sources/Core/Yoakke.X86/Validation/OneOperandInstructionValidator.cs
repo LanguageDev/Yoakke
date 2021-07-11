@@ -15,8 +15,9 @@ namespace Yoakke.X86.Validation
         /// <inheritdoc/>
         public void Validate(AssemblyContext context, IInstruction instruction)
         {
-            var one = (Instructions.OneOperandInstruction)instruction;
-            if (one.Operand is FarAddress) throw new InvalidOperationException("operand can not be a far-jump target");
+            if (instruction.Operands.Count != 1) throw new ArgumentException("instruction does not have one operand", nameof(instruction));
+            var operand = instruction.Operands[0];
+            if (operand is FarAddress) throw new InvalidOperationException("operand can not be a far-jump target");
         }
     }
 }

@@ -16,13 +16,15 @@ namespace Yoakke.X86.Validation
         /// <inheritdoc/>
         public void Validate(AssemblyContext context, IInstruction instruction)
         {
-            var arith = (Instructions.ArithmeticInstruction)instruction;
-            if (arith.Source is FarAddress || arith.Destination is FarAddress) throw new InvalidOperationException("operands can not be farjump addresses");
-            var destSize = arith.Destination.GetSize(context);
-            var srcSize = arith.Source.GetSize(context);
+            if (instruction.Operands.Count != 2) throw new ArgumentException("instruction requires 2 operands", nameof(instruction));
+            var destination = instruction.Operands[0];
+            var source = instruction.Operands[1];
+            if (source is FarAddress || destination is FarAddress) throw new InvalidOperationException("operands can not be farjump addresses");
+            var destSize = destination.GetSize(context);
+            var srcSize = source.GetSize(context);
             if (destSize != srcSize) throw new InvalidOperationException("operand size mismatch");
-            if (arith.Destination is Constant) throw new InvalidOperationException("destination operand cannot be a constant");
-            if (arith.Destination.IsMemory && arith.Source.IsMemory) throw new InvalidOperationException("instruction must include at least one non-memory operand");
+            if (destination is Constant) throw new InvalidOperationException("destination operand cannot be a constant");
+            if (destination.IsMemory && source.IsMemory) throw new InvalidOperationException("instruction must include at least one non-memory operand");
         }
     }
 }

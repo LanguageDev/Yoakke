@@ -17,6 +17,7 @@ namespace Yoakke.X86.Validation
         /// <inheritdoc/>
         public void Validate(AssemblyContext context, IInstruction instruction)
         {
+            // Pass
         }
     }
 }

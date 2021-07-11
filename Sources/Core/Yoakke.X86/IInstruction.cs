@@ -15,7 +15,7 @@ namespace Yoakke.X86
         /// <summary>
         /// The <see cref="IOperand"/>s this <see cref="IInstruction"/> needs.
         /// </summary>
-        public IEnumerable<IOperand> Operands { get; }
+        public IReadOnlyList<IOperand> Operands { get; }
 
         /// <summary>
         /// Optional inline comment.
