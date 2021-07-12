@@ -3,7 +3,7 @@ using System;
 namespace Yoakke.X86.Generator
 {
     /*
-     * Consumes the format found on http://ref.x86asm.net/
+     * Consumes the format found on https://github.com/Maratyszcza/Opcodes
      */
 
     internal static class Program
