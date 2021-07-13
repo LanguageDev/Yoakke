@@ -27,5 +27,11 @@ namespace Yoakke.X86.Generator.Model
         /// </summary>
         [XmlAttribute(AttributeName = "summary")]
         public string Summary { get; set; } = string.Empty;
+
+        /// <summary>
+        /// All the different forms (loosely overloads) of this <see cref="Instruction"/>.
+        /// </summary>
+        [XmlElement("InstructionForm")]
+        public List<InstructionForm> Forms { get; set; } = new();
     }
 }
