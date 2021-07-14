@@ -33,10 +33,28 @@ namespace Yoakke.X86.Generator.Model
         public List<Opcode> Opcodes { get; set; } = new();
 
         /// <summary>
+        /// The ModRM byte.
+        /// </summary>
+        [XmlElement("ModRM")]
+        public ModRM? ModRM { get; set; }
+
+        /// <summary>
         /// The postbyte some instruction encodings require.
         /// </summary>
         [XmlElement("Opcode")]
         public Opcode? Postbyte { get; set; }
+
+        /// <summary>
+        /// The immediates of the instruction.
+        /// </summary>
+        [XmlElement("Immediate")]
+        public List<Immediate> Immediates { get; set; } = new();
+
+        /// <summary>
+        /// True, if the encoding had unsupported elements in the XML.
+        /// </summary>
+        [XmlIgnore]
+        public bool HasUnsupportedElement { get; set; }
 
         /// <inheritdoc/>
         public XmlSchema? GetSchema() => null;
@@ -74,7 +92,17 @@ namespace Yoakke.X86.Generator.Model
                         this.Prefixes.Add(Deserialize<Prefix>(element));
                         break;
 
+                    case "ModRM":
+                        Debug.Assert(this.ModRM is null, "There can be only one ModR/M byte per encoding");
+                        this.ModRM = Deserialize<ModRM>(element);
+                        break;
+
+                    case "Immediate":
+                        this.Immediates.Add(Deserialize<Immediate>(element));
+                        break;
+
                     default:
+                        this.HasUnsupportedElement = true;
                         Console.WriteLine($"TODO: Unhandled {element.Name}");
                         break;
                     }

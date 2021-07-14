@@ -20,12 +20,8 @@ namespace Yoakke.X86.Generator
 
             Console.WriteLine($"{isa.Instructions.Count} instructions");
             Console.WriteLine($"{isa.Instructions.Select(i => i.Forms.Count).Sum()} forms");
-            Console.WriteLine($"{isa.Instructions.Select(i => i.Forms.Where(f => f.Extension.Count == 0).Count()).Sum()} forms wo. extensions");
-
-            foreach (var i in isa.Instructions.Where(i => i.Forms.Any(f => f.Extension.Count == 0)))
-            {
-                Console.WriteLine($"{i.Name}");
-            }
+            Console.WriteLine($"{isa.Instructions.SelectMany(i => i.Forms.SelectMany(f => f.Encodings)).Count()} encodings");
+            Console.WriteLine($"{isa.Instructions.SelectMany(i => i.Forms.SelectMany(f => f.Encodings.Where(e => !e.HasUnsupportedElement))).Count()} encodings");
         }
     }
 }
