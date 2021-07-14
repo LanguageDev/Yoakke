@@ -103,7 +103,6 @@ namespace Yoakke.X86.Generator.Model
 
                     default:
                         this.HasUnsupportedElement = true;
-                        Console.WriteLine($"TODO: Unhandled {element.Name}");
                         break;
                     }
                 }

@@ -16,83 +16,117 @@ namespace Yoakke.X86.Generator
     /// </summary>
     public class ClassGenerator
     {
-        public StringBuilder Result { get; } = new();
+        private StringBuilder result { get; } = new();
 
         /// <summary>
         /// Generates code for a single <see cref="Instruction"/>.
         /// </summary>
         /// <param name="instruction">The <see cref="Instruction"/> to generate code for.</param>
-        public void GenerateInstruction(Instruction instruction)
+        /// <returns>The built class.</returns>
+        public string GenerateInstruction(Instruction instruction)
         {
-            // First we check if we are qualified to deal with instruction
-            if (instruction.Forms.All(form => form.Encodings.All(encoding => encoding.HasUnsupportedElement)))
-            {
-                // We can't really deal with this instruction, no encodings we know fully
-                Console.WriteLine($"TODO: Missing things for all encodings for {instruction.Name}");
-                return;
-            }
-
-            if (instruction.Forms.All(form => form.Operands.Any(op => !IsSupportedOperand(op))))
-            {
-                // We can't deal with this instruction because all forms have an operand we can't support
-                Console.WriteLine($"TODO: Missing operand types for all forms {instruction.Name}");
-                return;
-            }
-
-            if (instruction.Forms.All(form => form.Operands.Count > 2))
-            {
-                // We can't really deal with this instruction, too many operands
-                Console.WriteLine($"TODO: Invalid operand count for {instruction.Name}");
-                return;
-            }
+            this.result.Clear();
 
             // Doc comment
-            this.Result
+            this.result
                 .AppendLine("/// <summary>")
                 .AppendLine($"/// {instruction.Summary}.")
                 .AppendLine("/// </summary>");
 
             // Class
             var className = Capitalize(instruction.Name);
-            this.Result
+            this.result
                 .AppendLine($"public class {className}")
                 .AppendLine("{");
 
             // Generate operand properties
             this.GenerateOperandProperties(instruction);
 
-            this.Result.AppendLine("}").AppendLine();
+            // We loop through each form with each encoding
+            var anySupportedForms = false;
+            foreach (var form in instruction.Forms)
+            {
+                if (form.Operands.Any(op => !IsSupportedOperand(op))) continue;
+
+                var anySupportedEncodings = false;
+                foreach (var encoding in form.Encodings)
+                {
+                    if (encoding.HasUnsupportedElement) continue;
+
+                    // TODO: Process here
+
+                    anySupportedEncodings = true;
+                }
+
+                if (!anySupportedEncodings) throw new NotSupportedException();
+                anySupportedForms = true;
+            }
+            if (!anySupportedForms) throw new NotSupportedException();
+
+            this.result.AppendLine("}");
+
+            return this.result.ToString();
         }
 
         private void GenerateOperandProperties(Instruction instruction)
+        {
+            var operandNames = this.InferOperandNames(instruction);
+            foreach (var name in operandNames)
+            {
+                var propertyName = Capitalize(name);
+
+                // Property docs
+                this.result
+                    .AppendLine("    /// <summary>")
+                    .AppendLine($"    /// The {name}.")
+                    .AppendLine("    /// <*summary>");
+
+                // The actual property
+                this.result.AppendLine($"    public IOperand {propertyName} {{ get; }}");
+            }
+        }
+
+        private IReadOnlyList<string> InferOperandNames(Instruction instruction)
         {
             // Checks if all forms have an operand count between certain numbers
             bool AllInBetween(int min, int max) =>
                 instruction.Forms.All(form => form.Operands.Count >= min && form.Operands.Count <= max);
 
+            // Checks if a predicate is true for all forms for a given operand
+            bool OperandIs(int idx, Predicate<Operand> pred) =>
+                instruction.Forms.All(form => pred(form.Operands[idx]));
+
             if (AllInBetween(0, 0))
             {
                 // Nullary operation
+                return Array.Empty<string>();
             }
             else if (AllInBetween(1, 1))
             {
                 // Unary operation
+                if (OperandIs(0, op => op.IsInput && op.IsOutput)) return new[] { "operand" };
+                if (OperandIs(0, op => op.IsInput)) return new[] { "source" };
+                if (OperandIs(0, op => op.IsOutput)) return new[] { "target" };
+                return new[] { "operand" };
             }
             else if (AllInBetween(2, 2))
             {
                 // Binary operation
+                throw new NotSupportedException();
             }
             else if (AllInBetween(0, 1))
             {
                 // Unary operation with optional operand
+                throw new NotSupportedException();
             }
             else if (AllInBetween(1, 2))
             {
                 // Binary operation with one optional operand
+                throw new NotSupportedException();
             }
             else
             {
-                Console.WriteLine($"Can't determine arity for {instruction.Name}");
+                throw new NotSupportedException();
             }
         }
 
