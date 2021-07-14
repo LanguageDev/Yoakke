@@ -17,6 +17,12 @@ namespace Yoakke.X86.Generator.Model
     public class InstructionForm
     {
         /// <summary>
+        /// The extensions this form belongs to.
+        /// </summary>
+        [XmlElement("ISA")]
+        public List<IsaExtension> Extension { get; set; } = new();
+
+        /// <summary>
         /// The <see cref="Operand"/>s this <see cref="InstructionForm"/> uses.
         /// </summary>
         [XmlElement("Operand")]

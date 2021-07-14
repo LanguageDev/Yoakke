@@ -20,8 +20,11 @@ namespace Yoakke.X86.Generator.Model
     /// </summary>
     public class Encoding : IXmlSerializable
     {
-        // TODO: This is not correct. The opcode can be followed by a ModRM and then another Opcode
-        // So we should only consume consecutive tags here, but I didn't figure out how to do that yet
+        /// <summary>
+        /// The <see cref="Prefix"/>es belonging to this <see cref="Encoding"/>.
+        /// </summary>
+        [XmlElement("Prefix")]
+        public List<Prefix> Prefixes { get; set; } = new();
 
         /// <summary>
         /// The main opcodes of the instruction.
@@ -50,7 +53,7 @@ namespace Yoakke.X86.Generator.Model
             {
                 if (element.Name == "Opcode")
                 {
-                    var opcode = Deserialize<Opcode>(element.CreateReader());
+                    var opcode = Deserialize<Opcode>(element);
                     if (pastOpcode)
                     {
                         Debug.Assert(this.Postbyte is null, "There can only be a single postbyte");
@@ -64,6 +67,17 @@ namespace Yoakke.X86.Generator.Model
                 else
                 {
                     if (this.Opcodes.Count > 0) pastOpcode = true;
+
+                    switch (element.Name.ToString())
+                    {
+                    case "Prefix":
+                        this.Prefixes.Add(Deserialize<Prefix>(element));
+                        break;
+
+                    default:
+                        Console.WriteLine($"TODO: Unhandled {element.Name}");
+                        break;
+                    }
                 }
             }
 
@@ -73,6 +87,8 @@ namespace Yoakke.X86.Generator.Model
 
         /// <inheritdoc/>
         public void WriteXml(XmlWriter writer) => throw new NotImplementedException();
+
+        private static T Deserialize<T>(XElement element) => Deserialize<T>(element.CreateReader());
 
         private static T Deserialize<T>(XmlReader reader) =>
             (T?)new XmlSerializer(typeof(T)).Deserialize(reader) ?? throw new InvalidOperationException();
