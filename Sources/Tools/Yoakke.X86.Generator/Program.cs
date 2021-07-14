@@ -25,12 +25,11 @@ namespace Yoakke.X86.Generator
             var unsupported = 0;
 
             var result = new StringBuilder();
-            var generator = new ClassGenerator();
             foreach (var instruction in isa.Instructions)
             {
                 try
                 {
-                    var source = generator.GenerateInstruction(instruction);
+                    var source = ClassGenerator.GenerateInstruction(instruction);
                     result.AppendLine(source);
                     ++supported;
                 }
