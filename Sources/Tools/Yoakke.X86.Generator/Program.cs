@@ -21,6 +21,9 @@ namespace Yoakke.X86.Generator
 
             var a = isa.Instructions.First(i => i.Forms.Any(f => f.Operands.Any(o => o.IsInput && o.IsOutput)));
 
+            var supported = 0;
+            var unsupported = 0;
+
             var result = new StringBuilder();
             var generator = new ClassGenerator();
             foreach (var instruction in isa.Instructions)
@@ -29,14 +32,17 @@ namespace Yoakke.X86.Generator
                 {
                     var source = generator.GenerateInstruction(instruction);
                     result.AppendLine(source);
+                    ++supported;
                 }
                 catch (NotSupportedException)
                 {
-                    Console.WriteLine($"Can't support {instruction.Name}");
+                    // Console.WriteLine($"Can't support {instruction.Name}");
+                    ++unsupported;
                 }
             }
 
             Console.WriteLine(result);
+            Console.WriteLine($"supported: {supported}, unsupported: {unsupported}");
         }
     }
 }

@@ -71,8 +71,12 @@ namespace Yoakke.X86.Generator
         private void GenerateOperandProperties(Instruction instruction)
         {
             var operandNames = this.InferOperandNames(instruction);
+            var first = true;
             foreach (var name in operandNames)
             {
+                if (!first) this.result.AppendLine();
+                first = false;
+
                 var propertyName = Capitalize(name);
 
                 // Property docs
@@ -104,14 +108,14 @@ namespace Yoakke.X86.Generator
             else if (AllInBetween(1, 1))
             {
                 // Unary operation
-                if (OperandIs(0, op => op.IsInput && op.IsOutput)) return new[] { "operand" };
-                if (OperandIs(0, op => op.IsInput)) return new[] { "source" };
-                if (OperandIs(0, op => op.IsOutput)) return new[] { "target" };
+                if (OperandIs(0, op => op.IsInput && !op.IsOutput)) return new[] { "source" };
+                if (OperandIs(0, op => !op.IsInput && op.IsOutput)) return new[] { "target" };
                 return new[] { "operand" };
             }
             else if (AllInBetween(2, 2))
             {
                 // Binary operation
+                if (OperandIs(0, op => op.IsOutput) && OperandIs(1, op => !op.IsOutput)) return new[] { "target", "source" };
                 throw new NotSupportedException();
             }
             else if (AllInBetween(0, 1))
