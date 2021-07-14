@@ -56,7 +56,7 @@ namespace Yoakke.X86.Generator
                 try
                 {
                     var isValid = GenerateInstructionFormMatcher(form);
-                    result.AppendLine($"        if({isValid}) return;");
+                    result.AppendLine($"        if ({isValid}) return;");
                     ++validForms;
                 }
                 catch (NotSupportedException)
@@ -85,15 +85,32 @@ namespace Yoakke.X86.Generator
         private static string GenerateOperandMatcher(int index, Operand operand) => operand.Type switch
         {
             "1" or "3" => GenerateConstantValueMatcher(index, operand.Type),
+            "al" or "cl" or "ax" or "eax" or "rax" => GenerateExactRegisterMatcher(index, operand.Type),
+            "r8" or "r16" or "r32" or "r64" => GenerateSizedRegisterMatcher(index, int.Parse(operand.Type.Substring(1)) / 8),
             _ => throw new NotSupportedException(),
         };
 
         private static string GenerateConstantValueMatcher(int index, string value) =>
             $"this.Operands[{index}] is Constant c{index} && c{index} == {value}";
 
+        private static string GenerateExactRegisterMatcher(int index, string registerName) =>
+            $"ReferenceEquals(this.Operands[{index}], Registers.{Capitalize(registerName)})";
+
+        private static string GenerateSizedRegisterMatcher(int index, int width) =>
+            $"this.Operands[{index}] is Register r{index} && r{index}.Width == {ToDataWidth(width)}";
+
         private static bool IsSupportedOperand(Operand operand) => SupportedOperandTypes.Contains(operand.Type);
 
         private static string Capitalize(string name) => $"{char.ToUpper(name[0])}{name.Substring(1).ToLower()}";
+
+        private static string ToDataWidth(int width) => width switch
+        {
+            1 => "DataWidth.Byte",
+            2 => "DataWidth.Word",
+            4 => "DataWidth.Dword",
+            8 => "DataWidth.Qword",
+            _ => throw new NotSupportedException(),
+        };
 
         private static readonly string[] SupportedOperandTypes =
         {
