@@ -111,8 +111,6 @@ namespace Yoakke.X86.Generator
         private static string GenerateIndirectMatcher(int index, int width) =>
             $"this.Operands[{index}] is Indirect i{index} && i{index}.Width == {ToDataWidth(width)}";
 
-        private static bool IsSupportedOperand(Operand operand) => SupportedOperandTypes.Contains(operand.Type);
-
         private static string Capitalize(string name) => $"{char.ToUpper(name[0])}{name.Substring(1).ToLower()}";
 
         private static string ToDataWidth(int width) => width switch
@@ -122,15 +120,6 @@ namespace Yoakke.X86.Generator
             4 => "DataWidth.Dword",
             8 => "DataWidth.Qword",
             _ => throw new NotSupportedException(),
-        };
-
-        private static readonly string[] SupportedOperandTypes =
-        {
-            "1", "3", "imm4", "imm8", "imm16", "imm32", "imm64",
-            "al", "cl", "ax", "eax", "rax",
-            "r8", "r16", "r32", "r64",
-            "m",
-            "m8", "m16", "m32", "m64", "m128", "m256", "m512",
         };
     }
 }
