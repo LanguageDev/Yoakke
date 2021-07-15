@@ -87,17 +87,29 @@ namespace Yoakke.X86.Generator
             "1" or "3" => GenerateConstantValueMatcher(index, operand.Type),
             "al" or "cl" or "ax" or "eax" or "rax" => GenerateExactRegisterMatcher(index, operand.Type),
             "r8" or "r16" or "r32" or "r64" => GenerateSizedRegisterMatcher(index, int.Parse(operand.Type.Substring(1)) / 8),
+            "m" => GenerateAddressMatcher(index),
+            "m8" or "m16" or "m32" or "m64" or "m128" or "m256" or "m512" => GenerateIndirectMatcher(index, int.Parse(operand.Type.Substring(1)) / 8),
+            "imm8" or "imm16" or "imm32" or "imm64" => GenerateConstantMatcher(index, int.Parse(operand.Type.Substring(3)) / 8),
             _ => throw new NotSupportedException(),
         };
 
         private static string GenerateConstantValueMatcher(int index, string value) =>
             $"this.Operands[{index}] is Constant c{index} && c{index} == {value}";
 
+        private static string GenerateConstantMatcher(int index, int width) =>
+            $"this.Operands[{index}] is Constant i{index} && (i{index}.Width is null || i{index}.Width == {ToDataWidth(width)})";
+
         private static string GenerateExactRegisterMatcher(int index, string registerName) =>
             $"ReferenceEquals(this.Operands[{index}], Registers.{Capitalize(registerName)})";
 
         private static string GenerateSizedRegisterMatcher(int index, int width) =>
             $"this.Operands[{index}] is Register r{index} && r{index}.Width == {ToDataWidth(width)}";
+
+        private static string GenerateAddressMatcher(int index) =>
+            $"this.Operands[{index}] is Address";
+
+        private static string GenerateIndirectMatcher(int index, int width) =>
+            $"this.Operands[{index}] is Indirect i{index} && i{index}.Width == {ToDataWidth(width)}";
 
         private static bool IsSupportedOperand(Operand operand) => SupportedOperandTypes.Contains(operand.Type);
 
