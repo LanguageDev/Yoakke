@@ -17,6 +17,12 @@ namespace Yoakke.X86.Generator.Model
     public class InstructionForm
     {
         /// <summary>
+        /// The <see cref="Model.Instruction"/> this <see cref="InstructionForm"/> belongs to.
+        /// </summary>
+        [XmlIgnore]
+        public Instruction Instruction { get; set; } = new();
+
+        /// <summary>
         /// The extensions this form belongs to.
         /// </summary>
         [XmlElement("ISA")]

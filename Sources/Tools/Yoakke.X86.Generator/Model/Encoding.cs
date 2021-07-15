@@ -21,6 +21,12 @@ namespace Yoakke.X86.Generator.Model
     public class Encoding : IXmlSerializable
     {
         /// <summary>
+        /// The <see cref="InstructionForm"/> this <see cref="Encoding"/> belongs to.
+        /// </summary>
+        [XmlIgnore]
+        public InstructionForm Form { get; set; } = new();
+
+        /// <summary>
         /// The <see cref="Prefix"/>es belonging to this <see cref="Encoding"/>.
         /// </summary>
         [XmlElement("Prefix")]

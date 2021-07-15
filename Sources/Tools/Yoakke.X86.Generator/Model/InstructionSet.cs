@@ -27,5 +27,23 @@ namespace Yoakke.X86.Generator.Model
         /// </summary>
         [XmlElement("Instruction")]
         public List<Instruction> Instructions { get; set; } = new();
+
+        /// <summary>
+        /// Fixes backreferences in the model.
+        /// </summary>
+        public void FixBackreferences()
+        {
+            foreach (var instruction in this.Instructions)
+            {
+                foreach (var form in instruction.Forms)
+                {
+                    form.Instruction = instruction;
+                    foreach (var encoding in form.Encodings)
+                    {
+                        encoding.Form = form;
+                    }
+                }
+            }
+        }
     }
 }

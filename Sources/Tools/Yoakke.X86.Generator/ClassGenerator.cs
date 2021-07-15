@@ -17,11 +17,116 @@ namespace Yoakke.X86.Generator
     public class ClassGenerator
     {
         /// <summary>
-        /// Generates code for a single <see cref="Instruction"/>.
+        /// Generates the code for the <see cref="Instruction"/> parser.
+        /// </summary>
+        /// <param name="instructionSet">The ISA to generate the parser for.</param>
+        /// <param name="withClasses">The <see cref="Instruction"/>s that have a class generated.
+        /// The ones that don't, won't generate parser code.</param>
+        /// <returns>The code for the generated parser.</returns>
+        public static string GenerateInstructionParser(InstructionSet instructionSet, ISet<Instruction> withClasses)
+        {
+            // Build the tree for the parser
+            var root = new ParseNode();
+            foreach (var instruction in instructionSet.Instructions)
+            {
+                // We skip it if it doesn't have a generated class
+                if (!withClasses.Contains(instruction)) continue;
+
+                foreach (var form in instruction.Forms)
+                {
+                    try
+                    {
+                        // We go through each operand and generate a matcher just to weed out unsupported stuff
+                        foreach (var operand in form.Operands)
+                        {
+                            GenerateOperandMatcher(0, operand);
+                        }
+
+                        foreach (var encoding in form.Encodings)
+                        {
+                            // For safety we don't include anything unsupported
+                            if (encoding.HasUnsupportedElement) continue;
+
+                            // Add the element to the tree
+                            root.AddEncoding(encoding);
+                        }
+                    }
+                    catch (NotSupportedException)
+                    {
+                    }
+                }
+            }
+
+            // Generate the parser function itself
+            var result = new StringBuilder();
+
+            // A function that walks through a single node
+            void GenerateParserCase(int depth, ParseNode node)
+            {
+                if (node.Subnodes.Count > 0)
+                {
+                    // First we need to read in a byte to switch on that
+                    result!
+                        .Append(' ', depth * 4)
+                        .AppendLine($"var byte{depth} = this.Peek({depth});");
+
+                    // Now we switch on the alternatives
+                    result
+                        .Append(' ', depth * 4)
+                        .AppendLine($"switch (byte{depth})")
+                        .Append(' ', depth * 4)
+                        .AppendLine("{");
+
+                    // Generate cases
+                    foreach (var (nextByte, subnode) in node.Subnodes)
+                    {
+                        // TODO: Handle last 3 bits encoding
+
+                        result
+                            .Append(' ', depth * 4)
+                            .AppendLine($"case 0x{nextByte:x2}:")
+                            .Append(' ', depth * 4)
+                            .AppendLine("{");
+
+                        GenerateParserCase(depth + 1, subnode);
+
+                        result
+                            .Append(' ', (depth + 1) * 4)
+                            .AppendLine("break;")
+                            .Append(' ', depth * 4)
+                            .AppendLine("}");
+                    }
+
+                    // Close switch
+                    result
+                        .Append(' ', depth * 4)
+                        .AppendLine("}");
+                }
+
+                if (node.Encodings.Count > 0)
+                {
+                    // TODO: Finish this
+                    foreach (var encoding in node.Encodings)
+                    {
+                        result!
+                            .Append(' ', depth * 4)
+                            .AppendLine($"// TODO: Missing encoding for {encoding.Form.Instruction.Name}");
+                    }
+                }
+            }
+
+            // Call for the root
+            GenerateParserCase(0, root);
+
+            return result.ToString();
+        }
+
+        /// <summary>
+        /// Generates code for a single <see cref="Instruction"/> cass.
         /// </summary>
         /// <param name="instruction">The <see cref="Instruction"/> to generate code for.</param>
         /// <returns>The built class.</returns>
-        public static string GenerateInstruction(Instruction instruction)
+        public static string GenerateInstructionClass(Instruction instruction)
         {
             var result = new StringBuilder();
 
