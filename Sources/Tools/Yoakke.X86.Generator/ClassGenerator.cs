@@ -80,11 +80,15 @@ namespace Yoakke.X86.Generator
                     // Generate cases
                     foreach (var (nextByte, subnode) in node.Subnodes)
                     {
-                        // TODO: Handle last 3 bits encoding
+                        // Handle last 3 bits encoding
+                        for (var i = 0; i < (subnode.Last3BitsEncodeRegister ? 8 : 1); ++i)
+                        {
+                            result
+                                .Append(' ', depth * 4)
+                                .AppendLine($"case 0x{nextByte + i:x2}:");
+                        }
 
                         result
-                            .Append(' ', depth * 4)
-                            .AppendLine($"case 0x{nextByte:x2}:")
                             .Append(' ', depth * 4)
                             .AppendLine("{");
 
