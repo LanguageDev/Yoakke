@@ -55,11 +55,13 @@ namespace Yoakke.X86.Generator
             case MatchType.Opcode:
                 this.GenerateOpcodeNode(node);
                 break;
+
             case MatchType.ModRmReg:
                 // We pass in the parent
                 Debug.Assert(node.Parent is not null, "ModRM encoding has to have opcodes parsed before");
                 this.GenerateModRmNode(node.Parent);
                 break;
+
             case MatchType.Prefix:
                 this.GeneratePrefixNode(node);
                 break;
@@ -184,7 +186,7 @@ namespace Yoakke.X86.Generator
                 Debug.Assert(modrm.Mode == "11" || modrm.Mode == modrm.Rm, "Mode and RM have to reference the same argument");
                 var rmOperandIndex = int.Parse(modrm.Rm.Substring(1));
                 args[rmOperandIndex] = "rm_op";
-                this.Indented().AppendLine("Operand rm_op = this.ParseModRM(modrm_byte);");
+                this.Indented().AppendLine("var rm_op = this.ParseModRM(modrm_byte);");
 
                 this.modrmConsumed = prevModrmConsumed;
             }
