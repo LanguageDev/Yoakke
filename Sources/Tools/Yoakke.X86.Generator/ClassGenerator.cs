@@ -143,12 +143,13 @@ namespace Yoakke.X86.Generator
                 }
 
                 // Immediates
-                if (encoding.Immediates.Count > 0)
+                for (var i = 0; i < encoding.Immediates.Count; ++i)
                 {
+                    var immediate = encoding.Immediates[i];
                     result
                         .Append(' ', depth * 4)
-                        .AppendLine($"// TODO: Missing encoding for {encoding.Form.Instruction.Name} (IMMEDIATES)");
-                    return;
+                        .AppendLine($"var imm{i} = this.ParseImmediate({i}, {immediate.Size});");
+                    args[immediate.OperandNumber] = $"imm{i}";
                 }
 
                 // If it's a last 3 bit encoding, do that here
