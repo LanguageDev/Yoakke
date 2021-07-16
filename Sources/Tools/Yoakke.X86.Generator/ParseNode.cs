@@ -19,7 +19,7 @@ namespace Yoakke.X86.Generator
         /// <summary>
         /// The subnodes when we match a certain byte.
         /// </summary>
-        public IDictionary<byte, ParseNode> Subnodes { get; } = new Dictionary<byte, ParseNode>();
+        public IDictionary<byte, (MatchType, ParseNode)> Subnodes { get; } = new Dictionary<byte, (MatchType, ParseNode)>();
 
         /// <summary>
         /// The encodings for this node.
@@ -36,8 +36,8 @@ namespace Yoakke.X86.Generator
         {
             if (opcodes.Count == 0)
             {
-                // Base-case
-                root.Encodings.Add(encoding);
+                // Base-case, we deal with prefixes
+                AddPrefixEncoding(root, encoding, encoding.Prefixes);
                 return;
             }
 
@@ -50,11 +50,33 @@ namespace Yoakke.X86.Generator
                 var code = (byte)(opcode.Code + i);
                 if (!root.Subnodes.TryGetValue(code, out var nextRoot))
                 {
-                    nextRoot = new ParseNode();
+                    nextRoot = (MatchType.Opcode, new ParseNode());
                     root.Subnodes.Add(code, nextRoot);
                 }
-                AddEncoding(nextRoot, encoding, nextOpcodes);
+                AddEncoding(nextRoot.Item2, encoding, nextOpcodes);
             }
+        }
+
+        private static void AddPrefixEncoding(ParseNode root, Encoding encoding, IReadOnlyList<Prefix> prefixes)
+        {
+            // To save on branches, we order the prefix checks
+            prefixes = prefixes.OrderBy(p => p.Code).ToList();
+
+            // Add each prefix
+            foreach (var prefix in prefixes)
+            {
+                if (!root.Subnodes.TryGetValue(prefix.Code, out var nextRoot))
+                {
+                    nextRoot = (MatchType.Prefix, new ParseNode());
+                    root.Subnodes.Add(prefix.Code, nextRoot);
+                }
+
+                Debug.Assert(nextRoot.Item1 == MatchType.Prefix, "Can't mix opcode with prefix matching");
+                root = nextRoot.Item2;
+            }
+
+            // Add the encoding
+            root.Encodings.Add(encoding);
         }
     }
 }

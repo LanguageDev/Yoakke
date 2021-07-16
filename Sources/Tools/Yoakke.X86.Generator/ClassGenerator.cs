@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -61,44 +62,69 @@ namespace Yoakke.X86.Generator
             var result = new StringBuilder();
 
             // A function that walks through a single node
-            void GenerateParserCase(int depth, ParseNode node)
+            void GenerateParserCase(int depth, MatchType matchType, ParseNode node)
             {
                 if (node.Subnodes.Count > 0)
                 {
-                    // First we need to read in a byte to switch on that
-                    result!
-                        .Append(' ', depth * 4)
-                        .AppendLine($"var byte{depth} = this.Peek({depth});");
-
-                    // Now we switch on the alternatives
-                    result
-                        .Append(' ', depth * 4)
-                        .AppendLine($"switch (byte{depth})")
-                        .Append(' ', depth * 4)
-                        .AppendLine("{");
-
-                    // Generate cases
-                    foreach (var (nextByte, subnode) in node.Subnodes)
+                    if (matchType == MatchType.Opcode)
                     {
+                        // First we need to read in a byte to switch on that
+                        result!
+                            .Append(' ', depth * 4)
+                            .AppendLine($"var byte{depth} = this.Peek({depth});");
+
+                        // Now we switch on the alternatives
                         result
                             .Append(' ', depth * 4)
-                            .AppendLine($"case 0x{nextByte:x2}:")
+                            .AppendLine($"switch (byte{depth})")
                             .Append(' ', depth * 4)
                             .AppendLine("{");
 
-                        GenerateParserCase(depth + 1, subnode);
+                        // Generate cases
+                        foreach (var (nextByte, subnode) in node.Subnodes)
+                        {
+                            result
+                                .Append(' ', depth * 4)
+                                .AppendLine($"case 0x{nextByte:x2}:")
+                                .Append(' ', depth * 4)
+                                .AppendLine("{");
 
+                            GenerateParserCase(depth + 1, subnode.Item1, subnode.Item2);
+
+                            result
+                                .Append(' ', (depth + 1) * 4)
+                                .AppendLine("break;")
+                                .Append(' ', depth * 4)
+                                .AppendLine("}");
+                        }
+
+                        // Close switch
                         result
-                            .Append(' ', (depth + 1) * 4)
-                            .AppendLine("break;")
                             .Append(' ', depth * 4)
                             .AppendLine("}");
                     }
+                    else if (matchType == MatchType.Prefix)
+                    {
+                        // It's a prefix we need to match on
+                        foreach (var (prefixByte, subnode) in node.Subnodes)
+                        {
+                            result
+                                .Append(' ', depth * 4)
+                                .AppendLine($"if (this.HasPrefix(0x{prefixByte:x2})")
+                                .Append(' ', depth * 4)
+                                .AppendLine("{");
 
-                    // Close switch
-                    result
-                        .Append(' ', depth * 4)
-                        .AppendLine("}");
+                            GenerateParserCase(depth + 1, subnode.Item1, subnode.Item2);
+
+                            result
+                                .Append(' ', depth * 4)
+                                .AppendLine("}");
+                        }
+                    }
+                    else
+                    {
+                        throw new NotImplementedException();
+                    }
                 }
 
                 foreach (var encoding in node.Encodings)
@@ -113,14 +139,7 @@ namespace Yoakke.X86.Generator
                 var operands = encoding.Form.Operands;
                 var args = new string[encoding.Form.Operands.Count];
 
-                // Prefix
-                if (encoding.Prefixes.Count > 0)
-                {
-                    result
-                        .Append(' ', depth * 4)
-                        .AppendLine($"// TODO: Missing encoding for {encoding.Form.Instruction.Name} (PREFIX)");
-                    return;
-                }
+                /* Prefixes are already matched in the tree are already eaten */
 
                 /* Opcodes are already eaten */
 
@@ -129,7 +148,7 @@ namespace Yoakke.X86.Generator
                 {
                     result
                         .Append(' ', depth * 4)
-                        .AppendLine($"// TODO: Missing encoding for {encoding.Form.Instruction.Name} (ModRM)");
+                        .AppendLine($"// TODO: Missing encoding for {encoding.Form.Instruction.Name} (MODRM)");
                     return;
                 }
 
@@ -182,7 +201,7 @@ namespace Yoakke.X86.Generator
             }
 
             // Call for the root
-            GenerateParserCase(0, root);
+            GenerateParserCase(0, MatchType.Opcode, root);
 
             return result.ToString();
         }
