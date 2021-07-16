@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Yoakke.X86.Generator.Model;
@@ -37,7 +38,7 @@ namespace Yoakke.X86.Generator
             if (opcodes.Count == 0)
             {
                 // Base-case, we deal with prefixes
-                AddPrefixEncoding(root, encoding, encoding.Prefixes);
+                AddModRmEncoding(root, encoding);
                 return;
             }
 
@@ -57,10 +58,30 @@ namespace Yoakke.X86.Generator
             }
         }
 
-        private static void AddPrefixEncoding(ParseNode root, Encoding encoding, IReadOnlyList<Prefix> prefixes)
+        private static void AddModRmEncoding(ParseNode root, Encoding encoding)
+        {
+            if (encoding.ModRM is not null && !encoding.ModRM.Reg.StartsWith('#'))
+            {
+                // The ModRM byte contains 3 bits as an opcode extension
+                // Inject a match node here
+                var bits = byte.Parse(encoding.ModRM.Reg, NumberStyles.HexNumber);
+                if (!root.Subnodes.TryGetValue(bits, out var nextRoot))
+                {
+                    nextRoot = (MatchType.ModRmReg, new ParseNode());
+                    root.Subnodes.Add(bits, nextRoot);
+                }
+
+                Debug.Assert(nextRoot.Item1 == MatchType.ModRmReg, "Can't mix opcode with prefix matching");
+                root = nextRoot.Item2;
+            }
+
+            AddPrefixEncoding(root, encoding);
+        }
+
+        private static void AddPrefixEncoding(ParseNode root, Encoding encoding)
         {
             // To save on branches, we order the prefix checks
-            prefixes = prefixes.OrderBy(p => p.Code).ToList();
+            var prefixes = encoding.Prefixes.OrderBy(p => p.Code).ToList();
 
             // Add each prefix
             foreach (var prefix in prefixes)

@@ -24,5 +24,10 @@ namespace Yoakke.X86.Generator
         /// Requires a matching prefix.
         /// </summary>
         Prefix,
+
+        /// <summary>
+        /// The ModRM register extends the opcode.
+        /// </summary>
+        ModRmReg,
     }
 }

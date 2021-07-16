@@ -49,7 +49,7 @@ namespace Yoakke.X86.Generator
             Console.WriteLine(result);
             Console.WriteLine($"supported: {supported}, unsupported: {unsupported}");
 
-            var parser = ClassGenerator.GenerateInstructionParser(isa, withClasses);
+            var parser = ParserGenerator.Generate(isa, withClasses);
             Console.WriteLine(parser);
         }
     }
