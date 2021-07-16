@@ -27,36 +27,34 @@ namespace Yoakke.X86.Generator
         public IList<Encoding> Encodings { get; } = new List<Encoding>();
 
         /// <summary>
-        /// True, if the last 3 bits encode a register.
-        /// </summary>
-        public bool Last3BitsEncodeRegister { get; set; }
-
-        /// <summary>
         /// Adds an <see cref="Encoding"/> to this tree.
         /// </summary>
         /// <param name="encoding">The <see cref="Encoding"/> to add.</param>
-        public void AddEncoding(Encoding encoding)
+        public void AddEncoding(Encoding encoding) => AddEncoding(this, encoding, encoding.Opcodes);
+
+        private static void AddEncoding(ParseNode root, Encoding encoding, IReadOnlyList<Opcode> opcodes)
         {
-            var root = this;
-            foreach (var opcode in encoding.Opcodes)
+            if (opcodes.Count == 0)
             {
-                if (!root.Subnodes.TryGetValue(opcode.Code, out var nextRoot))
-                {
-                    nextRoot = new ParseNode();
-                    root.Subnodes.Add(opcode.Code, nextRoot);
-                }
-                root = nextRoot;
+                // Base-case
+                root.Encodings.Add(encoding);
+                return;
             }
 
-            if (encoding.Opcodes.Count > 0 && encoding.Opcodes[encoding.Opcodes.Count - 1].RegisterCodeAtEnd is not null)
+            // Recursive case
+            var opcode = opcodes[0];
+            var nextOpcodes = opcodes.Skip(1).ToList();
+
+            for (var i = 0; i < (opcode.Last3BitsEncodedOperand is null ? 1 : 8); ++i)
             {
-                Debug.Assert(root.Subnodes.Count == 0, "Can't handle subnodes with last bits encoding");
-                Debug.Assert(
-                    root.Encodings.All(e => e.Opcodes[e.Opcodes.Count - 1].RegisterCodeAtEnd is not null),
-                    "All encodings must have the last 3 bits encoding the register, if one does it");
-                root.Last3BitsEncodeRegister = true;
+                var code = (byte)(opcode.Code + i);
+                if (!root.Subnodes.TryGetValue(code, out var nextRoot))
+                {
+                    nextRoot = new ParseNode();
+                    root.Subnodes.Add(code, nextRoot);
+                }
+                AddEncoding(nextRoot, encoding, nextOpcodes);
             }
-            root.Encodings.Add(encoding);
         }
     }
 }

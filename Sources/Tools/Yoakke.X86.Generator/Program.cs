@@ -17,7 +17,7 @@ namespace Yoakke.X86.Generator
         private static void Main(string[] args)
         {
             var serializer = new XmlSerializer(typeof(InstructionSet));
-            var isa = (InstructionSet?)serializer.Deserialize(new FileStream(@"c:\TMP\x86_gen\Opcodes\opcodes\x86.xml", FileMode.Open, FileAccess.Read));
+            var isa = (InstructionSet?)serializer.Deserialize(new FileStream(args[0], FileMode.Open, FileAccess.Read));
             if (isa is null) throw new InvalidOperationException();
             isa.FixBackreferences();
 
