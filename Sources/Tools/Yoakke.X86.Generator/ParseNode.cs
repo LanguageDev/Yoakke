@@ -30,7 +30,7 @@ namespace Yoakke.X86.Generator
         /// <summary>
         /// The subnodes when we match a certain byte.
         /// </summary>
-        public IDictionary<byte, ParseNode> Subnodes { get; } = new Dictionary<byte, ParseNode>();
+        public IDictionary<byte, ParseNode> Subnodes { get; } = new SortedDictionary<byte, ParseNode>();
 
         /// <summary>
         /// The encodings for this node.
