@@ -184,39 +184,7 @@ namespace Yoakke.X86.Generator
                 Debug.Assert(modrm.Mode == "11" || modrm.Mode == modrm.Rm, "Mode and RM have to reference the same argument");
                 var rmOperandIndex = int.Parse(modrm.Rm.Substring(1));
                 args[rmOperandIndex] = "rm_op";
-                this.Indented().AppendLine("Operand rm_op = null;");
-                this.Indented().AppendLine("switch (modrm_byte >> 6)");
-                this.Indented().AppendLine("{");
-
-                // Mode = 00
-                this.Indented().AppendLine("case 0b00:");
-                this.Indent();
-                this.Indented().AppendLine($"// TODO: Missing encoding for {encoding.Form.Instruction.Name} (Mode = 00)");
-                this.Indented().AppendLine("break;");
-                this.Unindent();
-
-                // Mode = 01
-                this.Indented().AppendLine("case 0b01:");
-                this.Indent();
-                this.Indented().AppendLine($"// TODO: Missing encoding for {encoding.Form.Instruction.Name} (Mode = 01)");
-                this.Indented().AppendLine("break;");
-                this.Unindent();
-
-                // Mode = 10
-                this.Indented().AppendLine("case 0b10:");
-                this.Indent();
-                this.Indented().AppendLine($"// TODO: Missing encoding for {encoding.Form.Instruction.Name} (Mode = 10)");
-                this.Indented().AppendLine("break;");
-                this.Unindent();
-
-                // Mode = 11
-                this.Indented().AppendLine("case 0b11:");
-                this.Indent();
-                this.Indented().AppendLine($"rm_op = Registers.FromIndex(modrm_byte & 0b111);");
-                this.Indented().AppendLine("break;");
-                this.Unindent();
-
-                this.Indented().AppendLine("}");
+                this.Indented().AppendLine("Operand rm_op = this.ParseModRM(modrm_byte);");
 
                 this.modrmConsumed = prevModrmConsumed;
             }
