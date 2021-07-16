@@ -101,16 +101,61 @@ namespace Yoakke.X86.Generator
                         .AppendLine("}");
                 }
 
-                if (node.Encodings.Count > 0)
+                foreach (var encoding in node.Encodings)
                 {
-                    // TODO: Finish this
-                    foreach (var encoding in node.Encodings)
-                    {
-                        result!
-                            .Append(' ', depth * 4)
-                            .AppendLine($"// TODO: Missing encoding for {encoding.Form.Instruction.Name}");
-                    }
+                    GenerateParserLeafCase(depth, encoding);
                 }
+            }
+
+            // A function that generates the leaf for a case
+            void GenerateParserLeafCase(int depth, Model.Encoding encoding)
+            {
+                var args = new List<string>();
+
+                // Prefix
+                if (encoding.Prefixes.Count > 0)
+                {
+                    result
+                        .Append(' ', depth * 4)
+                        .AppendLine($"// TODO: Missing encoding for {encoding.Form.Instruction.Name} (PREFIX)");
+                    return;
+                }
+
+                /* Opcodes are already eaten */
+
+                // ModRM
+                if (encoding.ModRM is not null)
+                {
+                    result
+                        .Append(' ', depth * 4)
+                        .AppendLine($"// TODO: Missing encoding for {encoding.Form.Instruction.Name} (ModRM)");
+                    return;
+                }
+
+                // Postbyte
+                if (encoding.Postbyte is not null)
+                {
+                    result
+                        .Append(' ', depth * 4)
+                        .AppendLine($"// TODO: Missing encoding for {encoding.Form.Instruction.Name} (POSTBYTE)");
+                    return;
+                }
+
+                // Immediates
+                if (encoding.Immediates.Count > 0)
+                {
+                    result
+                        .Append(' ', depth * 4)
+                        .AppendLine($"// TODO: Missing encoding for {encoding.Form.Instruction.Name} (IMMEDIATES)");
+                    return;
+                }
+
+                // We actually support everything
+                var argsStr = string.Join(", ", args);
+                var name = Capitalize(encoding.Form.Instruction.Name);
+                result
+                    .Append(' ', depth * 4)
+                    .AppendLine($"return new {name}({argsStr});");
             }
 
             // Call for the root
