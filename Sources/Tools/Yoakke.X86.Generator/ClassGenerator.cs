@@ -110,7 +110,8 @@ namespace Yoakke.X86.Generator
             // A function that generates the leaf for a case
             void GenerateParserLeafCase(int depth, Model.Encoding encoding)
             {
-                var args = new List<string>();
+                var operands = encoding.Form.Operands;
+                var args = new string[encoding.Form.Operands.Count];
 
                 // Prefix
                 if (encoding.Prefixes.Count > 0)
@@ -148,6 +149,27 @@ namespace Yoakke.X86.Generator
                         .Append(' ', depth * 4)
                         .AppendLine($"// TODO: Missing encoding for {encoding.Form.Instruction.Name} (IMMEDIATES)");
                     return;
+                }
+
+                // If it's a last 3 bit encoding, do that here
+                for (var i = 0; i < encoding.Opcodes.Count; ++i)
+                {
+                    var last3 = encoding.Opcodes[i].Last3BitsEncodedOperand;
+                    if (last3 is not null)
+                    {
+                        // TODO: Pass in size
+                        args[last3.Value] = $"Registers.FromIndex(byte{i} & 0b111)";
+                    }
+                }
+
+                // Deduce constant operands
+                for (var i = 0; i < operands.Count; ++i)
+                {
+                    // We don't care about already deduced args
+                    if (args[i] is not null) continue;
+
+                    var op = GenerateParserConstantOperand(operands[i]);
+                    if (op is not null) args[i] = op;
                 }
 
                 // We actually support everything
@@ -268,6 +290,18 @@ namespace Yoakke.X86.Generator
             4 => "DataWidth.Dword",
             8 => "DataWidth.Qword",
             _ => throw new NotSupportedException(),
+        };
+
+        // Returns a not null string for operands that are constants and don't require byte-parsing
+        private static string? GenerateParserConstantOperand(Operand operand) => operand.Type switch
+        {
+            "1" or "3" => $"new Constant({operand.Type})",
+            "al" => $"Registers.Al",
+            "cl" => $"Registers.Cl",
+            "ax" => $"Registers.Ax",
+            "eax" => $"Registers.Eax",
+            "rax" => $"Registers.Rax",
+            _ => null,
         };
     }
 }
