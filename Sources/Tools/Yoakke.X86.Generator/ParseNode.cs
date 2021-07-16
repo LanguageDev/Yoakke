@@ -18,9 +18,19 @@ namespace Yoakke.X86.Generator
     public class ParseNode
     {
         /// <summary>
+        /// The parent node of this one.
+        /// </summary>
+        public ParseNode? Parent { get; }
+
+        /// <summary>
+        /// The <see cref="MatchType"/> to get to this node.
+        /// </summary>
+        public MatchType Type { get; }
+
+        /// <summary>
         /// The subnodes when we match a certain byte.
         /// </summary>
-        public IDictionary<byte, (MatchType, ParseNode)> Subnodes { get; } = new Dictionary<byte, (MatchType, ParseNode)>();
+        public IDictionary<byte, ParseNode> Subnodes { get; } = new Dictionary<byte, ParseNode>();
 
         /// <summary>
         /// The encodings for this node.
@@ -32,6 +42,17 @@ namespace Yoakke.X86.Generator
         /// </summary>
         /// <param name="encoding">The <see cref="Encoding"/> to add.</param>
         public void AddEncoding(Encoding encoding) => AddEncoding(this, encoding, encoding.Opcodes);
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ParseNode"/> class.
+        /// </summary>
+        /// <param name="type">The <see cref="MatchType"/> for this node.</param>
+        /// <param name="parent">The parent node of this one.</param>
+        public ParseNode(MatchType type, ParseNode? parent = null)
+        {
+            this.Type = type;
+            this.Parent = parent;
+        }
 
         private static void AddEncoding(ParseNode root, Encoding encoding, IReadOnlyList<Opcode> opcodes)
         {
@@ -51,10 +72,10 @@ namespace Yoakke.X86.Generator
                 var code = (byte)(opcode.Code + i);
                 if (!root.Subnodes.TryGetValue(code, out var nextRoot))
                 {
-                    nextRoot = (MatchType.Opcode, new ParseNode());
+                    nextRoot = new ParseNode(MatchType.Opcode, root);
                     root.Subnodes.Add(code, nextRoot);
                 }
-                AddEncoding(nextRoot.Item2, encoding, nextOpcodes);
+                AddEncoding(nextRoot, encoding, nextOpcodes);
             }
         }
 
@@ -67,12 +88,12 @@ namespace Yoakke.X86.Generator
                 var bits = byte.Parse(encoding.ModRM.Reg, NumberStyles.HexNumber);
                 if (!root.Subnodes.TryGetValue(bits, out var nextRoot))
                 {
-                    nextRoot = (MatchType.ModRmReg, new ParseNode());
+                    nextRoot = new ParseNode(MatchType.ModRmReg, root);
                     root.Subnodes.Add(bits, nextRoot);
                 }
 
-                Debug.Assert(nextRoot.Item1 == MatchType.ModRmReg, "Can't mix opcode with prefix matching");
-                root = nextRoot.Item2;
+                Debug.Assert(nextRoot.Type == MatchType.ModRmReg, "Can't mix opcode with prefix matching");
+                root = nextRoot;
             }
 
             AddPrefixEncoding(root, encoding);
@@ -88,12 +109,12 @@ namespace Yoakke.X86.Generator
             {
                 if (!root.Subnodes.TryGetValue(prefix.Code, out var nextRoot))
                 {
-                    nextRoot = (MatchType.Prefix, new ParseNode());
+                    nextRoot = new ParseNode(MatchType.Prefix, root);
                     root.Subnodes.Add(prefix.Code, nextRoot);
                 }
 
-                Debug.Assert(nextRoot.Item1 == MatchType.Prefix, "Can't mix opcode with prefix matching");
-                root = nextRoot.Item2;
+                Debug.Assert(nextRoot.Type == MatchType.Prefix, "Can't mix opcode with prefix matching");
+                root = nextRoot;
             }
 
             // Add the encoding

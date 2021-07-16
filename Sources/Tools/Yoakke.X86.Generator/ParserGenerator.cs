@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,7 +35,7 @@ namespace Yoakke.X86.Generator
         private readonly InstructionSet instructionSet;
         private readonly ISet<Instruction> withClasses;
         private readonly StringBuilder resultBuilder;
-        private ParseNode parseTree = new();
+        private ParseNode parseTree = new(MatchType.None);
         private int indent = 0;
 
         private ParserGenerator(InstructionSet instructionSet, ISet<Instruction> withClasses)
@@ -44,17 +45,19 @@ namespace Yoakke.X86.Generator
             this.resultBuilder = new();
         }
 
-        private void GenerateParser() => this.GenerateNode(MatchType.Opcode, this.parseTree);
+        private void GenerateParser() => this.GenerateNode(this.parseTree);
 
-        private void GenerateNode(MatchType matchType, ParseNode node)
+        private void GenerateNode(ParseNode node)
         {
-            switch (matchType)
+            switch (node.Type)
             {
             case MatchType.Opcode:
                 this.GenerateOpcodeNode(node);
                 break;
             case MatchType.ModRmReg:
-                this.GenerateModRmNode(node);
+                // We pass in the parent
+                Debug.Assert(node.Parent is not null, "ModRM encoding has to have opcodes parsed before");
+                this.GenerateModRmNode(node.Parent);
                 break;
             case MatchType.Prefix:
                 this.GeneratePrefixNode(node);
@@ -83,7 +86,7 @@ namespace Yoakke.X86.Generator
                 this.Indented().AppendLine("{");
                 this.Indent();
 
-                this.GenerateNode(subnode.Item1, subnode.Item2);
+                this.GenerateNode(subnode);
 
                 this.Indented().AppendLine("break;");
                 this.Unindent();
@@ -93,11 +96,36 @@ namespace Yoakke.X86.Generator
             this.Indented().AppendLine("}");
         }
 
-        private void GenerateModRmNode(ParseNode node)
+        private void GenerateModRmNode(ParseNode parentNode)
         {
-            if (node.Subnodes.Count == 0) return;
+            if (parentNode.Subnodes.Count == 0) return;
 
-            this.Indented().AppendLine("// TODO: MOD/RM");
+            Debug.Assert(parentNode.Subnodes.Count <= 8, "There must be at most 8 encodings for ModRM extensions");
+            Debug.Assert(parentNode.Encodings.Count == 0, "If there are ModRM extensions, there can't be encodings");
+
+            // Read in a byte
+            this.Indented().AppendLine($"var byte{this.indent} = this.ParseByte();");
+            // Switch on alternatives for the register
+            this.Indented().AppendLine($"switch ((byte{this.indent} >> 3) & 0b111)");
+            this.Indented().AppendLine("{");
+
+            // The different cases
+            foreach (var (regByte, subnode) in parentNode.Subnodes)
+            {
+                this.Indented().AppendLine($"case 0x{regByte:x2}:");
+                this.Indented().AppendLine("{");
+                this.Indent();
+
+                // We unroll the children of the subnodes here manually, otherwise we stackoverflow
+                foreach (var subsubnode in subnode.Subnodes.Values) this.GenerateNode(subsubnode);
+                foreach (var encoding in subnode.Encodings) this.GenerateLeaf(encoding);
+
+                this.Indented().AppendLine("break;");
+                this.Unindent();
+                this.Indented().AppendLine("}");
+            }
+
+            this.Indented().AppendLine("}");
         }
 
         private void GeneratePrefixNode(ParseNode node)
@@ -110,7 +138,7 @@ namespace Yoakke.X86.Generator
                 this.Indented().AppendLine("{");
                 this.Indent();
 
-                this.GenerateNode(subnode.Item1, subnode.Item2);
+                this.GenerateNode(subnode);
 
                 this.Unindent();
                 this.Indented().AppendLine("}");
@@ -188,7 +216,7 @@ namespace Yoakke.X86.Generator
         private void BuildParserTree()
         {
             // Build the tree for the parser
-            var root = new ParseNode();
+            var root = new ParseNode(MatchType.Opcode);
             foreach (var instruction in this.instructionSet.Instructions)
             {
                 // We skip it if it doesn't have a generated class

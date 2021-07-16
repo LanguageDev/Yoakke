@@ -29,5 +29,10 @@ namespace Yoakke.X86.Generator
         /// The ModRM register extends the opcode.
         /// </summary>
         ModRmReg,
+
+        /// <summary>
+        /// Anything else, usually a leaf.
+        /// </summary>
+        None,
     }
 }
