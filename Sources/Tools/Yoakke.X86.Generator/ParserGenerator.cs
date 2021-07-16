@@ -37,6 +37,7 @@ namespace Yoakke.X86.Generator
         private readonly StringBuilder resultBuilder;
         private ParseNode parseTree = new(MatchType.None);
         private int indent = 0;
+        private bool modrmConsumed;
 
         private ParserGenerator(InstructionSet instructionSet, ISet<Instruction> withClasses)
         {
@@ -94,6 +95,8 @@ namespace Yoakke.X86.Generator
             }
 
             this.Indented().AppendLine("}");
+            // We didn't use the byte, un-eat it
+            this.Indented().AppendLine("this.UnparseByte();");
         }
 
         private void GenerateModRmNode(ParseNode parentNode)
@@ -103,10 +106,11 @@ namespace Yoakke.X86.Generator
             Debug.Assert(parentNode.Subnodes.Count <= 8, "There must be at most 8 encodings for ModRM extensions");
             Debug.Assert(parentNode.Encodings.Count == 0, "If there are ModRM extensions, there can't be encodings");
 
-            // Read in a byte
-            this.Indented().AppendLine($"var byte{this.indent} = this.ParseByte();");
+            // Read in the ModRM byte
+            this.Indented().AppendLine("var modrm_byte = this.ParseByte();");
+            this.modrmConsumed = true;
             // Switch on alternatives for the register
-            this.Indented().AppendLine($"switch ((byte{this.indent} >> 3) & 0b111)");
+            this.Indented().AppendLine("switch ((modrm_byte >> 3) & 0b111)");
             this.Indented().AppendLine("{");
 
             // The different cases
@@ -126,6 +130,7 @@ namespace Yoakke.X86.Generator
             }
 
             this.Indented().AppendLine("}");
+            this.modrmConsumed = false;
         }
 
         private void GeneratePrefixNode(ParseNode node)
@@ -158,17 +163,62 @@ namespace Yoakke.X86.Generator
             if (encoding.ModRM is not null)
             {
                 var modrm = encoding.ModRM;
-                if (!modrm.Reg.StartsWith('#'))
+                // TODO: Check if we can safely skip this?
+                // We handle this with the regular ModRM
+                if (modrm.Mode == "11") return;
+
+                var prevModrmConsumed = this.modrmConsumed;
+                // Consume ModRM, if we haven't already
+                if (!this.modrmConsumed) this.Indented().AppendLine("var modrm_byte = this.ParseByte();");
+                this.modrmConsumed = true;
+
+                if (modrm.Reg.StartsWith('#'))
                 {
-                    // It's an opcode extension
-                    this.Indented().AppendLine($"// TODO: Missing encoding for {encoding.Form.Instruction.Name} (ModRM opcode extension)");
-                    return;
+                    // Regular ModRM, not opcode extension
+                    // We can just convert the reg
+                    var regOperandIndex = int.Parse(modrm.Reg.Substring(1));
+                    args[regOperandIndex] = "Registers.FromIndex((modrm_byte >> 3) & 0b111)";
                 }
-                else
-                {
-                    this.Indented().AppendLine($"// TODO: Missing encoding for {encoding.Form.Instruction.Name} (ModRM operands)");
-                    return;
-                }
+
+                // Mode and RM
+                Debug.Assert(modrm.Mode == "11" || modrm.Mode == modrm.Rm, "Mode and RM have to reference the same argument");
+                var rmOperandIndex = int.Parse(modrm.Rm.Substring(1));
+                args[rmOperandIndex] = "rm_op";
+                this.Indented().AppendLine("Operand rm_op = null;");
+                this.Indented().AppendLine("switch (modrm_byte >> 6)");
+                this.Indented().AppendLine("{");
+
+                // Mode = 00
+                this.Indented().AppendLine("case 0b00:");
+                this.Indent();
+                this.Indented().AppendLine($"// TODO: Missing encoding for {encoding.Form.Instruction.Name} (Mode = 00)");
+                this.Indented().AppendLine("break;");
+                this.Unindent();
+
+                // Mode = 01
+                this.Indented().AppendLine("case 0b01:");
+                this.Indent();
+                this.Indented().AppendLine($"// TODO: Missing encoding for {encoding.Form.Instruction.Name} (Mode = 01)");
+                this.Indented().AppendLine("break;");
+                this.Unindent();
+
+                // Mode = 10
+                this.Indented().AppendLine("case 0b10:");
+                this.Indent();
+                this.Indented().AppendLine($"// TODO: Missing encoding for {encoding.Form.Instruction.Name} (Mode = 10)");
+                this.Indented().AppendLine("break;");
+                this.Unindent();
+
+                // Mode = 11
+                this.Indented().AppendLine("case 0b11:");
+                this.Indent();
+                this.Indented().AppendLine($"rm_op = Registers.FromIndex(modrm_byte & 0b111);");
+                this.Indented().AppendLine("break;");
+                this.Unindent();
+
+                this.Indented().AppendLine("}");
+
+                this.modrmConsumed = prevModrmConsumed;
             }
 
             // Postbyte
