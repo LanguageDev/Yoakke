@@ -50,31 +50,22 @@ namespace Yoakke.X86.Generator
 
         private void GenerateNode(ParseNode node)
         {
-            switch (node.Type)
-            {
-            case MatchType.Opcode:
-                this.GenerateOpcodeNode(node);
-                break;
+            var subnodesByType = node.Subnodes.GroupBy(s => s.Value.Type);
 
-            case MatchType.ModRmReg:
-                // We pass in the parent
-                Debug.Assert(node.Parent is not null, "ModRM encoding has to have opcodes parsed before");
-                this.GenerateModRmNode(node.Parent);
-                break;
+            var byOpcode = subnodesByType.FirstOrDefault(g => g.Key == MatchType.Opcode);
+            var byModRmReg = subnodesByType.FirstOrDefault(g => g.Key == MatchType.ModRmReg);
+            var byPrefix = subnodesByType.FirstOrDefault(g => g.Key == MatchType.Prefix);
 
-            case MatchType.Prefix:
-                this.GeneratePrefixNode(node);
-                break;
-
-            default: throw new NotImplementedException();
-            }
+            this.GenerateOpcodeMatches(byOpcode);
+            this.GenerateModRmRegMatches(byModRmReg);
+            this.GeneratePrefixMatches(byPrefix);
 
             foreach (var encoding in node.Encodings) this.GenerateLeaf(encoding);
         }
 
-        private void GenerateOpcodeNode(ParseNode node)
+        private void GenerateOpcodeMatches(IEnumerable<KeyValuePair<byte, ParseNode>>? nodes)
         {
-            if (node.Subnodes.Count == 0) return;
+            if (nodes is null) return;
 
             // Read in a byte
             this.Indented().AppendLine($"var byte{this.indent} = this.ParseByte();");
@@ -83,7 +74,7 @@ namespace Yoakke.X86.Generator
             this.Indented().AppendLine("{");
 
             // The different cases
-            foreach (var (nextByte, subnode) in node.Subnodes)
+            foreach (var (nextByte, subnode) in nodes)
             {
                 this.Indented().AppendLine($"case 0x{nextByte:x2}:");
                 this.Indented().AppendLine("{");
@@ -101,12 +92,11 @@ namespace Yoakke.X86.Generator
             this.Indented().AppendLine("this.UnparseByte();");
         }
 
-        private void GenerateModRmNode(ParseNode parentNode)
+        private void GenerateModRmRegMatches(IEnumerable<KeyValuePair<byte, ParseNode>>? nodes)
         {
-            if (parentNode.Subnodes.Count == 0) return;
+            if (nodes is null) return;
 
-            Debug.Assert(parentNode.Subnodes.Count <= 8, "There must be at most 8 encodings for ModRM extensions");
-            Debug.Assert(parentNode.Encodings.Count == 0, "If there are ModRM extensions, there can't be encodings");
+            Debug.Assert(nodes.Count() <= 8, "There must be at most 8 encodings for ModRM extensions");
 
             // Read in the ModRM byte
             this.Indented().AppendLine("var modrm_byte = this.ParseByte();");
@@ -116,15 +106,13 @@ namespace Yoakke.X86.Generator
             this.Indented().AppendLine("{");
 
             // The different cases
-            foreach (var (regByte, subnode) in parentNode.Subnodes)
+            foreach (var (regByte, subnode) in nodes)
             {
                 this.Indented().AppendLine($"case 0x{regByte:x2}:");
                 this.Indented().AppendLine("{");
                 this.Indent();
 
-                // We unroll the children of the subnodes here manually, otherwise we stackoverflow
-                foreach (var subsubnode in subnode.Subnodes.Values) this.GenerateNode(subsubnode);
-                foreach (var encoding in subnode.Encodings) this.GenerateLeaf(encoding);
+                this.GenerateNode(subnode);
 
                 this.Indented().AppendLine("break;");
                 this.Unindent();
@@ -132,14 +120,16 @@ namespace Yoakke.X86.Generator
             }
 
             this.Indented().AppendLine("}");
+            // We didn't use the byte, un-eat it
+            this.Indented().AppendLine("this.UnparseByte();");
             this.modrmConsumed = false;
         }
 
-        private void GeneratePrefixNode(ParseNode node)
+        private void GeneratePrefixMatches(IEnumerable<KeyValuePair<byte, ParseNode>>? nodes)
         {
-            if (node.Subnodes.Count == 0) return;
+            if (nodes is null) return;
 
-            foreach (var (prefixByte, subnode) in node.Subnodes)
+            foreach (var (prefixByte, subnode) in nodes)
             {
                 this.Indented().AppendLine($"if (this.HasPrefix(0x{prefixByte:x2})");
                 this.Indented().AppendLine("{");
@@ -156,6 +146,8 @@ namespace Yoakke.X86.Generator
         {
             var operands = encoding.Form.Operands;
             var args = new string[encoding.Form.Operands.Count];
+
+            // TODO: We can infer operand sizes from the InstructionForm of this encoding, do that
 
             /* Prefixes are already matched in the tree are already eaten */
 
@@ -189,6 +181,7 @@ namespace Yoakke.X86.Generator
                 this.Indented().AppendLine("var rm_op = this.ParseModRM(modrm_byte);");
 
                 this.modrmConsumed = prevModrmConsumed;
+                // NOTE: We don't un-parse here, we assume this has to work for now
             }
 
             // Postbyte
@@ -236,7 +229,7 @@ namespace Yoakke.X86.Generator
         private void BuildParserTree()
         {
             // Build the tree for the parser
-            var root = new ParseNode(MatchType.Opcode);
+            var root = new ParseNode(MatchType.None);
             foreach (var instruction in this.instructionSet.Instructions)
             {
                 // We skip it if it doesn't have a generated class
