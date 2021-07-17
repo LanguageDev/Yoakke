@@ -2908,6 +2908,314 @@ namespace Yoakke.X86
         }
 
         /// <summary>
+        /// Jump if above (CF == 0 and ZF == 0).
+        /// </summary>
+        public class Ja : IInstruction
+        {
+            /// <inheritdoc/>
+            public IReadOnlyList<IOperand> Operands { get; }
+
+            /// <inheritdoc/>
+            public string? Comment { get; init; }
+
+            /// <summary>
+            /// The operand.
+            /// </summary>
+            public IOperand Operand => this.Operands[0];
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Ja"/> class.
+            /// </summary>
+            /// <param name="operand">The operand.</param>
+            /// <param name="comment">The optional inline comment.</param>
+            public Ja(IOperand operand, string? comment = null)
+            {
+                this.Operands = new[] { operand };
+                this.Comment = comment;
+            }
+        }
+
+        /// <summary>
+        /// Jump if above or equal (CF == 0).
+        /// </summary>
+        public class Jae : IInstruction
+        {
+            /// <inheritdoc/>
+            public IReadOnlyList<IOperand> Operands { get; }
+
+            /// <inheritdoc/>
+            public string? Comment { get; init; }
+
+            /// <summary>
+            /// The operand.
+            /// </summary>
+            public IOperand Operand => this.Operands[0];
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Jae"/> class.
+            /// </summary>
+            /// <param name="operand">The operand.</param>
+            /// <param name="comment">The optional inline comment.</param>
+            public Jae(IOperand operand, string? comment = null)
+            {
+                this.Operands = new[] { operand };
+                this.Comment = comment;
+            }
+        }
+
+        /// <summary>
+        /// Jump if below (CF == 1).
+        /// </summary>
+        public class Jb : IInstruction
+        {
+            /// <inheritdoc/>
+            public IReadOnlyList<IOperand> Operands { get; }
+
+            /// <inheritdoc/>
+            public string? Comment { get; init; }
+
+            /// <summary>
+            /// The operand.
+            /// </summary>
+            public IOperand Operand => this.Operands[0];
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Jb"/> class.
+            /// </summary>
+            /// <param name="operand">The operand.</param>
+            /// <param name="comment">The optional inline comment.</param>
+            public Jb(IOperand operand, string? comment = null)
+            {
+                this.Operands = new[] { operand };
+                this.Comment = comment;
+            }
+        }
+
+        /// <summary>
+        /// Jump if below or equal (CF == 1 or ZF == 1).
+        /// </summary>
+        public class Jbe : IInstruction
+        {
+            /// <inheritdoc/>
+            public IReadOnlyList<IOperand> Operands { get; }
+
+            /// <inheritdoc/>
+            public string? Comment { get; init; }
+
+            /// <summary>
+            /// The operand.
+            /// </summary>
+            public IOperand Operand => this.Operands[0];
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Jbe"/> class.
+            /// </summary>
+            /// <param name="operand">The operand.</param>
+            /// <param name="comment">The optional inline comment.</param>
+            public Jbe(IOperand operand, string? comment = null)
+            {
+                this.Operands = new[] { operand };
+                this.Comment = comment;
+            }
+        }
+
+        /// <summary>
+        /// Jump if carry (CF == 1).
+        /// </summary>
+        public class Jc : IInstruction
+        {
+            /// <inheritdoc/>
+            public IReadOnlyList<IOperand> Operands { get; }
+
+            /// <inheritdoc/>
+            public string? Comment { get; init; }
+
+            /// <summary>
+            /// The operand.
+            /// </summary>
+            public IOperand Operand => this.Operands[0];
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Jc"/> class.
+            /// </summary>
+            /// <param name="operand">The operand.</param>
+            /// <param name="comment">The optional inline comment.</param>
+            public Jc(IOperand operand, string? comment = null)
+            {
+                this.Operands = new[] { operand };
+                this.Comment = comment;
+            }
+        }
+
+        /// <summary>
+        /// Jump if equal (ZF == 1).
+        /// </summary>
+        public class Je : IInstruction
+        {
+            /// <inheritdoc/>
+            public IReadOnlyList<IOperand> Operands { get; }
+
+            /// <inheritdoc/>
+            public string? Comment { get; init; }
+
+            /// <summary>
+            /// The operand.
+            /// </summary>
+            public IOperand Operand => this.Operands[0];
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Je"/> class.
+            /// </summary>
+            /// <param name="operand">The operand.</param>
+            /// <param name="comment">The optional inline comment.</param>
+            public Je(IOperand operand, string? comment = null)
+            {
+                this.Operands = new[] { operand };
+                this.Comment = comment;
+            }
+        }
+
+        /// <summary>
+        /// Jump if ECX register is 0.
+        /// </summary>
+        public class Jecxz : IInstruction
+        {
+            /// <inheritdoc/>
+            public IReadOnlyList<IOperand> Operands { get; }
+
+            /// <inheritdoc/>
+            public string? Comment { get; init; }
+
+            /// <summary>
+            /// The operand.
+            /// </summary>
+            public IOperand Operand => this.Operands[0];
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Jecxz"/> class.
+            /// </summary>
+            /// <param name="operand">The operand.</param>
+            /// <param name="comment">The optional inline comment.</param>
+            public Jecxz(IOperand operand, string? comment = null)
+            {
+                this.Operands = new[] { operand };
+                this.Comment = comment;
+            }
+        }
+
+        /// <summary>
+        /// Jump if greater (ZF == 0 and SF == OF).
+        /// </summary>
+        public class Jg : IInstruction
+        {
+            /// <inheritdoc/>
+            public IReadOnlyList<IOperand> Operands { get; }
+
+            /// <inheritdoc/>
+            public string? Comment { get; init; }
+
+            /// <summary>
+            /// The operand.
+            /// </summary>
+            public IOperand Operand => this.Operands[0];
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Jg"/> class.
+            /// </summary>
+            /// <param name="operand">The operand.</param>
+            /// <param name="comment">The optional inline comment.</param>
+            public Jg(IOperand operand, string? comment = null)
+            {
+                this.Operands = new[] { operand };
+                this.Comment = comment;
+            }
+        }
+
+        /// <summary>
+        /// Jump if greater or equal (SF == OF).
+        /// </summary>
+        public class Jge : IInstruction
+        {
+            /// <inheritdoc/>
+            public IReadOnlyList<IOperand> Operands { get; }
+
+            /// <inheritdoc/>
+            public string? Comment { get; init; }
+
+            /// <summary>
+            /// The operand.
+            /// </summary>
+            public IOperand Operand => this.Operands[0];
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Jge"/> class.
+            /// </summary>
+            /// <param name="operand">The operand.</param>
+            /// <param name="comment">The optional inline comment.</param>
+            public Jge(IOperand operand, string? comment = null)
+            {
+                this.Operands = new[] { operand };
+                this.Comment = comment;
+            }
+        }
+
+        /// <summary>
+        /// Jump if less (SF != OF).
+        /// </summary>
+        public class Jl : IInstruction
+        {
+            /// <inheritdoc/>
+            public IReadOnlyList<IOperand> Operands { get; }
+
+            /// <inheritdoc/>
+            public string? Comment { get; init; }
+
+            /// <summary>
+            /// The operand.
+            /// </summary>
+            public IOperand Operand => this.Operands[0];
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Jl"/> class.
+            /// </summary>
+            /// <param name="operand">The operand.</param>
+            /// <param name="comment">The optional inline comment.</param>
+            public Jl(IOperand operand, string? comment = null)
+            {
+                this.Operands = new[] { operand };
+                this.Comment = comment;
+            }
+        }
+
+        /// <summary>
+        /// Jump if less or equal (ZF == 1 or SF != OF).
+        /// </summary>
+        public class Jle : IInstruction
+        {
+            /// <inheritdoc/>
+            public IReadOnlyList<IOperand> Operands { get; }
+
+            /// <inheritdoc/>
+            public string? Comment { get; init; }
+
+            /// <summary>
+            /// The operand.
+            /// </summary>
+            public IOperand Operand => this.Operands[0];
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Jle"/> class.
+            /// </summary>
+            /// <param name="operand">The operand.</param>
+            /// <param name="comment">The optional inline comment.</param>
+            public Jle(IOperand operand, string? comment = null)
+            {
+                this.Operands = new[] { operand };
+                this.Comment = comment;
+            }
+        }
+
+        /// <summary>
         /// Jump Unconditionally.
         /// </summary>
         public class Jmp : IInstruction
@@ -2929,6 +3237,566 @@ namespace Yoakke.X86
             /// <param name="operand">The operand.</param>
             /// <param name="comment">The optional inline comment.</param>
             public Jmp(IOperand operand, string? comment = null)
+            {
+                this.Operands = new[] { operand };
+                this.Comment = comment;
+            }
+        }
+
+        /// <summary>
+        /// Jump if not above (CF == 1 or ZF == 1).
+        /// </summary>
+        public class Jna : IInstruction
+        {
+            /// <inheritdoc/>
+            public IReadOnlyList<IOperand> Operands { get; }
+
+            /// <inheritdoc/>
+            public string? Comment { get; init; }
+
+            /// <summary>
+            /// The operand.
+            /// </summary>
+            public IOperand Operand => this.Operands[0];
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Jna"/> class.
+            /// </summary>
+            /// <param name="operand">The operand.</param>
+            /// <param name="comment">The optional inline comment.</param>
+            public Jna(IOperand operand, string? comment = null)
+            {
+                this.Operands = new[] { operand };
+                this.Comment = comment;
+            }
+        }
+
+        /// <summary>
+        /// Jump if not above or equal (CF == 1).
+        /// </summary>
+        public class Jnae : IInstruction
+        {
+            /// <inheritdoc/>
+            public IReadOnlyList<IOperand> Operands { get; }
+
+            /// <inheritdoc/>
+            public string? Comment { get; init; }
+
+            /// <summary>
+            /// The operand.
+            /// </summary>
+            public IOperand Operand => this.Operands[0];
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Jnae"/> class.
+            /// </summary>
+            /// <param name="operand">The operand.</param>
+            /// <param name="comment">The optional inline comment.</param>
+            public Jnae(IOperand operand, string? comment = null)
+            {
+                this.Operands = new[] { operand };
+                this.Comment = comment;
+            }
+        }
+
+        /// <summary>
+        /// Jump if not below (CF == 0).
+        /// </summary>
+        public class Jnb : IInstruction
+        {
+            /// <inheritdoc/>
+            public IReadOnlyList<IOperand> Operands { get; }
+
+            /// <inheritdoc/>
+            public string? Comment { get; init; }
+
+            /// <summary>
+            /// The operand.
+            /// </summary>
+            public IOperand Operand => this.Operands[0];
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Jnb"/> class.
+            /// </summary>
+            /// <param name="operand">The operand.</param>
+            /// <param name="comment">The optional inline comment.</param>
+            public Jnb(IOperand operand, string? comment = null)
+            {
+                this.Operands = new[] { operand };
+                this.Comment = comment;
+            }
+        }
+
+        /// <summary>
+        /// Jump if not below or equal (CF == 0 and ZF == 0).
+        /// </summary>
+        public class Jnbe : IInstruction
+        {
+            /// <inheritdoc/>
+            public IReadOnlyList<IOperand> Operands { get; }
+
+            /// <inheritdoc/>
+            public string? Comment { get; init; }
+
+            /// <summary>
+            /// The operand.
+            /// </summary>
+            public IOperand Operand => this.Operands[0];
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Jnbe"/> class.
+            /// </summary>
+            /// <param name="operand">The operand.</param>
+            /// <param name="comment">The optional inline comment.</param>
+            public Jnbe(IOperand operand, string? comment = null)
+            {
+                this.Operands = new[] { operand };
+                this.Comment = comment;
+            }
+        }
+
+        /// <summary>
+        /// Jump if not carry (CF == 0).
+        /// </summary>
+        public class Jnc : IInstruction
+        {
+            /// <inheritdoc/>
+            public IReadOnlyList<IOperand> Operands { get; }
+
+            /// <inheritdoc/>
+            public string? Comment { get; init; }
+
+            /// <summary>
+            /// The operand.
+            /// </summary>
+            public IOperand Operand => this.Operands[0];
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Jnc"/> class.
+            /// </summary>
+            /// <param name="operand">The operand.</param>
+            /// <param name="comment">The optional inline comment.</param>
+            public Jnc(IOperand operand, string? comment = null)
+            {
+                this.Operands = new[] { operand };
+                this.Comment = comment;
+            }
+        }
+
+        /// <summary>
+        /// Jump if not equal (ZF == 0).
+        /// </summary>
+        public class Jne : IInstruction
+        {
+            /// <inheritdoc/>
+            public IReadOnlyList<IOperand> Operands { get; }
+
+            /// <inheritdoc/>
+            public string? Comment { get; init; }
+
+            /// <summary>
+            /// The operand.
+            /// </summary>
+            public IOperand Operand => this.Operands[0];
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Jne"/> class.
+            /// </summary>
+            /// <param name="operand">The operand.</param>
+            /// <param name="comment">The optional inline comment.</param>
+            public Jne(IOperand operand, string? comment = null)
+            {
+                this.Operands = new[] { operand };
+                this.Comment = comment;
+            }
+        }
+
+        /// <summary>
+        /// Jump if not greater (ZF == 1 or SF != OF).
+        /// </summary>
+        public class Jng : IInstruction
+        {
+            /// <inheritdoc/>
+            public IReadOnlyList<IOperand> Operands { get; }
+
+            /// <inheritdoc/>
+            public string? Comment { get; init; }
+
+            /// <summary>
+            /// The operand.
+            /// </summary>
+            public IOperand Operand => this.Operands[0];
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Jng"/> class.
+            /// </summary>
+            /// <param name="operand">The operand.</param>
+            /// <param name="comment">The optional inline comment.</param>
+            public Jng(IOperand operand, string? comment = null)
+            {
+                this.Operands = new[] { operand };
+                this.Comment = comment;
+            }
+        }
+
+        /// <summary>
+        /// Jump if not greater or equal (SF != OF).
+        /// </summary>
+        public class Jnge : IInstruction
+        {
+            /// <inheritdoc/>
+            public IReadOnlyList<IOperand> Operands { get; }
+
+            /// <inheritdoc/>
+            public string? Comment { get; init; }
+
+            /// <summary>
+            /// The operand.
+            /// </summary>
+            public IOperand Operand => this.Operands[0];
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Jnge"/> class.
+            /// </summary>
+            /// <param name="operand">The operand.</param>
+            /// <param name="comment">The optional inline comment.</param>
+            public Jnge(IOperand operand, string? comment = null)
+            {
+                this.Operands = new[] { operand };
+                this.Comment = comment;
+            }
+        }
+
+        /// <summary>
+        /// Jump if not less (SF == OF).
+        /// </summary>
+        public class Jnl : IInstruction
+        {
+            /// <inheritdoc/>
+            public IReadOnlyList<IOperand> Operands { get; }
+
+            /// <inheritdoc/>
+            public string? Comment { get; init; }
+
+            /// <summary>
+            /// The operand.
+            /// </summary>
+            public IOperand Operand => this.Operands[0];
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Jnl"/> class.
+            /// </summary>
+            /// <param name="operand">The operand.</param>
+            /// <param name="comment">The optional inline comment.</param>
+            public Jnl(IOperand operand, string? comment = null)
+            {
+                this.Operands = new[] { operand };
+                this.Comment = comment;
+            }
+        }
+
+        /// <summary>
+        /// Jump if not less or equal (ZF == 0 and SF == OF).
+        /// </summary>
+        public class Jnle : IInstruction
+        {
+            /// <inheritdoc/>
+            public IReadOnlyList<IOperand> Operands { get; }
+
+            /// <inheritdoc/>
+            public string? Comment { get; init; }
+
+            /// <summary>
+            /// The operand.
+            /// </summary>
+            public IOperand Operand => this.Operands[0];
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Jnle"/> class.
+            /// </summary>
+            /// <param name="operand">The operand.</param>
+            /// <param name="comment">The optional inline comment.</param>
+            public Jnle(IOperand operand, string? comment = null)
+            {
+                this.Operands = new[] { operand };
+                this.Comment = comment;
+            }
+        }
+
+        /// <summary>
+        /// Jump if not overflow (OF == 0).
+        /// </summary>
+        public class Jno : IInstruction
+        {
+            /// <inheritdoc/>
+            public IReadOnlyList<IOperand> Operands { get; }
+
+            /// <inheritdoc/>
+            public string? Comment { get; init; }
+
+            /// <summary>
+            /// The operand.
+            /// </summary>
+            public IOperand Operand => this.Operands[0];
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Jno"/> class.
+            /// </summary>
+            /// <param name="operand">The operand.</param>
+            /// <param name="comment">The optional inline comment.</param>
+            public Jno(IOperand operand, string? comment = null)
+            {
+                this.Operands = new[] { operand };
+                this.Comment = comment;
+            }
+        }
+
+        /// <summary>
+        /// Jump if not parity (PF == 0).
+        /// </summary>
+        public class Jnp : IInstruction
+        {
+            /// <inheritdoc/>
+            public IReadOnlyList<IOperand> Operands { get; }
+
+            /// <inheritdoc/>
+            public string? Comment { get; init; }
+
+            /// <summary>
+            /// The operand.
+            /// </summary>
+            public IOperand Operand => this.Operands[0];
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Jnp"/> class.
+            /// </summary>
+            /// <param name="operand">The operand.</param>
+            /// <param name="comment">The optional inline comment.</param>
+            public Jnp(IOperand operand, string? comment = null)
+            {
+                this.Operands = new[] { operand };
+                this.Comment = comment;
+            }
+        }
+
+        /// <summary>
+        /// Jump if not sign (SF == 0).
+        /// </summary>
+        public class Jns : IInstruction
+        {
+            /// <inheritdoc/>
+            public IReadOnlyList<IOperand> Operands { get; }
+
+            /// <inheritdoc/>
+            public string? Comment { get; init; }
+
+            /// <summary>
+            /// The operand.
+            /// </summary>
+            public IOperand Operand => this.Operands[0];
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Jns"/> class.
+            /// </summary>
+            /// <param name="operand">The operand.</param>
+            /// <param name="comment">The optional inline comment.</param>
+            public Jns(IOperand operand, string? comment = null)
+            {
+                this.Operands = new[] { operand };
+                this.Comment = comment;
+            }
+        }
+
+        /// <summary>
+        /// Jump if not zero (ZF == 0).
+        /// </summary>
+        public class Jnz : IInstruction
+        {
+            /// <inheritdoc/>
+            public IReadOnlyList<IOperand> Operands { get; }
+
+            /// <inheritdoc/>
+            public string? Comment { get; init; }
+
+            /// <summary>
+            /// The operand.
+            /// </summary>
+            public IOperand Operand => this.Operands[0];
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Jnz"/> class.
+            /// </summary>
+            /// <param name="operand">The operand.</param>
+            /// <param name="comment">The optional inline comment.</param>
+            public Jnz(IOperand operand, string? comment = null)
+            {
+                this.Operands = new[] { operand };
+                this.Comment = comment;
+            }
+        }
+
+        /// <summary>
+        /// Jump if overflow (OF == 1).
+        /// </summary>
+        public class Jo : IInstruction
+        {
+            /// <inheritdoc/>
+            public IReadOnlyList<IOperand> Operands { get; }
+
+            /// <inheritdoc/>
+            public string? Comment { get; init; }
+
+            /// <summary>
+            /// The operand.
+            /// </summary>
+            public IOperand Operand => this.Operands[0];
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Jo"/> class.
+            /// </summary>
+            /// <param name="operand">The operand.</param>
+            /// <param name="comment">The optional inline comment.</param>
+            public Jo(IOperand operand, string? comment = null)
+            {
+                this.Operands = new[] { operand };
+                this.Comment = comment;
+            }
+        }
+
+        /// <summary>
+        /// Jump if parity (PF == 1).
+        /// </summary>
+        public class Jp : IInstruction
+        {
+            /// <inheritdoc/>
+            public IReadOnlyList<IOperand> Operands { get; }
+
+            /// <inheritdoc/>
+            public string? Comment { get; init; }
+
+            /// <summary>
+            /// The operand.
+            /// </summary>
+            public IOperand Operand => this.Operands[0];
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Jp"/> class.
+            /// </summary>
+            /// <param name="operand">The operand.</param>
+            /// <param name="comment">The optional inline comment.</param>
+            public Jp(IOperand operand, string? comment = null)
+            {
+                this.Operands = new[] { operand };
+                this.Comment = comment;
+            }
+        }
+
+        /// <summary>
+        /// Jump if parity even (PF == 1).
+        /// </summary>
+        public class Jpe : IInstruction
+        {
+            /// <inheritdoc/>
+            public IReadOnlyList<IOperand> Operands { get; }
+
+            /// <inheritdoc/>
+            public string? Comment { get; init; }
+
+            /// <summary>
+            /// The operand.
+            /// </summary>
+            public IOperand Operand => this.Operands[0];
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Jpe"/> class.
+            /// </summary>
+            /// <param name="operand">The operand.</param>
+            /// <param name="comment">The optional inline comment.</param>
+            public Jpe(IOperand operand, string? comment = null)
+            {
+                this.Operands = new[] { operand };
+                this.Comment = comment;
+            }
+        }
+
+        /// <summary>
+        /// Jump if parity odd (PF == 0).
+        /// </summary>
+        public class Jpo : IInstruction
+        {
+            /// <inheritdoc/>
+            public IReadOnlyList<IOperand> Operands { get; }
+
+            /// <inheritdoc/>
+            public string? Comment { get; init; }
+
+            /// <summary>
+            /// The operand.
+            /// </summary>
+            public IOperand Operand => this.Operands[0];
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Jpo"/> class.
+            /// </summary>
+            /// <param name="operand">The operand.</param>
+            /// <param name="comment">The optional inline comment.</param>
+            public Jpo(IOperand operand, string? comment = null)
+            {
+                this.Operands = new[] { operand };
+                this.Comment = comment;
+            }
+        }
+
+        /// <summary>
+        /// Jump if sign (SF == 1).
+        /// </summary>
+        public class Js : IInstruction
+        {
+            /// <inheritdoc/>
+            public IReadOnlyList<IOperand> Operands { get; }
+
+            /// <inheritdoc/>
+            public string? Comment { get; init; }
+
+            /// <summary>
+            /// The operand.
+            /// </summary>
+            public IOperand Operand => this.Operands[0];
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Js"/> class.
+            /// </summary>
+            /// <param name="operand">The operand.</param>
+            /// <param name="comment">The optional inline comment.</param>
+            public Js(IOperand operand, string? comment = null)
+            {
+                this.Operands = new[] { operand };
+                this.Comment = comment;
+            }
+        }
+
+        /// <summary>
+        /// Jump if zero (ZF == 1).
+        /// </summary>
+        public class Jz : IInstruction
+        {
+            /// <inheritdoc/>
+            public IReadOnlyList<IOperand> Operands { get; }
+
+            /// <inheritdoc/>
+            public string? Comment { get; init; }
+
+            /// <summary>
+            /// The operand.
+            /// </summary>
+            public IOperand Operand => this.Operands[0];
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Jz"/> class.
+            /// </summary>
+            /// <param name="operand">The operand.</param>
+            /// <param name="comment">The optional inline comment.</param>
+            public Jz(IOperand operand, string? comment = null)
             {
                 this.Operands = new[] { operand };
                 this.Comment = comment;

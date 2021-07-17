@@ -301,15 +301,17 @@ namespace Yoakke.X86.Generator
 
         private void Unindent() => --this.indent;
 
-        private static bool SupportsOperand(Operand operand) => operand.Type switch
+        private static bool SupportsOperand(Operand operand) => SupportedOperands.Contains(operand.Type);
+
+        private static readonly string[] SupportedOperands = new[]
         {
-               "1" or "3"
-            or "al" or "cl" or "ax" or "eax" or "rax"
-            or "r8" or "r16" or "r32" or "r64"
-            or "m"
-            or "m8" or "m16" or "m32" or "m64" or "m128" or "m256" or "m512"
-            or "imm8" or "imm16" or "imm32" or "imm64" => true,
-            _ => false,
+            "1", "3",
+            "al", "cl", "ax", "eax", "rax",
+            "r8", "r16", "r32", "r64",
+            "m",
+            "m8", "m16", "m32", "m64", "m128", "m256", "m512",
+            "imm8", "imm16", "imm32", "imm64",
+            "rel8", "rel32",
         };
 
         // Returns a not null string for operands that are constants and don't require byte-parsing

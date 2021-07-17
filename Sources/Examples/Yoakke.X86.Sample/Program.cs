@@ -21,7 +21,7 @@ namespace Yoakke.X86.Sample
 
             var builder = new AssemblyBuilder();
 
-            for (var i = 0; i < 5; ++i)
+            for (var i = 0; i < 13; ++i)
             {
                 builder.Write(reader.ReadNext(out var len));
             }

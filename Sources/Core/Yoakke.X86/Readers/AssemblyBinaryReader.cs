@@ -641,6 +641,102 @@ namespace Yoakke.X86.Readers
                     length = this.Commit();
                     return new Instructions.Emms();
                 }
+                case 0x80:
+                {
+                    var rel0_2 = this.ParseCodeOffset(DataWidth.Dword);
+                    length = this.Commit();
+                    return new Instructions.Jo(rel0_2);
+                }
+                case 0x81:
+                {
+                    var rel0_2 = this.ParseCodeOffset(DataWidth.Dword);
+                    length = this.Commit();
+                    return new Instructions.Jno(rel0_2);
+                }
+                case 0x82:
+                {
+                    var rel0_2 = this.ParseCodeOffset(DataWidth.Dword);
+                    length = this.Commit();
+                    return new Instructions.Jb(rel0_2);
+                }
+                case 0x83:
+                {
+                    var rel0_2 = this.ParseCodeOffset(DataWidth.Dword);
+                    length = this.Commit();
+                    return new Instructions.Jae(rel0_2);
+                }
+                case 0x84:
+                {
+                    var rel0_2 = this.ParseCodeOffset(DataWidth.Dword);
+                    length = this.Commit();
+                    return new Instructions.Je(rel0_2);
+                }
+                case 0x85:
+                {
+                    var rel0_2 = this.ParseCodeOffset(DataWidth.Dword);
+                    length = this.Commit();
+                    return new Instructions.Jne(rel0_2);
+                }
+                case 0x86:
+                {
+                    var rel0_2 = this.ParseCodeOffset(DataWidth.Dword);
+                    length = this.Commit();
+                    return new Instructions.Jbe(rel0_2);
+                }
+                case 0x87:
+                {
+                    var rel0_2 = this.ParseCodeOffset(DataWidth.Dword);
+                    length = this.Commit();
+                    return new Instructions.Ja(rel0_2);
+                }
+                case 0x88:
+                {
+                    var rel0_2 = this.ParseCodeOffset(DataWidth.Dword);
+                    length = this.Commit();
+                    return new Instructions.Js(rel0_2);
+                }
+                case 0x89:
+                {
+                    var rel0_2 = this.ParseCodeOffset(DataWidth.Dword);
+                    length = this.Commit();
+                    return new Instructions.Jns(rel0_2);
+                }
+                case 0x8a:
+                {
+                    var rel0_2 = this.ParseCodeOffset(DataWidth.Dword);
+                    length = this.Commit();
+                    return new Instructions.Jp(rel0_2);
+                }
+                case 0x8b:
+                {
+                    var rel0_2 = this.ParseCodeOffset(DataWidth.Dword);
+                    length = this.Commit();
+                    return new Instructions.Jnp(rel0_2);
+                }
+                case 0x8c:
+                {
+                    var rel0_2 = this.ParseCodeOffset(DataWidth.Dword);
+                    length = this.Commit();
+                    return new Instructions.Jl(rel0_2);
+                }
+                case 0x8d:
+                {
+                    var rel0_2 = this.ParseCodeOffset(DataWidth.Dword);
+                    length = this.Commit();
+                    return new Instructions.Jge(rel0_2);
+                }
+                case 0x8e:
+                {
+                    var rel0_2 = this.ParseCodeOffset(DataWidth.Dword);
+                    length = this.Commit();
+                    return new Instructions.Jle(rel0_2);
+                }
+                case 0x8f:
+                {
+                    var rel0_2 = this.ParseCodeOffset(DataWidth.Dword);
+                    length = this.Commit();
+                    return new Instructions.Jg(rel0_2);
+                }
                 case 0x90:
                 {
                     var modrm2 = this.ParseByte();
@@ -2129,6 +2225,102 @@ namespace Yoakke.X86.Readers
                 length = this.Commit();
                 return new Instructions.Imul(FromRegisterIndex((modrm1 >> 3) & 0b111, DataWidth.Dword), rm1, imm0_1);
             }
+            case 0x70:
+            {
+                var rel0_1 = this.ParseCodeOffset(DataWidth.Byte);
+                length = this.Commit();
+                return new Instructions.Jo(rel0_1);
+            }
+            case 0x71:
+            {
+                var rel0_1 = this.ParseCodeOffset(DataWidth.Byte);
+                length = this.Commit();
+                return new Instructions.Jno(rel0_1);
+            }
+            case 0x72:
+            {
+                var rel0_1 = this.ParseCodeOffset(DataWidth.Byte);
+                length = this.Commit();
+                return new Instructions.Jb(rel0_1);
+            }
+            case 0x73:
+            {
+                var rel0_1 = this.ParseCodeOffset(DataWidth.Byte);
+                length = this.Commit();
+                return new Instructions.Jae(rel0_1);
+            }
+            case 0x74:
+            {
+                var rel0_1 = this.ParseCodeOffset(DataWidth.Byte);
+                length = this.Commit();
+                return new Instructions.Je(rel0_1);
+            }
+            case 0x75:
+            {
+                var rel0_1 = this.ParseCodeOffset(DataWidth.Byte);
+                length = this.Commit();
+                return new Instructions.Jne(rel0_1);
+            }
+            case 0x76:
+            {
+                var rel0_1 = this.ParseCodeOffset(DataWidth.Byte);
+                length = this.Commit();
+                return new Instructions.Jbe(rel0_1);
+            }
+            case 0x77:
+            {
+                var rel0_1 = this.ParseCodeOffset(DataWidth.Byte);
+                length = this.Commit();
+                return new Instructions.Ja(rel0_1);
+            }
+            case 0x78:
+            {
+                var rel0_1 = this.ParseCodeOffset(DataWidth.Byte);
+                length = this.Commit();
+                return new Instructions.Js(rel0_1);
+            }
+            case 0x79:
+            {
+                var rel0_1 = this.ParseCodeOffset(DataWidth.Byte);
+                length = this.Commit();
+                return new Instructions.Jns(rel0_1);
+            }
+            case 0x7a:
+            {
+                var rel0_1 = this.ParseCodeOffset(DataWidth.Byte);
+                length = this.Commit();
+                return new Instructions.Jp(rel0_1);
+            }
+            case 0x7b:
+            {
+                var rel0_1 = this.ParseCodeOffset(DataWidth.Byte);
+                length = this.Commit();
+                return new Instructions.Jnp(rel0_1);
+            }
+            case 0x7c:
+            {
+                var rel0_1 = this.ParseCodeOffset(DataWidth.Byte);
+                length = this.Commit();
+                return new Instructions.Jl(rel0_1);
+            }
+            case 0x7d:
+            {
+                var rel0_1 = this.ParseCodeOffset(DataWidth.Byte);
+                length = this.Commit();
+                return new Instructions.Jge(rel0_1);
+            }
+            case 0x7e:
+            {
+                var rel0_1 = this.ParseCodeOffset(DataWidth.Byte);
+                length = this.Commit();
+                return new Instructions.Jle(rel0_1);
+            }
+            case 0x7f:
+            {
+                var rel0_1 = this.ParseCodeOffset(DataWidth.Byte);
+                length = this.Commit();
+                return new Instructions.Jg(rel0_1);
+            }
             case 0x80:
             {
                 var modrm1 = this.ParseByte();
@@ -3387,6 +3579,30 @@ namespace Yoakke.X86.Readers
             {
                 length = this.Commit();
                 return new Instructions.Xlatb();
+            }
+            case 0xe3:
+            {
+                var rel0_1 = this.ParseCodeOffset(DataWidth.Byte);
+                length = this.Commit();
+                return new Instructions.Jecxz(rel0_1);
+            }
+            case 0xe8:
+            {
+                var rel0_1 = this.ParseCodeOffset(DataWidth.Dword);
+                length = this.Commit();
+                return new Instructions.Call(rel0_1);
+            }
+            case 0xe9:
+            {
+                var rel0_1 = this.ParseCodeOffset(DataWidth.Dword);
+                length = this.Commit();
+                return new Instructions.Jmp(rel0_1);
+            }
+            case 0xeb:
+            {
+                var rel0_1 = this.ParseCodeOffset(DataWidth.Byte);
+                length = this.Commit();
+                return new Instructions.Jmp(rel0_1);
             }
             case 0xf5:
             {
