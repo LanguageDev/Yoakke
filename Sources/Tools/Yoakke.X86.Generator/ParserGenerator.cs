@@ -147,8 +147,6 @@ namespace Yoakke.X86.Generator
             var operands = encoding.Form.Operands;
             var args = new string[encoding.Form.Operands.Count];
 
-            // TODO: We can infer operand sizes from the InstructionForm of this encoding, do that
-
             /* Prefixes are already matched in the tree are already eaten */
 
             /* Opcodes are already eaten */
@@ -171,14 +169,15 @@ namespace Yoakke.X86.Generator
                     // Regular ModRM, not opcode extension
                     // We can just convert the reg
                     var regOperandIndex = int.Parse(modrm.Reg.Substring(1));
-                    args[regOperandIndex] = "Registers.FromIndex((modrm_byte >> 3) & 0b111)";
+                    var size = GetDataWidthForOperand(encoding.Form.Operands[regOperandIndex]);
+                    args[regOperandIndex] = $"Registers.FromIndex((modrm_byte >> 3) & 0b111, {size})";
                 }
 
                 // Mode and RM
                 Debug.Assert(modrm.Mode == "11" || modrm.Mode == modrm.Rm, "Mode and RM have to reference the same argument");
                 var rmOperandIndex = int.Parse(modrm.Rm.Substring(1));
-                args[rmOperandIndex] = "rm_op";
-                this.Indented().AppendLine("var rm_op = this.ParseModRM(modrm_byte);");
+                var rmOperandSize = GetDataWidthForOperand(encoding.Form.Operands[rmOperandIndex]);
+                args[rmOperandIndex] = $"this.ParseRM(modrm_byte, {rmOperandSize})";
 
                 this.modrmConsumed = prevModrmConsumed;
                 // NOTE: We don't un-parse here, we assume this has to work for now
@@ -205,8 +204,8 @@ namespace Yoakke.X86.Generator
                 var last3 = encoding.Opcodes[i].Last3BitsEncodedOperand;
                 if (last3 is not null)
                 {
-                    // TODO: Pass in size
-                    args[last3.Value] = $"Registers.FromIndex(byte{i} & 0b111)";
+                    var size = GetDataWidthForOperand(encoding.Form.Operands[last3.Value]);
+                    args[last3.Value] = $"Registers.FromIndex(byte{i} & 0b111, {size})";
                 }
             }
 
@@ -282,6 +281,16 @@ namespace Yoakke.X86.Generator
             "eax" => $"Registers.Eax",
             "rax" => $"Registers.Rax",
             _ => null,
+        };
+
+        private static string GetDataWidthForOperand(Operand operand) => operand.Type switch
+        {
+            "m" => "null",
+            "r8" or "m8" => "DataWidth.Byte",
+            "r16" or "m16" => "DataWidth.Word",
+            "r32" or "m32" => "DataWidth.Dword",
+            "r64" or "m64" => "DataWidth.Qword",
+            _ => throw new NotSupportedException(),
         };
 
         private static string Capitalize(string name) => $"{char.ToUpper(name[0])}{name.Substring(1).ToLower()}";
