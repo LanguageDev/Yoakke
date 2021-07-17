@@ -242,6 +242,7 @@ namespace Yoakke.X86.Generator
             "r8", "r16", "r32", "r64",
             "m",
             "m8", "m16", "m32", "m64",
+            "rel8", "rel32",
         };
     }
 }

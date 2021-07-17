@@ -3683,7 +3683,15 @@ namespace Yoakke.X86.Readers
 
         private void UnparseByte() => --this.offset;
 
+        // TODO: Review these methods, immediates should be unsigned by default, while relative offsets should be signed
+
         private IOperand ParseImmediate(DataWidth width)
+        {
+            var number = this.ParseNumber(width);
+            return new Constant(width, number);
+        }
+
+        private IOperand ParseCodeOffset(DataWidth width)
         {
             var number = this.ParseNumber(width);
             return new Constant(width, number);

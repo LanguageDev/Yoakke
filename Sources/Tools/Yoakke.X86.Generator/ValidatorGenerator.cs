@@ -64,7 +64,7 @@ namespace Yoakke.X86.Generator
             "r8" or "r16" or "r32" or "r64" => GenerateSizedRegisterMatcher(index, int.Parse(operand.Type.Substring(1)) / 8),
             "m" => GenerateAddressMatcher(index),
             "m8" or "m16" or "m32" or "m64" or "m128" or "m256" or "m512" => GenerateIndirectMatcher(index, int.Parse(operand.Type.Substring(1)) / 8),
-            "imm8" or "imm16" or "imm32" or "imm64" => GenerateConstantMatcher(index, int.Parse(operand.Type.Substring(3)) / 8),
+            "imm8" or "imm16" or "imm32" or "imm64" or "rel8" or "rel32" => GenerateConstantMatcher(index, int.Parse(operand.Type.Substring(3)) / 8),
             _ => throw new NotSupportedException(),
         };
 

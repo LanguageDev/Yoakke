@@ -229,6 +229,15 @@ namespace Yoakke.X86.Generator
                 args[immediate.OperandNumber] = $"imm{i}_{this.indent}";
             }
 
+            // Code offsets
+            for (var i = 0; i < encoding.CodeOffsets.Count; ++i)
+            {
+                var immediate = encoding.CodeOffsets[i];
+                // NOTE: We tag immediates with indentation to avoid name collision
+                this.Indented().AppendLine($"var rel{i}_{this.indent} = this.ParseCodeOffset({GetDataWidthForSize(immediate.Size)});");
+                args[immediate.OperandNumber] = $"rel{i}_{this.indent}";
+            }
+
             // If it's a last 3 bit encoding, do that here
             for (var i = 0; i < encoding.Opcodes.Count; ++i)
             {

@@ -57,6 +57,12 @@ namespace Yoakke.X86.Generator.Model
         public List<Immediate> Immediates { get; set; } = new();
 
         /// <summary>
+        /// The code offsets of the instruction, which are just relative-jump immediates.
+        /// </summary>
+        [XmlElement("CodeOffset")]
+        public List<Immediate> CodeOffsets { get; set; } = new();
+
+        /// <summary>
         /// True, if the encoding had unsupported elements in the XML.
         /// </summary>
         [XmlIgnore]
@@ -107,6 +113,10 @@ namespace Yoakke.X86.Generator.Model
                         this.Immediates.Add(Deserialize<Immediate>(element));
                         break;
 
+                    case "CodeOffset":
+                        this.CodeOffsets.Add(Deserialize<Immediate>(element, "CodeOffset"));
+                        break;
+
                     default:
                         this.HasUnsupportedElement = true;
                         break;
@@ -121,9 +131,15 @@ namespace Yoakke.X86.Generator.Model
         /// <inheritdoc/>
         public void WriteXml(XmlWriter writer) => throw new NotImplementedException();
 
-        private static T Deserialize<T>(XElement element) => Deserialize<T>(element.CreateReader());
+        private static T Deserialize<T>(XElement element, string? tagOverride = null) =>
+            Deserialize<T>(element.CreateReader(), tagOverride);
 
-        private static T Deserialize<T>(XmlReader reader) =>
-            (T?)new XmlSerializer(typeof(T)).Deserialize(reader) ?? throw new InvalidOperationException();
+        private static T Deserialize<T>(XmlReader reader, string? tagOverride = null)
+        {
+            var serializer = tagOverride is null
+                ? new XmlSerializer(typeof(T))
+                : new XmlSerializer(typeof(T), new XmlRootAttribute { ElementName = tagOverride });
+            return (T?)serializer.Deserialize(reader) ?? throw new InvalidOperationException();
+        }
     }
 }
