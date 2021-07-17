@@ -55,7 +55,7 @@ namespace Yoakke.X86.Generator
             result.AppendLine($"    public IReadOnlyList<IOperand> Operands {{ get; }}");
 
             // Infer properties
-            var properties = GenerateProperties(instruction);
+            var properties = GenerateProperties(instruction.Forms);
 
             // Write properties into the class
             foreach (var prop in properties)
@@ -83,7 +83,7 @@ namespace Yoakke.X86.Generator
                 if (!instruction.Forms.Any(f => f.Operands.Count == paramCount)) continue;
 
                 // Yes we do need it, infer some names for us
-                var ctorParams = GenerateConstructorParams(instruction, paramCount);
+                var ctorParams = GenerateProperties(instruction.Forms.Where(f => f.Operands.Count == paramCount).ToList());
 
                 result.AppendLine();
 
@@ -95,7 +95,7 @@ namespace Yoakke.X86.Generator
                 // Parameter doc comments
                 foreach (var param in ctorParams)
                 {
-                    result.AppendLine($"    /// <param name=\"{param.Name}\">{param.Docs}</param>");
+                    result.AppendLine($"    /// <param name=\"{param.Name.ToLower()}\">{param.Docs}</param>");
                 }
 
                 // Ctor code
@@ -107,13 +107,13 @@ namespace Yoakke.X86.Generator
                     if (!first) result.Append(", ");
                     first = false;
 
-                    result.Append($"IOperand {param.Name}");
+                    result.Append($"IOperand {param.Name.ToLower()}");
                 }
                 // Body
                 result
                     .AppendLine(")")
                     .AppendLine("    {")
-                    .AppendLine($"        this.Operands = new[] {{ {string.Join(", ", ctorParams.Select(p => p.Name))} }};")
+                    .AppendLine($"        this.Operands = new[] {{ {string.Join(", ", ctorParams.Select(p => p.Name.ToLower()))} }};")
                     .AppendLine("    }");
             }
 
@@ -122,16 +122,75 @@ namespace Yoakke.X86.Generator
             return result.ToString();
         }
 
-        private static IReadOnlyList<OperandProperty> GenerateProperties(Instruction instruction)
+        private static IReadOnlyList<OperandProperty> GenerateProperties(IReadOnlyList<InstructionForm> relevantForms)
         {
+            Debug.Assert(relevantForms.Count > 0, "Must be at least one instruction form that has this many operands.");
+
+            if (relevantForms.All(f => f.Operands.Count == 1))
+            {
+                // Every form has exactly one operand
+                // For now we will just call that 'Operand'
+                return new OperandProperty[]
+                {
+                    new()
+                    {
+                        OperandIndex = 0,
+                        Docs = "The operand.",
+                        Name = "Operand",
+                    },
+                };
+            }
+
+            if (relevantForms.All(f => f.Operands.Count == 2))
+            {
+                // Every form has exactly 2 operands, might be a target <- source pattern, chech that
+                if (relevantForms.All(f => f.Operands[0].IsOutput && !f.Operands[1].IsOutput))
+                {
+                    // For a little extra readability, if the first operand is an input too, we can help that with some docs
+                    if (relevantForms.All(f => f.Operands[0].IsInput))
+                    {
+                        // It's an inout <- in form, like ADD
+                        return new OperandProperty[]
+                        {
+                            new()
+                            {
+                                OperandIndex = 0,
+                                Docs = "The first input (and output) operand.",
+                                Name = "Target",
+                            },
+                            new()
+                            {
+                                OperandIndex = 1,
+                                Docs = "The second input operand.",
+                                Name = "Source",
+                            },
+                        };
+                    }
+                    else
+                    {
+                        // It's an out <- in form, like MOV
+                        return new OperandProperty[]
+                        {
+                            new()
+                            {
+                                OperandIndex = 0,
+                                Docs = "The output operand.",
+                                Name = "Destination",
+                            },
+                            new()
+                            {
+                                OperandIndex = 1,
+                                Docs = "The input operand.",
+                                Name = "Source",
+                            },
+                        };
+                    }
+                }
+            }
+
+            // By default, we just generate numbered operands
             var properties = new List<OperandProperty>();
-
-            // Find out how many properties we need
-            var propCount = instruction.Forms.Max(f => f.Operands.Count);
-
-            // TODO: Make this a bit smarter
-            // For now we just generate Operand1, Operand2, ...
-            for (var i = 0; i < propCount; ++i)
+            for (var i = 0; i < relevantForms.Count; ++i)
             {
                 properties.Add(new()
                 {
@@ -140,26 +199,6 @@ namespace Yoakke.X86.Generator
                     Docs = $"The {i + 1}{GetNumberSuffix(i + 1)} operand.",
                 });
             }
-
-            return properties;
-        }
-
-        private static IReadOnlyList<OperandProperty> GenerateConstructorParams(Instruction instruction, int operandCount)
-        {
-            var properties = new List<OperandProperty>();
-
-            // TODO: Make this a bit smarter
-            // For now we just generate Operand1, Operand2, ...
-            for (var i = 0; i < operandCount; ++i)
-            {
-                properties.Add(new()
-                {
-                    OperandIndex = i,
-                    Name = $"operand{i + 1}",
-                    Docs = $"The {i + 1}{GetNumberSuffix(i + 1)} operand.",
-                });
-            }
-
             return properties;
         }
 

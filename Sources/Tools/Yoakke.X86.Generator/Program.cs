@@ -47,10 +47,11 @@ namespace Yoakke.X86.Generator
             }
 
             Console.WriteLine(result);
+            File.WriteAllText("Classes.cs", result.ToString());
             Console.WriteLine($"supported: {supported}, unsupported: {unsupported}");
 
-            var parser = ParserGenerator.Generate(isa, withClasses);
-            Console.WriteLine(parser);
+            // var parser = ParserGenerator.Generate(isa, withClasses);
+            // Console.WriteLine(parser);
         }
     }
 }
