@@ -3239,6 +3239,18 @@ namespace Yoakke.X86.Readers
                 this.UnparseByte();
                 break;
             }
+            case 0xc8:
+            {
+                var imm0_1 = this.ParseImmediate(DataWidth.Word);
+                var imm1_1 = this.ParseImmediate(DataWidth.Byte);
+                length = this.Commit();
+                return new Instructions.Enter(imm0_1, imm1_1);
+            }
+            case 0xc9:
+            {
+                length = this.Commit();
+                return new Instructions.Leave();
+            }
             case 0xcc:
             {
                 length = this.Commit();

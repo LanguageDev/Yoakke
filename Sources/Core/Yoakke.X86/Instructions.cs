@@ -2717,6 +2717,40 @@ namespace Yoakke.X86
         }
 
         /// <summary>
+        /// Make Stack Frame for Procedure Parameters.
+        /// </summary>
+        public class Enter : IInstruction
+        {
+            /// <inheritdoc/>
+            public IReadOnlyList<IOperand> Operands { get; }
+
+            /// <inheritdoc/>
+            public string? Comment { get; init; }
+
+            /// <summary>
+            /// The first operand.
+            /// </summary>
+            public IOperand First => this.Operands[0];
+
+            /// <summary>
+            /// The second operand.
+            /// </summary>
+            public IOperand Second => this.Operands[1];
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Enter"/> class.
+            /// </summary>
+            /// <param name="first">The first operand.</param>
+            /// <param name="second">The second operand.</param>
+            /// <param name="comment">The optional inline comment.</param>
+            public Enter(IOperand first, IOperand second, string? comment = null)
+            {
+                this.Operands = new[] { first, second };
+                this.Comment = comment;
+            }
+        }
+
+        /// <summary>
         /// Fast Exit Multimedia State.
         /// </summary>
         public class Femms : IInstruction
@@ -3883,6 +3917,28 @@ namespace Yoakke.X86
             public Lea(IOperand destination, IOperand source, string? comment = null)
             {
                 this.Operands = new[] { destination, source };
+                this.Comment = comment;
+            }
+        }
+
+        /// <summary>
+        /// High Level Procedure Exit.
+        /// </summary>
+        public class Leave : IInstruction
+        {
+            /// <inheritdoc/>
+            public IReadOnlyList<IOperand> Operands { get; }
+
+            /// <inheritdoc/>
+            public string? Comment { get; init; }
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Leave"/> class.
+            /// </summary>
+            /// <param name="comment">The optional inline comment.</param>
+            public Leave(string? comment = null)
+            {
+                this.Operands = Array.Empty<IOperand>();
                 this.Comment = comment;
             }
         }
