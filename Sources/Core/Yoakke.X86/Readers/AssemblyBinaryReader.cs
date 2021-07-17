@@ -3685,46 +3685,105 @@ namespace Yoakke.X86.Readers
 
         private IOperand ParseImmediate(DataWidth width)
         {
+            var number = this.ParseNumber(width);
+            return new Constant(width, number);
+        }
+
+        private int ParseNumber(DataWidth width)
+        {
             var bytes = new byte[(int)width];
             for (var i = 0; i < bytes.Length; ++i) bytes[i] = (byte)this.ParseByte();
 
-            // TODO: Not correct
-            var number = BitConverter.ToInt64(bytes);
-            return new Constant(width, number);
+            return width switch
+            {
+                DataWidth.Byte => bytes[0],
+                DataWidth.Word => BitConverter.ToInt16(bytes),
+                DataWidth.Dword => BitConverter.ToInt32(bytes),
+                _ => throw new NotImplementedException(),
+            };
         }
 
         private IOperand ParseRM(byte modrm, DataWidth? width)
         {
+            // TODO: Segment override prefixes?
+            // TODO: We probably need to use the width a few places, rn. all register sizes are hardcoded
+
             var mode = modrm >> 6;
             var rm = modrm & 0b111;
 
             // We parse SIB byte in case rm is 100 in any mode but 11
-            byte sib = 0;
-            if (mode != 0b11 && rm == 0b100) sib = (byte)this.ParseByte();
+            var sib_scale = 0;
+            var sib_index = 0;
+            var sib_base = 0;
+            ScaledIndex? scaledIndex = null;
+            if (mode != 0b11 && rm == 0b100)
+            {
+                var sib = (byte)this.ParseByte();
+                sib_scale = sib >> 6;
+                sib_index = (sib >> 3) & 0b111;
+                sib_base = sib & 0b111;
+                scaledIndex = new ScaledIndex(FromRegisterIndex(sib_index, DataWidth.Dword), 1 << sib_scale);
+            }
 
-            return mode switch
+            IOperand op = mode switch
             {
                 // Register indirect addressing mode or SIB without displacement
                 0b00 => rm switch
                 {
                     // SIB only
-                    0b100 => throw new NotImplementedException(),
+                    0b100 => sib_base == 0b101
+                        // Displacement only
+                        ? new Address
+                        {
+                            ScaledIndex = scaledIndex!.Value,
+                            Displacement = this.ParseNumber(DataWidth.Dword),
+                        }
+                        // Base
+                        : new Address
+                        {
+                            Base = FromRegisterIndex(sib_base, DataWidth.Dword),
+                            ScaledIndex = scaledIndex!.Value,
+                        },
 
                     // 32-bit displacement only
-                    0b101 => throw new NotImplementedException(),
+                    0b101 => new Address
+                    {
+                        Displacement = this.ParseNumber(DataWidth.Dword),
+                    },
 
                     // Register-indirect
-                    _ => throw new NotImplementedException(),
+                    _ => new Address
+                    {
+                        Base = FromRegisterIndex(rm, DataWidth.Dword),
+                    },
                 },
 
                 // 8 or 32 -bit displacement
-                0b01 or 0b10 => throw new NotImplementedException(),
+                0b01 or 0b10 => rm == 0b100
+                    // Has a SIB
+                    ? new Address
+                    {
+                        Base = FromRegisterIndex(sib_base, DataWidth.Dword),
+                        ScaledIndex = scaledIndex!.Value,
+                        Displacement = this.ParseNumber(mode == 0b01 ? DataWidth.Byte : DataWidth.Dword),
+                    }
+                    // No SIB
+                    : new Address
+                    {
+                        Base = FromRegisterIndex(rm, DataWidth.Dword),
+                        Displacement = this.ParseNumber(mode == 0b01 ? DataWidth.Byte : DataWidth.Dword),
+                    },
 
                 // Register addressing mode
                 0b11 => FromRegisterIndex(rm, width ?? throw new NotImplementedException()),
 
                 _ => throw new InvalidOperationException(),
             };
+
+            // If we have an address but a width was specified, that means it's an indirect read
+            return op is Address addr && width is not null
+                ? new Indirect(width.Value, addr)
+                : op;
         }
 
         private int Commit()
