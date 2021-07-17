@@ -93,13 +93,8 @@ namespace Yoakke.X86.Generator
                     .AppendLine("    /// <summary>")
                     .AppendLine($"    /// {prop.Docs}")
                     .AppendLine("    /// </summary>");
-                // Getter and setter
-                result
-                    .AppendLine($"    public IOperand {prop.Name}")
-                    .AppendLine("    {")
-                    .AppendLine($"        get => this.Operands[{prop.OperandIndex}];")
-                    .AppendLine($"        set => this.Operands[{prop.OperandIndex}] = value;")
-                    .AppendLine("    }");
+                // Getter
+                result.AppendLine($"    public IOperand {prop.Name} => this.Operands[{prop.OperandIndex}];");
             }
 
             // Generate the constructors into the class
@@ -145,8 +140,20 @@ namespace Yoakke.X86.Generator
                 // Body
                 result
                     .AppendLine(")")
-                    .AppendLine("    {")
-                    .AppendLine($"        this.Operands = new[] {{ {string.Join(", ", ctorParams.SkipLast(1).Select(p => p.Name.ToLower()))} }};")
+                    .AppendLine("    {");
+                if (ctorParams.Count > 1)
+                {
+                    // We have more than just the comment parameter
+                    var args = string.Join(", ", ctorParams.SkipLast(1).Select(p => p.Name.ToLower()));
+                    result.AppendLine($"        this.Operands = new[] {{ {args} }};");
+                }
+                else
+                {
+                    // No operands
+                    result.AppendLine($"        this.Operands = Array.Empty<IOperand>();");
+                }
+                // Also assign the comment, close ctor
+                result
                     .AppendLine("        this.Comment = comment;")
                     .AppendLine("    }");
             }

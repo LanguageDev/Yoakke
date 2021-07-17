@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Yoakke.X86.Validation;
 
 namespace Yoakke.X86
 {
@@ -21,19 +20,14 @@ namespace Yoakke.X86
         /// </summary>
         public IReadOnlyList<ICodeElement> Elements { get; init; } = Array.Empty<ICodeElement>();
 
-        private readonly ValidatorCache validatorCache = new();
-
         /// <summary>
         /// Validates this <see cref="Assembly"/>.
         /// </summary>
         /// <param name="context">The <see cref="AssemblyContext"/> to use for validation.</param>
         public void Validate(AssemblyContext context)
         {
-            foreach (var instruction in this.Elements.OfType<IInstruction>())
-            {
-                var validator = this.validatorCache.GetInstructionValidator(instruction);
-                validator.Validate(context, instruction);
-            }
+            // TODO
+            throw new NotImplementedException();
         }
     }
 }

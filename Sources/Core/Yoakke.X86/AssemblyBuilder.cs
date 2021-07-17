@@ -111,14 +111,6 @@ namespace Yoakke.X86
         /* Instructions */
 
         /// <summary>
-        /// Writes a LEAVE instruction, that essentially pops off EBP and puts it into ESP.
-        /// </summary>
-        /// <param name="comment">The optional instruction comment.</param>
-        /// <returns>This instance to chain calls.</returns>
-        public AssemblyBuilder Leave(string? comment = null) =>
-            this.Write(new Instructions.Leave(comment));
-
-        /// <summary>
         /// Writes a RET instruction.
         /// </summary>
         /// <param name="comment">The optional instruction comment.</param>
@@ -173,16 +165,6 @@ namespace Yoakke.X86
         /// <returns>This instance to chain calls.</returns>
         public AssemblyBuilder Jmp(IOperand target, string? comment = null) =>
             this.Write(new Instructions.Jmp(target, comment));
-
-        /// <summary>
-        /// Writes a conditional JLE instruction, that jumps if the left operand was less-than or
-        /// equal to the right one.
-        /// </summary>
-        /// <param name="target">The target operand to jump to.</param>
-        /// <param name="comment">The optional instruction comment.</param>
-        /// <returns>This instance to chain calls.</returns>
-        public AssemblyBuilder Jle(IOperand target, string? comment = null) =>
-            this.Write(new Instructions.Jle(target, comment));
 
         /// <summary>
         /// Writes a CMP instruction.

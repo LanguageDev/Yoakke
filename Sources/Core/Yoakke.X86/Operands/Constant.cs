@@ -33,7 +33,7 @@ namespace Yoakke.X86.Operands
         /// </summary>
         /// <param name="size">The <see cref="DataWidth"/> of this constant.</param>
         /// <param name="value">The value object.</param>
-        private Constant(DataWidth size, object value)
+        internal Constant(DataWidth size, object value)
         {
             this.Size = size;
             this.Value = value;

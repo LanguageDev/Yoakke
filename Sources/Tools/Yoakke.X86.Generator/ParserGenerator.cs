@@ -60,7 +60,7 @@ namespace Yoakke.X86.Generator
         private readonly StringBuilder resultBuilder;
         private ParseNode parseTree = new(MatchType.None);
         private int indent = 0;
-        private bool modrmConsumed;
+        private string? parsedModrmName;
 
         private ParserGenerator(InstructionSet instructionSet, ISet<Instruction> withClasses)
         {
@@ -122,10 +122,11 @@ namespace Yoakke.X86.Generator
             Debug.Assert(nodes.Count() <= 8, "There must be at most 8 encodings for ModRM extensions");
 
             // Read in the ModRM byte
-            this.Indented().AppendLine("var modrm_byte = this.ParseByte();");
-            this.modrmConsumed = true;
+            // NOTE: We tag modrm byte with indentation to avoid name collision
+            this.parsedModrmName = $"modrm{this.indent}";
+            this.Indented().AppendLine($"var {this.parsedModrmName} = this.ParseByte();");
             // Switch on alternatives for the register
-            this.Indented().AppendLine("switch ((modrm_byte >> 3) & 0b111)");
+            this.Indented().AppendLine($"switch (({this.parsedModrmName} >> 3) & 0b111)");
             this.Indented().AppendLine("{");
 
             // The different cases
@@ -145,7 +146,7 @@ namespace Yoakke.X86.Generator
             this.Indented().AppendLine("}");
             // We didn't use the byte, un-eat it
             this.Indented().AppendLine("this.UnparseByte();");
-            this.modrmConsumed = false;
+            this.parsedModrmName = null;
         }
 
         private void GeneratePrefixMatches(IEnumerable<KeyValuePair<byte, ParseNode>>? nodes)
@@ -182,10 +183,14 @@ namespace Yoakke.X86.Generator
                 // We handle this with the regular ModRM
                 if (modrm.Mode == "11") return;
 
-                var prevModrmConsumed = this.modrmConsumed;
+                var alreadyConsumedModRm = this.parsedModrmName is not null;
                 // Consume ModRM, if we haven't already
-                if (!this.modrmConsumed) this.Indented().AppendLine("var modrm_byte = this.ParseByte();");
-                this.modrmConsumed = true;
+                if (this.parsedModrmName is null)
+                {
+                    // NOTE: We tag modrm byte with indentation to avoid name collision
+                    this.parsedModrmName = $"modrm{this.indent}";
+                    this.Indented().AppendLine($"var {this.parsedModrmName} = this.ParseByte();");
+                }
 
                 if (modrm.Reg.StartsWith('#'))
                 {
@@ -193,17 +198,18 @@ namespace Yoakke.X86.Generator
                     // We can just convert the reg
                     var regOperandIndex = int.Parse(modrm.Reg.Substring(1));
                     var size = GetDataWidthForOperand(encoding.Form.Operands[regOperandIndex]);
-                    args[regOperandIndex] = $"FromRegisterIndex((modrm_byte >> 3) & 0b111, {size})";
+                    args[regOperandIndex] = $"FromRegisterIndex(({this.parsedModrmName} >> 3) & 0b111, {size})";
                 }
 
                 // Mode and RM
                 Debug.Assert(modrm.Mode == "11" || modrm.Mode == modrm.Rm, "Mode and RM have to reference the same argument");
                 var rmOperandIndex = int.Parse(modrm.Rm.Substring(1));
                 var rmOperandSize = GetDataWidthForOperand(encoding.Form.Operands[rmOperandIndex]);
-                this.Indented().AppendLine($"var rm = this.ParseRM(modrm_byte, {rmOperandSize});");
-                args[rmOperandIndex] = "rm";
+                // NOTE: We tag RM with indentation to avoid name collision
+                this.Indented().AppendLine($"var rm{this.indent} = this.ParseRM({this.parsedModrmName}, {rmOperandSize});");
+                args[rmOperandIndex] = $"rm{this.indent}";
 
-                this.modrmConsumed = prevModrmConsumed;
+                if (!alreadyConsumedModRm) this.parsedModrmName = null;
                 // NOTE: We don't un-parse here, we assume this has to work for now
             }
 
@@ -218,8 +224,9 @@ namespace Yoakke.X86.Generator
             for (var i = 0; i < encoding.Immediates.Count; ++i)
             {
                 var immediate = encoding.Immediates[i];
-                this.Indented().AppendLine($"var imm{i} = this.ParseImmediate({immediate.Size});");
-                args[immediate.OperandNumber] = $"imm{i}";
+                // NOTE: We tag immediates with indentation to avoid name collision
+                this.Indented().AppendLine($"var imm{i}_{this.indent} = this.ParseImmediate({GetDataWidthForSize(immediate.Size)});");
+                args[immediate.OperandNumber] = $"imm{i}_{this.indent}";
             }
 
             // If it's a last 3 bit encoding, do that here
@@ -315,6 +322,15 @@ namespace Yoakke.X86.Generator
             "r16" or "m16" => "DataWidth.Word",
             "r32" or "m32" => "DataWidth.Dword",
             "r64" or "m64" => "DataWidth.Qword",
+            _ => throw new NotSupportedException(),
+        };
+
+        private static string GetDataWidthForSize(int size) => size switch
+        {
+            1 => "DataWidth.Byte",
+            2 => "DataWidth.Word",
+            4 => "DataWidth.Dword",
+            8 => "DataWidth.Qword",
             _ => throw new NotSupportedException(),
         };
 
