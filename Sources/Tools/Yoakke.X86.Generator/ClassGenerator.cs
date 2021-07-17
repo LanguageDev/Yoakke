@@ -20,6 +20,33 @@ namespace Yoakke.X86.Generator
         private record OperandProperty(int OperandIndex, string Name, string Docs);
 
         /// <summary>
+        /// Generates the classes for <see cref="Instructions"/> in the given <see cref="InstructionSet"/>.
+        /// </summary>
+        /// <param name="instructionSet">The <see cref="InstructionSet"/> to generate classes for.</param>
+        /// <param name="generated">The set of <see cref="Instruction"/>s gets written here, that
+        /// generated a class. Unsupported instructions are not written here.</param>
+        /// <returns>The code for all of the class definitions.</returns>
+        public static string GenerateIsaClasses(InstructionSet instructionSet, out ISet<Instruction> generated)
+        {
+            generated = new HashSet<Instruction>();
+            var classes = new StringBuilder();
+            foreach (var instruction in instructionSet.Instructions)
+            {
+                try
+                {
+                    var source = GenerateInstructionClass(instruction);
+                    classes.AppendLine(source);
+                    generated.Add(instruction);
+                }
+                catch (NotSupportedException)
+                {
+                    // Pass
+                }
+            }
+            return classes.ToString();
+        }
+
+        /// <summary>
         /// Generates code for a single <see cref="Instruction"/> class.
         /// </summary>
         /// <param name="instruction">The <see cref="Instruction"/> to generate code for.</param>

@@ -16,42 +16,17 @@ namespace Yoakke.X86.Generator
     {
         private static void Main(string[] args)
         {
-            var serializer = new XmlSerializer(typeof(InstructionSet));
-            var isa = (InstructionSet?)serializer.Deserialize(new FileStream(args[0], FileMode.Open, FileAccess.Read));
-            if (isa is null) throw new InvalidOperationException();
-            isa.FixBackreferences();
+            var isa = InstructionSet.FromXmlFile(args[0]);
 
-            var supported = 0;
-            var unsupported = 0;
+            var classes = ClassGenerator.GenerateIsaClasses(isa, out var withClasses);
+            File.WriteAllText("Classes.cs", classes.ToString());
 
-            var withClasses = new HashSet<Instruction>();
+            var parser = ParserGenerator.Generate(isa, withClasses);
+            File.WriteAllText("Parser.cs", parser);
 
-            var i = 0;
-            var result = new StringBuilder();
-            foreach (var instruction in isa.Instructions)
-            {
-                try
-                {
-                    var source = ClassGenerator.GenerateInstructionClass(instruction);
-                    result.AppendLine(source);
-                    withClasses.Add(instruction);
-                    ++supported;
-                }
-                catch (NotSupportedException)
-                {
-                    // Console.WriteLine($"Can't support {instruction.Name}");
-                    ++unsupported;
-                }
-                ++i;
-                if (i % 100 == 0) Console.WriteLine($"Processed {i} / {isa.Instructions.Count}");
-            }
-
-            Console.WriteLine(result);
-            File.WriteAllText("Classes.cs", result.ToString());
+            var supported = withClasses.Count;
+            var unsupported = isa.Instructions.Count - supported;
             Console.WriteLine($"supported: {supported}, unsupported: {unsupported}");
-
-            // var parser = ParserGenerator.Generate(isa, withClasses);
-            // Console.WriteLine(parser);
         }
     }
 }
