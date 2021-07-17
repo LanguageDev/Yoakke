@@ -17,14 +17,7 @@ namespace Yoakke.X86.Generator
     /// </summary>
     public static class ClassGenerator
     {
-        private struct OperandProperty
-        {
-            public int OperandIndex { get; set; }
-
-            public string Name { get; set; }
-
-            public string Docs { get; set; }
-        }
+        private record OperandProperty(int OperandIndex, string Name, string Docs);
 
         /// <summary>
         /// Generates code for a single <see cref="Instruction"/> class.
@@ -33,6 +26,10 @@ namespace Yoakke.X86.Generator
         /// <returns>The built class code for <paramref name="instruction"/>.</returns>
         public static string GenerateInstructionClass(Instruction instruction)
         {
+            // Our first order of business is only keep the instruction forms that we support all operands for
+            var supportedForms = instruction.Forms.Where(f => f.Operands.All(IsOperandSupported)).ToList();
+            if (supportedForms.Count == 0) throw new NotSupportedException();
+
             var result = new StringBuilder();
 
             // Class doc comment
@@ -55,7 +52,7 @@ namespace Yoakke.X86.Generator
             result.AppendLine($"    public IReadOnlyList<IOperand> Operands {{ get; }}");
 
             // Infer properties
-            var properties = GenerateProperties(instruction.Forms);
+            var properties = GenerateProperties(supportedForms);
 
             // Write properties into the class
             foreach (var prop in properties)
@@ -80,10 +77,11 @@ namespace Yoakke.X86.Generator
             for (var paramCount = 0; paramCount <= properties.Count; ++paramCount)
             {
                 // Check if we even need a constructor with 'paramCount' no. parameters
-                if (!instruction.Forms.Any(f => f.Operands.Count == paramCount)) continue;
+                var form = supportedForms.Where(f => f.Operands.Count == paramCount).ToList();
+                if (form.Count == 0) continue;
 
                 // Yes we do need it, infer some names for us
-                var ctorParams = GenerateProperties(instruction.Forms.Where(f => f.Operands.Count == paramCount).ToList());
+                var ctorParams = GenerateProperties(form);
 
                 result.AppendLine();
 
@@ -126,25 +124,21 @@ namespace Yoakke.X86.Generator
         {
             Debug.Assert(relevantForms.Count > 0, "Must be at least one instruction form that has this many operands.");
 
-            if (relevantForms.All(f => f.Operands.Count == 1))
+            if (relevantForms.Max(f => f.Operands.Count) == 1)
             {
-                // Every form has exactly one operand
+                // Every form has exactly 0 or 1 operand
                 // For now we will just call that 'Operand'
-                return new OperandProperty[]
-                {
-                    new()
-                    {
-                        OperandIndex = 0,
-                        Docs = "The operand.",
-                        Name = "Operand",
-                    },
-                };
+                return new OperandProperty[] { new(0, "Operand", "The operand.") };
             }
 
             if (relevantForms.All(f => f.Operands.Count == 2))
             {
                 // Every form has exactly 2 operands, might be a target <- source pattern, chech that
-                if (relevantForms.All(f => f.Operands[0].IsOutput && !f.Operands[1].IsOutput))
+                if (relevantForms.All(f =>
+                    // Output <- !Output
+                       (f.Operands[0].IsOutput && !f.Operands[1].IsOutput)
+                    // !Input <- Input
+                    || (!f.Operands[0].IsInput && f.Operands[1].IsInput)))
                 {
                     // For a little extra readability, if the first operand is an input too, we can help that with some docs
                     if (relevantForms.All(f => f.Operands[0].IsInput))
@@ -152,18 +146,8 @@ namespace Yoakke.X86.Generator
                         // It's an inout <- in form, like ADD
                         return new OperandProperty[]
                         {
-                            new()
-                            {
-                                OperandIndex = 0,
-                                Docs = "The first input (and output) operand.",
-                                Name = "Target",
-                            },
-                            new()
-                            {
-                                OperandIndex = 1,
-                                Docs = "The second input operand.",
-                                Name = "Source",
-                            },
+                            new(0, "Target", "The first input (and output) operand."),
+                            new(1, "Source", "The second input operand."),
                         };
                     }
                     else
@@ -171,33 +155,26 @@ namespace Yoakke.X86.Generator
                         // It's an out <- in form, like MOV
                         return new OperandProperty[]
                         {
-                            new()
-                            {
-                                OperandIndex = 0,
-                                Docs = "The output operand.",
-                                Name = "Destination",
-                            },
-                            new()
-                            {
-                                OperandIndex = 1,
-                                Docs = "The input operand.",
-                                Name = "Source",
-                            },
+                            new(0, "Destination", "The output operand."),
+                            new(1, "Source", "The input operand."),
                         };
                     }
                 }
+
+                // We just return a little first, second pair
+                return new OperandProperty[]
+                {
+                    new(0, "First", "The first operand."),
+                    new(1, "Second", "The second operand."),
+                };
             }
 
             // By default, we just generate numbered operands
+            var maxNumberOfOperands = relevantForms.Max(f => f.Operands.Count);
             var properties = new List<OperandProperty>();
-            for (var i = 0; i < relevantForms.Count; ++i)
+            for (var i = 0; i < maxNumberOfOperands; ++i)
             {
-                properties.Add(new()
-                {
-                    OperandIndex = i,
-                    Name = $"Operand{i + 1}",
-                    Docs = $"The {i + 1}{GetNumberSuffix(i + 1)} operand.",
-                });
+                properties.Add(new(i, $"Operand{i + 1}", $"The {i + 1}{GetNumberSuffix(i + 1)} operand."));
             }
             return properties;
         }
@@ -210,6 +187,18 @@ namespace Yoakke.X86.Generator
             2 => "nd",
             3 => "rd",
             _ => "th",
+        };
+
+        private static bool IsOperandSupported(Operand operand) => SupportedOperands.Contains(operand.Type);
+
+        private static readonly string[] SupportedOperands = new[]
+        {
+            "1", "3",
+            "al", "cl", "ax", "eax", "rax",
+            "imm8", "imm16", "imm32", "imm64",
+            "r8", "r16", "r32", "r64",
+            "m",
+            "m8", "m16", "m32", "m64",
         };
     }
 }
