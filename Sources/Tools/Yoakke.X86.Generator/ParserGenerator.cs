@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,7 +30,29 @@ namespace Yoakke.X86.Generator
             var generator = new ParserGenerator(instructionSet, withClasses);
             generator.BuildParserTree();
             generator.GenerateParser();
-            return generator.resultBuilder.ToString();
+            var code = generator.resultBuilder.ToString();
+            code = CleanUpParserCode(code);
+            return code;
+        }
+
+        private static string CleanUpParserCode(string code)
+        {
+            var result = new StringBuilder();
+            var reader = new StringReader(code);
+            var ignore = false;
+            while (true)
+            {
+                var line = reader.ReadLine();
+                if (line is null) break;
+
+                var trimmedLine = line.TrimStart();
+
+                if (trimmedLine.StartsWith("}")) ignore = false;
+                if (ignore) continue;
+                ignore = line.TrimStart().StartsWith("return");
+                result.AppendLine(line);
+            }
+            return result.ToString();
         }
 
         private readonly InstructionSet instructionSet;
@@ -131,7 +154,7 @@ namespace Yoakke.X86.Generator
 
             foreach (var (prefixByte, subnode) in nodes)
             {
-                this.Indented().AppendLine($"if (this.HasPrefix(0x{prefixByte:x2})");
+                this.Indented().AppendLine($"if (HasPrefix(0x{prefixByte:x2}))");
                 this.Indented().AppendLine("{");
                 this.Indent();
 
@@ -170,14 +193,14 @@ namespace Yoakke.X86.Generator
                     // We can just convert the reg
                     var regOperandIndex = int.Parse(modrm.Reg.Substring(1));
                     var size = GetDataWidthForOperand(encoding.Form.Operands[regOperandIndex]);
-                    args[regOperandIndex] = $"Registers.FromIndex((modrm_byte >> 3) & 0b111, {size})";
+                    args[regOperandIndex] = $"FromIndex((modrm_byte >> 3) & 0b111, {size})";
                 }
 
                 // Mode and RM
                 Debug.Assert(modrm.Mode == "11" || modrm.Mode == modrm.Rm, "Mode and RM have to reference the same argument");
                 var rmOperandIndex = int.Parse(modrm.Rm.Substring(1));
                 var rmOperandSize = GetDataWidthForOperand(encoding.Form.Operands[rmOperandIndex]);
-                args[rmOperandIndex] = $"this.ParseRM(modrm_byte, {rmOperandSize})";
+                args[rmOperandIndex] = $"ParseRM(modrm_byte, {rmOperandSize})";
 
                 this.modrmConsumed = prevModrmConsumed;
                 // NOTE: We don't un-parse here, we assume this has to work for now
@@ -205,7 +228,7 @@ namespace Yoakke.X86.Generator
                 if (last3 is not null)
                 {
                     var size = GetDataWidthForOperand(encoding.Form.Operands[last3.Value]);
-                    args[last3.Value] = $"Registers.FromIndex(byte{i} & 0b111, {size})";
+                    args[last3.Value] = $"FromIndex(byte{i} & 0b111, {size})";
                 }
             }
 
@@ -222,6 +245,7 @@ namespace Yoakke.X86.Generator
             // We actually support everything
             var argsStr = string.Join(", ", args);
             var name = Capitalize(encoding.Form.Instruction.Name);
+            this.Indented().AppendLine("this.Commit();");
             this.Indented().AppendLine($"return new {name}({argsStr});");
         }
 
