@@ -5,14 +5,14 @@
 namespace Yoakke.X86.Writers
 {
     /// <summary>
-    /// Settings for an <see cref="AssemblyWriter"/>.
+    /// Settings for an <see cref="AssemblyTextWriter"/>.
     /// </summary>
-    public class AssemblyWriterSettings
+    public class AssemblyTextWriterSettings
     {
         /// <summary>
         /// Returns a default instance with some reasonable settings.
         /// </summary>
-        public static AssemblyWriterSettings Default => new();
+        public static AssemblyTextWriterSettings Default => new();
 
         /// <summary>
         /// The <see cref="Writers.SyntaxFlavor"/> to default to.

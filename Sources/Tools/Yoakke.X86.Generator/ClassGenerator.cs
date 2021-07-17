@@ -68,15 +68,17 @@ namespace Yoakke.X86.Generator
             // Class start
             var className = Capitalize(instruction.Name);
             result
-                .AppendLine($"public class {className}")
+                .AppendLine($"public class {className} : IInstruction")
                 .AppendLine("{");
 
             // For now we store all instruction operands in a read-only list
-            result
-                .AppendLine("    /// <summary>")
-                .AppendLine($"    /// The operands of this instruction.")
-                .AppendLine("    /// </summary>");
+            result.AppendLine("    /// <inheritdoc/>");
             result.AppendLine($"    public IReadOnlyList<IOperand> Operands {{ get; }}");
+
+            // The comment property
+            result.AppendLine();
+            result.AppendLine("    /// <inheritdoc/>");
+            result.AppendLine("    public string? Comment { get; init; }");
 
             // Infer properties
             var properties = GenerateProperties(supportedForms);
@@ -110,6 +112,9 @@ namespace Yoakke.X86.Generator
                 // Yes we do need it, infer some names for us
                 var ctorParams = GenerateProperties(form);
 
+                // Inject the doc comment parameter
+                ctorParams = ctorParams.Append(new(-1, "comment", "The optional inline comment.")).ToList();
+
                 result.AppendLine();
 
                 // Ctor doc comment
@@ -132,13 +137,17 @@ namespace Yoakke.X86.Generator
                     if (!first) result.Append(", ");
                     first = false;
 
-                    result.Append($"IOperand {param.Name.ToLower()}");
+                    // Comment, default it
+                    if (param.OperandIndex == -1) result.Append($"string? {param.Name.ToLower()} = null");
+                    // Regular operand
+                    else result.Append($"IOperand {param.Name.ToLower()}");
                 }
                 // Body
                 result
                     .AppendLine(")")
                     .AppendLine("    {")
-                    .AppendLine($"        this.Operands = new[] {{ {string.Join(", ", ctorParams.Select(p => p.Name.ToLower()))} }};")
+                    .AppendLine($"        this.Operands = new[] {{ {string.Join(", ", ctorParams.SkipLast(1).Select(p => p.Name.ToLower()))} }};")
+                    .AppendLine("        this.Comment = comment;")
                     .AppendLine("    }");
             }
 

@@ -31,9 +31,9 @@ namespace Yoakke.X86.Sample
             var context = new AssemblyContext { AddressSize = DataWidth.Dword };
             assembly.Validate(context);
 
-            var writer = new AssemblyWriter
+            var writer = new AssemblyTextWriter
             {
-                Settings = new AssemblyWriterSettings
+                Settings = new AssemblyTextWriterSettings
                 {
                     SyntaxFlavor = SyntaxFlavor.ATnT,
                     InstructionPadding = 5,

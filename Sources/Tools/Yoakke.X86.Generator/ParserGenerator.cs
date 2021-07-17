@@ -193,14 +193,15 @@ namespace Yoakke.X86.Generator
                     // We can just convert the reg
                     var regOperandIndex = int.Parse(modrm.Reg.Substring(1));
                     var size = GetDataWidthForOperand(encoding.Form.Operands[regOperandIndex]);
-                    args[regOperandIndex] = $"FromIndex((modrm_byte >> 3) & 0b111, {size})";
+                    args[regOperandIndex] = $"FromRegisterIndex((modrm_byte >> 3) & 0b111, {size})";
                 }
 
                 // Mode and RM
                 Debug.Assert(modrm.Mode == "11" || modrm.Mode == modrm.Rm, "Mode and RM have to reference the same argument");
                 var rmOperandIndex = int.Parse(modrm.Rm.Substring(1));
                 var rmOperandSize = GetDataWidthForOperand(encoding.Form.Operands[rmOperandIndex]);
-                args[rmOperandIndex] = $"ParseRM(modrm_byte, {rmOperandSize})";
+                this.Indented().AppendLine($"var rm = this.ParseRM(modrm_byte, {rmOperandSize});");
+                args[rmOperandIndex] = "rm";
 
                 this.modrmConsumed = prevModrmConsumed;
                 // NOTE: We don't un-parse here, we assume this has to work for now
@@ -228,7 +229,7 @@ namespace Yoakke.X86.Generator
                 if (last3 is not null)
                 {
                     var size = GetDataWidthForOperand(encoding.Form.Operands[last3.Value]);
-                    args[last3.Value] = $"FromIndex(byte{i} & 0b111, {size})";
+                    args[last3.Value] = $"FromRegisterIndex(byte{i} & 0b111, {size})";
                 }
             }
 
@@ -245,8 +246,8 @@ namespace Yoakke.X86.Generator
             // We actually support everything
             var argsStr = string.Join(", ", args);
             var name = Capitalize(encoding.Form.Instruction.Name);
-            this.Indented().AppendLine("this.Commit();");
-            this.Indented().AppendLine($"return new {name}({argsStr});");
+            this.Indented().AppendLine("length = this.Commit();");
+            this.Indented().AppendLine($"return new Instructions.{name}({argsStr});");
         }
 
         private void BuildParserTree()

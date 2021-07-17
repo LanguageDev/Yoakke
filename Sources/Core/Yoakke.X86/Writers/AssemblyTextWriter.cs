@@ -14,31 +14,31 @@ namespace Yoakke.X86.Writers
     /// <summary>
     /// Basic class for writers that emit textual assembly code.
     /// </summary>
-    public class AssemblyWriter
+    public class AssemblyTextWriter
     {
         /// <summary>
-        /// The underlying <see cref="StringBuilder"/> this <see cref="AssemblyWriter"/> writes to.
+        /// The underlying <see cref="StringBuilder"/> this <see cref="AssemblyTextWriter"/> writes to.
         /// </summary>
         public StringBuilder Result { get; }
 
         /// <summary>
-        /// Settings for this <see cref="AssemblyWriter"/>.
+        /// Settings for this <see cref="AssemblyTextWriter"/>.
         /// </summary>
-        public AssemblyWriterSettings Settings { get; set; } = AssemblyWriterSettings.Default;
+        public AssemblyTextWriterSettings Settings { get; set; } = AssemblyTextWriterSettings.Default;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AssemblyWriter"/> class.
+        /// Initializes a new instance of the <see cref="AssemblyTextWriter"/> class.
         /// </summary>
         /// <param name="result">The <see cref="StringBuilder"/> to write the code to.</param>
-        public AssemblyWriter(StringBuilder result)
+        public AssemblyTextWriter(StringBuilder result)
         {
             this.Result = result;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AssemblyWriter"/> class.
+        /// Initializes a new instance of the <see cref="AssemblyTextWriter"/> class.
         /// </summary>
-        public AssemblyWriter()
+        public AssemblyTextWriter()
             : this(new StringBuilder())
         {
         }
@@ -48,7 +48,7 @@ namespace Yoakke.X86.Writers
         /// </summary>
         /// <param name="c">The character to write.</param>
         /// <returns>This instance to be able to chain calls.</returns>
-        public AssemblyWriter Write(char c)
+        public AssemblyTextWriter Write(char c)
         {
             this.Result.Append(c);
             return this;
@@ -59,7 +59,7 @@ namespace Yoakke.X86.Writers
         /// </summary>
         /// <param name="str">The string to write.</param>
         /// <returns>This instance to be able to chain calls.</returns>
-        public AssemblyWriter Write(string str)
+        public AssemblyTextWriter Write(string str)
         {
             this.Result.Append(str);
             return this;
@@ -69,7 +69,7 @@ namespace Yoakke.X86.Writers
         /// Starts a new line for the underlying <see cref="StringBuilder"/>.
         /// </summary>
         /// <returns>This instance to be able to chain calls.</returns>
-        public AssemblyWriter WriteLine()
+        public AssemblyTextWriter WriteLine()
         {
             this.Result.AppendLine();
             return this;
@@ -80,7 +80,7 @@ namespace Yoakke.X86.Writers
         /// </summary>
         /// <param name="str">The string to write.</param>
         /// <returns>This instance to be able to chain calls.</returns>
-        public AssemblyWriter WriteLine(string str) => this.Write(str).WriteLine();
+        public AssemblyTextWriter WriteLine(string str) => this.Write(str).WriteLine();
 
         /// <summary>
         /// Writes an object to the underlying <see cref="StringBuilder"/>. Handles <see cref="ICodeElement"/>s
@@ -88,7 +88,7 @@ namespace Yoakke.X86.Writers
         /// </summary>
         /// <param name="obj">The object to write.</param>
         /// <returns>This instance to be able to chain calls.</returns>
-        public AssemblyWriter Write(object? obj) => obj switch
+        public AssemblyTextWriter Write(object? obj) => obj switch
         {
             IOperand op => this.Write(op),
             ICodeElement elem => this.Write(elem),
@@ -101,7 +101,7 @@ namespace Yoakke.X86.Writers
         /// </summary>
         /// <param name="obj">The object to write.</param>
         /// <returns>This instance to be able to chain calls.</returns>
-        public AssemblyWriter WriteLine(object? obj) => this.Write(obj).WriteLine();
+        public AssemblyTextWriter WriteLine(object? obj) => this.Write(obj).WriteLine();
 
         /// <summary>
         /// Writes a separated sequence of objects to the underlying <see cref="StringBuilder"/>.
@@ -110,7 +110,7 @@ namespace Yoakke.X86.Writers
         /// <param name="separator">The separator sequence to insert between elements.</param>
         /// <param name="items">The sequence of elements to write.</param>
         /// <returns>This instance to be able to chain calls.</returns>
-        public AssemblyWriter Write<T>(string separator, IEnumerable<T> items)
+        public AssemblyTextWriter Write<T>(string separator, IEnumerable<T> items)
         {
             var first = true;
             foreach (var item in items)
@@ -129,7 +129,7 @@ namespace Yoakke.X86.Writers
         /// <param name="separator">The separator sequence to insert between elements.</param>
         /// <param name="items">The sequence of elements to write.</param>
         /// <returns>This instance to be able to chain calls.</returns>
-        public AssemblyWriter WriteLine<T>(string separator, IEnumerable<T> items) =>
+        public AssemblyTextWriter WriteLine<T>(string separator, IEnumerable<T> items) =>
             this.Write(separator, items).WriteLine();
 
         /// <summary>
@@ -137,7 +137,7 @@ namespace Yoakke.X86.Writers
         /// </summary>
         /// <param name="str">The keyword string to write.</param>
         /// <returns>This instance to be able to chain calls.</returns>
-        public virtual AssemblyWriter WriteKeyword(string str) =>
+        public virtual AssemblyTextWriter WriteKeyword(string str) =>
             this.Write(this.Settings.KeywordsUpperCase ? str.ToUpper() : str.ToLower());
 
         /// <summary>
@@ -145,14 +145,14 @@ namespace Yoakke.X86.Writers
         /// </summary>
         /// <param name="str">The keyword string to write.</param>
         /// <returns>This instance to be able to chain calls.</returns>
-        public AssemblyWriter WriteKeywordLine(string str) => this.WriteKeyword(str).WriteLine();
+        public AssemblyTextWriter WriteKeywordLine(string str) => this.WriteKeyword(str).WriteLine();
 
         /// <summary>
         /// Writes a comment to the underlying <see cref="StringBuilder"/>.
         /// </summary>
         /// <param name="str">The comment string to write.</param>
         /// <returns>This instance to be able to chain calls.</returns>
-        public virtual AssemblyWriter WriteComment(string str)
+        public virtual AssemblyTextWriter WriteComment(string str)
         {
             // First we count how far off we are from the line start
             // This is so we can align other lines nicely with this one
@@ -178,14 +178,14 @@ namespace Yoakke.X86.Writers
         /// </summary>
         /// <param name="str">The comment string to write.</param>
         /// <returns>This instance to be able to chain calls.</returns>
-        public AssemblyWriter WriteCommentLine(string str) => this.WriteComment(str).WriteLine();
+        public AssemblyTextWriter WriteCommentLine(string str) => this.WriteComment(str).WriteLine();
 
         /// <summary>
         /// Writes an <see cref="ICodeElement"/> to the underlying <see cref="StringBuilder"/>.
         /// </summary>
         /// <param name="element">The <see cref="ICodeElement"/> to write.</param>
         /// <returns>This instance to be able to chain calls.</returns>
-        public virtual AssemblyWriter Write(ICodeElement element) => element switch
+        public virtual AssemblyTextWriter Write(ICodeElement element) => element switch
         {
             IInstruction instruction => this.Write(instruction),
             Label label => this.Write(label),
@@ -198,14 +198,14 @@ namespace Yoakke.X86.Writers
         /// </summary>
         /// <param name="element">The <see cref="ICodeElement"/> to write.</param>
         /// <returns>This instance to be able to chain calls.</returns>
-        public AssemblyWriter WriteLine(ICodeElement element) => this.Write(element).WriteLine();
+        public AssemblyTextWriter WriteLine(ICodeElement element) => this.Write(element).WriteLine();
 
         /// <summary>
         /// Writes an <see cref="IOperand"/> to the underlying <see cref="StringBuilder"/>.
         /// </summary>
         /// <param name="operand">The <see cref="IOperand"/> to write.</param>
         /// <returns>This instance to be able to chain calls.</returns>
-        public virtual AssemblyWriter Write(IOperand operand) => operand switch
+        public virtual AssemblyTextWriter Write(IOperand operand) => operand switch
         {
             Register r => this.Write(r),
             Segment s => this.Write(s),
@@ -223,14 +223,14 @@ namespace Yoakke.X86.Writers
         /// </summary>
         /// <param name="operand">The <see cref="IOperand"/> to write.</param>
         /// <returns>This instance to be able to chain calls.</returns>
-        public AssemblyWriter WriteLine(IOperand operand) => this.Write(operand).WriteLine();
+        public AssemblyTextWriter WriteLine(IOperand operand) => this.Write(operand).WriteLine();
 
         /// <summary>
         /// Writes an <see cref="IInstruction"/> to the underlying <see cref="StringBuilder"/>.
         /// </summary>
         /// <param name="instruction">The <see cref="IInstruction"/> to write.</param>
         /// <returns>This instance to be able to chain calls.</returns>
-        public virtual AssemblyWriter Write(IInstruction instruction)
+        public virtual AssemblyTextWriter Write(IInstruction instruction)
         {
             // Get the instruction name from it's type
             var ins = instruction.GetType().Name.ToString();
@@ -281,21 +281,21 @@ namespace Yoakke.X86.Writers
         /// </summary>
         /// <param name="register">The <see cref="Register"/> to write.</param>
         /// <returns>This instance to be able to chain calls.</returns>
-        public virtual AssemblyWriter Write(Register register) => this.WriteRegister(register.Name);
+        public virtual AssemblyTextWriter Write(Register register) => this.WriteRegister(register.Name);
 
         /// <summary>
         /// Writes a <see cref="Segment"/> to the underlying <see cref="StringBuilder"/>.
         /// </summary>
         /// <param name="segment">The <see cref="Segment"/> to write.</param>
         /// <returns>This instance to be able to chain calls.</returns>
-        public virtual AssemblyWriter Write(Segment segment) => this.WriteRegister(segment.Name);
+        public virtual AssemblyTextWriter Write(Segment segment) => this.WriteRegister(segment.Name);
 
         /// <summary>
         /// Writes an <see cref="Indirect"/> to the underlying <see cref="StringBuilder"/>.
         /// </summary>
         /// <param name="indirect">The <see cref="Indirect"/> to write.</param>
         /// <returns>This instance to be able to chain calls.</returns>
-        public virtual AssemblyWriter Write(Indirect indirect)
+        public virtual AssemblyTextWriter Write(Indirect indirect)
         {
             if (this.Settings.SyntaxFlavor == SyntaxFlavor.Intel)
             {
@@ -317,7 +317,7 @@ namespace Yoakke.X86.Writers
         /// </summary>
         /// <param name="address">The <see cref="Address"/> to write.</param>
         /// <returns>This instance to be able to chain calls.</returns>
-        public virtual AssemblyWriter Write(Address address)
+        public virtual AssemblyTextWriter Write(Address address)
         {
             if (this.Settings.SyntaxFlavor == SyntaxFlavor.Intel)
             {
@@ -417,7 +417,7 @@ namespace Yoakke.X86.Writers
         /// </summary>
         /// <param name="farAddress">The <see cref="FarAddress"/> to write.</param>
         /// <returns>This instance to be able to chain calls.</returns>
-        public virtual AssemblyWriter Write(FarAddress farAddress) =>
+        public virtual AssemblyTextWriter Write(FarAddress farAddress) =>
             this.Write(farAddress.Segment).Write(':').Write(farAddress.Address);
 
         /// <summary>
@@ -425,7 +425,7 @@ namespace Yoakke.X86.Writers
         /// </summary>
         /// <param name="constant">The <see cref="Constant"/> to write.</param>
         /// <returns>This instance to be able to chain calls.</returns>
-        public virtual AssemblyWriter Write(Constant constant)
+        public virtual AssemblyTextWriter Write(Constant constant)
         {
             if (this.Settings.SyntaxFlavor == SyntaxFlavor.ATnT) this.Write('$');
             return this.Write(constant.Value.ToString() ?? string.Empty);
@@ -436,14 +436,14 @@ namespace Yoakke.X86.Writers
         /// </summary>
         /// <param name="label">The <see cref="Label"/> to write.</param>
         /// <returns>This instance to be able to chain calls.</returns>
-        public virtual AssemblyWriter Write(Label label) => this.Write(label.Name).Write(':');
+        public virtual AssemblyTextWriter Write(Label label) => this.Write(label.Name).Write(':');
 
         /// <summary>
         /// Writes a <see cref="LabelRef"/> to the underlying <see cref="StringBuilder"/>.
         /// </summary>
         /// <param name="label">The <see cref="LabelRef"/> to write.</param>
         /// <returns>This instance to be able to chain calls.</returns>
-        public virtual AssemblyWriter Write(LabelRef label)
+        public virtual AssemblyTextWriter Write(LabelRef label)
         {
             this.Write(label.Label.Name);
             if (label.Offset != 0) this.Write(" + ").Write(label.Offset);
@@ -455,7 +455,7 @@ namespace Yoakke.X86.Writers
         /// </summary>
         /// <param name="assembly">The <see cref="Assembly"/> to write.</param>
         /// <returns>This instance to be able to chain calls.</returns>
-        public virtual AssemblyWriter Write(Assembly assembly)
+        public virtual AssemblyTextWriter Write(Assembly assembly)
         {
             foreach (var element in assembly.Elements)
             {
@@ -465,7 +465,7 @@ namespace Yoakke.X86.Writers
             return this;
         }
 
-        private AssemblyWriter WriteRegister(string name) => this
+        private AssemblyTextWriter WriteRegister(string name) => this
             .Write(this.Settings.SyntaxFlavor == SyntaxFlavor.ATnT ? "%" : string.Empty)
             .Write(this.Settings.RegistersUpperCase ? name.ToUpper() : name);
 
