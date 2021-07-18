@@ -70,7 +70,7 @@ namespace Yoakke.X86.Readers
         /// <returns>True, if there was something to read.</returns>
         public bool TryReadNext([MaybeNullWhen(false)] out IInstruction instruction, out int length)
         {
-            instruction = ReadNext(out length);
+            instruction = this.ReadNext(out length);
             return instruction is not null;
         }
 
