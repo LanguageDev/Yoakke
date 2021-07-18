@@ -216,8 +216,8 @@ namespace Yoakke.X86.Generator
                 var rmOperandIndex = int.Parse(modrm.Rm.Substring(1));
                 var rmOperandSize = GetDataWidthForOperand(encoding.Form.Operands[rmOperandIndex]);
                 // NOTE: We tag RM with indentation to avoid name collision
-                this.Indented().AppendLine($"var rm{this.indent} = this.ParseRM(modrm_byte, {rmOperandSize});");
-                args[rmOperandIndex] = $"rm{this.indent}";
+                this.Indented().AppendLine($"op{rmOperandIndex} = this.ParseRM(modrm_byte, {rmOperandSize});");
+                args[rmOperandIndex] = $"op{rmOperandIndex}";
                 // NOTE: We don't un-parse here, we assume this has to work for now
             }
 
@@ -232,18 +232,20 @@ namespace Yoakke.X86.Generator
             for (var i = 0; i < encoding.Immediates.Count; ++i)
             {
                 var immediate = encoding.Immediates[i];
+                var operandIndex = immediate.OperandNumber;
                 // NOTE: We tag immediates with indentation to avoid name collision
-                this.Indented().AppendLine($"var imm{i}_{this.indent} = this.ParseImmediate({GetDataWidthForSize(immediate.Size)});");
-                args[immediate.OperandNumber] = $"imm{i}_{this.indent}";
+                this.Indented().AppendLine($"op{operandIndex} = this.ParseImmediate({GetDataWidthForSize(immediate.Size)});");
+                args[operandIndex] = $"op{operandIndex}";
             }
 
             // Code offsets
             for (var i = 0; i < encoding.CodeOffsets.Count; ++i)
             {
                 var immediate = encoding.CodeOffsets[i];
+                var operandIndex = immediate.OperandNumber;
                 // NOTE: We tag immediates with indentation to avoid name collision
-                this.Indented().AppendLine($"var rel{i}_{this.indent} = this.ParseCodeOffset({GetDataWidthForSize(immediate.Size)});");
-                args[immediate.OperandNumber] = $"rel{i}_{this.indent}";
+                this.Indented().AppendLine($"op{operandIndex} = this.ParseCodeOffset({GetDataWidthForSize(immediate.Size)});");
+                args[operandIndex] = $"op{operandIndex}";
             }
 
             // If it's a last 3 bit encoding, do that here

@@ -95,6 +95,7 @@ namespace Yoakke.X86.Readers
             }
 
             byte modrm_byte;
+            IOperand op0, op1, op2;
 
             #region Generated
 
@@ -106,9 +107,9 @@ namespace Yoakke.X86.Readers
                 {
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                        op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.Add(rm3, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
+                        return new Instructions.Add(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
                     }
                     break;
                 }
@@ -118,16 +119,16 @@ namespace Yoakke.X86.Readers
                     {
                         if (this.TryParseByte(out modrm_byte))
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Word);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                             length = this.Commit();
-                            return new Instructions.Add(rm4, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
+                            return new Instructions.Add(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
                         }
                     }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Add(rm3, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
+                        return new Instructions.Add(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
                     }
                     break;
                 }
@@ -135,9 +136,9 @@ namespace Yoakke.X86.Readers
                 {
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                        op1 = this.ParseRM(modrm_byte, DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.Add(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte), rm3);
+                        return new Instructions.Add(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte), op1);
                     }
                     break;
                 }
@@ -147,44 +148,44 @@ namespace Yoakke.X86.Readers
                     {
                         if (this.TryParseByte(out modrm_byte))
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Word);
+                            op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                             length = this.Commit();
-                            return new Instructions.Add(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm4);
+                            return new Instructions.Add(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                         }
                     }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Add(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm3);
+                        return new Instructions.Add(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                     }
                     break;
                 }
                 case 0x04:
                 {
-                    var imm0_2 = this.ParseImmediate(DataWidth.Byte);
+                    op1 = this.ParseImmediate(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Add(Registers.Al, imm0_2);
+                    return new Instructions.Add(Registers.Al, op1);
                 }
                 case 0x05:
                 {
                     if (HasPrefix(0x66))
                     {
-                        var imm0_3 = this.ParseImmediate(DataWidth.Word);
+                        op1 = this.ParseImmediate(DataWidth.Word);
                         length = this.Commit();
-                        return new Instructions.Add(Registers.Ax, imm0_3);
+                        return new Instructions.Add(Registers.Ax, op1);
                     }
-                    var imm0_2 = this.ParseImmediate(DataWidth.Dword);
+                    op1 = this.ParseImmediate(DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Add(Registers.Eax, imm0_2);
+                    return new Instructions.Add(Registers.Eax, op1);
                 }
                 case 0x08:
                 {
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                        op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.Or(rm3, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
+                        return new Instructions.Or(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
                     }
                     break;
                 }
@@ -194,16 +195,16 @@ namespace Yoakke.X86.Readers
                     {
                         if (this.TryParseByte(out modrm_byte))
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Word);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                             length = this.Commit();
-                            return new Instructions.Or(rm4, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
+                            return new Instructions.Or(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
                         }
                     }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Or(rm3, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
+                        return new Instructions.Or(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
                     }
                     break;
                 }
@@ -211,9 +212,9 @@ namespace Yoakke.X86.Readers
                 {
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                        op1 = this.ParseRM(modrm_byte, DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.Or(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte), rm3);
+                        return new Instructions.Or(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte), op1);
                     }
                     break;
                 }
@@ -223,36 +224,36 @@ namespace Yoakke.X86.Readers
                     {
                         if (this.TryParseByte(out modrm_byte))
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Word);
+                            op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                             length = this.Commit();
-                            return new Instructions.Or(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm4);
+                            return new Instructions.Or(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                         }
                     }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Or(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm3);
+                        return new Instructions.Or(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                     }
                     break;
                 }
                 case 0x0c:
                 {
-                    var imm0_2 = this.ParseImmediate(DataWidth.Byte);
+                    op1 = this.ParseImmediate(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Or(Registers.Al, imm0_2);
+                    return new Instructions.Or(Registers.Al, op1);
                 }
                 case 0x0d:
                 {
                     if (HasPrefix(0x66))
                     {
-                        var imm0_3 = this.ParseImmediate(DataWidth.Word);
+                        op1 = this.ParseImmediate(DataWidth.Word);
                         length = this.Commit();
-                        return new Instructions.Or(Registers.Ax, imm0_3);
+                        return new Instructions.Or(Registers.Ax, op1);
                     }
-                    var imm0_2 = this.ParseImmediate(DataWidth.Dword);
+                    op1 = this.ParseImmediate(DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Or(Registers.Eax, imm0_2);
+                    return new Instructions.Or(Registers.Eax, op1);
                 }
                 case 0x0f:
                 {
@@ -319,21 +320,21 @@ namespace Yoakke.X86.Readers
                                 {
                                 case 0x00:
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                                    op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Prefetch(rm6);
+                                    return new Instructions.Prefetch(op0);
                                 }
                                 case 0x01:
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                                    op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Prefetchw(rm6);
+                                    return new Instructions.Prefetchw(op0);
                                 }
                                 case 0x02:
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                                    op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Prefetchwt1(rm6);
+                                    return new Instructions.Prefetchwt1(op0);
                                 }
                                 }
                                 this.UnparseByte();
@@ -353,27 +354,27 @@ namespace Yoakke.X86.Readers
                                 {
                                 case 0x00:
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                                    op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Prefetchnta(rm6);
+                                    return new Instructions.Prefetchnta(op0);
                                 }
                                 case 0x01:
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                                    op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Prefetcht0(rm6);
+                                    return new Instructions.Prefetcht0(op0);
                                 }
                                 case 0x02:
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                                    op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Prefetcht1(rm6);
+                                    return new Instructions.Prefetcht1(op0);
                                 }
                                 case 0x03:
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                                    op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Prefetcht2(rm6);
+                                    return new Instructions.Prefetcht2(op0);
                                 }
                                 }
                                 this.UnparseByte();
@@ -386,18 +387,18 @@ namespace Yoakke.X86.Readers
                             {
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Qword);
+                                    op1 = this.ParseRM(modrm_byte, DataWidth.Qword);
                                     length = this.Commit();
-                                    return new Instructions.Cvttsd2si(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm6);
+                                    return new Instructions.Cvttsd2si(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                                 }
                             }
                             if (HasPrefix(0xf3))
                             {
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                    op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                     length = this.Commit();
-                                    return new Instructions.Cvttss2si(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm6);
+                                    return new Instructions.Cvttss2si(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                                 }
                             }
                             break;
@@ -408,18 +409,18 @@ namespace Yoakke.X86.Readers
                             {
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Qword);
+                                    op1 = this.ParseRM(modrm_byte, DataWidth.Qword);
                                     length = this.Commit();
-                                    return new Instructions.Cvtsd2si(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm6);
+                                    return new Instructions.Cvtsd2si(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                                 }
                             }
                             if (HasPrefix(0xf3))
                             {
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                    op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                     length = this.Commit();
-                                    return new Instructions.Cvtss2si(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm6);
+                                    return new Instructions.Cvtss2si(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                                 }
                             }
                             break;
@@ -441,25 +442,25 @@ namespace Yoakke.X86.Readers
                                     {
                                         if (this.TryParseByte(out modrm_byte))
                                         {
-                                            var rm8 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                            op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                             length = this.Commit();
-                                            return new Instructions.Movbe(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm8);
+                                            return new Instructions.Movbe(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                                         }
                                     }
                                     if (HasPrefix(0xf2))
                                     {
                                         if (this.TryParseByte(out modrm_byte))
                                         {
-                                            var rm8 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                                            op1 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                             length = this.Commit();
-                                            return new Instructions.Crc32(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm8);
+                                            return new Instructions.Crc32(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                                         }
                                     }
                                     if (this.TryParseByte(out modrm_byte))
                                     {
-                                        var rm7 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                        op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                         length = this.Commit();
-                                        return new Instructions.Movbe(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm7);
+                                        return new Instructions.Movbe(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                                     }
                                     break;
                                 }
@@ -471,32 +472,32 @@ namespace Yoakke.X86.Readers
                                         {
                                             if (this.TryParseByte(out modrm_byte))
                                             {
-                                                var rm9 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                                op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                                 length = this.Commit();
-                                                return new Instructions.Crc32(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm9);
+                                                return new Instructions.Crc32(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                                             }
                                         }
                                         if (this.TryParseByte(out modrm_byte))
                                         {
-                                            var rm8 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                            op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                                             length = this.Commit();
-                                            return new Instructions.Movbe(rm8, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
+                                            return new Instructions.Movbe(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
                                         }
                                     }
                                     if (HasPrefix(0xf2))
                                     {
                                         if (this.TryParseByte(out modrm_byte))
                                         {
-                                            var rm8 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                            op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                             length = this.Commit();
-                                            return new Instructions.Crc32(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm8);
+                                            return new Instructions.Crc32(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                                         }
                                     }
                                     if (this.TryParseByte(out modrm_byte))
                                     {
-                                        var rm7 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                        op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                         length = this.Commit();
-                                        return new Instructions.Movbe(rm7, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
+                                        return new Instructions.Movbe(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
                                     }
                                     break;
                                 }
@@ -506,18 +507,18 @@ namespace Yoakke.X86.Readers
                                     {
                                         if (this.TryParseByte(out modrm_byte))
                                         {
-                                            var rm8 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                            op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                             length = this.Commit();
-                                            return new Instructions.Adcx(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm8);
+                                            return new Instructions.Adcx(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                                         }
                                     }
                                     if (HasPrefix(0xf3))
                                     {
                                         if (this.TryParseByte(out modrm_byte))
                                         {
-                                            var rm8 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                            op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                             length = this.Commit();
-                                            return new Instructions.Adox(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm8);
+                                            return new Instructions.Adox(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                                         }
                                     }
                                     break;
@@ -533,16 +534,16 @@ namespace Yoakke.X86.Readers
                             {
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                     length = this.Commit();
-                                    return new Instructions.Cmovo(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm6);
+                                    return new Instructions.Cmovo(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                                 }
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovo(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm5);
+                                return new Instructions.Cmovo(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -552,16 +553,16 @@ namespace Yoakke.X86.Readers
                             {
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                     length = this.Commit();
-                                    return new Instructions.Cmovno(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm6);
+                                    return new Instructions.Cmovno(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                                 }
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovno(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm5);
+                                return new Instructions.Cmovno(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -571,40 +572,40 @@ namespace Yoakke.X86.Readers
                             {
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                     length = this.Commit();
-                                    return new Instructions.Cmovb(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm6);
+                                    return new Instructions.Cmovb(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                                 }
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                     length = this.Commit();
-                                    return new Instructions.Cmovc(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm6);
+                                    return new Instructions.Cmovc(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                                 }
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                     length = this.Commit();
-                                    return new Instructions.Cmovnae(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm6);
+                                    return new Instructions.Cmovnae(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                                 }
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovb(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm5);
+                                return new Instructions.Cmovb(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovc(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm5);
+                                return new Instructions.Cmovc(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovnae(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm5);
+                                return new Instructions.Cmovnae(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -614,40 +615,40 @@ namespace Yoakke.X86.Readers
                             {
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                     length = this.Commit();
-                                    return new Instructions.Cmovae(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm6);
+                                    return new Instructions.Cmovae(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                                 }
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                     length = this.Commit();
-                                    return new Instructions.Cmovnb(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm6);
+                                    return new Instructions.Cmovnb(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                                 }
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                     length = this.Commit();
-                                    return new Instructions.Cmovnc(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm6);
+                                    return new Instructions.Cmovnc(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                                 }
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovae(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm5);
+                                return new Instructions.Cmovae(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovnb(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm5);
+                                return new Instructions.Cmovnb(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovnc(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm5);
+                                return new Instructions.Cmovnc(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -657,28 +658,28 @@ namespace Yoakke.X86.Readers
                             {
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                     length = this.Commit();
-                                    return new Instructions.Cmove(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm6);
+                                    return new Instructions.Cmove(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                                 }
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                     length = this.Commit();
-                                    return new Instructions.Cmovz(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm6);
+                                    return new Instructions.Cmovz(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                                 }
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmove(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm5);
+                                return new Instructions.Cmove(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovz(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm5);
+                                return new Instructions.Cmovz(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -688,28 +689,28 @@ namespace Yoakke.X86.Readers
                             {
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                     length = this.Commit();
-                                    return new Instructions.Cmovne(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm6);
+                                    return new Instructions.Cmovne(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                                 }
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                     length = this.Commit();
-                                    return new Instructions.Cmovnz(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm6);
+                                    return new Instructions.Cmovnz(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                                 }
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovne(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm5);
+                                return new Instructions.Cmovne(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovnz(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm5);
+                                return new Instructions.Cmovnz(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -719,28 +720,28 @@ namespace Yoakke.X86.Readers
                             {
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                     length = this.Commit();
-                                    return new Instructions.Cmovbe(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm6);
+                                    return new Instructions.Cmovbe(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                                 }
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                     length = this.Commit();
-                                    return new Instructions.Cmovna(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm6);
+                                    return new Instructions.Cmovna(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                                 }
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovbe(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm5);
+                                return new Instructions.Cmovbe(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovna(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm5);
+                                return new Instructions.Cmovna(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -750,28 +751,28 @@ namespace Yoakke.X86.Readers
                             {
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                     length = this.Commit();
-                                    return new Instructions.Cmova(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm6);
+                                    return new Instructions.Cmova(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                                 }
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                     length = this.Commit();
-                                    return new Instructions.Cmovnbe(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm6);
+                                    return new Instructions.Cmovnbe(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                                 }
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmova(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm5);
+                                return new Instructions.Cmova(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovnbe(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm5);
+                                return new Instructions.Cmovnbe(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -781,16 +782,16 @@ namespace Yoakke.X86.Readers
                             {
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                     length = this.Commit();
-                                    return new Instructions.Cmovs(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm6);
+                                    return new Instructions.Cmovs(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                                 }
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovs(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm5);
+                                return new Instructions.Cmovs(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -800,16 +801,16 @@ namespace Yoakke.X86.Readers
                             {
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                     length = this.Commit();
-                                    return new Instructions.Cmovns(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm6);
+                                    return new Instructions.Cmovns(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                                 }
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovns(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm5);
+                                return new Instructions.Cmovns(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -819,28 +820,28 @@ namespace Yoakke.X86.Readers
                             {
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                     length = this.Commit();
-                                    return new Instructions.Cmovp(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm6);
+                                    return new Instructions.Cmovp(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                                 }
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                     length = this.Commit();
-                                    return new Instructions.Cmovpe(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm6);
+                                    return new Instructions.Cmovpe(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                                 }
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovp(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm5);
+                                return new Instructions.Cmovp(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovpe(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm5);
+                                return new Instructions.Cmovpe(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -850,28 +851,28 @@ namespace Yoakke.X86.Readers
                             {
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                     length = this.Commit();
-                                    return new Instructions.Cmovnp(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm6);
+                                    return new Instructions.Cmovnp(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                                 }
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                     length = this.Commit();
-                                    return new Instructions.Cmovpo(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm6);
+                                    return new Instructions.Cmovpo(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                                 }
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovnp(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm5);
+                                return new Instructions.Cmovnp(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovpo(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm5);
+                                return new Instructions.Cmovpo(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -881,28 +882,28 @@ namespace Yoakke.X86.Readers
                             {
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                     length = this.Commit();
-                                    return new Instructions.Cmovl(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm6);
+                                    return new Instructions.Cmovl(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                                 }
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                     length = this.Commit();
-                                    return new Instructions.Cmovnge(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm6);
+                                    return new Instructions.Cmovnge(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                                 }
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovl(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm5);
+                                return new Instructions.Cmovl(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovnge(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm5);
+                                return new Instructions.Cmovnge(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -912,28 +913,28 @@ namespace Yoakke.X86.Readers
                             {
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                     length = this.Commit();
-                                    return new Instructions.Cmovge(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm6);
+                                    return new Instructions.Cmovge(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                                 }
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                     length = this.Commit();
-                                    return new Instructions.Cmovnl(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm6);
+                                    return new Instructions.Cmovnl(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                                 }
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovge(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm5);
+                                return new Instructions.Cmovge(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovnl(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm5);
+                                return new Instructions.Cmovnl(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -943,28 +944,28 @@ namespace Yoakke.X86.Readers
                             {
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                     length = this.Commit();
-                                    return new Instructions.Cmovle(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm6);
+                                    return new Instructions.Cmovle(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                                 }
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                     length = this.Commit();
-                                    return new Instructions.Cmovng(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm6);
+                                    return new Instructions.Cmovng(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                                 }
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovle(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm5);
+                                return new Instructions.Cmovle(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovng(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm5);
+                                return new Instructions.Cmovng(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -974,28 +975,28 @@ namespace Yoakke.X86.Readers
                             {
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                     length = this.Commit();
-                                    return new Instructions.Cmovg(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm6);
+                                    return new Instructions.Cmovg(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                                 }
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                     length = this.Commit();
-                                    return new Instructions.Cmovnle(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm6);
+                                    return new Instructions.Cmovnle(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                                 }
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovg(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm5);
+                                return new Instructions.Cmovg(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovnle(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm5);
+                                return new Instructions.Cmovnle(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -1006,99 +1007,99 @@ namespace Yoakke.X86.Readers
                         }
                         case 0x80:
                         {
-                            var rel0_4 = this.ParseCodeOffset(DataWidth.Dword);
+                            op0 = this.ParseCodeOffset(DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Jo(rel0_4);
+                            return new Instructions.Jo(op0);
                         }
                         case 0x81:
                         {
-                            var rel0_4 = this.ParseCodeOffset(DataWidth.Dword);
+                            op0 = this.ParseCodeOffset(DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Jno(rel0_4);
+                            return new Instructions.Jno(op0);
                         }
                         case 0x82:
                         {
-                            var rel0_4 = this.ParseCodeOffset(DataWidth.Dword);
+                            op0 = this.ParseCodeOffset(DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Jb(rel0_4);
+                            return new Instructions.Jb(op0);
                         }
                         case 0x83:
                         {
-                            var rel0_4 = this.ParseCodeOffset(DataWidth.Dword);
+                            op0 = this.ParseCodeOffset(DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Jae(rel0_4);
+                            return new Instructions.Jae(op0);
                         }
                         case 0x84:
                         {
-                            var rel0_4 = this.ParseCodeOffset(DataWidth.Dword);
+                            op0 = this.ParseCodeOffset(DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Je(rel0_4);
+                            return new Instructions.Je(op0);
                         }
                         case 0x85:
                         {
-                            var rel0_4 = this.ParseCodeOffset(DataWidth.Dword);
+                            op0 = this.ParseCodeOffset(DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Jne(rel0_4);
+                            return new Instructions.Jne(op0);
                         }
                         case 0x86:
                         {
-                            var rel0_4 = this.ParseCodeOffset(DataWidth.Dword);
+                            op0 = this.ParseCodeOffset(DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Jbe(rel0_4);
+                            return new Instructions.Jbe(op0);
                         }
                         case 0x87:
                         {
-                            var rel0_4 = this.ParseCodeOffset(DataWidth.Dword);
+                            op0 = this.ParseCodeOffset(DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Ja(rel0_4);
+                            return new Instructions.Ja(op0);
                         }
                         case 0x88:
                         {
-                            var rel0_4 = this.ParseCodeOffset(DataWidth.Dword);
+                            op0 = this.ParseCodeOffset(DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Js(rel0_4);
+                            return new Instructions.Js(op0);
                         }
                         case 0x89:
                         {
-                            var rel0_4 = this.ParseCodeOffset(DataWidth.Dword);
+                            op0 = this.ParseCodeOffset(DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Jns(rel0_4);
+                            return new Instructions.Jns(op0);
                         }
                         case 0x8a:
                         {
-                            var rel0_4 = this.ParseCodeOffset(DataWidth.Dword);
+                            op0 = this.ParseCodeOffset(DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Jp(rel0_4);
+                            return new Instructions.Jp(op0);
                         }
                         case 0x8b:
                         {
-                            var rel0_4 = this.ParseCodeOffset(DataWidth.Dword);
+                            op0 = this.ParseCodeOffset(DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Jnp(rel0_4);
+                            return new Instructions.Jnp(op0);
                         }
                         case 0x8c:
                         {
-                            var rel0_4 = this.ParseCodeOffset(DataWidth.Dword);
+                            op0 = this.ParseCodeOffset(DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Jl(rel0_4);
+                            return new Instructions.Jl(op0);
                         }
                         case 0x8d:
                         {
-                            var rel0_4 = this.ParseCodeOffset(DataWidth.Dword);
+                            op0 = this.ParseCodeOffset(DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Jge(rel0_4);
+                            return new Instructions.Jge(op0);
                         }
                         case 0x8e:
                         {
-                            var rel0_4 = this.ParseCodeOffset(DataWidth.Dword);
+                            op0 = this.ParseCodeOffset(DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Jle(rel0_4);
+                            return new Instructions.Jle(op0);
                         }
                         case 0x8f:
                         {
-                            var rel0_4 = this.ParseCodeOffset(DataWidth.Dword);
+                            op0 = this.ParseCodeOffset(DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Jg(rel0_4);
+                            return new Instructions.Jg(op0);
                         }
                         case 0x90:
                         {
@@ -1108,9 +1109,9 @@ namespace Yoakke.X86.Readers
                                 {
                                 case 0x00:
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                                    op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Seto(rm6);
+                                    return new Instructions.Seto(op0);
                                 }
                                 }
                                 this.UnparseByte();
@@ -1125,9 +1126,9 @@ namespace Yoakke.X86.Readers
                                 {
                                 case 0x00:
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                                    op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Setno(rm6);
+                                    return new Instructions.Setno(op0);
                                 }
                                 }
                                 this.UnparseByte();
@@ -1142,9 +1143,9 @@ namespace Yoakke.X86.Readers
                                 {
                                 case 0x00:
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                                    op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Setb(rm6);
+                                    return new Instructions.Setb(op0);
                                 }
                                 }
                                 this.UnparseByte();
@@ -1159,9 +1160,9 @@ namespace Yoakke.X86.Readers
                                 {
                                 case 0x00:
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                                    op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Setae(rm6);
+                                    return new Instructions.Setae(op0);
                                 }
                                 }
                                 this.UnparseByte();
@@ -1176,9 +1177,9 @@ namespace Yoakke.X86.Readers
                                 {
                                 case 0x00:
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                                    op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Sete(rm6);
+                                    return new Instructions.Sete(op0);
                                 }
                                 }
                                 this.UnparseByte();
@@ -1193,9 +1194,9 @@ namespace Yoakke.X86.Readers
                                 {
                                 case 0x00:
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                                    op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Setne(rm6);
+                                    return new Instructions.Setne(op0);
                                 }
                                 }
                                 this.UnparseByte();
@@ -1210,9 +1211,9 @@ namespace Yoakke.X86.Readers
                                 {
                                 case 0x00:
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                                    op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Setbe(rm6);
+                                    return new Instructions.Setbe(op0);
                                 }
                                 }
                                 this.UnparseByte();
@@ -1227,9 +1228,9 @@ namespace Yoakke.X86.Readers
                                 {
                                 case 0x00:
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                                    op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Seta(rm6);
+                                    return new Instructions.Seta(op0);
                                 }
                                 }
                                 this.UnparseByte();
@@ -1244,9 +1245,9 @@ namespace Yoakke.X86.Readers
                                 {
                                 case 0x00:
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                                    op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Sets(rm6);
+                                    return new Instructions.Sets(op0);
                                 }
                                 }
                                 this.UnparseByte();
@@ -1261,9 +1262,9 @@ namespace Yoakke.X86.Readers
                                 {
                                 case 0x00:
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                                    op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Setns(rm6);
+                                    return new Instructions.Setns(op0);
                                 }
                                 }
                                 this.UnparseByte();
@@ -1278,9 +1279,9 @@ namespace Yoakke.X86.Readers
                                 {
                                 case 0x00:
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                                    op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Setp(rm6);
+                                    return new Instructions.Setp(op0);
                                 }
                                 }
                                 this.UnparseByte();
@@ -1295,9 +1296,9 @@ namespace Yoakke.X86.Readers
                                 {
                                 case 0x00:
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                                    op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Setnp(rm6);
+                                    return new Instructions.Setnp(op0);
                                 }
                                 }
                                 this.UnparseByte();
@@ -1312,9 +1313,9 @@ namespace Yoakke.X86.Readers
                                 {
                                 case 0x00:
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                                    op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Setl(rm6);
+                                    return new Instructions.Setl(op0);
                                 }
                                 }
                                 this.UnparseByte();
@@ -1329,9 +1330,9 @@ namespace Yoakke.X86.Readers
                                 {
                                 case 0x00:
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                                    op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Setge(rm6);
+                                    return new Instructions.Setge(op0);
                                 }
                                 }
                                 this.UnparseByte();
@@ -1346,9 +1347,9 @@ namespace Yoakke.X86.Readers
                                 {
                                 case 0x00:
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                                    op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Setle(rm6);
+                                    return new Instructions.Setle(op0);
                                 }
                                 }
                                 this.UnparseByte();
@@ -1363,9 +1364,9 @@ namespace Yoakke.X86.Readers
                                 {
                                 case 0x00:
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                                    op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Setg(rm6);
+                                    return new Instructions.Setg(op0);
                                 }
                                 }
                                 this.UnparseByte();
@@ -1383,16 +1384,16 @@ namespace Yoakke.X86.Readers
                             {
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                                     length = this.Commit();
-                                    return new Instructions.Bt(rm6, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
+                                    return new Instructions.Bt(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
                                 }
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Bt(rm5, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
+                                return new Instructions.Bt(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
                             }
                             break;
                         }
@@ -1402,18 +1403,18 @@ namespace Yoakke.X86.Readers
                             {
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    var imm0_6 = this.ParseImmediate(DataWidth.Byte);
+                                    op0 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op2 = this.ParseImmediate(DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Shld(rm6, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), imm0_6);
+                                    return new Instructions.Shld(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op2);
                                 }
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                                var imm0_5 = this.ParseImmediate(DataWidth.Byte);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op2 = this.ParseImmediate(DataWidth.Byte);
                                 length = this.Commit();
-                                return new Instructions.Shld(rm5, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), imm0_5);
+                                return new Instructions.Shld(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op2);
                             }
                             break;
                         }
@@ -1423,16 +1424,16 @@ namespace Yoakke.X86.Readers
                             {
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                                     length = this.Commit();
-                                    return new Instructions.Shld(rm6, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), Registers.Cl);
+                                    return new Instructions.Shld(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), Registers.Cl);
                                 }
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Shld(rm5, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), Registers.Cl);
+                                return new Instructions.Shld(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), Registers.Cl);
                             }
                             break;
                         }
@@ -1442,16 +1443,16 @@ namespace Yoakke.X86.Readers
                             {
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                                     length = this.Commit();
-                                    return new Instructions.Bts(rm6, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
+                                    return new Instructions.Bts(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
                                 }
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Bts(rm5, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
+                                return new Instructions.Bts(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
                             }
                             break;
                         }
@@ -1461,18 +1462,18 @@ namespace Yoakke.X86.Readers
                             {
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    var imm0_6 = this.ParseImmediate(DataWidth.Byte);
+                                    op0 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op2 = this.ParseImmediate(DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Shrd(rm6, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), imm0_6);
+                                    return new Instructions.Shrd(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op2);
                                 }
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                                var imm0_5 = this.ParseImmediate(DataWidth.Byte);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op2 = this.ParseImmediate(DataWidth.Byte);
                                 length = this.Commit();
-                                return new Instructions.Shrd(rm5, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), imm0_5);
+                                return new Instructions.Shrd(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op2);
                             }
                             break;
                         }
@@ -1482,16 +1483,16 @@ namespace Yoakke.X86.Readers
                             {
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                                     length = this.Commit();
-                                    return new Instructions.Shrd(rm6, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), Registers.Cl);
+                                    return new Instructions.Shrd(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), Registers.Cl);
                                 }
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Shrd(rm5, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), Registers.Cl);
+                                return new Instructions.Shrd(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), Registers.Cl);
                             }
                             break;
                         }
@@ -1525,23 +1526,23 @@ namespace Yoakke.X86.Readers
                                 {
                                 case 0x02:
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                    op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                     length = this.Commit();
-                                    return new Instructions.Ldmxcsr(rm6);
+                                    return new Instructions.Ldmxcsr(op0);
                                 }
                                 case 0x03:
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                    op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                     length = this.Commit();
-                                    return new Instructions.Stmxcsr(rm6);
+                                    return new Instructions.Stmxcsr(op0);
                                 }
                                 case 0x06:
                                 {
                                     if (HasPrefix(0x66))
                                     {
-                                        var rm7 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                                        op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                         length = this.Commit();
-                                        return new Instructions.Clwb(rm7);
+                                        return new Instructions.Clwb(op0);
                                     }
                                     break;
                                 }
@@ -1549,13 +1550,13 @@ namespace Yoakke.X86.Readers
                                 {
                                     if (HasPrefix(0x66))
                                     {
-                                        var rm7 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                                        op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                         length = this.Commit();
-                                        return new Instructions.Clflushopt(rm7);
+                                        return new Instructions.Clflushopt(op0);
                                     }
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                                    op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Clflush(rm6);
+                                    return new Instructions.Clflush(op0);
                                 }
                                 }
                                 this.UnparseByte();
@@ -1568,16 +1569,16 @@ namespace Yoakke.X86.Readers
                             {
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                     length = this.Commit();
-                                    return new Instructions.Imul(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm6);
+                                    return new Instructions.Imul(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                                 }
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Imul(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm5);
+                                return new Instructions.Imul(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -1585,9 +1586,9 @@ namespace Yoakke.X86.Readers
                         {
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                 length = this.Commit();
-                                return new Instructions.Cmpxchg(rm5, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
+                                return new Instructions.Cmpxchg(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
                             }
                             break;
                         }
@@ -1597,16 +1598,16 @@ namespace Yoakke.X86.Readers
                             {
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                                     length = this.Commit();
-                                    return new Instructions.Cmpxchg(rm6, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
+                                    return new Instructions.Cmpxchg(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
                                 }
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmpxchg(rm5, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
+                                return new Instructions.Cmpxchg(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
                             }
                             break;
                         }
@@ -1616,16 +1617,16 @@ namespace Yoakke.X86.Readers
                             {
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                                     length = this.Commit();
-                                    return new Instructions.Btr(rm6, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
+                                    return new Instructions.Btr(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
                                 }
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Btr(rm5, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
+                                return new Instructions.Btr(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
                             }
                             break;
                         }
@@ -1635,16 +1636,16 @@ namespace Yoakke.X86.Readers
                             {
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                                    op1 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Movzx(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm6);
+                                    return new Instructions.Movzx(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                                 }
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                                op1 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                 length = this.Commit();
-                                return new Instructions.Movzx(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm5);
+                                return new Instructions.Movzx(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -1652,9 +1653,9 @@ namespace Yoakke.X86.Readers
                         {
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                 length = this.Commit();
-                                return new Instructions.Movzx(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm5);
+                                return new Instructions.Movzx(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -1666,9 +1667,9 @@ namespace Yoakke.X86.Readers
                                 {
                                     if (this.TryParseByte(out modrm_byte))
                                     {
-                                        var rm7 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                        op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                         length = this.Commit();
-                                        return new Instructions.Popcnt(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm7);
+                                        return new Instructions.Popcnt(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                                     }
                                 }
                             }
@@ -1676,9 +1677,9 @@ namespace Yoakke.X86.Readers
                             {
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                    op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                     length = this.Commit();
-                                    return new Instructions.Popcnt(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm6);
+                                    return new Instructions.Popcnt(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                                 }
                             }
                             break;
@@ -1693,57 +1694,57 @@ namespace Yoakke.X86.Readers
                                 {
                                     if (HasPrefix(0x66))
                                     {
-                                        var rm7 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                        var imm0_7 = this.ParseImmediate(DataWidth.Byte);
+                                        op0 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                        op1 = this.ParseImmediate(DataWidth.Byte);
                                         length = this.Commit();
-                                        return new Instructions.Bt(rm7, imm0_7);
+                                        return new Instructions.Bt(op0, op1);
                                     }
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                                    var imm0_6 = this.ParseImmediate(DataWidth.Byte);
+                                    op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                    op1 = this.ParseImmediate(DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Bt(rm6, imm0_6);
+                                    return new Instructions.Bt(op0, op1);
                                 }
                                 case 0x05:
                                 {
                                     if (HasPrefix(0x66))
                                     {
-                                        var rm7 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                        var imm0_7 = this.ParseImmediate(DataWidth.Byte);
+                                        op0 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                        op1 = this.ParseImmediate(DataWidth.Byte);
                                         length = this.Commit();
-                                        return new Instructions.Bts(rm7, imm0_7);
+                                        return new Instructions.Bts(op0, op1);
                                     }
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                                    var imm0_6 = this.ParseImmediate(DataWidth.Byte);
+                                    op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                    op1 = this.ParseImmediate(DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Bts(rm6, imm0_6);
+                                    return new Instructions.Bts(op0, op1);
                                 }
                                 case 0x06:
                                 {
                                     if (HasPrefix(0x66))
                                     {
-                                        var rm7 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                        var imm0_7 = this.ParseImmediate(DataWidth.Byte);
+                                        op0 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                        op1 = this.ParseImmediate(DataWidth.Byte);
                                         length = this.Commit();
-                                        return new Instructions.Btr(rm7, imm0_7);
+                                        return new Instructions.Btr(op0, op1);
                                     }
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                                    var imm0_6 = this.ParseImmediate(DataWidth.Byte);
+                                    op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                    op1 = this.ParseImmediate(DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Btr(rm6, imm0_6);
+                                    return new Instructions.Btr(op0, op1);
                                 }
                                 case 0x07:
                                 {
                                     if (HasPrefix(0x66))
                                     {
-                                        var rm7 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                        var imm0_7 = this.ParseImmediate(DataWidth.Byte);
+                                        op0 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                        op1 = this.ParseImmediate(DataWidth.Byte);
                                         length = this.Commit();
-                                        return new Instructions.Btc(rm7, imm0_7);
+                                        return new Instructions.Btc(op0, op1);
                                     }
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                                    var imm0_6 = this.ParseImmediate(DataWidth.Byte);
+                                    op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                    op1 = this.ParseImmediate(DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Btc(rm6, imm0_6);
+                                    return new Instructions.Btc(op0, op1);
                                 }
                                 }
                                 this.UnparseByte();
@@ -1756,16 +1757,16 @@ namespace Yoakke.X86.Readers
                             {
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                                     length = this.Commit();
-                                    return new Instructions.Btc(rm6, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
+                                    return new Instructions.Btc(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
                                 }
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Btc(rm5, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
+                                return new Instructions.Btc(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
                             }
                             break;
                         }
@@ -1777,32 +1778,32 @@ namespace Yoakke.X86.Readers
                                 {
                                     if (this.TryParseByte(out modrm_byte))
                                     {
-                                        var rm7 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                        op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                         length = this.Commit();
-                                        return new Instructions.Tzcnt(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm7);
+                                        return new Instructions.Tzcnt(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                                     }
                                 }
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                     length = this.Commit();
-                                    return new Instructions.Bsf(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm6);
+                                    return new Instructions.Bsf(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                                 }
                             }
                             if (HasPrefix(0xf3))
                             {
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                    op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                     length = this.Commit();
-                                    return new Instructions.Tzcnt(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm6);
+                                    return new Instructions.Tzcnt(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                                 }
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Bsf(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm5);
+                                return new Instructions.Bsf(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -1814,32 +1815,32 @@ namespace Yoakke.X86.Readers
                                 {
                                     if (this.TryParseByte(out modrm_byte))
                                     {
-                                        var rm7 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                        op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                         length = this.Commit();
-                                        return new Instructions.Lzcnt(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm7);
+                                        return new Instructions.Lzcnt(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                                     }
                                 }
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                     length = this.Commit();
-                                    return new Instructions.Bsr(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm6);
+                                    return new Instructions.Bsr(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                                 }
                             }
                             if (HasPrefix(0xf3))
                             {
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                    op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                     length = this.Commit();
-                                    return new Instructions.Lzcnt(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm6);
+                                    return new Instructions.Lzcnt(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                                 }
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Bsr(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm5);
+                                return new Instructions.Bsr(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -1849,16 +1850,16 @@ namespace Yoakke.X86.Readers
                             {
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                                    op1 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Movsx(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm6);
+                                    return new Instructions.Movsx(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                                 }
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                                op1 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                 length = this.Commit();
-                                return new Instructions.Movsx(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm5);
+                                return new Instructions.Movsx(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -1866,9 +1867,9 @@ namespace Yoakke.X86.Readers
                         {
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                 length = this.Commit();
-                                return new Instructions.Movsx(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm5);
+                                return new Instructions.Movsx(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -1876,9 +1877,9 @@ namespace Yoakke.X86.Readers
                         {
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                 length = this.Commit();
-                                return new Instructions.Xadd(rm5, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
+                                return new Instructions.Xadd(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
                             }
                             break;
                         }
@@ -1888,16 +1889,16 @@ namespace Yoakke.X86.Readers
                             {
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                    op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                                     length = this.Commit();
-                                    return new Instructions.Xadd(rm6, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
+                                    return new Instructions.Xadd(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
                                 }
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Xadd(rm5, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
+                                return new Instructions.Xadd(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
                             }
                             break;
                         }
@@ -1905,9 +1906,9 @@ namespace Yoakke.X86.Readers
                         {
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Movnti(rm5, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
+                                return new Instructions.Movnti(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
                             }
                             break;
                         }
@@ -1919,9 +1920,9 @@ namespace Yoakke.X86.Readers
                                 {
                                 case 0x01:
                                 {
-                                    var rm6 = this.ParseRM(modrm_byte, DataWidth.Qword);
+                                    op0 = this.ParseRM(modrm_byte, DataWidth.Qword);
                                     length = this.Commit();
-                                    return new Instructions.Cmpxchg8b(rm6);
+                                    return new Instructions.Cmpxchg8b(op0);
                                 }
                                 case 0x06:
                                 {
@@ -1991,9 +1992,9 @@ namespace Yoakke.X86.Readers
                 {
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                        op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.Adc(rm3, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
+                        return new Instructions.Adc(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
                     }
                     break;
                 }
@@ -2003,16 +2004,16 @@ namespace Yoakke.X86.Readers
                     {
                         if (this.TryParseByte(out modrm_byte))
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Word);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                             length = this.Commit();
-                            return new Instructions.Adc(rm4, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
+                            return new Instructions.Adc(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
                         }
                     }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Adc(rm3, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
+                        return new Instructions.Adc(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
                     }
                     break;
                 }
@@ -2020,9 +2021,9 @@ namespace Yoakke.X86.Readers
                 {
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                        op1 = this.ParseRM(modrm_byte, DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.Adc(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte), rm3);
+                        return new Instructions.Adc(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte), op1);
                     }
                     break;
                 }
@@ -2032,44 +2033,44 @@ namespace Yoakke.X86.Readers
                     {
                         if (this.TryParseByte(out modrm_byte))
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Word);
+                            op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                             length = this.Commit();
-                            return new Instructions.Adc(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm4);
+                            return new Instructions.Adc(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                         }
                     }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Adc(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm3);
+                        return new Instructions.Adc(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                     }
                     break;
                 }
                 case 0x14:
                 {
-                    var imm0_2 = this.ParseImmediate(DataWidth.Byte);
+                    op1 = this.ParseImmediate(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Adc(Registers.Al, imm0_2);
+                    return new Instructions.Adc(Registers.Al, op1);
                 }
                 case 0x15:
                 {
                     if (HasPrefix(0x66))
                     {
-                        var imm0_3 = this.ParseImmediate(DataWidth.Word);
+                        op1 = this.ParseImmediate(DataWidth.Word);
                         length = this.Commit();
-                        return new Instructions.Adc(Registers.Ax, imm0_3);
+                        return new Instructions.Adc(Registers.Ax, op1);
                     }
-                    var imm0_2 = this.ParseImmediate(DataWidth.Dword);
+                    op1 = this.ParseImmediate(DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Adc(Registers.Eax, imm0_2);
+                    return new Instructions.Adc(Registers.Eax, op1);
                 }
                 case 0x18:
                 {
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                        op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.Sbb(rm3, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
+                        return new Instructions.Sbb(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
                     }
                     break;
                 }
@@ -2079,16 +2080,16 @@ namespace Yoakke.X86.Readers
                     {
                         if (this.TryParseByte(out modrm_byte))
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Word);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                             length = this.Commit();
-                            return new Instructions.Sbb(rm4, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
+                            return new Instructions.Sbb(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
                         }
                     }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Sbb(rm3, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
+                        return new Instructions.Sbb(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
                     }
                     break;
                 }
@@ -2096,9 +2097,9 @@ namespace Yoakke.X86.Readers
                 {
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                        op1 = this.ParseRM(modrm_byte, DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.Sbb(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte), rm3);
+                        return new Instructions.Sbb(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte), op1);
                     }
                     break;
                 }
@@ -2108,44 +2109,44 @@ namespace Yoakke.X86.Readers
                     {
                         if (this.TryParseByte(out modrm_byte))
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Word);
+                            op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                             length = this.Commit();
-                            return new Instructions.Sbb(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm4);
+                            return new Instructions.Sbb(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                         }
                     }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Sbb(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm3);
+                        return new Instructions.Sbb(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                     }
                     break;
                 }
                 case 0x1c:
                 {
-                    var imm0_2 = this.ParseImmediate(DataWidth.Byte);
+                    op1 = this.ParseImmediate(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Sbb(Registers.Al, imm0_2);
+                    return new Instructions.Sbb(Registers.Al, op1);
                 }
                 case 0x1d:
                 {
                     if (HasPrefix(0x66))
                     {
-                        var imm0_3 = this.ParseImmediate(DataWidth.Word);
+                        op1 = this.ParseImmediate(DataWidth.Word);
                         length = this.Commit();
-                        return new Instructions.Sbb(Registers.Ax, imm0_3);
+                        return new Instructions.Sbb(Registers.Ax, op1);
                     }
-                    var imm0_2 = this.ParseImmediate(DataWidth.Dword);
+                    op1 = this.ParseImmediate(DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Sbb(Registers.Eax, imm0_2);
+                    return new Instructions.Sbb(Registers.Eax, op1);
                 }
                 case 0x20:
                 {
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                        op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.And(rm3, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
+                        return new Instructions.And(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
                     }
                     break;
                 }
@@ -2155,16 +2156,16 @@ namespace Yoakke.X86.Readers
                     {
                         if (this.TryParseByte(out modrm_byte))
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Word);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                             length = this.Commit();
-                            return new Instructions.And(rm4, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
+                            return new Instructions.And(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
                         }
                     }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.And(rm3, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
+                        return new Instructions.And(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
                     }
                     break;
                 }
@@ -2172,9 +2173,9 @@ namespace Yoakke.X86.Readers
                 {
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                        op1 = this.ParseRM(modrm_byte, DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.And(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte), rm3);
+                        return new Instructions.And(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte), op1);
                     }
                     break;
                 }
@@ -2184,36 +2185,36 @@ namespace Yoakke.X86.Readers
                     {
                         if (this.TryParseByte(out modrm_byte))
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Word);
+                            op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                             length = this.Commit();
-                            return new Instructions.And(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm4);
+                            return new Instructions.And(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                         }
                     }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.And(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm3);
+                        return new Instructions.And(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                     }
                     break;
                 }
                 case 0x24:
                 {
-                    var imm0_2 = this.ParseImmediate(DataWidth.Byte);
+                    op1 = this.ParseImmediate(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.And(Registers.Al, imm0_2);
+                    return new Instructions.And(Registers.Al, op1);
                 }
                 case 0x25:
                 {
                     if (HasPrefix(0x66))
                     {
-                        var imm0_3 = this.ParseImmediate(DataWidth.Word);
+                        op1 = this.ParseImmediate(DataWidth.Word);
                         length = this.Commit();
-                        return new Instructions.And(Registers.Ax, imm0_3);
+                        return new Instructions.And(Registers.Ax, op1);
                     }
-                    var imm0_2 = this.ParseImmediate(DataWidth.Dword);
+                    op1 = this.ParseImmediate(DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.And(Registers.Eax, imm0_2);
+                    return new Instructions.And(Registers.Eax, op1);
                 }
                 case 0x27:
                 {
@@ -2224,9 +2225,9 @@ namespace Yoakke.X86.Readers
                 {
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                        op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.Sub(rm3, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
+                        return new Instructions.Sub(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
                     }
                     break;
                 }
@@ -2236,16 +2237,16 @@ namespace Yoakke.X86.Readers
                     {
                         if (this.TryParseByte(out modrm_byte))
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Word);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                             length = this.Commit();
-                            return new Instructions.Sub(rm4, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
+                            return new Instructions.Sub(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
                         }
                     }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Sub(rm3, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
+                        return new Instructions.Sub(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
                     }
                     break;
                 }
@@ -2253,9 +2254,9 @@ namespace Yoakke.X86.Readers
                 {
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                        op1 = this.ParseRM(modrm_byte, DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.Sub(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte), rm3);
+                        return new Instructions.Sub(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte), op1);
                     }
                     break;
                 }
@@ -2265,36 +2266,36 @@ namespace Yoakke.X86.Readers
                     {
                         if (this.TryParseByte(out modrm_byte))
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Word);
+                            op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                             length = this.Commit();
-                            return new Instructions.Sub(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm4);
+                            return new Instructions.Sub(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                         }
                     }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Sub(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm3);
+                        return new Instructions.Sub(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                     }
                     break;
                 }
                 case 0x2c:
                 {
-                    var imm0_2 = this.ParseImmediate(DataWidth.Byte);
+                    op1 = this.ParseImmediate(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Sub(Registers.Al, imm0_2);
+                    return new Instructions.Sub(Registers.Al, op1);
                 }
                 case 0x2d:
                 {
                     if (HasPrefix(0x66))
                     {
-                        var imm0_3 = this.ParseImmediate(DataWidth.Word);
+                        op1 = this.ParseImmediate(DataWidth.Word);
                         length = this.Commit();
-                        return new Instructions.Sub(Registers.Ax, imm0_3);
+                        return new Instructions.Sub(Registers.Ax, op1);
                     }
-                    var imm0_2 = this.ParseImmediate(DataWidth.Dword);
+                    op1 = this.ParseImmediate(DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Sub(Registers.Eax, imm0_2);
+                    return new Instructions.Sub(Registers.Eax, op1);
                 }
                 case 0x2f:
                 {
@@ -2305,9 +2306,9 @@ namespace Yoakke.X86.Readers
                 {
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                        op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.Xor(rm3, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
+                        return new Instructions.Xor(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
                     }
                     break;
                 }
@@ -2317,16 +2318,16 @@ namespace Yoakke.X86.Readers
                     {
                         if (this.TryParseByte(out modrm_byte))
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Word);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                             length = this.Commit();
-                            return new Instructions.Xor(rm4, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
+                            return new Instructions.Xor(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
                         }
                     }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Xor(rm3, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
+                        return new Instructions.Xor(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
                     }
                     break;
                 }
@@ -2334,9 +2335,9 @@ namespace Yoakke.X86.Readers
                 {
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                        op1 = this.ParseRM(modrm_byte, DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.Xor(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte), rm3);
+                        return new Instructions.Xor(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte), op1);
                     }
                     break;
                 }
@@ -2346,36 +2347,36 @@ namespace Yoakke.X86.Readers
                     {
                         if (this.TryParseByte(out modrm_byte))
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Word);
+                            op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                             length = this.Commit();
-                            return new Instructions.Xor(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm4);
+                            return new Instructions.Xor(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                         }
                     }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Xor(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm3);
+                        return new Instructions.Xor(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                     }
                     break;
                 }
                 case 0x34:
                 {
-                    var imm0_2 = this.ParseImmediate(DataWidth.Byte);
+                    op1 = this.ParseImmediate(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Xor(Registers.Al, imm0_2);
+                    return new Instructions.Xor(Registers.Al, op1);
                 }
                 case 0x35:
                 {
                     if (HasPrefix(0x66))
                     {
-                        var imm0_3 = this.ParseImmediate(DataWidth.Word);
+                        op1 = this.ParseImmediate(DataWidth.Word);
                         length = this.Commit();
-                        return new Instructions.Xor(Registers.Ax, imm0_3);
+                        return new Instructions.Xor(Registers.Ax, op1);
                     }
-                    var imm0_2 = this.ParseImmediate(DataWidth.Dword);
+                    op1 = this.ParseImmediate(DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Xor(Registers.Eax, imm0_2);
+                    return new Instructions.Xor(Registers.Eax, op1);
                 }
                 case 0x37:
                 {
@@ -2386,9 +2387,9 @@ namespace Yoakke.X86.Readers
                 {
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                        op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.Cmp(rm3, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
+                        return new Instructions.Cmp(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
                     }
                     break;
                 }
@@ -2398,16 +2399,16 @@ namespace Yoakke.X86.Readers
                     {
                         if (this.TryParseByte(out modrm_byte))
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Word);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                             length = this.Commit();
-                            return new Instructions.Cmp(rm4, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
+                            return new Instructions.Cmp(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
                         }
                     }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Cmp(rm3, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
+                        return new Instructions.Cmp(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
                     }
                     break;
                 }
@@ -2415,9 +2416,9 @@ namespace Yoakke.X86.Readers
                 {
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                        op1 = this.ParseRM(modrm_byte, DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.Cmp(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte), rm3);
+                        return new Instructions.Cmp(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte), op1);
                     }
                     break;
                 }
@@ -2427,36 +2428,36 @@ namespace Yoakke.X86.Readers
                     {
                         if (this.TryParseByte(out modrm_byte))
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Word);
+                            op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                             length = this.Commit();
-                            return new Instructions.Cmp(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm4);
+                            return new Instructions.Cmp(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                         }
                     }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Cmp(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm3);
+                        return new Instructions.Cmp(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                     }
                     break;
                 }
                 case 0x3c:
                 {
-                    var imm0_2 = this.ParseImmediate(DataWidth.Byte);
+                    op1 = this.ParseImmediate(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Cmp(Registers.Al, imm0_2);
+                    return new Instructions.Cmp(Registers.Al, op1);
                 }
                 case 0x3d:
                 {
                     if (HasPrefix(0x66))
                     {
-                        var imm0_3 = this.ParseImmediate(DataWidth.Word);
+                        op1 = this.ParseImmediate(DataWidth.Word);
                         length = this.Commit();
-                        return new Instructions.Cmp(Registers.Ax, imm0_3);
+                        return new Instructions.Cmp(Registers.Ax, op1);
                     }
-                    var imm0_2 = this.ParseImmediate(DataWidth.Dword);
+                    op1 = this.ParseImmediate(DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Cmp(Registers.Eax, imm0_2);
+                    return new Instructions.Cmp(Registers.Eax, op1);
                 }
                 case 0x3f:
                 {
@@ -2785,9 +2786,9 @@ namespace Yoakke.X86.Readers
                 }
                 case 0x68:
                 {
-                    var imm0_2 = this.ParseImmediate(DataWidth.Dword);
+                    op0 = this.ParseImmediate(DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Push(imm0_2);
+                    return new Instructions.Push(op0);
                 }
                 case 0x69:
                 {
@@ -2795,26 +2796,26 @@ namespace Yoakke.X86.Readers
                     {
                         if (this.TryParseByte(out modrm_byte))
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Word);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Word);
+                            op1 = this.ParseRM(modrm_byte, DataWidth.Word);
+                            op2 = this.ParseImmediate(DataWidth.Word);
                             length = this.Commit();
-                            return new Instructions.Imul(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm4, imm0_4);
+                            return new Instructions.Imul(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1, op2);
                         }
                     }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                        var imm0_3 = this.ParseImmediate(DataWidth.Dword);
+                        op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op2 = this.ParseImmediate(DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Imul(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm3, imm0_3);
+                        return new Instructions.Imul(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1, op2);
                     }
                     break;
                 }
                 case 0x6a:
                 {
-                    var imm0_2 = this.ParseImmediate(DataWidth.Byte);
+                    op0 = this.ParseImmediate(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Push(imm0_2);
+                    return new Instructions.Push(op0);
                 }
                 case 0x6b:
                 {
@@ -2822,116 +2823,116 @@ namespace Yoakke.X86.Readers
                     {
                         if (this.TryParseByte(out modrm_byte))
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Word);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Byte);
+                            op1 = this.ParseRM(modrm_byte, DataWidth.Word);
+                            op2 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Imul(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm4, imm0_4);
+                            return new Instructions.Imul(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1, op2);
                         }
                     }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                        var imm0_3 = this.ParseImmediate(DataWidth.Byte);
+                        op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op2 = this.ParseImmediate(DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.Imul(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm3, imm0_3);
+                        return new Instructions.Imul(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1, op2);
                     }
                     break;
                 }
                 case 0x70:
                 {
-                    var rel0_2 = this.ParseCodeOffset(DataWidth.Byte);
+                    op0 = this.ParseCodeOffset(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Jo(rel0_2);
+                    return new Instructions.Jo(op0);
                 }
                 case 0x71:
                 {
-                    var rel0_2 = this.ParseCodeOffset(DataWidth.Byte);
+                    op0 = this.ParseCodeOffset(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Jno(rel0_2);
+                    return new Instructions.Jno(op0);
                 }
                 case 0x72:
                 {
-                    var rel0_2 = this.ParseCodeOffset(DataWidth.Byte);
+                    op0 = this.ParseCodeOffset(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Jb(rel0_2);
+                    return new Instructions.Jb(op0);
                 }
                 case 0x73:
                 {
-                    var rel0_2 = this.ParseCodeOffset(DataWidth.Byte);
+                    op0 = this.ParseCodeOffset(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Jae(rel0_2);
+                    return new Instructions.Jae(op0);
                 }
                 case 0x74:
                 {
-                    var rel0_2 = this.ParseCodeOffset(DataWidth.Byte);
+                    op0 = this.ParseCodeOffset(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Je(rel0_2);
+                    return new Instructions.Je(op0);
                 }
                 case 0x75:
                 {
-                    var rel0_2 = this.ParseCodeOffset(DataWidth.Byte);
+                    op0 = this.ParseCodeOffset(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Jne(rel0_2);
+                    return new Instructions.Jne(op0);
                 }
                 case 0x76:
                 {
-                    var rel0_2 = this.ParseCodeOffset(DataWidth.Byte);
+                    op0 = this.ParseCodeOffset(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Jbe(rel0_2);
+                    return new Instructions.Jbe(op0);
                 }
                 case 0x77:
                 {
-                    var rel0_2 = this.ParseCodeOffset(DataWidth.Byte);
+                    op0 = this.ParseCodeOffset(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Ja(rel0_2);
+                    return new Instructions.Ja(op0);
                 }
                 case 0x78:
                 {
-                    var rel0_2 = this.ParseCodeOffset(DataWidth.Byte);
+                    op0 = this.ParseCodeOffset(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Js(rel0_2);
+                    return new Instructions.Js(op0);
                 }
                 case 0x79:
                 {
-                    var rel0_2 = this.ParseCodeOffset(DataWidth.Byte);
+                    op0 = this.ParseCodeOffset(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Jns(rel0_2);
+                    return new Instructions.Jns(op0);
                 }
                 case 0x7a:
                 {
-                    var rel0_2 = this.ParseCodeOffset(DataWidth.Byte);
+                    op0 = this.ParseCodeOffset(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Jp(rel0_2);
+                    return new Instructions.Jp(op0);
                 }
                 case 0x7b:
                 {
-                    var rel0_2 = this.ParseCodeOffset(DataWidth.Byte);
+                    op0 = this.ParseCodeOffset(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Jnp(rel0_2);
+                    return new Instructions.Jnp(op0);
                 }
                 case 0x7c:
                 {
-                    var rel0_2 = this.ParseCodeOffset(DataWidth.Byte);
+                    op0 = this.ParseCodeOffset(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Jl(rel0_2);
+                    return new Instructions.Jl(op0);
                 }
                 case 0x7d:
                 {
-                    var rel0_2 = this.ParseCodeOffset(DataWidth.Byte);
+                    op0 = this.ParseCodeOffset(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Jge(rel0_2);
+                    return new Instructions.Jge(op0);
                 }
                 case 0x7e:
                 {
-                    var rel0_2 = this.ParseCodeOffset(DataWidth.Byte);
+                    op0 = this.ParseCodeOffset(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Jle(rel0_2);
+                    return new Instructions.Jle(op0);
                 }
                 case 0x7f:
                 {
-                    var rel0_2 = this.ParseCodeOffset(DataWidth.Byte);
+                    op0 = this.ParseCodeOffset(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Jg(rel0_2);
+                    return new Instructions.Jg(op0);
                 }
                 case 0x80:
                 {
@@ -2941,59 +2942,59 @@ namespace Yoakke.X86.Readers
                         {
                         case 0x00:
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Byte);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                            op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Add(rm4, imm0_4);
+                            return new Instructions.Add(op0, op1);
                         }
                         case 0x01:
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Byte);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                            op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Or(rm4, imm0_4);
+                            return new Instructions.Or(op0, op1);
                         }
                         case 0x02:
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Byte);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                            op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Adc(rm4, imm0_4);
+                            return new Instructions.Adc(op0, op1);
                         }
                         case 0x03:
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Byte);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                            op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Sbb(rm4, imm0_4);
+                            return new Instructions.Sbb(op0, op1);
                         }
                         case 0x04:
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Byte);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                            op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.And(rm4, imm0_4);
+                            return new Instructions.And(op0, op1);
                         }
                         case 0x05:
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Byte);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                            op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Sub(rm4, imm0_4);
+                            return new Instructions.Sub(op0, op1);
                         }
                         case 0x06:
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Byte);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                            op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Xor(rm4, imm0_4);
+                            return new Instructions.Xor(op0, op1);
                         }
                         case 0x07:
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Byte);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                            op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Cmp(rm4, imm0_4);
+                            return new Instructions.Cmp(op0, op1);
                         }
                         }
                         this.UnparseByte();
@@ -3010,113 +3011,113 @@ namespace Yoakke.X86.Readers
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                var imm0_5 = this.ParseImmediate(DataWidth.Word);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op1 = this.ParseImmediate(DataWidth.Word);
                                 length = this.Commit();
-                                return new Instructions.Add(rm5, imm0_5);
+                                return new Instructions.Add(op0, op1);
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op1 = this.ParseImmediate(DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Add(rm4, imm0_4);
+                            return new Instructions.Add(op0, op1);
                         }
                         case 0x01:
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                var imm0_5 = this.ParseImmediate(DataWidth.Word);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op1 = this.ParseImmediate(DataWidth.Word);
                                 length = this.Commit();
-                                return new Instructions.Or(rm5, imm0_5);
+                                return new Instructions.Or(op0, op1);
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op1 = this.ParseImmediate(DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Or(rm4, imm0_4);
+                            return new Instructions.Or(op0, op1);
                         }
                         case 0x02:
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                var imm0_5 = this.ParseImmediate(DataWidth.Word);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op1 = this.ParseImmediate(DataWidth.Word);
                                 length = this.Commit();
-                                return new Instructions.Adc(rm5, imm0_5);
+                                return new Instructions.Adc(op0, op1);
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op1 = this.ParseImmediate(DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Adc(rm4, imm0_4);
+                            return new Instructions.Adc(op0, op1);
                         }
                         case 0x03:
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                var imm0_5 = this.ParseImmediate(DataWidth.Word);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op1 = this.ParseImmediate(DataWidth.Word);
                                 length = this.Commit();
-                                return new Instructions.Sbb(rm5, imm0_5);
+                                return new Instructions.Sbb(op0, op1);
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op1 = this.ParseImmediate(DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Sbb(rm4, imm0_4);
+                            return new Instructions.Sbb(op0, op1);
                         }
                         case 0x04:
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                var imm0_5 = this.ParseImmediate(DataWidth.Word);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op1 = this.ParseImmediate(DataWidth.Word);
                                 length = this.Commit();
-                                return new Instructions.And(rm5, imm0_5);
+                                return new Instructions.And(op0, op1);
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op1 = this.ParseImmediate(DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.And(rm4, imm0_4);
+                            return new Instructions.And(op0, op1);
                         }
                         case 0x05:
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                var imm0_5 = this.ParseImmediate(DataWidth.Word);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op1 = this.ParseImmediate(DataWidth.Word);
                                 length = this.Commit();
-                                return new Instructions.Sub(rm5, imm0_5);
+                                return new Instructions.Sub(op0, op1);
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op1 = this.ParseImmediate(DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Sub(rm4, imm0_4);
+                            return new Instructions.Sub(op0, op1);
                         }
                         case 0x06:
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                var imm0_5 = this.ParseImmediate(DataWidth.Word);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op1 = this.ParseImmediate(DataWidth.Word);
                                 length = this.Commit();
-                                return new Instructions.Xor(rm5, imm0_5);
+                                return new Instructions.Xor(op0, op1);
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op1 = this.ParseImmediate(DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Xor(rm4, imm0_4);
+                            return new Instructions.Xor(op0, op1);
                         }
                         case 0x07:
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                var imm0_5 = this.ParseImmediate(DataWidth.Word);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op1 = this.ParseImmediate(DataWidth.Word);
                                 length = this.Commit();
-                                return new Instructions.Cmp(rm5, imm0_5);
+                                return new Instructions.Cmp(op0, op1);
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op1 = this.ParseImmediate(DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Cmp(rm4, imm0_4);
+                            return new Instructions.Cmp(op0, op1);
                         }
                         }
                         this.UnparseByte();
@@ -3133,113 +3134,113 @@ namespace Yoakke.X86.Readers
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                var imm0_5 = this.ParseImmediate(DataWidth.Byte);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op1 = this.ParseImmediate(DataWidth.Byte);
                                 length = this.Commit();
-                                return new Instructions.Add(rm5, imm0_5);
+                                return new Instructions.Add(op0, op1);
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Add(rm4, imm0_4);
+                            return new Instructions.Add(op0, op1);
                         }
                         case 0x01:
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                var imm0_5 = this.ParseImmediate(DataWidth.Byte);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op1 = this.ParseImmediate(DataWidth.Byte);
                                 length = this.Commit();
-                                return new Instructions.Or(rm5, imm0_5);
+                                return new Instructions.Or(op0, op1);
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Or(rm4, imm0_4);
+                            return new Instructions.Or(op0, op1);
                         }
                         case 0x02:
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                var imm0_5 = this.ParseImmediate(DataWidth.Byte);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op1 = this.ParseImmediate(DataWidth.Byte);
                                 length = this.Commit();
-                                return new Instructions.Adc(rm5, imm0_5);
+                                return new Instructions.Adc(op0, op1);
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Adc(rm4, imm0_4);
+                            return new Instructions.Adc(op0, op1);
                         }
                         case 0x03:
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                var imm0_5 = this.ParseImmediate(DataWidth.Byte);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op1 = this.ParseImmediate(DataWidth.Byte);
                                 length = this.Commit();
-                                return new Instructions.Sbb(rm5, imm0_5);
+                                return new Instructions.Sbb(op0, op1);
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Sbb(rm4, imm0_4);
+                            return new Instructions.Sbb(op0, op1);
                         }
                         case 0x04:
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                var imm0_5 = this.ParseImmediate(DataWidth.Byte);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op1 = this.ParseImmediate(DataWidth.Byte);
                                 length = this.Commit();
-                                return new Instructions.And(rm5, imm0_5);
+                                return new Instructions.And(op0, op1);
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.And(rm4, imm0_4);
+                            return new Instructions.And(op0, op1);
                         }
                         case 0x05:
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                var imm0_5 = this.ParseImmediate(DataWidth.Byte);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op1 = this.ParseImmediate(DataWidth.Byte);
                                 length = this.Commit();
-                                return new Instructions.Sub(rm5, imm0_5);
+                                return new Instructions.Sub(op0, op1);
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Sub(rm4, imm0_4);
+                            return new Instructions.Sub(op0, op1);
                         }
                         case 0x06:
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                var imm0_5 = this.ParseImmediate(DataWidth.Byte);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op1 = this.ParseImmediate(DataWidth.Byte);
                                 length = this.Commit();
-                                return new Instructions.Xor(rm5, imm0_5);
+                                return new Instructions.Xor(op0, op1);
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Xor(rm4, imm0_4);
+                            return new Instructions.Xor(op0, op1);
                         }
                         case 0x07:
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                var imm0_5 = this.ParseImmediate(DataWidth.Byte);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op1 = this.ParseImmediate(DataWidth.Byte);
                                 length = this.Commit();
-                                return new Instructions.Cmp(rm5, imm0_5);
+                                return new Instructions.Cmp(op0, op1);
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Cmp(rm4, imm0_4);
+                            return new Instructions.Cmp(op0, op1);
                         }
                         }
                         this.UnparseByte();
@@ -3250,9 +3251,9 @@ namespace Yoakke.X86.Readers
                 {
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                        op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.Test(rm3, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
+                        return new Instructions.Test(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
                     }
                     break;
                 }
@@ -3262,16 +3263,16 @@ namespace Yoakke.X86.Readers
                     {
                         if (this.TryParseByte(out modrm_byte))
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Word);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                             length = this.Commit();
-                            return new Instructions.Test(rm4, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
+                            return new Instructions.Test(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
                         }
                     }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Test(rm3, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
+                        return new Instructions.Test(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
                     }
                     break;
                 }
@@ -3279,15 +3280,15 @@ namespace Yoakke.X86.Readers
                 {
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                        op1 = this.ParseRM(modrm_byte, DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.Xchg(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte), rm3);
+                        return new Instructions.Xchg(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte), op1);
                     }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                        op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.Xchg(rm3, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
+                        return new Instructions.Xchg(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
                     }
                     break;
                 }
@@ -3297,28 +3298,28 @@ namespace Yoakke.X86.Readers
                     {
                         if (this.TryParseByte(out modrm_byte))
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Word);
+                            op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                             length = this.Commit();
-                            return new Instructions.Xchg(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm4);
+                            return new Instructions.Xchg(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                         }
                         if (this.TryParseByte(out modrm_byte))
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Word);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                             length = this.Commit();
-                            return new Instructions.Xchg(rm4, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
+                            return new Instructions.Xchg(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
                         }
                     }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Xchg(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm3);
+                        return new Instructions.Xchg(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                     }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Xchg(rm3, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
+                        return new Instructions.Xchg(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
                     }
                     break;
                 }
@@ -3326,9 +3327,9 @@ namespace Yoakke.X86.Readers
                 {
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                        op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.Mov(rm3, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
+                        return new Instructions.Mov(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
                     }
                     break;
                 }
@@ -3338,16 +3339,16 @@ namespace Yoakke.X86.Readers
                     {
                         if (this.TryParseByte(out modrm_byte))
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Word);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                             length = this.Commit();
-                            return new Instructions.Mov(rm4, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
+                            return new Instructions.Mov(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
                         }
                     }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Mov(rm3, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
+                        return new Instructions.Mov(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
                     }
                     break;
                 }
@@ -3355,9 +3356,9 @@ namespace Yoakke.X86.Readers
                 {
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                        op1 = this.ParseRM(modrm_byte, DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.Mov(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte), rm3);
+                        return new Instructions.Mov(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte), op1);
                     }
                     break;
                 }
@@ -3367,16 +3368,16 @@ namespace Yoakke.X86.Readers
                     {
                         if (this.TryParseByte(out modrm_byte))
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Word);
+                            op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                             length = this.Commit();
-                            return new Instructions.Mov(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm4);
+                            return new Instructions.Mov(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                         }
                     }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Mov(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm3);
+                        return new Instructions.Mov(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                     }
                     break;
                 }
@@ -3386,16 +3387,16 @@ namespace Yoakke.X86.Readers
                     {
                         if (this.TryParseByte(out modrm_byte))
                         {
-                            var rm4 = this.ParseRM(modrm_byte, null);
+                            op1 = this.ParseRM(modrm_byte, null);
                             length = this.Commit();
-                            return new Instructions.Lea(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), rm4);
+                            return new Instructions.Lea(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                         }
                     }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        var rm3 = this.ParseRM(modrm_byte, null);
+                        op1 = this.ParseRM(modrm_byte, null);
                         length = this.Commit();
-                        return new Instructions.Lea(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), rm3);
+                        return new Instructions.Lea(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                     }
                     break;
                 }
@@ -3409,13 +3410,13 @@ namespace Yoakke.X86.Readers
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                                 length = this.Commit();
-                                return new Instructions.Pop(rm5);
+                                return new Instructions.Pop(op0);
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Pop(rm4);
+                            return new Instructions.Pop(op0);
                         }
                         }
                         this.UnparseByte();
@@ -3539,165 +3540,165 @@ namespace Yoakke.X86.Readers
                 }
                 case 0xa8:
                 {
-                    var imm0_2 = this.ParseImmediate(DataWidth.Byte);
+                    op1 = this.ParseImmediate(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Test(Registers.Al, imm0_2);
+                    return new Instructions.Test(Registers.Al, op1);
                 }
                 case 0xa9:
                 {
                     if (HasPrefix(0x66))
                     {
-                        var imm0_3 = this.ParseImmediate(DataWidth.Word);
+                        op1 = this.ParseImmediate(DataWidth.Word);
                         length = this.Commit();
-                        return new Instructions.Test(Registers.Ax, imm0_3);
+                        return new Instructions.Test(Registers.Ax, op1);
                     }
-                    var imm0_2 = this.ParseImmediate(DataWidth.Dword);
+                    op1 = this.ParseImmediate(DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Test(Registers.Eax, imm0_2);
+                    return new Instructions.Test(Registers.Eax, op1);
                 }
                 case 0xb0:
                 {
-                    var imm0_2 = this.ParseImmediate(DataWidth.Byte);
+                    op1 = this.ParseImmediate(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Byte), imm0_2);
+                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Byte), op1);
                 }
                 case 0xb1:
                 {
-                    var imm0_2 = this.ParseImmediate(DataWidth.Byte);
+                    op1 = this.ParseImmediate(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Byte), imm0_2);
+                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Byte), op1);
                 }
                 case 0xb2:
                 {
-                    var imm0_2 = this.ParseImmediate(DataWidth.Byte);
+                    op1 = this.ParseImmediate(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Byte), imm0_2);
+                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Byte), op1);
                 }
                 case 0xb3:
                 {
-                    var imm0_2 = this.ParseImmediate(DataWidth.Byte);
+                    op1 = this.ParseImmediate(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Byte), imm0_2);
+                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Byte), op1);
                 }
                 case 0xb4:
                 {
-                    var imm0_2 = this.ParseImmediate(DataWidth.Byte);
+                    op1 = this.ParseImmediate(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Byte), imm0_2);
+                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Byte), op1);
                 }
                 case 0xb5:
                 {
-                    var imm0_2 = this.ParseImmediate(DataWidth.Byte);
+                    op1 = this.ParseImmediate(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Byte), imm0_2);
+                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Byte), op1);
                 }
                 case 0xb6:
                 {
-                    var imm0_2 = this.ParseImmediate(DataWidth.Byte);
+                    op1 = this.ParseImmediate(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Byte), imm0_2);
+                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Byte), op1);
                 }
                 case 0xb7:
                 {
-                    var imm0_2 = this.ParseImmediate(DataWidth.Byte);
+                    op1 = this.ParseImmediate(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Byte), imm0_2);
+                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Byte), op1);
                 }
                 case 0xb8:
                 {
                     if (HasPrefix(0x66))
                     {
-                        var imm0_3 = this.ParseImmediate(DataWidth.Word);
+                        op1 = this.ParseImmediate(DataWidth.Word);
                         length = this.Commit();
-                        return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Word), imm0_3);
+                        return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Word), op1);
                     }
-                    var imm0_2 = this.ParseImmediate(DataWidth.Dword);
+                    op1 = this.ParseImmediate(DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword), imm0_2);
+                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword), op1);
                 }
                 case 0xb9:
                 {
                     if (HasPrefix(0x66))
                     {
-                        var imm0_3 = this.ParseImmediate(DataWidth.Word);
+                        op1 = this.ParseImmediate(DataWidth.Word);
                         length = this.Commit();
-                        return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Word), imm0_3);
+                        return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Word), op1);
                     }
-                    var imm0_2 = this.ParseImmediate(DataWidth.Dword);
+                    op1 = this.ParseImmediate(DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword), imm0_2);
+                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword), op1);
                 }
                 case 0xba:
                 {
                     if (HasPrefix(0x66))
                     {
-                        var imm0_3 = this.ParseImmediate(DataWidth.Word);
+                        op1 = this.ParseImmediate(DataWidth.Word);
                         length = this.Commit();
-                        return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Word), imm0_3);
+                        return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Word), op1);
                     }
-                    var imm0_2 = this.ParseImmediate(DataWidth.Dword);
+                    op1 = this.ParseImmediate(DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword), imm0_2);
+                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword), op1);
                 }
                 case 0xbb:
                 {
                     if (HasPrefix(0x66))
                     {
-                        var imm0_3 = this.ParseImmediate(DataWidth.Word);
+                        op1 = this.ParseImmediate(DataWidth.Word);
                         length = this.Commit();
-                        return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Word), imm0_3);
+                        return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Word), op1);
                     }
-                    var imm0_2 = this.ParseImmediate(DataWidth.Dword);
+                    op1 = this.ParseImmediate(DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword), imm0_2);
+                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword), op1);
                 }
                 case 0xbc:
                 {
                     if (HasPrefix(0x66))
                     {
-                        var imm0_3 = this.ParseImmediate(DataWidth.Word);
+                        op1 = this.ParseImmediate(DataWidth.Word);
                         length = this.Commit();
-                        return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Word), imm0_3);
+                        return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Word), op1);
                     }
-                    var imm0_2 = this.ParseImmediate(DataWidth.Dword);
+                    op1 = this.ParseImmediate(DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword), imm0_2);
+                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword), op1);
                 }
                 case 0xbd:
                 {
                     if (HasPrefix(0x66))
                     {
-                        var imm0_3 = this.ParseImmediate(DataWidth.Word);
+                        op1 = this.ParseImmediate(DataWidth.Word);
                         length = this.Commit();
-                        return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Word), imm0_3);
+                        return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Word), op1);
                     }
-                    var imm0_2 = this.ParseImmediate(DataWidth.Dword);
+                    op1 = this.ParseImmediate(DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword), imm0_2);
+                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword), op1);
                 }
                 case 0xbe:
                 {
                     if (HasPrefix(0x66))
                     {
-                        var imm0_3 = this.ParseImmediate(DataWidth.Word);
+                        op1 = this.ParseImmediate(DataWidth.Word);
                         length = this.Commit();
-                        return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Word), imm0_3);
+                        return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Word), op1);
                     }
-                    var imm0_2 = this.ParseImmediate(DataWidth.Dword);
+                    op1 = this.ParseImmediate(DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword), imm0_2);
+                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword), op1);
                 }
                 case 0xbf:
                 {
                     if (HasPrefix(0x66))
                     {
-                        var imm0_3 = this.ParseImmediate(DataWidth.Word);
+                        op1 = this.ParseImmediate(DataWidth.Word);
                         length = this.Commit();
-                        return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Word), imm0_3);
+                        return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Word), op1);
                     }
-                    var imm0_2 = this.ParseImmediate(DataWidth.Dword);
+                    op1 = this.ParseImmediate(DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword), imm0_2);
+                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword), op1);
                 }
                 case 0xc0:
                 {
@@ -3707,52 +3708,52 @@ namespace Yoakke.X86.Readers
                         {
                         case 0x00:
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Byte);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                            op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Rol(rm4, imm0_4);
+                            return new Instructions.Rol(op0, op1);
                         }
                         case 0x01:
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Byte);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                            op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Ror(rm4, imm0_4);
+                            return new Instructions.Ror(op0, op1);
                         }
                         case 0x02:
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Byte);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                            op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Rcl(rm4, imm0_4);
+                            return new Instructions.Rcl(op0, op1);
                         }
                         case 0x03:
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Byte);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                            op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Rcr(rm4, imm0_4);
+                            return new Instructions.Rcr(op0, op1);
                         }
                         case 0x04:
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Byte);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                            op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Sal(rm4, imm0_4);
+                            return new Instructions.Sal(op0, op1);
                         }
                         case 0x05:
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Byte);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                            op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Shr(rm4, imm0_4);
+                            return new Instructions.Shr(op0, op1);
                         }
                         case 0x07:
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Byte);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                            op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Sar(rm4, imm0_4);
+                            return new Instructions.Sar(op0, op1);
                         }
                         }
                         this.UnparseByte();
@@ -3769,99 +3770,99 @@ namespace Yoakke.X86.Readers
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                var imm0_5 = this.ParseImmediate(DataWidth.Byte);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op1 = this.ParseImmediate(DataWidth.Byte);
                                 length = this.Commit();
-                                return new Instructions.Rol(rm5, imm0_5);
+                                return new Instructions.Rol(op0, op1);
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Rol(rm4, imm0_4);
+                            return new Instructions.Rol(op0, op1);
                         }
                         case 0x01:
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                var imm0_5 = this.ParseImmediate(DataWidth.Byte);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op1 = this.ParseImmediate(DataWidth.Byte);
                                 length = this.Commit();
-                                return new Instructions.Ror(rm5, imm0_5);
+                                return new Instructions.Ror(op0, op1);
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Ror(rm4, imm0_4);
+                            return new Instructions.Ror(op0, op1);
                         }
                         case 0x02:
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                var imm0_5 = this.ParseImmediate(DataWidth.Byte);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op1 = this.ParseImmediate(DataWidth.Byte);
                                 length = this.Commit();
-                                return new Instructions.Rcl(rm5, imm0_5);
+                                return new Instructions.Rcl(op0, op1);
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Rcl(rm4, imm0_4);
+                            return new Instructions.Rcl(op0, op1);
                         }
                         case 0x03:
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                var imm0_5 = this.ParseImmediate(DataWidth.Byte);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op1 = this.ParseImmediate(DataWidth.Byte);
                                 length = this.Commit();
-                                return new Instructions.Rcr(rm5, imm0_5);
+                                return new Instructions.Rcr(op0, op1);
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Rcr(rm4, imm0_4);
+                            return new Instructions.Rcr(op0, op1);
                         }
                         case 0x04:
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                var imm0_5 = this.ParseImmediate(DataWidth.Byte);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op1 = this.ParseImmediate(DataWidth.Byte);
                                 length = this.Commit();
-                                return new Instructions.Sal(rm5, imm0_5);
+                                return new Instructions.Sal(op0, op1);
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Sal(rm4, imm0_4);
+                            return new Instructions.Sal(op0, op1);
                         }
                         case 0x05:
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                var imm0_5 = this.ParseImmediate(DataWidth.Byte);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op1 = this.ParseImmediate(DataWidth.Byte);
                                 length = this.Commit();
-                                return new Instructions.Shr(rm5, imm0_5);
+                                return new Instructions.Shr(op0, op1);
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Shr(rm4, imm0_4);
+                            return new Instructions.Shr(op0, op1);
                         }
                         case 0x07:
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                var imm0_5 = this.ParseImmediate(DataWidth.Byte);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op1 = this.ParseImmediate(DataWidth.Byte);
                                 length = this.Commit();
-                                return new Instructions.Sar(rm5, imm0_5);
+                                return new Instructions.Sar(op0, op1);
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Sar(rm4, imm0_4);
+                            return new Instructions.Sar(op0, op1);
                         }
                         }
                         this.UnparseByte();
@@ -3870,9 +3871,9 @@ namespace Yoakke.X86.Readers
                 }
                 case 0xc2:
                 {
-                    var imm0_2 = this.ParseImmediate(DataWidth.Word);
+                    op0 = this.ParseImmediate(DataWidth.Word);
                     length = this.Commit();
-                    return new Instructions.Ret(imm0_2);
+                    return new Instructions.Ret(op0);
                 }
                 case 0xc3:
                 {
@@ -3887,10 +3888,10 @@ namespace Yoakke.X86.Readers
                         {
                         case 0x00:
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Byte);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                            op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Mov(rm4, imm0_4);
+                            return new Instructions.Mov(op0, op1);
                         }
                         }
                         this.UnparseByte();
@@ -3907,15 +3908,15 @@ namespace Yoakke.X86.Readers
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                var imm0_5 = this.ParseImmediate(DataWidth.Word);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op1 = this.ParseImmediate(DataWidth.Word);
                                 length = this.Commit();
-                                return new Instructions.Mov(rm5, imm0_5);
+                                return new Instructions.Mov(op0, op1);
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op1 = this.ParseImmediate(DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Mov(rm4, imm0_4);
+                            return new Instructions.Mov(op0, op1);
                         }
                         }
                         this.UnparseByte();
@@ -3924,10 +3925,10 @@ namespace Yoakke.X86.Readers
                 }
                 case 0xc8:
                 {
-                    var imm0_2 = this.ParseImmediate(DataWidth.Word);
-                    var imm1_2 = this.ParseImmediate(DataWidth.Byte);
+                    op0 = this.ParseImmediate(DataWidth.Word);
+                    op1 = this.ParseImmediate(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Enter(imm0_2, imm1_2);
+                    return new Instructions.Enter(op0, op1);
                 }
                 case 0xc9:
                 {
@@ -3941,9 +3942,9 @@ namespace Yoakke.X86.Readers
                 }
                 case 0xcd:
                 {
-                    var imm0_2 = this.ParseImmediate(DataWidth.Byte);
+                    op0 = this.ParseImmediate(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Int(imm0_2);
+                    return new Instructions.Int(op0);
                 }
                 case 0xce:
                 {
@@ -3958,45 +3959,45 @@ namespace Yoakke.X86.Readers
                         {
                         case 0x00:
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Rol(rm4, new Constant(1));
+                            return new Instructions.Rol(op0, new Constant(1));
                         }
                         case 0x01:
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Ror(rm4, new Constant(1));
+                            return new Instructions.Ror(op0, new Constant(1));
                         }
                         case 0x02:
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Rcl(rm4, new Constant(1));
+                            return new Instructions.Rcl(op0, new Constant(1));
                         }
                         case 0x03:
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Rcr(rm4, new Constant(1));
+                            return new Instructions.Rcr(op0, new Constant(1));
                         }
                         case 0x04:
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Sal(rm4, new Constant(1));
+                            return new Instructions.Sal(op0, new Constant(1));
                         }
                         case 0x05:
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Shr(rm4, new Constant(1));
+                            return new Instructions.Shr(op0, new Constant(1));
                         }
                         case 0x07:
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Sar(rm4, new Constant(1));
+                            return new Instructions.Sar(op0, new Constant(1));
                         }
                         }
                         this.UnparseByte();
@@ -4013,85 +4014,85 @@ namespace Yoakke.X86.Readers
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                                 length = this.Commit();
-                                return new Instructions.Rol(rm5, new Constant(1));
+                                return new Instructions.Rol(op0, new Constant(1));
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Rol(rm4, new Constant(1));
+                            return new Instructions.Rol(op0, new Constant(1));
                         }
                         case 0x01:
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                                 length = this.Commit();
-                                return new Instructions.Ror(rm5, new Constant(1));
+                                return new Instructions.Ror(op0, new Constant(1));
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Ror(rm4, new Constant(1));
+                            return new Instructions.Ror(op0, new Constant(1));
                         }
                         case 0x02:
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                                 length = this.Commit();
-                                return new Instructions.Rcl(rm5, new Constant(1));
+                                return new Instructions.Rcl(op0, new Constant(1));
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Rcl(rm4, new Constant(1));
+                            return new Instructions.Rcl(op0, new Constant(1));
                         }
                         case 0x03:
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                                 length = this.Commit();
-                                return new Instructions.Rcr(rm5, new Constant(1));
+                                return new Instructions.Rcr(op0, new Constant(1));
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Rcr(rm4, new Constant(1));
+                            return new Instructions.Rcr(op0, new Constant(1));
                         }
                         case 0x04:
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                                 length = this.Commit();
-                                return new Instructions.Sal(rm5, new Constant(1));
+                                return new Instructions.Sal(op0, new Constant(1));
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Sal(rm4, new Constant(1));
+                            return new Instructions.Sal(op0, new Constant(1));
                         }
                         case 0x05:
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                                 length = this.Commit();
-                                return new Instructions.Shr(rm5, new Constant(1));
+                                return new Instructions.Shr(op0, new Constant(1));
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Shr(rm4, new Constant(1));
+                            return new Instructions.Shr(op0, new Constant(1));
                         }
                         case 0x07:
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                                 length = this.Commit();
-                                return new Instructions.Sar(rm5, new Constant(1));
+                                return new Instructions.Sar(op0, new Constant(1));
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Sar(rm4, new Constant(1));
+                            return new Instructions.Sar(op0, new Constant(1));
                         }
                         }
                         this.UnparseByte();
@@ -4106,45 +4107,45 @@ namespace Yoakke.X86.Readers
                         {
                         case 0x00:
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Rol(rm4, Registers.Cl);
+                            return new Instructions.Rol(op0, Registers.Cl);
                         }
                         case 0x01:
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Ror(rm4, Registers.Cl);
+                            return new Instructions.Ror(op0, Registers.Cl);
                         }
                         case 0x02:
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Rcl(rm4, Registers.Cl);
+                            return new Instructions.Rcl(op0, Registers.Cl);
                         }
                         case 0x03:
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Rcr(rm4, Registers.Cl);
+                            return new Instructions.Rcr(op0, Registers.Cl);
                         }
                         case 0x04:
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Sal(rm4, Registers.Cl);
+                            return new Instructions.Sal(op0, Registers.Cl);
                         }
                         case 0x05:
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Shr(rm4, Registers.Cl);
+                            return new Instructions.Shr(op0, Registers.Cl);
                         }
                         case 0x07:
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Sar(rm4, Registers.Cl);
+                            return new Instructions.Sar(op0, Registers.Cl);
                         }
                         }
                         this.UnparseByte();
@@ -4161,85 +4162,85 @@ namespace Yoakke.X86.Readers
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                                 length = this.Commit();
-                                return new Instructions.Rol(rm5, Registers.Cl);
+                                return new Instructions.Rol(op0, Registers.Cl);
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Rol(rm4, Registers.Cl);
+                            return new Instructions.Rol(op0, Registers.Cl);
                         }
                         case 0x01:
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                                 length = this.Commit();
-                                return new Instructions.Ror(rm5, Registers.Cl);
+                                return new Instructions.Ror(op0, Registers.Cl);
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Ror(rm4, Registers.Cl);
+                            return new Instructions.Ror(op0, Registers.Cl);
                         }
                         case 0x02:
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                                 length = this.Commit();
-                                return new Instructions.Rcl(rm5, Registers.Cl);
+                                return new Instructions.Rcl(op0, Registers.Cl);
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Rcl(rm4, Registers.Cl);
+                            return new Instructions.Rcl(op0, Registers.Cl);
                         }
                         case 0x03:
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                                 length = this.Commit();
-                                return new Instructions.Rcr(rm5, Registers.Cl);
+                                return new Instructions.Rcr(op0, Registers.Cl);
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Rcr(rm4, Registers.Cl);
+                            return new Instructions.Rcr(op0, Registers.Cl);
                         }
                         case 0x04:
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                                 length = this.Commit();
-                                return new Instructions.Sal(rm5, Registers.Cl);
+                                return new Instructions.Sal(op0, Registers.Cl);
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Sal(rm4, Registers.Cl);
+                            return new Instructions.Sal(op0, Registers.Cl);
                         }
                         case 0x05:
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                                 length = this.Commit();
-                                return new Instructions.Shr(rm5, Registers.Cl);
+                                return new Instructions.Shr(op0, Registers.Cl);
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Shr(rm4, Registers.Cl);
+                            return new Instructions.Shr(op0, Registers.Cl);
                         }
                         case 0x07:
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                                 length = this.Commit();
-                                return new Instructions.Sar(rm5, Registers.Cl);
+                                return new Instructions.Sar(op0, Registers.Cl);
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Sar(rm4, Registers.Cl);
+                            return new Instructions.Sar(op0, Registers.Cl);
                         }
                         }
                         this.UnparseByte();
@@ -4260,9 +4261,9 @@ namespace Yoakke.X86.Readers
                         }
                         this.UnparseByte();
                     }
-                    var imm0_2 = this.ParseImmediate(DataWidth.Byte);
+                    op0 = this.ParseImmediate(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Aam(imm0_2);
+                    return new Instructions.Aam(op0);
                 }
                 case 0xd5:
                 {
@@ -4278,9 +4279,9 @@ namespace Yoakke.X86.Readers
                         }
                         this.UnparseByte();
                     }
-                    var imm0_2 = this.ParseImmediate(DataWidth.Byte);
+                    op0 = this.ParseImmediate(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Aad(imm0_2);
+                    return new Instructions.Aad(op0);
                 }
                 case 0xd7:
                 {
@@ -4289,27 +4290,27 @@ namespace Yoakke.X86.Readers
                 }
                 case 0xe3:
                 {
-                    var rel0_2 = this.ParseCodeOffset(DataWidth.Byte);
+                    op0 = this.ParseCodeOffset(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Jecxz(rel0_2);
+                    return new Instructions.Jecxz(op0);
                 }
                 case 0xe8:
                 {
-                    var rel0_2 = this.ParseCodeOffset(DataWidth.Dword);
+                    op0 = this.ParseCodeOffset(DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Call(rel0_2);
+                    return new Instructions.Call(op0);
                 }
                 case 0xe9:
                 {
-                    var rel0_2 = this.ParseCodeOffset(DataWidth.Dword);
+                    op0 = this.ParseCodeOffset(DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Jmp(rel0_2);
+                    return new Instructions.Jmp(op0);
                 }
                 case 0xeb:
                 {
-                    var rel0_2 = this.ParseCodeOffset(DataWidth.Byte);
+                    op0 = this.ParseCodeOffset(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Jmp(rel0_2);
+                    return new Instructions.Jmp(op0);
                 }
                 case 0xf5:
                 {
@@ -4324,46 +4325,46 @@ namespace Yoakke.X86.Readers
                         {
                         case 0x00:
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Byte);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                            op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Test(rm4, imm0_4);
+                            return new Instructions.Test(op0, op1);
                         }
                         case 0x02:
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Not(rm4);
+                            return new Instructions.Not(op0);
                         }
                         case 0x03:
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Neg(rm4);
+                            return new Instructions.Neg(op0);
                         }
                         case 0x04:
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Mul(rm4);
+                            return new Instructions.Mul(op0);
                         }
                         case 0x05:
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Imul(rm4);
+                            return new Instructions.Imul(op0);
                         }
                         case 0x06:
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Div(rm4);
+                            return new Instructions.Div(op0);
                         }
                         case 0x07:
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Idiv(rm4);
+                            return new Instructions.Idiv(op0);
                         }
                         }
                         this.UnparseByte();
@@ -4380,87 +4381,87 @@ namespace Yoakke.X86.Readers
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                var imm0_5 = this.ParseImmediate(DataWidth.Word);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op1 = this.ParseImmediate(DataWidth.Word);
                                 length = this.Commit();
-                                return new Instructions.Test(rm5, imm0_5);
+                                return new Instructions.Test(op0, op1);
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                            var imm0_4 = this.ParseImmediate(DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op1 = this.ParseImmediate(DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Test(rm4, imm0_4);
+                            return new Instructions.Test(op0, op1);
                         }
                         case 0x02:
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                                 length = this.Commit();
-                                return new Instructions.Not(rm5);
+                                return new Instructions.Not(op0);
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Not(rm4);
+                            return new Instructions.Not(op0);
                         }
                         case 0x03:
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                                 length = this.Commit();
-                                return new Instructions.Neg(rm5);
+                                return new Instructions.Neg(op0);
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Neg(rm4);
+                            return new Instructions.Neg(op0);
                         }
                         case 0x04:
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                                 length = this.Commit();
-                                return new Instructions.Mul(rm5);
+                                return new Instructions.Mul(op0);
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Mul(rm4);
+                            return new Instructions.Mul(op0);
                         }
                         case 0x05:
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                                 length = this.Commit();
-                                return new Instructions.Imul(rm5);
+                                return new Instructions.Imul(op0);
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Imul(rm4);
+                            return new Instructions.Imul(op0);
                         }
                         case 0x06:
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                                 length = this.Commit();
-                                return new Instructions.Div(rm5);
+                                return new Instructions.Div(op0);
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Div(rm4);
+                            return new Instructions.Div(op0);
                         }
                         case 0x07:
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                                 length = this.Commit();
-                                return new Instructions.Idiv(rm5);
+                                return new Instructions.Idiv(op0);
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Idiv(rm4);
+                            return new Instructions.Idiv(op0);
                         }
                         }
                         this.UnparseByte();
@@ -4495,15 +4496,15 @@ namespace Yoakke.X86.Readers
                         {
                         case 0x00:
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Inc(rm4);
+                            return new Instructions.Inc(op0);
                         }
                         case 0x01:
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Byte);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Dec(rm4);
+                            return new Instructions.Dec(op0);
                         }
                         }
                         this.UnparseByte();
@@ -4520,49 +4521,49 @@ namespace Yoakke.X86.Readers
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                                 length = this.Commit();
-                                return new Instructions.Inc(rm5);
+                                return new Instructions.Inc(op0);
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Inc(rm4);
+                            return new Instructions.Inc(op0);
                         }
                         case 0x01:
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                                 length = this.Commit();
-                                return new Instructions.Dec(rm5);
+                                return new Instructions.Dec(op0);
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Dec(rm4);
+                            return new Instructions.Dec(op0);
                         }
                         case 0x02:
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Call(rm4);
+                            return new Instructions.Call(op0);
                         }
                         case 0x04:
                         {
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Jmp(rm4);
+                            return new Instructions.Jmp(op0);
                         }
                         case 0x06:
                         {
                             if (HasPrefix(0x66))
                             {
-                                var rm5 = this.ParseRM(modrm_byte, DataWidth.Word);
+                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
                                 length = this.Commit();
-                                return new Instructions.Push(rm5);
+                                return new Instructions.Push(op0);
                             }
-                            var rm4 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Push(rm4);
+                            return new Instructions.Push(op0);
                         }
                         }
                         this.UnparseByte();
