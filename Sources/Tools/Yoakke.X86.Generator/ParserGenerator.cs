@@ -60,7 +60,7 @@ namespace Yoakke.X86.Generator
         private readonly StringBuilder resultBuilder;
         private ParseNode parseTree = new(MatchType.None);
         private int indent = 0;
-        private string? parsedModrmName;
+        private bool modrmParsed;
 
         private ParserGenerator(InstructionSet instructionSet, ISet<Instruction> withClasses)
         {
@@ -69,9 +69,9 @@ namespace Yoakke.X86.Generator
             this.resultBuilder = new();
         }
 
-        private void GenerateParser() => this.GenerateNode(this.parseTree);
+        private void GenerateParser() => this.GenerateNode(0, this.parseTree);
 
-        private void GenerateNode(ParseNode node)
+        private void GenerateNode(int byteDepth, ParseNode node)
         {
             var subnodesByType = node.Subnodes.GroupBy(s => s.Value.Type);
 
@@ -79,21 +79,23 @@ namespace Yoakke.X86.Generator
             var byModRmReg = subnodesByType.FirstOrDefault(g => g.Key == MatchType.ModRmReg);
             var byPrefix = subnodesByType.FirstOrDefault(g => g.Key == MatchType.Prefix);
 
-            this.GenerateOpcodeMatches(byOpcode);
-            this.GenerateModRmRegMatches(byModRmReg);
-            this.GeneratePrefixMatches(byPrefix);
+            this.GenerateOpcodeMatches(byteDepth, byOpcode);
+            this.GenerateModRmRegMatches(byteDepth, byModRmReg);
+            this.GeneratePrefixMatches(byteDepth, byPrefix);
 
             foreach (var encoding in node.Encodings) this.GenerateLeaf(encoding);
         }
 
-        private void GenerateOpcodeMatches(IEnumerable<KeyValuePair<byte, ParseNode>>? nodes)
+        private void GenerateOpcodeMatches(int byteDepth, IEnumerable<KeyValuePair<byte, ParseNode>>? nodes)
         {
             if (nodes is null) return;
 
             // Read in a byte
-            this.Indented().AppendLine($"var byte{this.indent} = this.ParseByte();");
+            this.Indented().AppendLine($"if (this.TryParseByte(out var byte{byteDepth}))");
+            this.Indented().AppendLine("{");
+            this.Indent();
             // Switch on alternatives
-            this.Indented().AppendLine($"switch (byte{this.indent})");
+            this.Indented().AppendLine($"switch (byte{byteDepth})");
             this.Indented().AppendLine("{");
 
             // The different cases
@@ -103,7 +105,7 @@ namespace Yoakke.X86.Generator
                 this.Indented().AppendLine("{");
                 this.Indent();
 
-                this.GenerateNode(subnode);
+                this.GenerateNode(byteDepth + 1, subnode);
 
                 this.Indented().AppendLine("break;");
                 this.Unindent();
@@ -113,9 +115,11 @@ namespace Yoakke.X86.Generator
             this.Indented().AppendLine("}");
             // We didn't use the byte, un-eat it
             this.Indented().AppendLine("this.UnparseByte();");
+            this.Unindent();
+            this.Indented().AppendLine("}");
         }
 
-        private void GenerateModRmRegMatches(IEnumerable<KeyValuePair<byte, ParseNode>>? nodes)
+        private void GenerateModRmRegMatches(int byteDepth, IEnumerable<KeyValuePair<byte, ParseNode>>? nodes)
         {
             if (nodes is null) return;
 
@@ -123,10 +127,12 @@ namespace Yoakke.X86.Generator
 
             // Read in the ModRM byte
             // NOTE: We tag modrm byte with indentation to avoid name collision
-            this.parsedModrmName = $"modrm{this.indent}";
-            this.Indented().AppendLine($"var {this.parsedModrmName} = this.ParseByte();");
+            this.modrmParsed = true;
+            this.Indented().AppendLine($"if (this.TryParseByte(out modrm_byte))");
+            this.Indented().AppendLine("{");
+            this.Indent();
             // Switch on alternatives for the register
-            this.Indented().AppendLine($"switch (({this.parsedModrmName} >> 3) & 0b111)");
+            this.Indented().AppendLine($"switch ((modrm_byte >> 3) & 0b111)");
             this.Indented().AppendLine("{");
 
             // The different cases
@@ -136,7 +142,7 @@ namespace Yoakke.X86.Generator
                 this.Indented().AppendLine("{");
                 this.Indent();
 
-                this.GenerateNode(subnode);
+                this.GenerateNode(byteDepth + 1, subnode);
 
                 this.Indented().AppendLine("break;");
                 this.Unindent();
@@ -146,10 +152,12 @@ namespace Yoakke.X86.Generator
             this.Indented().AppendLine("}");
             // We didn't use the byte, un-eat it
             this.Indented().AppendLine("this.UnparseByte();");
-            this.parsedModrmName = null;
+            this.modrmParsed = false;
+            this.Unindent();
+            this.Indented().AppendLine("}");
         }
 
-        private void GeneratePrefixMatches(IEnumerable<KeyValuePair<byte, ParseNode>>? nodes)
+        private void GeneratePrefixMatches(int byteDepth, IEnumerable<KeyValuePair<byte, ParseNode>>? nodes)
         {
             if (nodes is null) return;
 
@@ -159,7 +167,7 @@ namespace Yoakke.X86.Generator
                 this.Indented().AppendLine("{");
                 this.Indent();
 
-                this.GenerateNode(subnode);
+                this.GenerateNode(byteDepth, subnode);
 
                 this.Unindent();
                 this.Indented().AppendLine("}");
@@ -170,6 +178,7 @@ namespace Yoakke.X86.Generator
         {
             var operands = encoding.Form.Operands;
             var args = new string[encoding.Form.Operands.Count];
+            var haveToCloseIf = false;
 
             /* Prefixes are already matched in the tree are already eaten */
 
@@ -183,13 +192,14 @@ namespace Yoakke.X86.Generator
                 // We handle this with the regular ModRM
                 if (modrm.Mode == "11") return;
 
-                var alreadyConsumedModRm = this.parsedModrmName is not null;
+                haveToCloseIf = !this.modrmParsed;
                 // Consume ModRM, if we haven't already
-                if (this.parsedModrmName is null)
+                if (!this.modrmParsed)
                 {
                     // NOTE: We tag modrm byte with indentation to avoid name collision
-                    this.parsedModrmName = $"modrm{this.indent}";
-                    this.Indented().AppendLine($"var {this.parsedModrmName} = this.ParseByte();");
+                    this.Indented().AppendLine($"if (this.TryParseByte(out modrm_byte))");
+                    this.Indented().AppendLine("{");
+                    this.Indent();
                 }
 
                 if (modrm.Reg.StartsWith('#'))
@@ -198,7 +208,7 @@ namespace Yoakke.X86.Generator
                     // We can just convert the reg
                     var regOperandIndex = int.Parse(modrm.Reg.Substring(1));
                     var size = GetDataWidthForOperand(encoding.Form.Operands[regOperandIndex]);
-                    args[regOperandIndex] = $"FromRegisterIndex(({this.parsedModrmName} >> 3) & 0b111, {size})";
+                    args[regOperandIndex] = $"FromRegisterIndex((modrm_byte >> 3) & 0b111, {size})";
                 }
 
                 // Mode and RM
@@ -206,10 +216,8 @@ namespace Yoakke.X86.Generator
                 var rmOperandIndex = int.Parse(modrm.Rm.Substring(1));
                 var rmOperandSize = GetDataWidthForOperand(encoding.Form.Operands[rmOperandIndex]);
                 // NOTE: We tag RM with indentation to avoid name collision
-                this.Indented().AppendLine($"var rm{this.indent} = this.ParseRM({this.parsedModrmName}, {rmOperandSize});");
+                this.Indented().AppendLine($"var rm{this.indent} = this.ParseRM(modrm_byte, {rmOperandSize});");
                 args[rmOperandIndex] = $"rm{this.indent}";
-
-                if (!alreadyConsumedModRm) this.parsedModrmName = null;
                 // NOTE: We don't un-parse here, we assume this has to work for now
             }
 
@@ -264,6 +272,13 @@ namespace Yoakke.X86.Generator
             var name = Capitalize(encoding.Form.Instruction.Name);
             this.Indented().AppendLine("length = this.Commit();");
             this.Indented().AppendLine($"return new Instructions.{name}({argsStr});");
+
+            if (haveToCloseIf)
+            {
+                // Close the if caused by ModRM parse
+                this.Unindent();
+                this.Indented().AppendLine("}");
+            }
         }
 
         private void BuildParserTree()
