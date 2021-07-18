@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -58,6 +59,19 @@ namespace Yoakke.X86.Readers
             this.readBuffer = new byte[16];
             this.peekBuffer = new();
             this.prefixBuffer = new byte[4];
+        }
+
+        /// <summary>
+        /// Tries to read the next <see cref="IInstruction"/> from the <see cref="Underlying"/> reader.
+        /// </summary>
+        /// <param name="instruction">The read instruction gets written here, if succeeded.</param>
+        /// <param name="length">The number of read bytes will be written here, so the caller can know the exact
+        /// byte-length of the parser <see cref="IInstruction"/>.</param>
+        /// <returns>True, if there was something to read.</returns>
+        public bool TryReadNext([MaybeNullWhen(false)] out IInstruction instruction, out int length)
+        {
+            instruction = ReadNext(out length);
+            return instruction is not null;
         }
 
         /// <summary>

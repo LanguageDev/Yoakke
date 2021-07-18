@@ -21,10 +21,8 @@ namespace Yoakke.X86.Sample
 
             var builder = new AssemblyBuilder();
 
-            while (true)
+            while (reader.TryReadNext(out var ins, out var len))
             {
-                var ins = reader.ReadNext(out var len);
-                if (ins is null) break;
                 builder.Write(ins);
             }
 
