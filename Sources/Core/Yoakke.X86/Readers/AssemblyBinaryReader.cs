@@ -115,20 +115,11 @@ namespace Yoakke.X86.Readers
                 }
                 case 0x01:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        if (this.TryParseByte(out modrm_byte))
-                        {
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                            length = this.Commit();
-                            return new Instructions.Add(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
-                        }
-                    }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Add(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
+                        return new Instructions.Add(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                     }
                     break;
                 }
@@ -144,20 +135,11 @@ namespace Yoakke.X86.Readers
                 }
                 case 0x03:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        if (this.TryParseByte(out modrm_byte))
-                        {
-                            op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                            length = this.Commit();
-                            return new Instructions.Add(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                        }
-                    }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Add(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                        return new Instructions.Add(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                     }
                     break;
                 }
@@ -169,15 +151,9 @@ namespace Yoakke.X86.Readers
                 }
                 case 0x05:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        op1 = this.ParseImmediate(DataWidth.Word);
-                        length = this.Commit();
-                        return new Instructions.Add(Registers.Ax, op1);
-                    }
-                    op1 = this.ParseImmediate(DataWidth.Dword);
+                    op1 = this.ParseImmediate(HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Add(Registers.Eax, op1);
+                    return new Instructions.Add(HasPrefix(0x66) ? Registers.Ax : Registers.Eax, op1);
                 }
                 case 0x08:
                 {
@@ -191,20 +167,11 @@ namespace Yoakke.X86.Readers
                 }
                 case 0x09:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        if (this.TryParseByte(out modrm_byte))
-                        {
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                            length = this.Commit();
-                            return new Instructions.Or(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
-                        }
-                    }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Or(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
+                        return new Instructions.Or(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                     }
                     break;
                 }
@@ -220,20 +187,11 @@ namespace Yoakke.X86.Readers
                 }
                 case 0x0b:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        if (this.TryParseByte(out modrm_byte))
-                        {
-                            op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                            length = this.Commit();
-                            return new Instructions.Or(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                        }
-                    }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Or(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                        return new Instructions.Or(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                     }
                     break;
                 }
@@ -245,15 +203,9 @@ namespace Yoakke.X86.Readers
                 }
                 case 0x0d:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        op1 = this.ParseImmediate(DataWidth.Word);
-                        length = this.Commit();
-                        return new Instructions.Or(Registers.Ax, op1);
-                    }
-                    op1 = this.ParseImmediate(DataWidth.Dword);
+                    op1 = this.ParseImmediate(HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Or(Registers.Eax, op1);
+                    return new Instructions.Or(HasPrefix(0x66) ? Registers.Ax : Registers.Eax, op1);
                 }
                 case 0x0f:
                 {
@@ -466,38 +418,20 @@ namespace Yoakke.X86.Readers
                                 }
                                 case 0xf1:
                                 {
-                                    if (HasPrefix(0x66))
-                                    {
-                                        if (HasPrefix(0xf2))
-                                        {
-                                            if (this.TryParseByte(out modrm_byte))
-                                            {
-                                                op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                                length = this.Commit();
-                                                return new Instructions.Crc32(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
-                                            }
-                                        }
-                                        if (this.TryParseByte(out modrm_byte))
-                                        {
-                                            op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                            length = this.Commit();
-                                            return new Instructions.Movbe(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
-                                        }
-                                    }
                                     if (HasPrefix(0xf2))
                                     {
                                         if (this.TryParseByte(out modrm_byte))
                                         {
-                                            op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                            op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                             length = this.Commit();
                                             return new Instructions.Crc32(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                                         }
                                     }
                                     if (this.TryParseByte(out modrm_byte))
                                     {
-                                        op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                        op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                         length = this.Commit();
-                                        return new Instructions.Movbe(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
+                                        return new Instructions.Movbe(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                                     }
                                     break;
                                 }
@@ -530,473 +464,245 @@ namespace Yoakke.X86.Readers
                         }
                         case 0x40:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    length = this.Commit();
-                                    return new Instructions.Cmovo(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                                }
-                            }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovo(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                                return new Instructions.Cmovo(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
                         case 0x41:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    length = this.Commit();
-                                    return new Instructions.Cmovno(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                                }
-                            }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovno(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                                return new Instructions.Cmovno(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
                         case 0x42:
                         {
-                            if (HasPrefix(0x66))
+                            if (this.TryParseByte(out modrm_byte))
                             {
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    length = this.Commit();
-                                    return new Instructions.Cmovb(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                                }
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    length = this.Commit();
-                                    return new Instructions.Cmovc(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                                }
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    length = this.Commit();
-                                    return new Instructions.Cmovnae(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                                }
+                                op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
+                                length = this.Commit();
+                                return new Instructions.Cmovb(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovb(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                                return new Instructions.Cmovc(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovc(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
-                            }
-                            if (this.TryParseByte(out modrm_byte))
-                            {
-                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                                length = this.Commit();
-                                return new Instructions.Cmovnae(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                                return new Instructions.Cmovnae(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
                         case 0x43:
                         {
-                            if (HasPrefix(0x66))
+                            if (this.TryParseByte(out modrm_byte))
                             {
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    length = this.Commit();
-                                    return new Instructions.Cmovae(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                                }
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    length = this.Commit();
-                                    return new Instructions.Cmovnb(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                                }
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    length = this.Commit();
-                                    return new Instructions.Cmovnc(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                                }
+                                op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
+                                length = this.Commit();
+                                return new Instructions.Cmovae(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovae(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                                return new Instructions.Cmovnb(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovnb(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
-                            }
-                            if (this.TryParseByte(out modrm_byte))
-                            {
-                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                                length = this.Commit();
-                                return new Instructions.Cmovnc(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                                return new Instructions.Cmovnc(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
                         case 0x44:
                         {
-                            if (HasPrefix(0x66))
+                            if (this.TryParseByte(out modrm_byte))
                             {
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    length = this.Commit();
-                                    return new Instructions.Cmove(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                                }
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    length = this.Commit();
-                                    return new Instructions.Cmovz(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                                }
+                                op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
+                                length = this.Commit();
+                                return new Instructions.Cmove(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmove(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
-                            }
-                            if (this.TryParseByte(out modrm_byte))
-                            {
-                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                                length = this.Commit();
-                                return new Instructions.Cmovz(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                                return new Instructions.Cmovz(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
                         case 0x45:
                         {
-                            if (HasPrefix(0x66))
+                            if (this.TryParseByte(out modrm_byte))
                             {
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    length = this.Commit();
-                                    return new Instructions.Cmovne(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                                }
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    length = this.Commit();
-                                    return new Instructions.Cmovnz(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                                }
+                                op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
+                                length = this.Commit();
+                                return new Instructions.Cmovne(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovne(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
-                            }
-                            if (this.TryParseByte(out modrm_byte))
-                            {
-                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                                length = this.Commit();
-                                return new Instructions.Cmovnz(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                                return new Instructions.Cmovnz(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
                         case 0x46:
                         {
-                            if (HasPrefix(0x66))
+                            if (this.TryParseByte(out modrm_byte))
                             {
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    length = this.Commit();
-                                    return new Instructions.Cmovbe(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                                }
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    length = this.Commit();
-                                    return new Instructions.Cmovna(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                                }
+                                op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
+                                length = this.Commit();
+                                return new Instructions.Cmovbe(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovbe(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
-                            }
-                            if (this.TryParseByte(out modrm_byte))
-                            {
-                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                                length = this.Commit();
-                                return new Instructions.Cmovna(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                                return new Instructions.Cmovna(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
                         case 0x47:
                         {
-                            if (HasPrefix(0x66))
+                            if (this.TryParseByte(out modrm_byte))
                             {
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    length = this.Commit();
-                                    return new Instructions.Cmova(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                                }
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    length = this.Commit();
-                                    return new Instructions.Cmovnbe(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                                }
+                                op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
+                                length = this.Commit();
+                                return new Instructions.Cmova(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmova(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
-                            }
-                            if (this.TryParseByte(out modrm_byte))
-                            {
-                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                                length = this.Commit();
-                                return new Instructions.Cmovnbe(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                                return new Instructions.Cmovnbe(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
                         case 0x48:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    length = this.Commit();
-                                    return new Instructions.Cmovs(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                                }
-                            }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovs(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                                return new Instructions.Cmovs(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
                         case 0x49:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    length = this.Commit();
-                                    return new Instructions.Cmovns(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                                }
-                            }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovns(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                                return new Instructions.Cmovns(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
                         case 0x4a:
                         {
-                            if (HasPrefix(0x66))
+                            if (this.TryParseByte(out modrm_byte))
                             {
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    length = this.Commit();
-                                    return new Instructions.Cmovp(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                                }
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    length = this.Commit();
-                                    return new Instructions.Cmovpe(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                                }
+                                op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
+                                length = this.Commit();
+                                return new Instructions.Cmovp(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovp(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
-                            }
-                            if (this.TryParseByte(out modrm_byte))
-                            {
-                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                                length = this.Commit();
-                                return new Instructions.Cmovpe(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                                return new Instructions.Cmovpe(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
                         case 0x4b:
                         {
-                            if (HasPrefix(0x66))
+                            if (this.TryParseByte(out modrm_byte))
                             {
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    length = this.Commit();
-                                    return new Instructions.Cmovnp(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                                }
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    length = this.Commit();
-                                    return new Instructions.Cmovpo(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                                }
+                                op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
+                                length = this.Commit();
+                                return new Instructions.Cmovnp(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovnp(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
-                            }
-                            if (this.TryParseByte(out modrm_byte))
-                            {
-                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                                length = this.Commit();
-                                return new Instructions.Cmovpo(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                                return new Instructions.Cmovpo(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
                         case 0x4c:
                         {
-                            if (HasPrefix(0x66))
+                            if (this.TryParseByte(out modrm_byte))
                             {
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    length = this.Commit();
-                                    return new Instructions.Cmovl(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                                }
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    length = this.Commit();
-                                    return new Instructions.Cmovnge(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                                }
+                                op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
+                                length = this.Commit();
+                                return new Instructions.Cmovl(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovl(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
-                            }
-                            if (this.TryParseByte(out modrm_byte))
-                            {
-                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                                length = this.Commit();
-                                return new Instructions.Cmovnge(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                                return new Instructions.Cmovnge(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
                         case 0x4d:
                         {
-                            if (HasPrefix(0x66))
+                            if (this.TryParseByte(out modrm_byte))
                             {
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    length = this.Commit();
-                                    return new Instructions.Cmovge(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                                }
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    length = this.Commit();
-                                    return new Instructions.Cmovnl(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                                }
+                                op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
+                                length = this.Commit();
+                                return new Instructions.Cmovge(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovge(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
-                            }
-                            if (this.TryParseByte(out modrm_byte))
-                            {
-                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                                length = this.Commit();
-                                return new Instructions.Cmovnl(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                                return new Instructions.Cmovnl(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
                         case 0x4e:
                         {
-                            if (HasPrefix(0x66))
+                            if (this.TryParseByte(out modrm_byte))
                             {
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    length = this.Commit();
-                                    return new Instructions.Cmovle(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                                }
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    length = this.Commit();
-                                    return new Instructions.Cmovng(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                                }
+                                op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
+                                length = this.Commit();
+                                return new Instructions.Cmovle(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovle(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
-                            }
-                            if (this.TryParseByte(out modrm_byte))
-                            {
-                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                                length = this.Commit();
-                                return new Instructions.Cmovng(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                                return new Instructions.Cmovng(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
                         case 0x4f:
                         {
-                            if (HasPrefix(0x66))
+                            if (this.TryParseByte(out modrm_byte))
                             {
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    length = this.Commit();
-                                    return new Instructions.Cmovg(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                                }
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    length = this.Commit();
-                                    return new Instructions.Cmovnle(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                                }
+                                op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
+                                length = this.Commit();
+                                return new Instructions.Cmovg(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovg(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
-                            }
-                            if (this.TryParseByte(out modrm_byte))
-                            {
-                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                                length = this.Commit();
-                                return new Instructions.Cmovnle(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                                return new Instructions.Cmovnle(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -1380,119 +1086,63 @@ namespace Yoakke.X86.Readers
                         }
                         case 0xa3:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    length = this.Commit();
-                                    return new Instructions.Bt(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
-                                }
-                            }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Bt(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
+                                return new Instructions.Bt(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                             }
                             break;
                         }
                         case 0xa4:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    op2 = this.ParseImmediate(DataWidth.Byte);
-                                    length = this.Commit();
-                                    return new Instructions.Shld(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op2);
-                                }
-                            }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 op2 = this.ParseImmediate(DataWidth.Byte);
                                 length = this.Commit();
-                                return new Instructions.Shld(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op2);
+                                return new Instructions.Shld(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op2);
                             }
                             break;
                         }
                         case 0xa5:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    length = this.Commit();
-                                    return new Instructions.Shld(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), Registers.Cl);
-                                }
-                            }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Shld(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), Registers.Cl);
+                                return new Instructions.Shld(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), Registers.Cl);
                             }
                             break;
                         }
                         case 0xab:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    length = this.Commit();
-                                    return new Instructions.Bts(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
-                                }
-                            }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Bts(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
+                                return new Instructions.Bts(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                             }
                             break;
                         }
                         case 0xac:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    op2 = this.ParseImmediate(DataWidth.Byte);
-                                    length = this.Commit();
-                                    return new Instructions.Shrd(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op2);
-                                }
-                            }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 op2 = this.ParseImmediate(DataWidth.Byte);
                                 length = this.Commit();
-                                return new Instructions.Shrd(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op2);
+                                return new Instructions.Shrd(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op2);
                             }
                             break;
                         }
                         case 0xad:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    length = this.Commit();
-                                    return new Instructions.Shrd(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), Registers.Cl);
-                                }
-                            }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Shrd(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), Registers.Cl);
+                                return new Instructions.Shrd(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), Registers.Cl);
                             }
                             break;
                         }
@@ -1565,20 +1215,11 @@ namespace Yoakke.X86.Readers
                         }
                         case 0xaf:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    length = this.Commit();
-                                    return new Instructions.Imul(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                                }
-                            }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Imul(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                                return new Instructions.Imul(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -1594,58 +1235,31 @@ namespace Yoakke.X86.Readers
                         }
                         case 0xb1:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    length = this.Commit();
-                                    return new Instructions.Cmpxchg(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
-                                }
-                            }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmpxchg(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
+                                return new Instructions.Cmpxchg(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                             }
                             break;
                         }
                         case 0xb3:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    length = this.Commit();
-                                    return new Instructions.Btr(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
-                                }
-                            }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Btr(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
+                                return new Instructions.Btr(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                             }
                             break;
                         }
                         case 0xb6:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op1 = this.ParseRM(modrm_byte, DataWidth.Byte);
-                                    length = this.Commit();
-                                    return new Instructions.Movzx(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                                }
-                            }
                             if (this.TryParseByte(out modrm_byte))
                             {
                                 op1 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                 length = this.Commit();
-                                return new Instructions.Movzx(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                                return new Instructions.Movzx(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -1661,25 +1275,13 @@ namespace Yoakke.X86.Readers
                         }
                         case 0xb8:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                if (HasPrefix(0xf3))
-                                {
-                                    if (this.TryParseByte(out modrm_byte))
-                                    {
-                                        op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                        length = this.Commit();
-                                        return new Instructions.Popcnt(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                                    }
-                                }
-                            }
                             if (HasPrefix(0xf3))
                             {
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                    op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                     length = this.Commit();
-                                    return new Instructions.Popcnt(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                                    return new Instructions.Popcnt(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                                 }
                             }
                             break;
@@ -1692,56 +1294,28 @@ namespace Yoakke.X86.Readers
                                 {
                                 case 0x04:
                                 {
-                                    if (HasPrefix(0x66))
-                                    {
-                                        op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                        op1 = this.ParseImmediate(DataWidth.Byte);
-                                        length = this.Commit();
-                                        return new Instructions.Bt(op0, op1);
-                                    }
-                                    op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                    op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                     op1 = this.ParseImmediate(DataWidth.Byte);
                                     length = this.Commit();
                                     return new Instructions.Bt(op0, op1);
                                 }
                                 case 0x05:
                                 {
-                                    if (HasPrefix(0x66))
-                                    {
-                                        op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                        op1 = this.ParseImmediate(DataWidth.Byte);
-                                        length = this.Commit();
-                                        return new Instructions.Bts(op0, op1);
-                                    }
-                                    op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                    op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                     op1 = this.ParseImmediate(DataWidth.Byte);
                                     length = this.Commit();
                                     return new Instructions.Bts(op0, op1);
                                 }
                                 case 0x06:
                                 {
-                                    if (HasPrefix(0x66))
-                                    {
-                                        op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                        op1 = this.ParseImmediate(DataWidth.Byte);
-                                        length = this.Commit();
-                                        return new Instructions.Btr(op0, op1);
-                                    }
-                                    op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                    op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                     op1 = this.ParseImmediate(DataWidth.Byte);
                                     length = this.Commit();
                                     return new Instructions.Btr(op0, op1);
                                 }
                                 case 0x07:
                                 {
-                                    if (HasPrefix(0x66))
-                                    {
-                                        op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                        op1 = this.ParseImmediate(DataWidth.Byte);
-                                        length = this.Commit();
-                                        return new Instructions.Btc(op0, op1);
-                                    }
-                                    op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                    op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                     op1 = this.ParseImmediate(DataWidth.Byte);
                                     length = this.Commit();
                                     return new Instructions.Btc(op0, op1);
@@ -1753,113 +1327,59 @@ namespace Yoakke.X86.Readers
                         }
                         case 0xbb:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    length = this.Commit();
-                                    return new Instructions.Btc(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
-                                }
-                            }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Btc(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
+                                return new Instructions.Btc(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                             }
                             break;
                         }
                         case 0xbc:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                if (HasPrefix(0xf3))
-                                {
-                                    if (this.TryParseByte(out modrm_byte))
-                                    {
-                                        op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                        length = this.Commit();
-                                        return new Instructions.Tzcnt(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                                    }
-                                }
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    length = this.Commit();
-                                    return new Instructions.Bsf(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                                }
-                            }
                             if (HasPrefix(0xf3))
                             {
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                    op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                     length = this.Commit();
-                                    return new Instructions.Tzcnt(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                                    return new Instructions.Tzcnt(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                                 }
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Bsf(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                                return new Instructions.Bsf(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
                         case 0xbd:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                if (HasPrefix(0xf3))
-                                {
-                                    if (this.TryParseByte(out modrm_byte))
-                                    {
-                                        op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                        length = this.Commit();
-                                        return new Instructions.Lzcnt(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                                    }
-                                }
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    length = this.Commit();
-                                    return new Instructions.Bsr(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                                }
-                            }
                             if (HasPrefix(0xf3))
                             {
                                 if (this.TryParseByte(out modrm_byte))
                                 {
-                                    op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                    op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                     length = this.Commit();
-                                    return new Instructions.Lzcnt(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                                    return new Instructions.Lzcnt(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                                 }
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Bsr(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                                return new Instructions.Bsr(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
                         case 0xbe:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op1 = this.ParseRM(modrm_byte, DataWidth.Byte);
-                                    length = this.Commit();
-                                    return new Instructions.Movsx(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                                }
-                            }
                             if (this.TryParseByte(out modrm_byte))
                             {
                                 op1 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                 length = this.Commit();
-                                return new Instructions.Movsx(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                                return new Instructions.Movsx(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -1885,20 +1405,11 @@ namespace Yoakke.X86.Readers
                         }
                         case 0xc1:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                if (this.TryParseByte(out modrm_byte))
-                                {
-                                    op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                    length = this.Commit();
-                                    return new Instructions.Xadd(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
-                                }
-                            }
                             if (this.TryParseByte(out modrm_byte))
                             {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                                op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Xadd(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
+                                return new Instructions.Xadd(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                             }
                             break;
                         }
@@ -1926,16 +1437,10 @@ namespace Yoakke.X86.Readers
                                 }
                                 case 0x06:
                                 {
-                                    if (HasPrefix(0x66))
-                                    {
-                                    }
                                     break;
                                 }
                                 case 0x07:
                                 {
-                                    if (HasPrefix(0x66))
-                                    {
-                                    }
                                     break;
                                 }
                                 }
@@ -2000,20 +1505,11 @@ namespace Yoakke.X86.Readers
                 }
                 case 0x11:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        if (this.TryParseByte(out modrm_byte))
-                        {
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                            length = this.Commit();
-                            return new Instructions.Adc(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
-                        }
-                    }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Adc(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
+                        return new Instructions.Adc(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                     }
                     break;
                 }
@@ -2029,20 +1525,11 @@ namespace Yoakke.X86.Readers
                 }
                 case 0x13:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        if (this.TryParseByte(out modrm_byte))
-                        {
-                            op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                            length = this.Commit();
-                            return new Instructions.Adc(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                        }
-                    }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Adc(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                        return new Instructions.Adc(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                     }
                     break;
                 }
@@ -2054,15 +1541,9 @@ namespace Yoakke.X86.Readers
                 }
                 case 0x15:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        op1 = this.ParseImmediate(DataWidth.Word);
-                        length = this.Commit();
-                        return new Instructions.Adc(Registers.Ax, op1);
-                    }
-                    op1 = this.ParseImmediate(DataWidth.Dword);
+                    op1 = this.ParseImmediate(HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Adc(Registers.Eax, op1);
+                    return new Instructions.Adc(HasPrefix(0x66) ? Registers.Ax : Registers.Eax, op1);
                 }
                 case 0x18:
                 {
@@ -2076,20 +1557,11 @@ namespace Yoakke.X86.Readers
                 }
                 case 0x19:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        if (this.TryParseByte(out modrm_byte))
-                        {
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                            length = this.Commit();
-                            return new Instructions.Sbb(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
-                        }
-                    }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Sbb(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
+                        return new Instructions.Sbb(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                     }
                     break;
                 }
@@ -2105,20 +1577,11 @@ namespace Yoakke.X86.Readers
                 }
                 case 0x1b:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        if (this.TryParseByte(out modrm_byte))
-                        {
-                            op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                            length = this.Commit();
-                            return new Instructions.Sbb(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                        }
-                    }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Sbb(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                        return new Instructions.Sbb(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                     }
                     break;
                 }
@@ -2130,15 +1593,9 @@ namespace Yoakke.X86.Readers
                 }
                 case 0x1d:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        op1 = this.ParseImmediate(DataWidth.Word);
-                        length = this.Commit();
-                        return new Instructions.Sbb(Registers.Ax, op1);
-                    }
-                    op1 = this.ParseImmediate(DataWidth.Dword);
+                    op1 = this.ParseImmediate(HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Sbb(Registers.Eax, op1);
+                    return new Instructions.Sbb(HasPrefix(0x66) ? Registers.Ax : Registers.Eax, op1);
                 }
                 case 0x20:
                 {
@@ -2152,20 +1609,11 @@ namespace Yoakke.X86.Readers
                 }
                 case 0x21:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        if (this.TryParseByte(out modrm_byte))
-                        {
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                            length = this.Commit();
-                            return new Instructions.And(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
-                        }
-                    }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.And(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
+                        return new Instructions.And(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                     }
                     break;
                 }
@@ -2181,20 +1629,11 @@ namespace Yoakke.X86.Readers
                 }
                 case 0x23:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        if (this.TryParseByte(out modrm_byte))
-                        {
-                            op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                            length = this.Commit();
-                            return new Instructions.And(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                        }
-                    }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.And(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                        return new Instructions.And(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                     }
                     break;
                 }
@@ -2206,15 +1645,9 @@ namespace Yoakke.X86.Readers
                 }
                 case 0x25:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        op1 = this.ParseImmediate(DataWidth.Word);
-                        length = this.Commit();
-                        return new Instructions.And(Registers.Ax, op1);
-                    }
-                    op1 = this.ParseImmediate(DataWidth.Dword);
+                    op1 = this.ParseImmediate(HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.And(Registers.Eax, op1);
+                    return new Instructions.And(HasPrefix(0x66) ? Registers.Ax : Registers.Eax, op1);
                 }
                 case 0x27:
                 {
@@ -2233,20 +1666,11 @@ namespace Yoakke.X86.Readers
                 }
                 case 0x29:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        if (this.TryParseByte(out modrm_byte))
-                        {
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                            length = this.Commit();
-                            return new Instructions.Sub(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
-                        }
-                    }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Sub(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
+                        return new Instructions.Sub(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                     }
                     break;
                 }
@@ -2262,20 +1686,11 @@ namespace Yoakke.X86.Readers
                 }
                 case 0x2b:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        if (this.TryParseByte(out modrm_byte))
-                        {
-                            op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                            length = this.Commit();
-                            return new Instructions.Sub(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                        }
-                    }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Sub(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                        return new Instructions.Sub(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                     }
                     break;
                 }
@@ -2287,15 +1702,9 @@ namespace Yoakke.X86.Readers
                 }
                 case 0x2d:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        op1 = this.ParseImmediate(DataWidth.Word);
-                        length = this.Commit();
-                        return new Instructions.Sub(Registers.Ax, op1);
-                    }
-                    op1 = this.ParseImmediate(DataWidth.Dword);
+                    op1 = this.ParseImmediate(HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Sub(Registers.Eax, op1);
+                    return new Instructions.Sub(HasPrefix(0x66) ? Registers.Ax : Registers.Eax, op1);
                 }
                 case 0x2f:
                 {
@@ -2314,20 +1723,11 @@ namespace Yoakke.X86.Readers
                 }
                 case 0x31:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        if (this.TryParseByte(out modrm_byte))
-                        {
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                            length = this.Commit();
-                            return new Instructions.Xor(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
-                        }
-                    }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Xor(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
+                        return new Instructions.Xor(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                     }
                     break;
                 }
@@ -2343,20 +1743,11 @@ namespace Yoakke.X86.Readers
                 }
                 case 0x33:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        if (this.TryParseByte(out modrm_byte))
-                        {
-                            op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                            length = this.Commit();
-                            return new Instructions.Xor(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                        }
-                    }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Xor(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                        return new Instructions.Xor(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                     }
                     break;
                 }
@@ -2368,15 +1759,9 @@ namespace Yoakke.X86.Readers
                 }
                 case 0x35:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        op1 = this.ParseImmediate(DataWidth.Word);
-                        length = this.Commit();
-                        return new Instructions.Xor(Registers.Ax, op1);
-                    }
-                    op1 = this.ParseImmediate(DataWidth.Dword);
+                    op1 = this.ParseImmediate(HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Xor(Registers.Eax, op1);
+                    return new Instructions.Xor(HasPrefix(0x66) ? Registers.Ax : Registers.Eax, op1);
                 }
                 case 0x37:
                 {
@@ -2395,20 +1780,11 @@ namespace Yoakke.X86.Readers
                 }
                 case 0x39:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        if (this.TryParseByte(out modrm_byte))
-                        {
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                            length = this.Commit();
-                            return new Instructions.Cmp(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
-                        }
-                    }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Cmp(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
+                        return new Instructions.Cmp(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                     }
                     break;
                 }
@@ -2424,20 +1800,11 @@ namespace Yoakke.X86.Readers
                 }
                 case 0x3b:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        if (this.TryParseByte(out modrm_byte))
-                        {
-                            op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                            length = this.Commit();
-                            return new Instructions.Cmp(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                        }
-                    }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Cmp(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                        return new Instructions.Cmp(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                     }
                     break;
                 }
@@ -2449,15 +1816,9 @@ namespace Yoakke.X86.Readers
                 }
                 case 0x3d:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        op1 = this.ParseImmediate(DataWidth.Word);
-                        length = this.Commit();
-                        return new Instructions.Cmp(Registers.Ax, op1);
-                    }
-                    op1 = this.ParseImmediate(DataWidth.Dword);
+                    op1 = this.ParseImmediate(HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Cmp(Registers.Eax, op1);
+                    return new Instructions.Cmp(HasPrefix(0x66) ? Registers.Ax : Registers.Eax, op1);
                 }
                 case 0x3f:
                 {
@@ -2466,323 +1827,163 @@ namespace Yoakke.X86.Readers
                 }
                 case 0x40:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        length = this.Commit();
-                        return new Instructions.Inc(FromRegisterIndex(byte0 & 0b111, DataWidth.Word));
-                    }
                     length = this.Commit();
-                    return new Instructions.Inc(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword));
+                    return new Instructions.Inc(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x41:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        length = this.Commit();
-                        return new Instructions.Inc(FromRegisterIndex(byte0 & 0b111, DataWidth.Word));
-                    }
                     length = this.Commit();
-                    return new Instructions.Inc(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword));
+                    return new Instructions.Inc(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x42:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        length = this.Commit();
-                        return new Instructions.Inc(FromRegisterIndex(byte0 & 0b111, DataWidth.Word));
-                    }
                     length = this.Commit();
-                    return new Instructions.Inc(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword));
+                    return new Instructions.Inc(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x43:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        length = this.Commit();
-                        return new Instructions.Inc(FromRegisterIndex(byte0 & 0b111, DataWidth.Word));
-                    }
                     length = this.Commit();
-                    return new Instructions.Inc(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword));
+                    return new Instructions.Inc(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x44:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        length = this.Commit();
-                        return new Instructions.Inc(FromRegisterIndex(byte0 & 0b111, DataWidth.Word));
-                    }
                     length = this.Commit();
-                    return new Instructions.Inc(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword));
+                    return new Instructions.Inc(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x45:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        length = this.Commit();
-                        return new Instructions.Inc(FromRegisterIndex(byte0 & 0b111, DataWidth.Word));
-                    }
                     length = this.Commit();
-                    return new Instructions.Inc(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword));
+                    return new Instructions.Inc(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x46:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        length = this.Commit();
-                        return new Instructions.Inc(FromRegisterIndex(byte0 & 0b111, DataWidth.Word));
-                    }
                     length = this.Commit();
-                    return new Instructions.Inc(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword));
+                    return new Instructions.Inc(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x47:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        length = this.Commit();
-                        return new Instructions.Inc(FromRegisterIndex(byte0 & 0b111, DataWidth.Word));
-                    }
                     length = this.Commit();
-                    return new Instructions.Inc(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword));
+                    return new Instructions.Inc(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x48:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        length = this.Commit();
-                        return new Instructions.Dec(FromRegisterIndex(byte0 & 0b111, DataWidth.Word));
-                    }
                     length = this.Commit();
-                    return new Instructions.Dec(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword));
+                    return new Instructions.Dec(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x49:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        length = this.Commit();
-                        return new Instructions.Dec(FromRegisterIndex(byte0 & 0b111, DataWidth.Word));
-                    }
                     length = this.Commit();
-                    return new Instructions.Dec(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword));
+                    return new Instructions.Dec(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x4a:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        length = this.Commit();
-                        return new Instructions.Dec(FromRegisterIndex(byte0 & 0b111, DataWidth.Word));
-                    }
                     length = this.Commit();
-                    return new Instructions.Dec(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword));
+                    return new Instructions.Dec(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x4b:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        length = this.Commit();
-                        return new Instructions.Dec(FromRegisterIndex(byte0 & 0b111, DataWidth.Word));
-                    }
                     length = this.Commit();
-                    return new Instructions.Dec(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword));
+                    return new Instructions.Dec(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x4c:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        length = this.Commit();
-                        return new Instructions.Dec(FromRegisterIndex(byte0 & 0b111, DataWidth.Word));
-                    }
                     length = this.Commit();
-                    return new Instructions.Dec(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword));
+                    return new Instructions.Dec(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x4d:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        length = this.Commit();
-                        return new Instructions.Dec(FromRegisterIndex(byte0 & 0b111, DataWidth.Word));
-                    }
                     length = this.Commit();
-                    return new Instructions.Dec(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword));
+                    return new Instructions.Dec(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x4e:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        length = this.Commit();
-                        return new Instructions.Dec(FromRegisterIndex(byte0 & 0b111, DataWidth.Word));
-                    }
                     length = this.Commit();
-                    return new Instructions.Dec(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword));
+                    return new Instructions.Dec(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x4f:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        length = this.Commit();
-                        return new Instructions.Dec(FromRegisterIndex(byte0 & 0b111, DataWidth.Word));
-                    }
                     length = this.Commit();
-                    return new Instructions.Dec(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword));
+                    return new Instructions.Dec(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x50:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        length = this.Commit();
-                        return new Instructions.Push(FromRegisterIndex(byte0 & 0b111, DataWidth.Word));
-                    }
                     length = this.Commit();
-                    return new Instructions.Push(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword));
+                    return new Instructions.Push(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x51:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        length = this.Commit();
-                        return new Instructions.Push(FromRegisterIndex(byte0 & 0b111, DataWidth.Word));
-                    }
                     length = this.Commit();
-                    return new Instructions.Push(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword));
+                    return new Instructions.Push(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x52:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        length = this.Commit();
-                        return new Instructions.Push(FromRegisterIndex(byte0 & 0b111, DataWidth.Word));
-                    }
                     length = this.Commit();
-                    return new Instructions.Push(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword));
+                    return new Instructions.Push(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x53:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        length = this.Commit();
-                        return new Instructions.Push(FromRegisterIndex(byte0 & 0b111, DataWidth.Word));
-                    }
                     length = this.Commit();
-                    return new Instructions.Push(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword));
+                    return new Instructions.Push(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x54:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        length = this.Commit();
-                        return new Instructions.Push(FromRegisterIndex(byte0 & 0b111, DataWidth.Word));
-                    }
                     length = this.Commit();
-                    return new Instructions.Push(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword));
+                    return new Instructions.Push(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x55:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        length = this.Commit();
-                        return new Instructions.Push(FromRegisterIndex(byte0 & 0b111, DataWidth.Word));
-                    }
                     length = this.Commit();
-                    return new Instructions.Push(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword));
+                    return new Instructions.Push(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x56:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        length = this.Commit();
-                        return new Instructions.Push(FromRegisterIndex(byte0 & 0b111, DataWidth.Word));
-                    }
                     length = this.Commit();
-                    return new Instructions.Push(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword));
+                    return new Instructions.Push(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x57:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        length = this.Commit();
-                        return new Instructions.Push(FromRegisterIndex(byte0 & 0b111, DataWidth.Word));
-                    }
                     length = this.Commit();
-                    return new Instructions.Push(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword));
+                    return new Instructions.Push(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x58:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        length = this.Commit();
-                        return new Instructions.Pop(FromRegisterIndex(byte0 & 0b111, DataWidth.Word));
-                    }
                     length = this.Commit();
-                    return new Instructions.Pop(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword));
+                    return new Instructions.Pop(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x59:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        length = this.Commit();
-                        return new Instructions.Pop(FromRegisterIndex(byte0 & 0b111, DataWidth.Word));
-                    }
                     length = this.Commit();
-                    return new Instructions.Pop(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword));
+                    return new Instructions.Pop(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x5a:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        length = this.Commit();
-                        return new Instructions.Pop(FromRegisterIndex(byte0 & 0b111, DataWidth.Word));
-                    }
                     length = this.Commit();
-                    return new Instructions.Pop(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword));
+                    return new Instructions.Pop(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x5b:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        length = this.Commit();
-                        return new Instructions.Pop(FromRegisterIndex(byte0 & 0b111, DataWidth.Word));
-                    }
                     length = this.Commit();
-                    return new Instructions.Pop(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword));
+                    return new Instructions.Pop(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x5c:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        length = this.Commit();
-                        return new Instructions.Pop(FromRegisterIndex(byte0 & 0b111, DataWidth.Word));
-                    }
                     length = this.Commit();
-                    return new Instructions.Pop(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword));
+                    return new Instructions.Pop(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x5d:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        length = this.Commit();
-                        return new Instructions.Pop(FromRegisterIndex(byte0 & 0b111, DataWidth.Word));
-                    }
                     length = this.Commit();
-                    return new Instructions.Pop(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword));
+                    return new Instructions.Pop(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x5e:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        length = this.Commit();
-                        return new Instructions.Pop(FromRegisterIndex(byte0 & 0b111, DataWidth.Word));
-                    }
                     length = this.Commit();
-                    return new Instructions.Pop(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword));
+                    return new Instructions.Pop(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x5f:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        length = this.Commit();
-                        return new Instructions.Pop(FromRegisterIndex(byte0 & 0b111, DataWidth.Word));
-                    }
                     length = this.Commit();
-                    return new Instructions.Pop(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword));
+                    return new Instructions.Pop(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x68:
                 {
@@ -2792,22 +1993,12 @@ namespace Yoakke.X86.Readers
                 }
                 case 0x69:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        if (this.TryParseByte(out modrm_byte))
-                        {
-                            op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                            op2 = this.ParseImmediate(DataWidth.Word);
-                            length = this.Commit();
-                            return new Instructions.Imul(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1, op2);
-                        }
-                    }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                        op2 = this.ParseImmediate(DataWidth.Dword);
+                        op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
+                        op2 = this.ParseImmediate(HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Imul(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1, op2);
+                        return new Instructions.Imul(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1, op2);
                     }
                     break;
                 }
@@ -2819,22 +2010,12 @@ namespace Yoakke.X86.Readers
                 }
                 case 0x6b:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        if (this.TryParseByte(out modrm_byte))
-                        {
-                            op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                            op2 = this.ParseImmediate(DataWidth.Byte);
-                            length = this.Commit();
-                            return new Instructions.Imul(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1, op2);
-                        }
-                    }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         op2 = this.ParseImmediate(DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.Imul(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1, op2);
+                        return new Instructions.Imul(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1, op2);
                     }
                     break;
                 }
@@ -3009,113 +2190,57 @@ namespace Yoakke.X86.Readers
                         {
                         case 0x00:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                op1 = this.ParseImmediate(DataWidth.Word);
-                                length = this.Commit();
-                                return new Instructions.Add(op0, op1);
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                            op1 = this.ParseImmediate(DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
+                            op1 = this.ParseImmediate(HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
                             return new Instructions.Add(op0, op1);
                         }
                         case 0x01:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                op1 = this.ParseImmediate(DataWidth.Word);
-                                length = this.Commit();
-                                return new Instructions.Or(op0, op1);
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                            op1 = this.ParseImmediate(DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
+                            op1 = this.ParseImmediate(HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
                             return new Instructions.Or(op0, op1);
                         }
                         case 0x02:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                op1 = this.ParseImmediate(DataWidth.Word);
-                                length = this.Commit();
-                                return new Instructions.Adc(op0, op1);
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                            op1 = this.ParseImmediate(DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
+                            op1 = this.ParseImmediate(HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
                             return new Instructions.Adc(op0, op1);
                         }
                         case 0x03:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                op1 = this.ParseImmediate(DataWidth.Word);
-                                length = this.Commit();
-                                return new Instructions.Sbb(op0, op1);
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                            op1 = this.ParseImmediate(DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
+                            op1 = this.ParseImmediate(HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
                             return new Instructions.Sbb(op0, op1);
                         }
                         case 0x04:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                op1 = this.ParseImmediate(DataWidth.Word);
-                                length = this.Commit();
-                                return new Instructions.And(op0, op1);
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                            op1 = this.ParseImmediate(DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
+                            op1 = this.ParseImmediate(HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
                             return new Instructions.And(op0, op1);
                         }
                         case 0x05:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                op1 = this.ParseImmediate(DataWidth.Word);
-                                length = this.Commit();
-                                return new Instructions.Sub(op0, op1);
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                            op1 = this.ParseImmediate(DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
+                            op1 = this.ParseImmediate(HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
                             return new Instructions.Sub(op0, op1);
                         }
                         case 0x06:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                op1 = this.ParseImmediate(DataWidth.Word);
-                                length = this.Commit();
-                                return new Instructions.Xor(op0, op1);
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                            op1 = this.ParseImmediate(DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
+                            op1 = this.ParseImmediate(HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
                             return new Instructions.Xor(op0, op1);
                         }
                         case 0x07:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                op1 = this.ParseImmediate(DataWidth.Word);
-                                length = this.Commit();
-                                return new Instructions.Cmp(op0, op1);
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                            op1 = this.ParseImmediate(DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
+                            op1 = this.ParseImmediate(HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
                             return new Instructions.Cmp(op0, op1);
                         }
@@ -3132,112 +2257,56 @@ namespace Yoakke.X86.Readers
                         {
                         case 0x00:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                op1 = this.ParseImmediate(DataWidth.Byte);
-                                length = this.Commit();
-                                return new Instructions.Add(op0, op1);
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
                             return new Instructions.Add(op0, op1);
                         }
                         case 0x01:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                op1 = this.ParseImmediate(DataWidth.Byte);
-                                length = this.Commit();
-                                return new Instructions.Or(op0, op1);
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
                             return new Instructions.Or(op0, op1);
                         }
                         case 0x02:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                op1 = this.ParseImmediate(DataWidth.Byte);
-                                length = this.Commit();
-                                return new Instructions.Adc(op0, op1);
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
                             return new Instructions.Adc(op0, op1);
                         }
                         case 0x03:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                op1 = this.ParseImmediate(DataWidth.Byte);
-                                length = this.Commit();
-                                return new Instructions.Sbb(op0, op1);
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
                             return new Instructions.Sbb(op0, op1);
                         }
                         case 0x04:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                op1 = this.ParseImmediate(DataWidth.Byte);
-                                length = this.Commit();
-                                return new Instructions.And(op0, op1);
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
                             return new Instructions.And(op0, op1);
                         }
                         case 0x05:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                op1 = this.ParseImmediate(DataWidth.Byte);
-                                length = this.Commit();
-                                return new Instructions.Sub(op0, op1);
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
                             return new Instructions.Sub(op0, op1);
                         }
                         case 0x06:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                op1 = this.ParseImmediate(DataWidth.Byte);
-                                length = this.Commit();
-                                return new Instructions.Xor(op0, op1);
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
                             return new Instructions.Xor(op0, op1);
                         }
                         case 0x07:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                op1 = this.ParseImmediate(DataWidth.Byte);
-                                length = this.Commit();
-                                return new Instructions.Cmp(op0, op1);
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
                             return new Instructions.Cmp(op0, op1);
@@ -3259,20 +2328,11 @@ namespace Yoakke.X86.Readers
                 }
                 case 0x85:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        if (this.TryParseByte(out modrm_byte))
-                        {
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                            length = this.Commit();
-                            return new Instructions.Test(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
-                        }
-                    }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Test(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
+                        return new Instructions.Test(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                     }
                     break;
                 }
@@ -3294,32 +2354,17 @@ namespace Yoakke.X86.Readers
                 }
                 case 0x87:
                 {
-                    if (HasPrefix(0x66))
+                    if (this.TryParseByte(out modrm_byte))
                     {
-                        if (this.TryParseByte(out modrm_byte))
-                        {
-                            op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                            length = this.Commit();
-                            return new Instructions.Xchg(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                        }
-                        if (this.TryParseByte(out modrm_byte))
-                        {
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                            length = this.Commit();
-                            return new Instructions.Xchg(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
-                        }
+                        op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
+                        length = this.Commit();
+                        return new Instructions.Xchg(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                     }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Xchg(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
-                    }
-                    if (this.TryParseByte(out modrm_byte))
-                    {
-                        op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                        length = this.Commit();
-                        return new Instructions.Xchg(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
+                        return new Instructions.Xchg(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                     }
                     break;
                 }
@@ -3335,20 +2380,11 @@ namespace Yoakke.X86.Readers
                 }
                 case 0x89:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        if (this.TryParseByte(out modrm_byte))
-                        {
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                            length = this.Commit();
-                            return new Instructions.Mov(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word));
-                        }
-                    }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Mov(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
+                        return new Instructions.Mov(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                     }
                     break;
                 }
@@ -3364,39 +2400,21 @@ namespace Yoakke.X86.Readers
                 }
                 case 0x8b:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        if (this.TryParseByte(out modrm_byte))
-                        {
-                            op1 = this.ParseRM(modrm_byte, DataWidth.Word);
-                            length = this.Commit();
-                            return new Instructions.Mov(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                        }
-                    }
                     if (this.TryParseByte(out modrm_byte))
                     {
-                        op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                        op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Mov(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                        return new Instructions.Mov(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                     }
                     break;
                 }
                 case 0x8d:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        if (this.TryParseByte(out modrm_byte))
-                        {
-                            op1 = this.ParseRM(modrm_byte, null);
-                            length = this.Commit();
-                            return new Instructions.Lea(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
-                        }
-                    }
                     if (this.TryParseByte(out modrm_byte))
                     {
                         op1 = this.ParseRM(modrm_byte, null);
                         length = this.Commit();
-                        return new Instructions.Lea(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                        return new Instructions.Lea(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                     }
                     break;
                 }
@@ -3408,13 +2426,7 @@ namespace Yoakke.X86.Readers
                         {
                         case 0x00:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                length = this.Commit();
-                                return new Instructions.Pop(op0);
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
                             return new Instructions.Pop(op0);
                         }
@@ -3440,73 +2452,38 @@ namespace Yoakke.X86.Readers
                 }
                 case 0x91:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        length = this.Commit();
-                        return new Instructions.Xchg(Registers.Ax, FromRegisterIndex(byte0 & 0b111, DataWidth.Word));
-                    }
                     length = this.Commit();
-                    return new Instructions.Xchg(Registers.Eax, FromRegisterIndex(byte0 & 0b111, DataWidth.Dword));
+                    return new Instructions.Xchg(HasPrefix(0x66) ? Registers.Ax : Registers.Eax, FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x92:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        length = this.Commit();
-                        return new Instructions.Xchg(Registers.Ax, FromRegisterIndex(byte0 & 0b111, DataWidth.Word));
-                    }
                     length = this.Commit();
-                    return new Instructions.Xchg(Registers.Eax, FromRegisterIndex(byte0 & 0b111, DataWidth.Dword));
+                    return new Instructions.Xchg(HasPrefix(0x66) ? Registers.Ax : Registers.Eax, FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x93:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        length = this.Commit();
-                        return new Instructions.Xchg(Registers.Ax, FromRegisterIndex(byte0 & 0b111, DataWidth.Word));
-                    }
                     length = this.Commit();
-                    return new Instructions.Xchg(Registers.Eax, FromRegisterIndex(byte0 & 0b111, DataWidth.Dword));
+                    return new Instructions.Xchg(HasPrefix(0x66) ? Registers.Ax : Registers.Eax, FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x94:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        length = this.Commit();
-                        return new Instructions.Xchg(Registers.Ax, FromRegisterIndex(byte0 & 0b111, DataWidth.Word));
-                    }
                     length = this.Commit();
-                    return new Instructions.Xchg(Registers.Eax, FromRegisterIndex(byte0 & 0b111, DataWidth.Dword));
+                    return new Instructions.Xchg(HasPrefix(0x66) ? Registers.Ax : Registers.Eax, FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x95:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        length = this.Commit();
-                        return new Instructions.Xchg(Registers.Ax, FromRegisterIndex(byte0 & 0b111, DataWidth.Word));
-                    }
                     length = this.Commit();
-                    return new Instructions.Xchg(Registers.Eax, FromRegisterIndex(byte0 & 0b111, DataWidth.Dword));
+                    return new Instructions.Xchg(HasPrefix(0x66) ? Registers.Ax : Registers.Eax, FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x96:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        length = this.Commit();
-                        return new Instructions.Xchg(Registers.Ax, FromRegisterIndex(byte0 & 0b111, DataWidth.Word));
-                    }
                     length = this.Commit();
-                    return new Instructions.Xchg(Registers.Eax, FromRegisterIndex(byte0 & 0b111, DataWidth.Dword));
+                    return new Instructions.Xchg(HasPrefix(0x66) ? Registers.Ax : Registers.Eax, FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x97:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        length = this.Commit();
-                        return new Instructions.Xchg(Registers.Ax, FromRegisterIndex(byte0 & 0b111, DataWidth.Word));
-                    }
                     length = this.Commit();
-                    return new Instructions.Xchg(Registers.Eax, FromRegisterIndex(byte0 & 0b111, DataWidth.Dword));
+                    return new Instructions.Xchg(HasPrefix(0x66) ? Registers.Ax : Registers.Eax, FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x98:
                 {
@@ -3546,15 +2523,9 @@ namespace Yoakke.X86.Readers
                 }
                 case 0xa9:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        op1 = this.ParseImmediate(DataWidth.Word);
-                        length = this.Commit();
-                        return new Instructions.Test(Registers.Ax, op1);
-                    }
-                    op1 = this.ParseImmediate(DataWidth.Dword);
+                    op1 = this.ParseImmediate(HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Test(Registers.Eax, op1);
+                    return new Instructions.Test(HasPrefix(0x66) ? Registers.Ax : Registers.Eax, op1);
                 }
                 case 0xb0:
                 {
@@ -3606,99 +2577,51 @@ namespace Yoakke.X86.Readers
                 }
                 case 0xb8:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        op1 = this.ParseImmediate(DataWidth.Word);
-                        length = this.Commit();
-                        return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Word), op1);
-                    }
-                    op1 = this.ParseImmediate(DataWidth.Dword);
+                    op1 = this.ParseImmediate(HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword), op1);
+                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                 }
                 case 0xb9:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        op1 = this.ParseImmediate(DataWidth.Word);
-                        length = this.Commit();
-                        return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Word), op1);
-                    }
-                    op1 = this.ParseImmediate(DataWidth.Dword);
+                    op1 = this.ParseImmediate(HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword), op1);
+                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                 }
                 case 0xba:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        op1 = this.ParseImmediate(DataWidth.Word);
-                        length = this.Commit();
-                        return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Word), op1);
-                    }
-                    op1 = this.ParseImmediate(DataWidth.Dword);
+                    op1 = this.ParseImmediate(HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword), op1);
+                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                 }
                 case 0xbb:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        op1 = this.ParseImmediate(DataWidth.Word);
-                        length = this.Commit();
-                        return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Word), op1);
-                    }
-                    op1 = this.ParseImmediate(DataWidth.Dword);
+                    op1 = this.ParseImmediate(HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword), op1);
+                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                 }
                 case 0xbc:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        op1 = this.ParseImmediate(DataWidth.Word);
-                        length = this.Commit();
-                        return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Word), op1);
-                    }
-                    op1 = this.ParseImmediate(DataWidth.Dword);
+                    op1 = this.ParseImmediate(HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword), op1);
+                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                 }
                 case 0xbd:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        op1 = this.ParseImmediate(DataWidth.Word);
-                        length = this.Commit();
-                        return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Word), op1);
-                    }
-                    op1 = this.ParseImmediate(DataWidth.Dword);
+                    op1 = this.ParseImmediate(HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword), op1);
+                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                 }
                 case 0xbe:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        op1 = this.ParseImmediate(DataWidth.Word);
-                        length = this.Commit();
-                        return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Word), op1);
-                    }
-                    op1 = this.ParseImmediate(DataWidth.Dword);
+                    op1 = this.ParseImmediate(HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword), op1);
+                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                 }
                 case 0xbf:
                 {
-                    if (HasPrefix(0x66))
-                    {
-                        op1 = this.ParseImmediate(DataWidth.Word);
-                        length = this.Commit();
-                        return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Word), op1);
-                    }
-                    op1 = this.ParseImmediate(DataWidth.Dword);
+                    op1 = this.ParseImmediate(HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Dword), op1);
+                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                 }
                 case 0xc0:
                 {
@@ -3768,98 +2691,49 @@ namespace Yoakke.X86.Readers
                         {
                         case 0x00:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                op1 = this.ParseImmediate(DataWidth.Byte);
-                                length = this.Commit();
-                                return new Instructions.Rol(op0, op1);
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
                             return new Instructions.Rol(op0, op1);
                         }
                         case 0x01:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                op1 = this.ParseImmediate(DataWidth.Byte);
-                                length = this.Commit();
-                                return new Instructions.Ror(op0, op1);
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
                             return new Instructions.Ror(op0, op1);
                         }
                         case 0x02:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                op1 = this.ParseImmediate(DataWidth.Byte);
-                                length = this.Commit();
-                                return new Instructions.Rcl(op0, op1);
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
                             return new Instructions.Rcl(op0, op1);
                         }
                         case 0x03:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                op1 = this.ParseImmediate(DataWidth.Byte);
-                                length = this.Commit();
-                                return new Instructions.Rcr(op0, op1);
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
                             return new Instructions.Rcr(op0, op1);
                         }
                         case 0x04:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                op1 = this.ParseImmediate(DataWidth.Byte);
-                                length = this.Commit();
-                                return new Instructions.Sal(op0, op1);
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
                             return new Instructions.Sal(op0, op1);
                         }
                         case 0x05:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                op1 = this.ParseImmediate(DataWidth.Byte);
-                                length = this.Commit();
-                                return new Instructions.Shr(op0, op1);
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
                             return new Instructions.Shr(op0, op1);
                         }
                         case 0x07:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                op1 = this.ParseImmediate(DataWidth.Byte);
-                                length = this.Commit();
-                                return new Instructions.Sar(op0, op1);
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
                             return new Instructions.Sar(op0, op1);
@@ -3906,15 +2780,8 @@ namespace Yoakke.X86.Readers
                         {
                         case 0x00:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                op1 = this.ParseImmediate(DataWidth.Word);
-                                length = this.Commit();
-                                return new Instructions.Mov(op0, op1);
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                            op1 = this.ParseImmediate(DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
+                            op1 = this.ParseImmediate(HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
                             return new Instructions.Mov(op0, op1);
                         }
@@ -4012,85 +2879,43 @@ namespace Yoakke.X86.Readers
                         {
                         case 0x00:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                length = this.Commit();
-                                return new Instructions.Rol(op0, new Constant(1));
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
                             return new Instructions.Rol(op0, new Constant(1));
                         }
                         case 0x01:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                length = this.Commit();
-                                return new Instructions.Ror(op0, new Constant(1));
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
                             return new Instructions.Ror(op0, new Constant(1));
                         }
                         case 0x02:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                length = this.Commit();
-                                return new Instructions.Rcl(op0, new Constant(1));
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
                             return new Instructions.Rcl(op0, new Constant(1));
                         }
                         case 0x03:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                length = this.Commit();
-                                return new Instructions.Rcr(op0, new Constant(1));
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
                             return new Instructions.Rcr(op0, new Constant(1));
                         }
                         case 0x04:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                length = this.Commit();
-                                return new Instructions.Sal(op0, new Constant(1));
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
                             return new Instructions.Sal(op0, new Constant(1));
                         }
                         case 0x05:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                length = this.Commit();
-                                return new Instructions.Shr(op0, new Constant(1));
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
                             return new Instructions.Shr(op0, new Constant(1));
                         }
                         case 0x07:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                length = this.Commit();
-                                return new Instructions.Sar(op0, new Constant(1));
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
                             return new Instructions.Sar(op0, new Constant(1));
                         }
@@ -4160,85 +2985,43 @@ namespace Yoakke.X86.Readers
                         {
                         case 0x00:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                length = this.Commit();
-                                return new Instructions.Rol(op0, Registers.Cl);
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
                             return new Instructions.Rol(op0, Registers.Cl);
                         }
                         case 0x01:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                length = this.Commit();
-                                return new Instructions.Ror(op0, Registers.Cl);
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
                             return new Instructions.Ror(op0, Registers.Cl);
                         }
                         case 0x02:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                length = this.Commit();
-                                return new Instructions.Rcl(op0, Registers.Cl);
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
                             return new Instructions.Rcl(op0, Registers.Cl);
                         }
                         case 0x03:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                length = this.Commit();
-                                return new Instructions.Rcr(op0, Registers.Cl);
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
                             return new Instructions.Rcr(op0, Registers.Cl);
                         }
                         case 0x04:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                length = this.Commit();
-                                return new Instructions.Sal(op0, Registers.Cl);
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
                             return new Instructions.Sal(op0, Registers.Cl);
                         }
                         case 0x05:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                length = this.Commit();
-                                return new Instructions.Shr(op0, Registers.Cl);
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
                             return new Instructions.Shr(op0, Registers.Cl);
                         }
                         case 0x07:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                length = this.Commit();
-                                return new Instructions.Sar(op0, Registers.Cl);
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
                             return new Instructions.Sar(op0, Registers.Cl);
                         }
@@ -4379,87 +3162,44 @@ namespace Yoakke.X86.Readers
                         {
                         case 0x00:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                op1 = this.ParseImmediate(DataWidth.Word);
-                                length = this.Commit();
-                                return new Instructions.Test(op0, op1);
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
-                            op1 = this.ParseImmediate(DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
+                            op1 = this.ParseImmediate(HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
                             return new Instructions.Test(op0, op1);
                         }
                         case 0x02:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                length = this.Commit();
-                                return new Instructions.Not(op0);
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
                             return new Instructions.Not(op0);
                         }
                         case 0x03:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                length = this.Commit();
-                                return new Instructions.Neg(op0);
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
                             return new Instructions.Neg(op0);
                         }
                         case 0x04:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                length = this.Commit();
-                                return new Instructions.Mul(op0);
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
                             return new Instructions.Mul(op0);
                         }
                         case 0x05:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                length = this.Commit();
-                                return new Instructions.Imul(op0);
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
                             return new Instructions.Imul(op0);
                         }
                         case 0x06:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                length = this.Commit();
-                                return new Instructions.Div(op0);
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
                             return new Instructions.Div(op0);
                         }
                         case 0x07:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                length = this.Commit();
-                                return new Instructions.Idiv(op0);
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
                             return new Instructions.Idiv(op0);
                         }
@@ -4519,25 +3259,13 @@ namespace Yoakke.X86.Readers
                         {
                         case 0x00:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                length = this.Commit();
-                                return new Instructions.Inc(op0);
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
                             return new Instructions.Inc(op0);
                         }
                         case 0x01:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                length = this.Commit();
-                                return new Instructions.Dec(op0);
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
                             return new Instructions.Dec(op0);
                         }
@@ -4555,13 +3283,7 @@ namespace Yoakke.X86.Readers
                         }
                         case 0x06:
                         {
-                            if (HasPrefix(0x66))
-                            {
-                                op0 = this.ParseRM(modrm_byte, DataWidth.Word);
-                                length = this.Commit();
-                                return new Instructions.Push(op0);
-                            }
-                            op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
+                            op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
                             return new Instructions.Push(op0);
                         }

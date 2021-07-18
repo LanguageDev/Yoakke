@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Yoakke.X86.Generator.Model;
 
@@ -31,20 +32,18 @@ namespace Yoakke.X86.Generator
             generator.BuildParserTree();
             generator.GenerateParser();
             var code = generator.resultBuilder.ToString();
-            code = CleanUpParserCode(code);
+            code = RemoveCodeAfterReturn(code);
+            code = RemovePrefixDuplicates(code);
             return code;
         }
 
-        private static string CleanUpParserCode(string code)
+        private static string RemoveCodeAfterReturn(string code)
         {
             var result = new StringBuilder();
-            var reader = new StringReader(code);
+            var lines = SplitIntoLines(code);
             var ignore = false;
-            while (true)
+            foreach (var line in lines)
             {
-                var line = reader.ReadLine();
-                if (line is null) break;
-
                 var trimmedLine = line.TrimStart();
 
                 if (trimmedLine.StartsWith("}")) ignore = false;
@@ -53,6 +52,128 @@ namespace Yoakke.X86.Generator
                 result.AppendLine(line);
             }
             return result.ToString();
+        }
+
+        private static string RemovePrefixDuplicates(string code)
+        {
+            var lines = SplitIntoLines(code);
+            var result = new StringBuilder();
+            for (var i = 0; i < lines.Count; )
+            {
+                if (lines[i].Contains("HasPrefix"))
+                {
+                    // We potentially can "optimize away" this line by merging it with the next lines
+                    // Take the condition
+                    var hasPrefixCheck = lines[i].Trim().Substring(4);
+                    hasPrefixCheck = hasPrefixCheck.Substring(0, hasPrefixCheck.Length - 1);
+                    // Jump over the if (HasPrefix(...))
+                    var j = i + 1;
+                    // Collect out the lines between the braces
+                    var insideLines = ParseCurlyContents(lines, ref j);
+                    // We pre-process the lines a bit to make matching easier
+                    insideLines = insideLines.Select(l => l.Substring(4)).ToList();
+
+                    // Now we have all the lines in between if (HasPrefix(...)) { HERE }
+                    // Figure out if these next lines match
+                    var replacementLines = new List<string>();
+                    var canCutOut = true;
+                    for (var k = 0; k < insideLines.Count; ++k)
+                    {
+                        var outsideLine = lines[j + k];
+                        if (outsideLine != insideLines[k])
+                        {
+                            var replacement = FindReplacementCombo(hasPrefixCheck, insideLines[k], outsideLine);
+                            if (replacement is null)
+                            {
+                                canCutOut = false;
+                                break;
+                            }
+                            replacementLines.Add(replacement);
+                        }
+                        else
+                        {
+                            replacementLines.Add(outsideLine);
+                        }
+                    }
+                    if (canCutOut)
+                    {
+                        // Found a match, write in replacement, advance
+                        foreach (var line in replacementLines) result.AppendLine(line);
+                        i = j + insideLines.Count;
+                        continue;
+                    }
+                }
+                result.AppendLine(lines[i]);
+                ++i;
+            }
+            return result.ToString();
+        }
+
+        private static string? FindReplacementCombo(string prefixCondition, string withPrefix, string withoutPrefix)
+        {
+            var dataWidths = new[]
+            {
+                ("DataWidth.Byte", "Registers.Al"),
+                ("DataWidth.Word", "Registers.Ax"),
+                ("DataWidth.Dword", "Registers.Eax"),
+            };
+
+            string MacroLine(string line, (string, string) args) => line
+                .Replace(args.Item1, "$DW$")
+                .Replace(args.Item2, "$REG$");
+
+            foreach (var withPrefixWidth in dataWidths)
+            {
+                var withPrefixMacrod = MacroLine(withPrefix, withPrefixWidth);
+                foreach (var withoutPrefixWidth in dataWidths)
+                {
+                    if (withPrefixWidth == withoutPrefixWidth) continue;
+
+                    var withoutPrefixMacrod = MacroLine(withoutPrefix, withoutPrefixWidth);
+                    if (withPrefixMacrod != withoutPrefixMacrod) continue;
+
+                    // It's a match, construct the common line
+                    return withPrefixMacrod
+                        .Replace("$DW$", $"{prefixCondition} ? {withPrefixWidth.Item1} : {withoutPrefixWidth.Item1}")
+                        .Replace("$REG$", $"{prefixCondition} ? {withPrefixWidth.Item2} : {withoutPrefixWidth.Item2}");
+                }
+            }
+
+            return null;
+        }
+
+        private static List<string> ParseCurlyContents(List<string> lines, ref int j)
+        {
+            var insideLines = new List<string>();
+            Debug.Assert(lines[j].EndsWith("{"), "This function should be called when the current line is a '{'");
+            ++j;
+            var depth = 1;
+            while (true)
+            {
+                var l = lines[j];
+                ++j;
+
+                if (l.EndsWith("{")) ++depth;
+                else if (l.EndsWith("}")) --depth;
+
+                if (depth == 0) break;
+
+                insideLines.Add(l);
+            }
+            return insideLines;
+        }
+
+        private static List<string> SplitIntoLines(string code)
+        {
+            var lines = new List<string>();
+            var reader = new StringReader(code);
+            while (true)
+            {
+                var line = reader.ReadLine();
+                if (line is null) break;
+                lines.Add(line);
+            }
+            return lines;
         }
 
         private readonly InstructionSet instructionSet;
