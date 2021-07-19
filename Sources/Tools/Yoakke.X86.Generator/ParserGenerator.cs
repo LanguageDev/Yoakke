@@ -34,6 +34,8 @@ namespace Yoakke.X86.Generator
             var code = generator.resultBuilder.ToString();
             code = RemoveCodeAfterReturn(code);
             code = RemovePrefixDuplicates(code);
+            code = MergeEnclosedIf(code);
+            code = MergeIdenticalCases(code);
             return code;
         }
 
@@ -106,6 +108,83 @@ namespace Yoakke.X86.Generator
                 result.AppendLine(lines[i]);
                 ++i;
             }
+            return result.ToString();
+        }
+
+        private static string MergeEnclosedIf(string code)
+        {
+            var lines = SplitIntoLines(code);
+            var result = new StringBuilder();
+
+            for (var i = 0; i < lines.Count; )
+            {
+                if (lines[i].Contains("if (") && lines[i + 2].Contains("if ("))
+                {
+                    var outerIf = lines[i];
+                    var innerIf = lines[i + 2];
+                    i += 3;
+                    // Take what's in the inner if-statement
+                    var innerIfContent = ParseCurlyContents(lines, ref i);
+                    // Skip over the close brace of the outer if
+                    ++i;
+                    // Un-indent it once
+                    innerIfContent = innerIfContent.Select(l => l.Substring(4)).ToList();
+                    // Piece together the new if
+                    var combinedIf = $"{outerIf.Substring(0, outerIf.Length - 1)} && {innerIf.TrimStart().Substring(4)}";
+                    // Get the indentation
+                    var indentation = new string(outerIf.TakeWhile(c => c == ' ').ToArray());
+                    // Build it up
+                    result.AppendLine(combinedIf);
+                    result.AppendLine($"{indentation}{{");
+                    foreach (var line in innerIfContent) result.AppendLine(line);
+                    result.AppendLine($"{indentation}}}");
+                }
+                else
+                {
+                    result.AppendLine(lines[i]);
+                    ++i;
+                }
+            }
+
+            return result.ToString();
+        }
+
+        private static string MergeIdenticalCases(string code)
+        {
+            var lines = SplitIntoLines(code);
+            var result = new StringBuilder();
+
+            for (var i = 0; i < lines.Count;)
+            {
+                if (lines[i].Contains("case"))
+                {
+                    var j = i + 1;
+                    var caseContents = ParseCurlyContents(lines, ref j);
+                    var identicalCases = new List<string> { lines[i] };
+                    while (lines[j].Contains("case"))
+                    {
+                        var caseLine = lines[j];
+                        ++j;
+                        var caseContents2 = ParseCurlyContents(lines, ref j);
+                        if (!caseContents.SequenceEqual(caseContents2)) break;
+                        identicalCases.Add(caseLine);
+                    }
+
+                    if (identicalCases.Count > 1)
+                    {
+                        var caseIndent = new string(lines[i].TakeWhile(c => c == ' ').ToArray());
+                        foreach (var c in identicalCases) result.AppendLine(c);
+                        result.AppendLine($"{caseIndent}{{");
+                        foreach (var l in caseContents) result.AppendLine(l);
+                        result.AppendLine($"{caseIndent}}}");
+                        i += identicalCases.Count * (3 + caseContents.Count);
+                        continue;
+                    }
+                }
+                result.AppendLine(lines[i]);
+                ++i;
+            }
+
             return result.ToString();
         }
 
