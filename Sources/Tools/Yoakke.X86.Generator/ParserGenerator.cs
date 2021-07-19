@@ -36,6 +36,7 @@ namespace Yoakke.X86.Generator
             code = RemovePrefixDuplicates(code);
             code = MergeEnclosedIf(code);
             code = MergeIdenticalCases(code);
+            code = FactorOutCommonCaseCode(code);
             return code;
         }
 
@@ -179,6 +180,67 @@ namespace Yoakke.X86.Generator
                         result.AppendLine($"{caseIndent}}}");
                         i += identicalCases.Count * (3 + caseContents.Count);
                         continue;
+                    }
+                }
+                result.AppendLine(lines[i]);
+                ++i;
+            }
+
+            return result.ToString();
+        }
+
+        private static string FactorOutCommonCaseCode(string code)
+        {
+            var lines = SplitIntoLines(code);
+            var result = new StringBuilder();
+
+            for (var i = 0; i < lines.Count;)
+            {
+                if (lines[i].Contains("switch"))
+                {
+                    // Let's skim through all cases
+                    // First '{' of first case
+                    var j = i + 3;
+                    var firstCaseContents = ParseCurlyContents(lines, ref j);
+                    if (firstCaseContents[firstCaseContents.Count - 1].Contains("return"))
+                    {
+                        var applicable = true;
+                        var caseLabels = new List<string> { lines[i + 2] };
+                        var commonPrefixes = firstCaseContents.SkipLast(1).ToList();
+                        var differingSuffixes = new List<string> { firstCaseContents[firstCaseContents.Count - 1] };
+                        while (lines[j].Contains("case") && lines[j + 1].Contains("{"))
+                        {
+                            var caseLine = lines[j];
+                            caseLabels.Add(caseLine);
+                            ++j;
+                            var caseContents2 = ParseCurlyContents(lines, ref j);
+                            var casePrefixes = caseContents2.SkipLast(1).ToList();
+                            var differingSuffix = caseContents2[caseContents2.Count - 1];
+                            if (!commonPrefixes.SequenceEqual(casePrefixes) || !differingSuffix.Contains("return"))
+                            {
+                                applicable = false;
+                                break;
+                            }
+                            differingSuffixes.Add(differingSuffix);
+                        }
+                        if (applicable && caseLabels.Count > 1)
+                        {
+                            // First write the common prefix unindented
+                            foreach (var l in commonPrefixes) result.AppendLine(l.Substring(4));
+                            // Yield the switch
+                            result.AppendLine(lines[i]);
+                            result.AppendLine(lines[i + 1]);
+                            for (var k = 0; k < caseLabels.Count; ++k)
+                            {
+                                result.AppendLine(caseLabels[k]);
+                                result.AppendLine(lines[i + 1]);
+                                result.AppendLine(differingSuffixes[k]);
+                                result.AppendLine(lines[i + 1].Replace('{', '}'));
+                            }
+                            result.AppendLine(lines[i + 1].Replace('{', '}'));
+                            i += 3 + (caseLabels.Count * (4 + commonPrefixes.Count));
+                            continue;
+                        }
                     }
                 }
                 result.AppendLine(lines[i]);
