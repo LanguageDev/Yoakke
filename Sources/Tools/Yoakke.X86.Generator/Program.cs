@@ -21,6 +21,9 @@ namespace Yoakke.X86.Generator
             var classes = ClassGenerator.GenerateIsaClasses(isa, out var withClasses);
             File.WriteAllText("Classes.cs", classes.ToString());
 
+            var writers = WriterGenerator.GenerateIsaWriters(withClasses);
+            File.WriteAllText("Writers.cs", writers.ToString());
+
             var parser = ParserGenerator.Generate(isa, withClasses);
             File.WriteAllText("Parser.cs", parser);
 

@@ -17,7 +17,7 @@ namespace Yoakke.X86.Generator
     /// </summary>
     public static class ClassGenerator
     {
-        private record OperandProperty(int OperandIndex, string Name, string Docs);
+        internal record OperandProperty(int OperandIndex, string Name, string Docs);
 
         /// <summary>
         /// Generates the classes for <see cref="Instructions"/> in the given <see cref="InstructionSet"/>.
@@ -107,9 +107,6 @@ namespace Yoakke.X86.Generator
                 // Yes we do need it, infer some names for us
                 var ctorParams = GenerateProperties(form);
 
-                // Inject the doc comment parameter
-                ctorParams = ctorParams.Append(new(-1, "comment", "The optional inline comment.")).ToList();
-
                 result.AppendLine();
 
                 // Ctor doc comment
@@ -118,7 +115,7 @@ namespace Yoakke.X86.Generator
                     .AppendLine($"    /// Initializes a new instance of the <see cref=\"{className}\"/> class.")
                     .AppendLine("    /// </summary>");
                 // Parameter doc comments
-                foreach (var param in ctorParams)
+                foreach (var param in ctorParams.Append(new(-1, "comment", "The optional inline comment.")))
                 {
                     result.AppendLine($"    /// <param name=\"{param.Name.ToLower()}\">{param.Docs}</param>");
                 }
@@ -126,25 +123,17 @@ namespace Yoakke.X86.Generator
                 // Ctor code
                 result.Append($"    public {className}(");
                 // Parameters
-                var first = true;
-                foreach (var param in ctorParams)
-                {
-                    if (!first) result.Append(", ");
-                    first = false;
-
-                    // Comment, default it
-                    if (param.OperandIndex == -1) result.Append($"string? {param.Name.ToLower()} = null");
-                    // Regular operand
-                    else result.Append($"IOperand {param.Name.ToLower()}");
-                }
+                result.Append(string.Join(string.Empty, ctorParams.Select(param => $"IOperand {param.Name.ToLower()}, ")));
+                // Comment param
+                result.Append("string? comment = null");
                 // Body
                 result
                     .AppendLine(")")
                     .AppendLine("    {");
-                if (ctorParams.Count > 1)
+                if (ctorParams.Count > 0)
                 {
                     // We have more than just the comment parameter
-                    var args = string.Join(", ", ctorParams.SkipLast(1).Select(p => p.Name.ToLower()));
+                    var args = string.Join(", ", ctorParams.Select(p => p.Name.ToLower()));
                     result.AppendLine($"        this.Operands = new[] {{ {args} }};");
                 }
                 else
@@ -163,7 +152,12 @@ namespace Yoakke.X86.Generator
             return result.ToString();
         }
 
-        private static IReadOnlyList<OperandProperty> GenerateProperties(IReadOnlyList<InstructionForm> relevantForms)
+        /// <summary>
+        /// Generates property descriptions for the given <see cref="InstructionForm"/>s.
+        /// </summary>
+        /// <param name="relevantForms">The <see cref="InstructionForm"/>s to generate for.</param>
+        /// <returns>The list of <see cref="OperandProperty"/>s describing them.</returns>
+        internal static IReadOnlyList<OperandProperty> GenerateProperties(IReadOnlyList<InstructionForm> relevantForms)
         {
             Debug.Assert(relevantForms.Count > 0, "Must be at least one instruction form that has this many operands.");
 
@@ -232,7 +226,12 @@ namespace Yoakke.X86.Generator
             _ => "th",
         };
 
-        private static bool IsOperandSupported(Operand operand) => SupportedOperands.Contains(operand.Type);
+        /// <summary>
+        /// Checks if an <see cref="Operand"/> is supported for class-generation.
+        /// </summary>
+        /// <param name="operand">The <see cref="Operand"/> to check.</param>
+        /// <returns>True, if <paramref name="operand"/> is supported.</returns>
+        internal static bool IsOperandSupported(Operand operand) => SupportedOperands.Contains(operand.Type);
 
         private static readonly string[] SupportedOperands = new[]
         {
