@@ -15,6 +15,7 @@ namespace Yoakke.Value.Collections
     /// </summary>
     /// <typeparam name="T">The type of the elements.</typeparam>
     public interface IReadOnlyValueList<T> : IReadOnlyList<T>, IEquatable<IReadOnlyList<T>>
+        where T : IEquatable<T>
     {
     }
 }

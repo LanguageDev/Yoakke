@@ -16,6 +16,7 @@ namespace Yoakke.Value.Collections
     /// </summary>
     /// <typeparam name="T">The element type.</typeparam>
     public class ReadOnlyValueList<T> : IReadOnlyValueList<T>
+        where T : IEquatable<T>
     {
         /// <inheritdoc/>
         public T this[int index] => this.Underlying[index];
