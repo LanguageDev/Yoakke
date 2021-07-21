@@ -1,11 +1,7 @@
-// Copyright (c) 2021 Yoakke.
-// Licensed under the Apache License, Version 2.0.
-// Source repository: https://github.com/LanguageDev/Yoakke
-
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Yoakke.Utilities.Tests
+namespace Yoakke.Collections.Tests
 {
     [TestClass]
     public class RingBufferTests

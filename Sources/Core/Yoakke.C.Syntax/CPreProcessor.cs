@@ -7,9 +7,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using Yoakke.Collections;
 using Yoakke.Lexer;
 using Yoakke.Text;
-using Yoakke.Utilities;
 
 namespace Yoakke.C.Syntax
 {

@@ -4,8 +4,8 @@
 
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using Yoakke.Collections;
 using Yoakke.Lexer;
-using Yoakke.Utilities;
 
 namespace Yoakke.Parser
 {

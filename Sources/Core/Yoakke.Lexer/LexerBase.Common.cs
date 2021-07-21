@@ -5,8 +5,8 @@
 using System;
 using System.IO;
 using System.Text;
+using Yoakke.Collections;
 using Yoakke.Text;
-using Yoakke.Utilities;
 
 namespace Yoakke.Lexer
 {

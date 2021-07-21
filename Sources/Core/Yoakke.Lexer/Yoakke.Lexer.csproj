@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="$(SolutionDir)\Core\Yoakke.Text\Yoakke.Text.csproj" />
-    <ProjectReference Include="$(SolutionDir)\Core\Yoakke.Utilities\Yoakke.Utilities.csproj" />
+    <ProjectReference Include="$(SolutionDir)\Core\Yoakke.Collections\Yoakke.Collections.csproj" />
   </ItemGroup>
 
 </Project>

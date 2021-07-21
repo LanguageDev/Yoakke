@@ -6,7 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Yoakke.Utilities
+namespace Yoakke.Collections
 {
     /// <summary>
     /// A ring buffer implementation backed by an array.
