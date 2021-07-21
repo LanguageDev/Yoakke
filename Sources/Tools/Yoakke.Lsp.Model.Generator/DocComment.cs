@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace Yoakke.Lsp.Generator
+namespace Yoakke.Lsp.Model.Generator
 {
     internal class DocComment
     {

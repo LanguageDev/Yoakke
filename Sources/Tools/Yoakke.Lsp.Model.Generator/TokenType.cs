@@ -5,7 +5,7 @@
 using Yoakke.Lexer;
 using Yoakke.Lexer.Attributes;
 
-namespace Yoakke.Lsp.Generator
+namespace Yoakke.Lsp.Model.Generator
 {
     [Lexer("TsLexer")]
     internal enum TokenType

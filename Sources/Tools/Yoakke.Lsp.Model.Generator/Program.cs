@@ -8,7 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace Yoakke.Lsp.Generator
+namespace Yoakke.Lsp.Model.Generator
 {
     internal static class Program
     {
