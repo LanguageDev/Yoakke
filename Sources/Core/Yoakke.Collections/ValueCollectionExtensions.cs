@@ -7,8 +7,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Yoakke.Collections;
 
-namespace Yoakke.Value.Collections
+namespace Yoakke.Collections
 {
     /// <summary>
     /// Extension methods for value-based equality collection creations.

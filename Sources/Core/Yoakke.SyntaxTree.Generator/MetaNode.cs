@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 
-namespace Yoakke.Ast.Generator
+namespace Yoakke.SyntaxTree.Generator
 {
     /// <summary>
     /// A meta-AST node.

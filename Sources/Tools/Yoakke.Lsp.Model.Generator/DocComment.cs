@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace Yoakke.LSP.Generator
+namespace Yoakke.Lsp.Generator
 {
     internal class DocComment
     {

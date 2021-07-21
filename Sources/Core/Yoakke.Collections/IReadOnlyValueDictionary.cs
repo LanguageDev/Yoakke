@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Yoakke.Value.Collections
+namespace Yoakke.Collections
 {
     /// <summary>
     /// Represents a generic associative container of keys and values that implements value-based equality.

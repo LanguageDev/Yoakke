@@ -9,7 +9,7 @@ using Yoakke.Lexer;
 using Yoakke.Parser;
 using Yoakke.Parser.Attributes;
 
-namespace Yoakke.LSP.Generator
+namespace Yoakke.Lsp.Generator
 {
     [Parser(typeof(TokenType))]
     internal partial class TsParser

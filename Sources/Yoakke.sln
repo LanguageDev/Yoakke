@@ -41,11 +41,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Reporting.Sample", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Sample", "Examples\Yoakke.Sample\Yoakke.Sample.csproj", "{94C26FC8-A4E7-435D-91B4-57F75719DC45}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ast", "Ast", "{58417641-179E-4F53-9528-234B4E87944E}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SyntaxTree", "SyntaxTree", "{58417641-179E-4F53-9528-234B4E87944E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Ast", "Core\Yoakke.Ast\Yoakke.Ast.csproj", "{384A70A8-96CE-4C1C-BC5C-BF3341B522E5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.SyntaxTree", "Core\Yoakke.SyntaxTree\Yoakke.SyntaxTree.csproj", "{384A70A8-96CE-4C1C-BC5C-BF3341B522E5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Ast.Generator", "Core\Yoakke.Ast.Generator\Yoakke.Ast.Generator.csproj", "{C3B90E58-A8C7-4F79-B8C7-140D0E6687E6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.SyntaxTree.Generator", "Core\Yoakke.SyntaxTree.Generator\Yoakke.SyntaxTree.Generator.csproj", "{C3B90E58-A8C7-4F79-B8C7-140D0E6687E6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Symbols", "Core\Yoakke.Symbols\Yoakke.Symbols.csproj", "{80BDC869-2344-4EEC-BB01-A3AC72CA26ED}"
 EndProject
@@ -88,7 +88,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.X86.Generator", "Too
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Collections", "Core\Yoakke.Collections\Yoakke.Collections.csproj", "{F831F2D0-4BDC-4A30-A064-F31A9B5B3F1B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yoakke.Collections.Tests", "Tests\Yoakke.Collections.Tests\Yoakke.Collections.Tests.csproj", "{4DA71BF1-D45F-4ADE-8088-A01BD4BD412A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Collections.Tests", "Tests\Yoakke.Collections.Tests\Yoakke.Collections.Tests.csproj", "{4DA71BF1-D45F-4ADE-8088-A01BD4BD412A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

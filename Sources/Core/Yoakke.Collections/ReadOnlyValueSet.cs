@@ -8,8 +8,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Yoakke.Collections;
 
-namespace Yoakke.Value.Collections
+namespace Yoakke.Collections
 {
     /// <summary>
     /// A wrapper around <see cref="IReadOnlySet{T}"/>s to make them have value-based equality.

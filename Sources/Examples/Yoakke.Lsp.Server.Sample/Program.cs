@@ -12,7 +12,7 @@ using Yoakke.Lsp.Model.TextSynchronization;
 using Yoakke.Lsp.Server.Handlers;
 using Yoakke.Lsp.Server.Hosting;
 
-namespace Yoakke.Lsp.Sample
+namespace Yoakke.Lsp.Server.Sample
 {
     internal class SyncHandler : ITextDocumentSyncHandler
     {

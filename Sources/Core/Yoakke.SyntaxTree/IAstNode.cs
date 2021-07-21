@@ -1,10 +1,10 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System.Collections.Generic;
 
-namespace Yoakke.Ast
+namespace Yoakke.SyntaxTree
 {
     /// <summary>
     /// Interface for all AST nodes.

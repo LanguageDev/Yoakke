@@ -11,7 +11,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Yoakke.SourceGenerator.Common;
 using Yoakke.Utilities.Compatibility;
 
-namespace Yoakke.Ast.Generator
+namespace Yoakke.SyntaxTree.Generator
 {
     /// <summary>
     /// Generator for AST functionality.
@@ -48,7 +48,7 @@ namespace Yoakke.Ast.Generator
         /// Initializes a new instance of the <see cref="AstSourceGenerator"/> class.
         /// </summary>
         public AstSourceGenerator()
-            : base("Yoakke.Ast.Generator")
+            : base("Yoakke.SyntaxTree.Generator")
         {
         }
 
@@ -63,7 +63,7 @@ namespace Yoakke.Ast.Generator
         {
             var receiver = (SyntaxReceiver)syntaxReceiver;
 
-            this.RequireLibrary("Yoakke.Ast");
+            this.RequireLibrary("Yoakke.SyntaxTree");
 
             this.BuildMetaNodes(receiver.CandidateClasses);
 

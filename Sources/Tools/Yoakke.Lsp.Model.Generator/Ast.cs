@@ -4,7 +4,7 @@
 
 using System.Collections.Generic;
 
-namespace Yoakke.LSP.Generator
+namespace Yoakke.Lsp.Generator
 {
     /// <summary>
     /// Base class for all defititions.

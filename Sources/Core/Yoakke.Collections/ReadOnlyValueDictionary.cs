@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Yoakke.Value.Collections
+namespace Yoakke.Collections
 {
     /// <summary>
     /// A wrapper around <see cref="IReadOnlyDictionary{TKey, TValue}"/>s to make them have value-based equality.
