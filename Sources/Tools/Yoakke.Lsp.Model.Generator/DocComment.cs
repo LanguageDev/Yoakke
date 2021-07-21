@@ -69,7 +69,7 @@ namespace Yoakke.LSP.Generator
             if (origLines[lineIndex][0] != '@') throw new InvalidOperationException();
             var tag = new string(origLines[lineIndex].Skip(1).TakeWhile(char.IsLetterOrDigit).ToArray());
             // First line gets consumed, but cut out the tag
-            lines.Add(origLines[lineIndex].Substring(tag.Length + 1).Trim());
+            lines.Add(origLines[lineIndex][(tag.Length + 1)..].Trim());
             origLines.RemoveAt(lineIndex);
             // Get all consecutive lines that don't start with a tag or not separated with empty line
             while (lineIndex < origLines.Count && !string.IsNullOrWhiteSpace(origLines[lineIndex]) && origLines[lineIndex][0] != '@')
@@ -84,7 +84,7 @@ namespace Yoakke.LSP.Generator
         private static List<string> DocCommentToLines(string docComment)
         {
             // First we remove leading /* and trailing */
-            var result = docComment.Substring(2, docComment.Length - 4);
+            var result = docComment[2..^2];
             // Divide up into lines
             var lines = new List<string>();
             var lineReader = new StringReader(result);
@@ -112,7 +112,7 @@ namespace Yoakke.LSP.Generator
         private static void PruneLineList(List<string> lines)
         {
             while (lines.Count > 0 && string.IsNullOrWhiteSpace(lines[0])) lines.RemoveAt(0);
-            while (lines.Count > 0 && string.IsNullOrWhiteSpace(lines[lines.Count - 1])) lines.RemoveAt(lines.Count - 1);
+            while (lines.Count > 0 && string.IsNullOrWhiteSpace(lines[^1])) lines.RemoveAt(lines.Count - 1);
         }
     }
 }

@@ -45,7 +45,7 @@ namespace Yoakke.X86.Generator.Model
         public string OperandNumberString
         {
             get => $"#{this.OperandNumber}";
-            set => this.OperandNumber = int.Parse(value.Substring(1));
+            set => this.OperandNumber = int.Parse(value[1..]);
         }
     }
 }

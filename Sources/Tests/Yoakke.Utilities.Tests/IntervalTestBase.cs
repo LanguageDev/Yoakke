@@ -14,9 +14,9 @@ namespace Yoakke.Utilities.Tests
         protected static Interval<int> Iv(string s)
         {
             if (s == "..") return Interval<int>.Full();
-            if (s.StartsWith("..=")) return new Interval<int>(LowerBound<int>.Unbounded(), UpperBound<int>.Inclusive(int.Parse(s.Substring(3))));
-            if (s.StartsWith("..")) return new Interval<int>(LowerBound<int>.Unbounded(), UpperBound<int>.Exclusive(int.Parse(s.Substring(2))));
-            if (s.EndsWith("..")) return new Interval<int>(LowerBound<int>.Inclusive(int.Parse(s.Substring(0, s.Length - 2))), UpperBound<int>.Unbounded());
+            if (s.StartsWith("..=")) return new Interval<int>(LowerBound<int>.Unbounded(), UpperBound<int>.Inclusive(int.Parse(s[3..])));
+            if (s.StartsWith("..")) return new Interval<int>(LowerBound<int>.Unbounded(), UpperBound<int>.Exclusive(int.Parse(s[2..])));
+            if (s.EndsWith("..")) return new Interval<int>(LowerBound<int>.Inclusive(int.Parse(s[0..^2])), UpperBound<int>.Unbounded());
             if (s.Contains("..="))
             {
                 var parts = s.Split("..=");

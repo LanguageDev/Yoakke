@@ -96,13 +96,13 @@ namespace Yoakke.LSP.Generator
         private static NamespaceField StringLitToNamespaceField(IToken<TokenType> t)
         {
             if (t.Kind != TokenType.StringLit) throw new ArgumentException("string literal expected");
-            var text = t.Text.Substring(1, t.Text.Length - 2);
-            var capitalText = char.ToUpper(text[0]) + text.Substring(1);
+            var text = t.Text[1..^1];
+            var capitalText = char.ToUpper(text[0]) + text[1..];
             return new NamespaceField(capitalText, text);
         }
 
         private static object MakeNamespaceValue(IToken<TokenType> t) => t.Kind == TokenType.NumLit
             ? int.Parse(t.Text)
-            : t.Text.Substring(1, t.Text.Length - 2);
+            : t.Text[1..^1];
     }
 }

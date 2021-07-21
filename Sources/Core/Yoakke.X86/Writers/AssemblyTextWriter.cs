@@ -483,7 +483,7 @@ namespace Yoakke.X86.Writers
         {
             static bool IsNewline(char ch) => ch == '\r' || ch == '\n';
 
-            if (this.Result.Length == 0 || IsNewline(this.Result[this.Result.Length - 1])) return string.Empty;
+            if (this.Result.Length == 0 || IsNewline(this.Result[^1])) return string.Empty;
 
             var result = new StringBuilder();
             var i = this.Result.Length - 1;

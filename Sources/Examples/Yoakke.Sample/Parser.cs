@@ -91,7 +91,7 @@ namespace Yoakke.Sample
         private static Expression StrLit(Token t) => new Expression.StringLit(EscapeString(t.Text));
 
         // TODO: Proper escape
-        private static string EscapeString(string str) => str.Substring(1, str.Length - 2);
+        private static string EscapeString(string str) => str[1..^1];
 
         private static BinOp ToBinOp(TokenType tt) => tt switch
         {

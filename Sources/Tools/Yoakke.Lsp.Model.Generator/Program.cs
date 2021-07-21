@@ -241,7 +241,7 @@ namespace Yoakke.LSP.Generator
 
         private static string Capitalize(string s) => string.IsNullOrEmpty(s)
             ? s
-            : char.ToUpper(s[0]) + s.Substring(1);
+            : char.ToUpper(s[0]) + s[1..];
 
         private static string WithOptional(string type) => type.EndsWith('?') ? type : $"{type}?";
     }

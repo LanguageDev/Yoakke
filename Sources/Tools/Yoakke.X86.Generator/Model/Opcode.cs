@@ -48,7 +48,7 @@ namespace Yoakke.X86.Generator.Model
         public string? RegisterCodeAtEnd
         {
             get => this.Last3BitsEncodedOperand is null ? null : $"#{this.Last3BitsEncodedOperand}";
-            set => this.Last3BitsEncodedOperand = value is null ? null : int.Parse(value.Substring(1));
+            set => this.Last3BitsEncodedOperand = value is null ? null : int.Parse(value[1..]);
         }
     }
 }

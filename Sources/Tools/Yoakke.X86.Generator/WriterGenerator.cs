@@ -97,6 +97,6 @@ namespace Yoakke.X86.Generator
             return result.ToString();
         }
 
-        private static string Capitalize(string name) => $"{char.ToUpper(name[0])}{name.Substring(1).ToLower()}";
+        private static string Capitalize(string name) => $"{char.ToUpper(name[0])}{name[1..].ToLower()}";
     }
 }

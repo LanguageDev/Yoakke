@@ -67,14 +67,14 @@ namespace Yoakke.X86.Generator
                 {
                     // We potentially can "optimize away" this line by merging it with the next lines
                     // Take the condition
-                    var hasPrefixCheck = lines[i].Trim().Substring(4);
-                    hasPrefixCheck = hasPrefixCheck.Substring(0, hasPrefixCheck.Length - 1);
+                    var hasPrefixCheck = lines[i].Trim()[4..];
+                    hasPrefixCheck = hasPrefixCheck[0..^1];
                     // Jump over the if (HasPrefix(...))
                     var j = i + 1;
                     // Collect out the lines between the braces
                     var insideLines = ParseCurlyContents(lines, ref j);
                     // We pre-process the lines a bit to make matching easier
-                    insideLines = insideLines.Select(l => l.Substring(4)).ToList();
+                    insideLines = insideLines.Select(l => l[4..]).ToList();
 
                     // Now we have all the lines in between if (HasPrefix(...)) { HERE }
                     // Figure out if these next lines match
@@ -129,9 +129,9 @@ namespace Yoakke.X86.Generator
                     // Skip over the close brace of the outer if
                     ++i;
                     // Un-indent it once
-                    innerIfContent = innerIfContent.Select(l => l.Substring(4)).ToList();
+                    innerIfContent = innerIfContent.Select(l => l[4..]).ToList();
                     // Piece together the new if
-                    var combinedIf = $"{outerIf.Substring(0, outerIf.Length - 1)} && {innerIf.TrimStart().Substring(4)}";
+                    var combinedIf = $"{outerIf[0..^1]} && {innerIf.TrimStart()[4..]}";
                     // Get the indentation
                     var indentation = new string(outerIf.TakeWhile(c => c == ' ').ToArray());
                     // Build it up
@@ -202,12 +202,12 @@ namespace Yoakke.X86.Generator
                     // First '{' of first case
                     var j = i + 3;
                     var firstCaseContents = ParseCurlyContents(lines, ref j);
-                    if (firstCaseContents[firstCaseContents.Count - 1].Contains("return"))
+                    if (firstCaseContents[^1].Contains("return"))
                     {
                         var applicable = true;
                         var caseLabels = new List<string> { lines[i + 2] };
                         var commonPrefixes = firstCaseContents.SkipLast(1).ToList();
-                        var differingSuffixes = new List<string> { firstCaseContents[firstCaseContents.Count - 1] };
+                        var differingSuffixes = new List<string> { firstCaseContents[^1] };
                         while (lines[j].Contains("case") && lines[j + 1].Contains("{"))
                         {
                             var caseLine = lines[j];
@@ -215,7 +215,7 @@ namespace Yoakke.X86.Generator
                             ++j;
                             var caseContents2 = ParseCurlyContents(lines, ref j);
                             var casePrefixes = caseContents2.SkipLast(1).ToList();
-                            var differingSuffix = caseContents2[caseContents2.Count - 1];
+                            var differingSuffix = caseContents2[^1];
                             if (!commonPrefixes.SequenceEqual(casePrefixes) || !differingSuffix.Contains("return"))
                             {
                                 applicable = false;
@@ -226,7 +226,7 @@ namespace Yoakke.X86.Generator
                         if (applicable && caseLabels.Count > 1)
                         {
                             // First write the common prefix unindented
-                            foreach (var l in commonPrefixes) result.AppendLine(l.Substring(4));
+                            foreach (var l in commonPrefixes) result.AppendLine(l[4..]);
                             // Yield the switch
                             result.AppendLine(lines[i]);
                             result.AppendLine(lines[i + 1]);
@@ -468,14 +468,14 @@ namespace Yoakke.X86.Generator
                 {
                     // Regular ModRM, not opcode extension
                     // We can just convert the reg
-                    var regOperandIndex = int.Parse(modrm.Reg.Substring(1));
+                    var regOperandIndex = int.Parse(modrm.Reg[1..]);
                     var size = GetDataWidthForOperand(encoding.Form.Operands[regOperandIndex]);
                     args[regOperandIndex] = $"FromRegisterIndex((modrm_byte >> 3) & 0b111, {size})";
                 }
 
                 // Mode and RM
                 Debug.Assert(modrm.Mode == "11" || modrm.Mode == modrm.Rm, "Mode and RM have to reference the same argument");
-                var rmOperandIndex = int.Parse(modrm.Rm.Substring(1));
+                var rmOperandIndex = int.Parse(modrm.Rm[1..]);
                 var rmOperandSize = GetDataWidthForOperand(encoding.Form.Operands[rmOperandIndex]);
                 // NOTE: We tag RM with indentation to avoid name collision
                 this.Indented().AppendLine($"op{rmOperandIndex} = this.ParseRM(modrm_byte, {rmOperandSize});");
@@ -624,6 +624,6 @@ namespace Yoakke.X86.Generator
             _ => throw new NotSupportedException(),
         };
 
-        private static string Capitalize(string name) => $"{char.ToUpper(name[0])}{name.Substring(1).ToLower()}";
+        private static string Capitalize(string name) => $"{char.ToUpper(name[0])}{name[1..].ToLower()}";
     }
 }
