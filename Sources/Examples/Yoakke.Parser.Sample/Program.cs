@@ -14,7 +14,7 @@ namespace Yoakke.Parser.Sample
     {
         [Error] Error,
         [End] End,
-        [Ignore] [Regex(Regex.Whitespace)] Whitespace,
+        [Ignore] [Regex(Regexes.Whitespace)] Whitespace,
 
         [Token("(")] OpenParen,
         [Token(")")] CloseParen,
@@ -28,7 +28,7 @@ namespace Yoakke.Parser.Sample
 
         [Token(";")] Semicol,
 
-        [Regex(Regex.IntLiteral)] IntLit,
+        [Regex(Regexes.IntLiteral)] IntLit,
     }
 
     [Parser(typeof(TokenType))]

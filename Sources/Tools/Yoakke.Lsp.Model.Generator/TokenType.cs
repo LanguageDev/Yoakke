@@ -14,11 +14,11 @@ namespace Yoakke.LSP.Generator
         [End] End,
 
         [Ignore]
-        [Regex(Regex.Whitespace)]
-        [Regex(Regex.LineComment)]
+        [Regex(Regexes.Whitespace)]
+        [Regex(Regexes.LineComment)]
         Ignore,
 
-        [Regex(Regex.MultilineComment)]
+        [Regex(Regexes.MultilineComment)]
         DocComment,
 
         [Token("export")] KwExport,
@@ -39,8 +39,8 @@ namespace Yoakke.LSP.Generator
         [Token(":")] Colon,
         [Token(";")] Semicolon,
 
-        [Regex(Regex.Identifier)] Ident,
+        [Regex(Regexes.Identifier)] Ident,
         [Regex(@"'[^']*'")] StringLit,
-        [Regex(Regex.IntLiteral)] NumLit,
+        [Regex(Regexes.IntLiteral)] NumLit,
     }
 }

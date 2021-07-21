@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -7,7 +7,7 @@ namespace Yoakke.Lexer
     /// <summary>
     /// Common regular expression constants. This can be used for the declarative, attribute-based API.
     /// </summary>
-    public static class Regex
+    public static class Regexes
     {
         /// <summary>
         /// C identifier.

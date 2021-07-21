@@ -35,9 +35,9 @@ namespace Yoakke.Parser.Tests
         {
             [End] End,
             [Error] Error,
-            [Ignore] [Regex(Regex.Whitespace)] Whitespace,
+            [Ignore] [Regex(Regexes.Whitespace)] Whitespace,
 
-            [Regex(Regex.Identifier)] Identifier,
+            [Regex(Regexes.Identifier)] Identifier,
         }
 
         private static string Parse(string source) =>

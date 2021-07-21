@@ -12,12 +12,12 @@ namespace Yoakke.Lexer.Sample
     {
         [Error] Error,
         [End] End,
-        [Ignore] [Regex(Regex.Whitespace)] Whitespace,
+        [Ignore] [Regex(Regexes.Whitespace)] Whitespace,
 
         [Token("if")] KwIf,
         [Token("else")] KwElse,
         [Token("func")] KwFunc,
-        [Regex(Regex.Identifier)] Ident,
+        [Regex(Regexes.Identifier)] Ident,
 
         [Token("{")] OpenBrace,
         [Token("}")] CloseBrace,
@@ -27,7 +27,7 @@ namespace Yoakke.Lexer.Sample
         [Token("+")] Plus,
         [Token("-")] Minus,
 
-        [Regex(Regex.IntLiteral)] IntLiteral,
+        [Regex(Regexes.IntLiteral)] IntLiteral,
     }
 
     internal class Program

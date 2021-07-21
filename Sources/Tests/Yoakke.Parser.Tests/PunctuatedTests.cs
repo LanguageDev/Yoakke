@@ -34,12 +34,12 @@ namespace Yoakke.Parser.Tests
         {
             [End] End,
             [Error] Error,
-            [Ignore] [Regex(Regex.Whitespace)] Whitespace,
+            [Ignore] [Regex(Regexes.Whitespace)] Whitespace,
 
             [Token("(")] Lparen,
             [Token(")")] Rparen,
             [Token(",")] Comma,
-            [Regex(Regex.Identifier)] Identifier,
+            [Regex(Regexes.Identifier)] Identifier,
         }
 
         private static List<string> Any0NoTrailing(string source) => new ListParser(new ListLexer(source)).ParseAny0NoTrailing().Ok.Value;

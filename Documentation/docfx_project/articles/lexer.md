@@ -50,14 +50,14 @@ You might be wondering, how can the library differentiate between regexes, that 
 The rules define their precedence by their order of declaration. Rules defined earlier have higher precedence, that's why `"if"` and `"else"` get to match these literals before the identifier rule does. If you defined the identifier rule before the keywords, then `"if"` and `"else"` would be recognized as identifiers instead.
 
 #### Built-in regexes
-There are some regexes that are very common among language lexemes, so the `Regex` class contains some of these definitions:
- * `Regex.Identifier`: A C-style identifier, matching `[A-Za-z_][A-Za-z0-9_]*`
- * `Regex.Whitespace`: Common whitespace characters, matching `[ \t\r\n]`
- * `Regex.IntLiteral`: Decimal numbers, matching `[0-9]+`
- * `Regex.HexLiteral`: A hexadecimal number with `0x` prefix, matching `0x[0-9a-fA-F]+`
- * `Regex.StringLiteral`: A *single-line* string-literal that starts and ends with a `"`, supports any escape character with `\`
- * `Regex.LineComment`: A C-style single-line comment, starting with a `//`, ending with the line, matching `//[^\r\n]*`
- * `Regex.MultilineComment`: A C-style multi-line comment starting with `/*` and ending with `*/`. Please note, that this is _not a nestable multi-line comment_. That would make it non-regular, so the library wouldn't be able to reasonably support it. If you want to support this, you should probably [roll your own lexer](#rolling-your-own-lexer).
+There are some regexes that are very common among language lexemes, so the `Regexes` class contains some of these definitions:
+ * `Regexes.Identifier`: A C-style identifier, matching `[A-Za-z_][A-Za-z0-9_]*`
+ * `Regexes.Whitespace`: Common whitespace characters, matching `[ \t\r\n]`
+ * `Regexes.IntLiteral`: Decimal numbers, matching `[0-9]+`
+ * `Regexes.HexLiteral`: A hexadecimal number with `0x` prefix, matching `0x[0-9a-fA-F]+`
+ * `Regexes.StringLiteral`: A *single-line* string-literal that starts and ends with a `"`, supports any escape character with `\`
+ * `Regexes.LineComment`: A C-style single-line comment, starting with a `//`, ending with the line, matching `//[^\r\n]*`
+ * `Regexes.MultilineComment`: A C-style multi-line comment starting with `/*` and ending with `*/`. Please note, that this is _not a nestable multi-line comment_. That would make it non-regular, so the library wouldn't be able to reasonably support it. If you want to support this, you should probably [roll your own lexer](#rolling-your-own-lexer).
 
 Rewriting the above sample to use these built-ins:
 ```csharp
@@ -66,17 +66,17 @@ public enum TokenType
 {
     [Error] Error,
     [End] End,
-    [Ignore] [Regex(Regex.Whitespace)] Whitespace,
-    [Ignore] [Regex(Regex.LineComment)] LineComment,
+    [Ignore] [Regex(Regexes.Whitespace)] Whitespace,
+    [Ignore] [Regex(Regexes.LineComment)] LineComment,
 
     [Token("if")] KwIf,
     [Token("else")] KwElse,
-    [Regex(Regex.Identifier)] Identifier,
+    [Regex(Regexes.Identifier)] Identifier,
 
     [Token("+")] Plus,
     [Token("-")] Minus,
 
-    [Regex(Regex.IntLiteral)] IntLiteral,
+    [Regex(Regexes.IntLiteral)] IntLiteral,
 }
 ```
 
@@ -86,9 +86,9 @@ You might want to give multiple definitions for the same token, and for good rea
 Fortunately, you can define as many rules for a token-type, as you wish. Presenting the above examples:
 ```csharp
 [Ignore]
-[Regex(Regex.Whitespace)]
-[Regex(Regex.LineComment)]
-[Regex(Regex.MultilineComment)] IgnoreMe,
+[Regex(Regexes.Whitespace)]
+[Regex(Regexes.LineComment)]
+[Regex(Regexes.MultilineComment)] IgnoreMe,
 
 [Token("and")]
 [Token("&&")] AndOperator,
