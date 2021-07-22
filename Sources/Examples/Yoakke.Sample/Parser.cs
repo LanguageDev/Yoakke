@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Yoakke.Collections;
 using Yoakke.Lexer;
 using Yoakke.Parser;
 using Yoakke.Parser.Attributes;
@@ -18,14 +19,14 @@ namespace Yoakke.Sample
         // Statements
 
         [Rule("program : stmt*")]
-        private static Statement Program(IReadOnlyList<Statement> statements) => new Statement.Program(statements);
+        private static Statement Program(IReadOnlyList<Statement> statements) => new Statement.Program(statements.AsValue());
 
         [Rule("stmt : 'func' Ident '(' (Ident (',' Ident)*)? ')' block_stmt")]
         private static Statement Func(
             Token _1, Token name,
             Token _2, Punctuated<Token, Token> paramList, Token _3,
             Statement body) =>
-            new Statement.Func(name.Text, paramList.Values.Select(t => t.Text).ToArray(), body);
+            new Statement.Func(name.Text, paramList.Values.Select(t => t.Text).ToList().AsValue(), body);
 
         [Rule("stmt : 'if' expr block_stmt ('else' block_stmt)?")]
         private static Statement IfElse(Token _1, Expression cond, Statement then, (Token Kw, Statement Body)? els) =>
@@ -47,7 +48,7 @@ namespace Yoakke.Sample
 
         [Rule("block_stmt : '{' stmt* '}'")]
         private static Statement Block(Token _1, IReadOnlyList<Statement> statements, Token _2) =>
-            new Statement.List(statements);
+            new Statement.List(statements.AsValue());
 
         [Rule("stmt: expr ';'")]
         private static Statement Expr(Expression expr, Token _1) => new Statement.Expr(expr);
@@ -76,7 +77,7 @@ namespace Yoakke.Sample
 
         [Rule("post_expr : post_expr '(' (expr (',' expr)*)? ')'")]
         private static Expression Call(Expression func, Token _1, Punctuated<Expression, Token> args, IToken _2) =>
-            new Expression.Call(func, args.Values.ToArray());
+            new Expression.Call(func, args.Values.ToList().AsValue());
 
         [Rule("atom_expr : '(' expr ')'")]
         private static Expression Ident(Token _1, Expression e, Token _2) => e;

@@ -53,6 +53,20 @@ namespace Yoakke.Utilities.Compatibility
         /// </summary>
         /// <typeparam name="T">The element type of the <see cref="HashSet{T}"/>.</typeparam>
         /// <param name="values">The <see cref="IEnumerable{T}"/> values to collect.</param>
+        /// <param name="comparer">The value comparer to use.</param>
+        /// <returns>The collected values in a <see cref="HashSet{T}"/>.</returns>
+        public static HashSet<T> ToHashSet<T>(this IEnumerable<T> values, IEqualityComparer<T> comparer)
+        {
+            var result = new HashSet<T>(comparer);
+            foreach (var item in values) result.Add(item);
+            return result;
+        }
+
+        /// <summary>
+        /// Collects the elements into a <see cref="HashSet{T}"/>.
+        /// </summary>
+        /// <typeparam name="T">The element type of the <see cref="HashSet{T}"/>.</typeparam>
+        /// <param name="values">The <see cref="IEnumerable{T}"/> values to collect.</param>
         /// <returns>The collected values in a <see cref="HashSet{T}"/>.</returns>
         public static HashSet<T> ToHashSet<T>(this IEnumerable<T> values)
         {

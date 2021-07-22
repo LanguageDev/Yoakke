@@ -36,7 +36,7 @@ print(fib(7));
             }
 
             var ast = result.Ok.Value;
-            Console.WriteLine(PrettyPrinter.Print(ast, PrettyPrintFormat.Xml));
+            //Console.WriteLine(PrettyPrinter.Print(ast, PrettyPrintFormat.Xml));
             var resolve = new SymbolResolution();
             resolve.SymbolTable.GlobalScope.DefineSymbol(
                 new ConstSymbol(resolve.SymbolTable.GlobalScope, "print", (Func<object[], object?>)(arg => { Console.WriteLine(arg[0].ToString()); return null; })));

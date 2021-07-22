@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
@@ -14,40 +15,32 @@ using Yoakke.Utilities.Compatibility;
 namespace Yoakke.SyntaxTree.Generator
 {
     /// <summary>
-    /// Generator for AST functionality.
+    /// Generator for syntax tree functionality.
     /// </summary>
     [Generator]
-    public class AstSourceGenerator : GeneratorBase
+    public class SyntaxTreeSourceGenerator : GeneratorBase
     {
         private class SyntaxReceiver : ISyntaxReceiver
         {
-            public IList<ClassDeclarationSyntax> CandidateClasses { get; } = new List<ClassDeclarationSyntax>();
+            public IList<TypeDeclarationSyntax> CandidateClasses { get; } = new List<TypeDeclarationSyntax>();
 
             public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
             {
-                if (syntaxNode is ClassDeclarationSyntax classDeclSyntax
-                    && classDeclSyntax.AttributeLists.Count > 0)
+                if (syntaxNode is TypeDeclarationSyntax typeDeclSyntax
+                    && typeDeclSyntax.AttributeLists.Count > 0)
                 {
-                    this.CandidateClasses.Add(classDeclSyntax);
+                    this.CandidateClasses.Add(typeDeclSyntax);
                 }
             }
-        }
-
-        private enum FieldKind
-        {
-            Leaf,
-            Subnode,
-            LeafList,
-            SubnodeList,
         }
 
         private Dictionary<string, MetaNode> rootNodes = new();
         private Dictionary<string, MetaNode> allNodes = new();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AstSourceGenerator"/> class.
+        /// Initializes a new instance of the <see cref="SyntaxTreeSourceGenerator"/> class.
         /// </summary>
-        public AstSourceGenerator()
+        public SyntaxTreeSourceGenerator()
             : base("Yoakke.SyntaxTree.Generator")
         {
         }
@@ -62,6 +55,7 @@ namespace Yoakke.SyntaxTree.Generator
         protected override void GenerateCode(ISyntaxReceiver syntaxReceiver)
         {
             var receiver = (SyntaxReceiver)syntaxReceiver;
+            // Debugger.Launch();
 
             this.RequireLibrary("Yoakke.SyntaxTree");
 
@@ -74,18 +68,18 @@ namespace Yoakke.SyntaxTree.Generator
             foreach (var node in this.rootNodes.Values) this.GenerateVisitorSource(node);
         }
 
-        private void BuildMetaNodes(IList<ClassDeclarationSyntax> classDeclarations)
+        private void BuildMetaNodes(IList<TypeDeclarationSyntax> classDeclarations)
         {
             // Collect only the classes that have the AstAttribute
             // NOTE: False positive since 3.3.2 update
 #pragma warning disable RS1024 // Compare symbols correctly
-            var astNodeSymbols = new HashSet<INamedTypeSymbol>(SymbolEqualityComparer.Default);
+            var astNodeSymbols = new HashSet<ISymbol>(SymbolEqualityComparer.Default);
 #pragma warning restore RS1024 // Compare symbols correctly
             foreach (var syntax in classDeclarations)
             {
                 var model = this.Context.Compilation.GetSemanticModel(syntax.SyntaxTree);
                 var symbol = model.GetDeclaredSymbol(syntax) as INamedTypeSymbol;
-                if (!this.HasAttribute(symbol!, TypeNames.AstAttribute)) continue;
+                if (!this.HasAttribute(symbol!, TypeNames.SyntaxTreeAttribute)) continue;
                 if (!this.RequirePartial(syntax)) continue;
                 astNodeSymbols.Add(symbol!);
             }
@@ -93,10 +87,12 @@ namespace Yoakke.SyntaxTree.Generator
             // Select all the root nodes
             // They are all the nodes without a base class or with a base class that's not an AST node
             var rootNodeSymbols = astNodeSymbols
-                .Where(sym => sym.BaseType == null || !this.HasAttribute(sym.BaseType, TypeNames.AstAttribute))
-                .ToHashSet();
+                .OfType<INamedTypeSymbol>()
+                .Where(sym => sym.BaseType is null || !this.HasAttribute(sym.BaseType, TypeNames.SyntaxTreeAttribute))
+                .ToHashSet(SymbolEqualityComparer.Default);
             this.rootNodes = rootNodeSymbols
-                .Select(sym => this.MakeMetaNode(sym, null))
+                .OfType<INamedTypeSymbol>()
+                .Select(sym => new MetaNode(sym, null))
                 .ToDictionary(n => n.Name);
             // Clone them to all nodes
             this.allNodes = this.rootNodes.ToDictionary(n => n.Key, n => n.Value);
@@ -104,7 +100,7 @@ namespace Yoakke.SyntaxTree.Generator
             // Remove them from all symbols
             astNodeSymbols = astNodeSymbols
                 .Except(rootNodeSymbols)
-                .ToHashSet();
+                .ToHashSet(SymbolEqualityComparer.Default)!;
 
             // Now loop until all nodes could be attached somewhere
             while (astNodeSymbols.Count > 0)
@@ -113,11 +109,11 @@ namespace Yoakke.SyntaxTree.Generator
 #pragma warning disable RS1024 // Compare symbols correctly
                 var toRemove = new HashSet<INamedTypeSymbol>(SymbolEqualityComparer.Default);
 #pragma warning restore RS1024 // Compare symbols correctly
-                foreach (var symbol in astNodeSymbols)
+                foreach (var symbol in astNodeSymbols.OfType<INamedTypeSymbol>())
                 {
                     if (!this.allNodes.TryGetValue(symbol.BaseType!.Name, out var parentNode)) continue;
                     // We found this node's parent in our existing nodes
-                    var node = this.MakeMetaNode(symbol, parentNode);
+                    var node = new MetaNode(symbol, parentNode);
                     this.allNodes.Add(node.Name, node);
                     toRemove.Add(symbol);
                 }
@@ -134,104 +130,32 @@ namespace Yoakke.SyntaxTree.Generator
             }
         }
 
-        private MetaNode MakeMetaNode(INamedTypeSymbol symbol, MetaNode? parent)
-        {
-            var node = new MetaNode(symbol, parent);
-            if (parent != null) parent.Children.Add(node.Name, node);
-
-            if (this.TryGetAttribute(symbol, TypeNames.ImplementEqualityAttribute, out var equalityAttr))
-            {
-                node.ImplementEquality =
-                    equalityAttr.ConstructorArguments.Length == 0 || (bool?)equalityAttr.ConstructorArguments[0].Value == true;
-            }
-
-            return node;
-        }
-
         private void GenerateNodeSource(MetaNode node)
         {
-            var isRoot = node.Parent == null;
             // Generate this node
-            var interfacesToImplement = new List<string>
-            {
-                TypeNames.IAstNode,
-            };
-            if (isRoot)
-            {
-                // There are potentially things to implement
-                if (node.ImplementEquality) interfacesToImplement.Add($"{TypeNames.IEquatable}<{node.Symbol.ToDisplayString()}>");
-            }
+            var fields = this.GetAllSyntaxTreeNodeChildren(node.Symbol);
+            var definitions = new StringBuilder();
+            var interfaceImplementations = new StringBuilder();
 
-            var fields = this.CategorizeAllFields(node.Symbol);
+            if (node.Parent is null) interfaceImplementations.Append(" : ").Append(TypeNames.ISyntaxTreeNode);
 
-            var extraDefinitions = new StringBuilder();
-
-            // Utility to create the getter
-            void WriteGetter(string valueType, string propName, IEnumerable<IFieldSymbol> symbols)
-            {
-                var kvType = $"{TypeNames.KeyValuePair}<string, {valueType}>";
-                var typeName = $"{TypeNames.IEnumerable}<{kvType}>";
-                extraDefinitions!.AppendLine($"{typeName} {TypeNames.IAstNode}.{propName}");
-                extraDefinitions.AppendLine("{ get {");
-                var hasAny = false;
-                foreach (var symbol in symbols)
-                {
-                    hasAny = true;
-                    extraDefinitions.AppendLine($"yield return new {kvType}(\"{symbol.Name}\", this.{symbol.Name});");
-                }
-                if (!hasAny) extraDefinitions.AppendLine("yield break;");
-                extraDefinitions.AppendLine("} }");
-            }
-
-            // Generate overrides for IAstNode children getters
-            WriteGetter(TypeNames.IAstNode, "ChildNodes", fields.Where(f => f.Kind == FieldKind.Subnode).Select(f => f.Symbol));
-            WriteGetter($"{TypeNames.IReadOnlyCollection}<{TypeNames.IAstNode}>", "ChildNodeCollections", fields.Where(f => f.Kind == FieldKind.SubnodeList).Select(f => f.Symbol));
-            WriteGetter("object", "LeafObjects", fields.Where(f => f.Kind == FieldKind.Leaf).Select(f => f.Symbol));
-            WriteGetter($"{TypeNames.IReadOnlyCollection}<object>", "LeafObjectCollections", fields.Where(f => f.Kind == FieldKind.LeafList).Select(f => f.Symbol));
-
-            // Generate ctor
-            var ctorSource = $@"
-public {node.Name}({string.Join(", ", fields.Select(f => $"{f.Symbol.Type.ToDisplayString()} {f.Symbol.Name}"))}) {{
-    {string.Join(string.Empty, fields.Select(f => $"this.{f.Symbol.Name} = {f.Symbol.Name};"))};
-}}
-";
-            var emptyCtorSource = fields.Count == 0 ? string.Empty : $"protected {node.Name}() {{ }}";
-
-            // Extra stuff like interface implementations
-            if (isRoot && node.ImplementEquality)
-            {
-                // A root node that needs equality always defines object.Equals
-                extraDefinitions.AppendLine($"public override bool Equals(object other) => Equals(other as {node.Name});");
-            }
-
+            // Generate the ISyntaxTreeNode implementation
+            var overridePart = node.Parent is null ? string.Empty : "override";
             if (node.IsAbstract)
             {
-                if (isRoot && node.ImplementEquality)
-                {
-                    // Define equality and hash abstractly
-                    extraDefinitions.AppendLine($"public abstract bool Equals({node.Name} other);");
-                    extraDefinitions.AppendLine("public abstract override int GetHashCode();");
-                }
+                definitions.AppendLine($"public abstract {overridePart} int ChildCount {{ get; }}");
+                definitions.AppendLine($"public abstract {overridePart} object GetChild(int index);");
             }
             else
             {
-                if (node.ImplementEquality)
-                {
-                    // Override equality and hash
-                    var lastEquality = LastParentThat(node, n => n.ImplementEquality)!.Symbol.ToDisplayString();
-                    var (eqCmp, hash) = GenerateEqualityElements(fields);
-
-                    var comparisons = string.Join(" && ", eqCmp);
-                    extraDefinitions.AppendLine($"public override bool Equals({lastEquality} o) =>");
-                    extraDefinitions.AppendLine($"    o is {node.Name} other && {comparisons};");
-
-                    extraDefinitions.AppendLine("public override int GetHashCode()");
-                    extraDefinitions.AppendLine("{");
-                    extraDefinitions.AppendLine($"    var hash = new {TypeNames.HashCode}();");
-                    extraDefinitions.AppendLine(string.Join(string.Empty, hash));
-                    extraDefinitions.AppendLine("    return hash.ToHashCode();");
-                    extraDefinitions.AppendLine("}");
-                }
+                definitions.AppendLine($"public {overridePart} int ChildCount => {fields.Count};");
+                definitions
+                    .AppendLine($"public {overridePart} object GetChild(int index) => index switch")
+                    .AppendLine("{");
+                for (var i = 0; i < fields.Count; ++i) definitions.AppendLine($"{i} => this.{fields[i].Name},");
+                definitions
+                    .AppendLine($"_ => throw new {TypeNames.ArgumentOutOfRangeException}(nameof(index)),")
+                    .AppendLine("};");
             }
 
             // Surrounding crud
@@ -240,19 +164,15 @@ public {node.Name}({string.Join(", ", fields.Select(f => $"{f.Symbol.Type.ToDisp
             var nestClassSuffix = new StringBuilder();
             foreach (var nest in node.Nesting)
             {
-                nestClassPrefix.AppendLine($"partial class {nest} {{");
+                nestClassPrefix.AppendLine($"partial {nest} {{");
                 nestClassSuffix.AppendLine("}");
             }
 
             var sourceCode = $@"
-using System.Linq;
-
 namespace {surroundingNamespace} {{
     {nestClassPrefix}
-    partial class {node.Name} : {string.Join(", ", interfacesToImplement)} {{
-        {emptyCtorSource}
-        {ctorSource}
-        {extraDefinitions}
+    partial {node.Symbol.GetTypeKindName()} {node.Name} {interfaceImplementations} {{
+        {definitions}
     }}
     {nestClassSuffix}
 }}
@@ -271,14 +191,14 @@ namespace {surroundingNamespace} {{
                 var nestClassSuffix = new StringBuilder();
                 foreach (var nest in node.Nesting)
                 {
-                    nestClassPrefix.AppendLine($"partial class {nest} {{");
+                    nestClassPrefix.AppendLine($"partial {nest} {{");
                     nestClassSuffix.AppendLine("}");
                 }
 
                 var sourceCode = $@"
 namespace {surroundingNamespace} {{
     {nestClassPrefix}
-    partial class {visitor.Value.Root.Name} {{
+    partial {visitor.Value.Root.GetTypeKindName()} {visitor.Value.Root.Name} {{
         public abstract class {visitor.Key} {{
             {visitor.Value.Content}
         }}
@@ -295,10 +215,12 @@ namespace {surroundingNamespace} {{
             IReadOnlyDictionary<string, (INamedTypeSymbol Root, StringBuilder Content, INamedTypeSymbol ReturnType)> visitors)
         {
             // Get all visitor attributes on this node
-            var visitorAttr = this.LoadSymbol(TypeNames.VisitorAttribute);
+            var visitorAttr = this.LoadSymbol(TypeNames.SyntaxTreeVisitorAttribute);
             var visitorAttrs = node.Symbol.GetAttributes()
                 .Where(attr => SymbolEquals(attr.AttributeClass, visitorAttr))
-                .ToDictionary(attr => attr.GetCtorValue(0)!.ToString(), attr => (INamedTypeSymbol)attr.GetCtorValue(1)!);
+                .ToDictionary(
+                    attr => attr.GetCtorValue(0)!.ToString(),
+                    attr => attr.ConstructorArguments.Length > 1 ? (INamedTypeSymbol)attr.GetCtorValue(1)! : this.LoadSymbol(TypeNames.Void));
             // Go through all visitors, old or new
             var newVisitors = new Dictionary<string, (INamedTypeSymbol Root, StringBuilder Content, INamedTypeSymbol ReturnType)>();
             foreach (var visitorName in visitors.Keys.Union(visitorAttrs.Select(v => v.Key)))
@@ -320,7 +242,8 @@ namespace {surroundingNamespace} {{
                 }
             }
 
-            var members = this.CategorizeAllFields(node.Symbol);
+            var members = this.GetAllSyntaxTreeNodeChildren(node.Symbol);
+            var enumerableInterface = this.LoadSymbol(TypeNames.IEnumerable);
             foreach (var (root, content, returnType) in newVisitors.Values)
             {
                 var returnTypeStr = returnType.ToDisplayString();
@@ -329,17 +252,24 @@ namespace {surroundingNamespace} {{
                 {
                     // No subtypes
                     // Visit each member of the type
-                    foreach (var (member, kind) in members)
+                    foreach (var member in members)
                     {
-                        if (kind == FieldKind.Subnode)
+                        var type = member switch
                         {
-                            // It's a subnode, we have to visit it (with a null check)
-                            content.AppendLine($"if (node.{member.Name} != null) this.Visit(node.{member.Name});");
-                        }
-                        else if (kind == FieldKind.SubnodeList)
+                            IFieldSymbol f => f.Type,
+                            IPropertySymbol p => p.Type,
+                            _ => throw new InvalidOperationException(),
+                        };
+                        if (type.ImplementsGenericInterface(enumerableInterface, out var args)
+                         && this.HasAttribute(args![0], TypeNames.SyntaxTreeAttribute))
                         {
                             // It's a list of visitable things, visit them
                             content.AppendLine($"foreach (var item in node.{member.Name}) this.Visit(item);");
+                        }
+                        else if (this.HasAttribute(type, TypeNames.SyntaxTreeAttribute))
+                        {
+                            // It's a subnode, we have to visit it (with a null check)
+                            content.AppendLine($"if (node.{member.Name} is not null) this.Visit(node.{member.Name});");
                         }
                     }
                 }
@@ -386,74 +316,12 @@ namespace {surroundingNamespace} {{
             return unified;
         }
 
-        private static (List<string> Equality, List<string> Hash) GenerateEqualityElements(
-            List<(IFieldSymbol Symbol, FieldKind Kind)> fields)
-        {
-            var equality = new List<string>();
-            var hash = new List<string>();
-            foreach (var (symbol, kind) in fields)
-            {
-                if (kind == FieldKind.LeafList || kind == FieldKind.SubnodeList)
-                {
-                    // Use .SequenceEquals and add each element to hash one by one
-                    equality.Add($"this.{symbol.Name}.Count == other.{symbol.Name}.Count && this.{symbol.Name}.SequenceEqual(other.{symbol.Name})");
-                    hash.Add($"foreach (var item in this.{symbol.Name}) hash.Add(item);");
-                }
-                else
-                {
-                    // Just call Equals and add to hash
-                    equality.Add($"this.{symbol.Name}.Equals(other.{symbol.Name})");
-                    hash.Add($"hash.Add(this.{symbol.Name});");
-                }
-            }
-            return (equality, hash);
-        }
-
-        private List<(IFieldSymbol Symbol, FieldKind Kind)> CategorizeAllFields(ITypeSymbol symbol) => symbol
+        private List<ISymbol> GetAllSyntaxTreeNodeChildren(ITypeSymbol symbol) => symbol
             .GetMembers()
-            .Where(m => !m.IsStatic)
-            .OfType<IFieldSymbol>()
-            .Select(f => (Symbol: f, Kind: this.CategorizeField(f)))
+            .Where(m => !m.IsStatic
+                     && m.DeclaredAccessibility != Accessibility.Private
+                     && !this.HasAttribute(m, TypeNames.SyntaxTreeIgnoreAttribute)
+                     && (m is IFieldSymbol || m is IPropertySymbol))
             .ToList();
-
-        private FieldKind CategorizeField(IFieldSymbol symbol)
-        {
-            var readOnlyCollection = this.LoadSymbol(TypeNames.IReadOnlyCollectionG);
-            if (this.HasAttribute(symbol.Type, TypeNames.AstAttribute))
-            {
-                // It's a subnode
-                return FieldKind.Subnode;
-            }
-            else if (symbol.Type.ImplementsGenericInterface(readOnlyCollection, out var args))
-            {
-                // It's a list of something
-                if (this.HasAttribute(args![0], TypeNames.AstAttribute))
-                {
-                    // It's a list of subnodes
-                    return FieldKind.SubnodeList;
-                }
-                else
-                {
-                    // It's a list of leaves
-                    return FieldKind.LeafList;
-                }
-            }
-            else
-            {
-                // It's some leaf
-                return FieldKind.Leaf;
-            }
-        }
-
-        private static MetaNode? LastParentThat(MetaNode root, Predicate<MetaNode> pred)
-        {
-            if (root.Parent == null)
-            {
-                if (pred(root)) return root;
-                return null;
-            }
-            if (!pred(root.Parent)) return root;
-            return LastParentThat(root.Parent, pred);
-        }
     }
 }

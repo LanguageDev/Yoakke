@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -14,6 +15,19 @@ namespace Yoakke.SourceGenerator.Common
     /// </summary>
     public static class SymbolExtensions
     {
+        /// <summary>
+        /// Retrieves the type kind of a <see cref="ISymbol"/> that can be used in codegen.
+        /// </summary>
+        /// <param name="symbol">The <see cref="ISymbol"/> to get the kind of.</param>
+        /// <returns>The code-friendly name of the type kind.</returns>
+        public static string GetTypeKindName(this ITypeSymbol symbol) => symbol.TypeKind switch
+        {
+            TypeKind.Class => symbol.IsRecord ? "record" : "class",
+            TypeKind.Struct => "struct",
+            TypeKind.Interface => "interface",
+            _ => throw new NotSupportedException(),
+        };
+
         /// <summary>
         /// Checks, if a <see cref="ISymbol"/> is a nested type.
         /// </summary>

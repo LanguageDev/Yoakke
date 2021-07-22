@@ -3,73 +3,67 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System.Collections.Generic;
+using Yoakke.Collections;
 using Yoakke.SyntaxTree.Attributes;
 
 namespace Yoakke.Sample
 {
-    [Ast]
-    [Visitor("PassVisitor", typeof(void))]
-    [Visitor("TreeEvaluator", typeof(void))]
-    public abstract partial class AstNode
+    [SyntaxTree]
+    [SyntaxTreeVisitor("PassVisitor", typeof(void))]
+    [SyntaxTreeVisitor("TreeEvaluator", typeof(void))]
+    public abstract partial record AstNode
     {
     }
 
-    [Ast]
-    public abstract partial class Statement : AstNode
+    [SyntaxTree]
+    public abstract partial record Statement : AstNode
     {
-        [Ast]
-        public partial class Program : Statement
-        {
-            public readonly IReadOnlyList<Statement> Statements;
-        }
+        [SyntaxTree]
+        public partial record Program(IReadOnlyValueList<Statement> Statements) : Statement;
 
-        [Ast]
-        public partial class List : Statement
-        {
-            public readonly IReadOnlyList<Statement> Statements;
-        }
+        [SyntaxTree]
+        public partial record List(IReadOnlyValueList<Statement> Statements) : Statement;
 
-        [Ast]
-        public partial class Var : Statement
-        {
-            public readonly string Name;
-            public readonly Expression Value;
-        }
+        [SyntaxTree]
+        public partial record Var(string Name, Expression Value) : Statement;
 
-        [Ast]
-        public partial class Func : Statement
-        {
-            public readonly string Name;
-            public readonly IReadOnlyList<string> Parameters;
-            public readonly Statement Body;
-        }
+        [SyntaxTree]
+        public partial record Func(string Name, IReadOnlyValueList<string> Parameters, Statement Body) : Statement;
 
-        [Ast]
-        public partial class Return : Statement
-        {
-            public readonly Expression? Value;
-        }
+        [SyntaxTree]
+        public partial record Return(Expression? Value) : Statement;
 
-        [Ast]
-        public partial class If : Statement
-        {
-            public readonly Expression Condition;
-            public readonly Statement Then;
-            public readonly Statement? Else;
-        }
+        [SyntaxTree]
+        public partial record If(Expression Condition, Statement Then, Statement? Else) : Statement;
 
-        [Ast]
-        public partial class While : Statement
-        {
-            public readonly Expression Condition;
-            public readonly Statement Body;
-        }
+        [SyntaxTree]
+        public partial record While(Expression Condition, Statement Body) : Statement;
 
-        [Ast]
-        public partial class Expr : Statement
-        {
-            public readonly Expression Expression;
-        }
+        [SyntaxTree]
+        public partial record Expr(Expression Expression) : Statement;
+    }
+
+    [SyntaxTree]
+    [SyntaxTreeVisitor("TreeEvaluator", typeof(object))]
+    public abstract partial record Expression : AstNode
+    {
+        [SyntaxTree]
+        public partial record Call(Expression Function, IReadOnlyValueList<Expression> Arguments) : Expression;
+
+        [SyntaxTree]
+        public partial record Unary(UnaryOp Op, Expression Subexpr) : Expression;
+
+        [SyntaxTree]
+        public partial record Binary(Expression Left, BinOp Op, Expression Right) : Expression;
+
+        [SyntaxTree]
+        public partial record Ident(string Name) : Expression;
+
+        [SyntaxTree]
+        public partial record StringLit(string Value) : Expression;
+
+        [SyntaxTree]
+        public partial record IntLit(int Value) : Expression;
     }
 
     public enum UnaryOp
@@ -95,50 +89,5 @@ namespace Yoakke.Sample
         LessEq,
         And,
         Or,
-    }
-
-    [Ast]
-    [Visitor("TreeEvaluator", typeof(object))]
-    public abstract partial class Expression : AstNode
-    {
-        [Ast]
-        public partial class Call : Expression
-        {
-            public readonly Expression Function;
-            public readonly IReadOnlyList<Expression> Arguments;
-        }
-
-        [Ast]
-        public partial class Unary : Expression
-        {
-            public readonly UnaryOp Op;
-            public readonly Expression Subexpr;
-        }
-
-        [Ast]
-        public partial class Binary : Expression
-        {
-            public readonly Expression Left;
-            public readonly BinOp Op;
-            public readonly Expression Right;
-        }
-
-        [Ast]
-        public partial class Ident : Expression
-        {
-            public readonly string Name;
-        }
-
-        [Ast]
-        public partial class StringLit : Expression
-        {
-            public readonly string Value;
-        }
-
-        [Ast]
-        public partial class IntLit : Expression
-        {
-            public readonly int Value;
-        }
     }
 }

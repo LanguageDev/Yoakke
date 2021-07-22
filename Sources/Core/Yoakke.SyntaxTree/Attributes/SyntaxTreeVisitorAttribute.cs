@@ -10,7 +10,7 @@ namespace Yoakke.SyntaxTree.Attributes
     /// An attribute to denote the generation of a visitor.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
-    public class VisitorAttribute : Attribute
+    public class SyntaxTreeVisitorAttribute : Attribute
     {
         /// <summary>
         /// The name of the visitor to generate.
@@ -23,14 +23,23 @@ namespace Yoakke.SyntaxTree.Attributes
         public Type Type { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="VisitorAttribute"/> class.
+        /// Initializes a new instance of the <see cref="SyntaxTreeVisitorAttribute"/> class.
         /// </summary>
         /// <param name="name">The name of the visitor to generate.</param>
         /// <param name="type">The type to return from the visitor calls.</param>
-        public VisitorAttribute(string name, Type type)
+        public SyntaxTreeVisitorAttribute(string name, Type type)
         {
             this.Name = name;
             this.Type = type;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SyntaxTreeVisitorAttribute"/> class.
+        /// </summary>
+        /// <param name="name">The name of the visitor to generate.</param>
+        public SyntaxTreeVisitorAttribute(string name)
+            : this(name, typeof(void))
+        {
         }
     }
 }

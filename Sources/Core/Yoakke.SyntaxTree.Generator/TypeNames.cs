@@ -12,6 +12,11 @@ namespace Yoakke.SyntaxTree.Generator
         private const string AstNamespace = "Yoakke.SyntaxTree";
 
         /// <summary>
+        /// System.ArgumentOutOfRangeException.
+        /// </summary>
+        public const string ArgumentOutOfRangeException = "System.ArgumentOutOfRangeException";
+
+        /// <summary>
         /// System.HashCode.
         /// </summary>
         public const string HashCode = "System.HashCode";
@@ -29,7 +34,7 @@ namespace Yoakke.SyntaxTree.Generator
         /// <summary>
         /// System.Collections.Generic.IEnumerable.
         /// </summary>
-        public const string IEnumerable = "System.Collections.Generic.IEnumerable";
+        public const string IEnumerable = "System.Collections.Generic.IEnumerable`1";
 
         /// <summary>
         /// System.Text.StringBuilder.
@@ -57,28 +62,28 @@ namespace Yoakke.SyntaxTree.Generator
         public const string IReadOnlyCollectionG = "System.Collections.Generic.IReadOnlyCollection`1";
 
         /// <summary>
-        /// The attribute to annotate an AST.
+        /// System.Void.
         /// </summary>
-        public static readonly string AstAttribute = $"{AstNamespace}.Attributes.AstAttribute";
+        public const string Void = "System.Void";
 
         /// <summary>
-        /// The attribute to annotate if equality and hash should be implemented.
+        /// The attribute to annotate a syntax tree.
         /// </summary>
-        public static readonly string ImplementEqualityAttribute = $"{AstNamespace}.Attributes.ImplementEqualityAttribute";
+        public static readonly string SyntaxTreeAttribute = $"{AstNamespace}.Attributes.SyntaxTreeAttribute";
 
         /// <summary>
         /// The attribute to annotate if a visitor should be implemented.
         /// </summary>
-        public static readonly string VisitorAttribute = $"{AstNamespace}.Attributes.VisitorAttribute";
+        public static readonly string SyntaxTreeVisitorAttribute = $"{AstNamespace}.Attributes.SyntaxTreeVisitorAttribute";
+
+        /// <summary>
+        /// The attribute to mark a member to be skipped.
+        /// </summary>
+        public static readonly string SyntaxTreeIgnoreAttribute = $"{AstNamespace}.Attributes.SyntaxTreeIgnoreAttribute";
 
         /// <summary>
         /// The common interface for AST nodes.
         /// </summary>
-        public static readonly string IAstNode = $"{AstNamespace}.IAstNode";
-
-        /// <summary>
-        /// The enumeration containing pretty-print formats.
-        /// </summary>
-        public static readonly string PrettyPrintFormat = $"{AstNamespace}.PrettyPrintFormat";
+        public static readonly string ISyntaxTreeNode = $"{AstNamespace}.ISyntaxTreeNode";
     }
 }

@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
+using Yoakke.SourceGenerator.Common;
 
 namespace Yoakke.SyntaxTree.Generator
 {
@@ -53,18 +54,7 @@ namespace Yoakke.SyntaxTree.Generator
         /// <summary>
         /// The root node, so the ancestor with no parent.
         /// </summary>
-        public MetaNode Root => this.Parent == null ? this : this.Parent.Root;
-
-        private bool? implementEquality;
-
-        /// <summary>
-        /// True, if equality and hash should be implemented.
-        /// </summary>
-        public bool ImplementEquality
-        {
-            get => this.implementEquality ?? this.Parent?.ImplementEquality ?? false;
-            set => this.implementEquality = value;
-        }
+        public MetaNode Root => this.Parent?.Root ?? this;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MetaNode"/> class.
@@ -76,6 +66,8 @@ namespace Yoakke.SyntaxTree.Generator
             this.Symbol = symbol;
             this.Parent = parent;
             this.Nesting = GetNesting(this.Symbol);
+
+            if (parent is not null) parent.Children.Add(this.Name, this);
         }
 
         private static IList<string> GetNesting(INamedTypeSymbol symbol)
@@ -83,7 +75,7 @@ namespace Yoakke.SyntaxTree.Generator
             var result = new List<string>();
             for (var parent = symbol.ContainingType; parent != null; parent = parent.ContainingType)
             {
-                result.Insert(0, parent.Name);
+                result.Insert(0, $"{parent.GetTypeKindName()} {parent.Name}");
             }
             return result;
         }
