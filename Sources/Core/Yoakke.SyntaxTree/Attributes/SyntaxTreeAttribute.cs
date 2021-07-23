@@ -9,7 +9,7 @@ namespace Yoakke.SyntaxTree.Attributes
     /// <summary>
     /// An attribute to annotate that the given node is part of a syntax tree.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
     public class SyntaxTreeAttribute : Attribute
     {
     }

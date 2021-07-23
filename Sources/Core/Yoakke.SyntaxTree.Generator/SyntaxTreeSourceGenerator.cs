@@ -22,14 +22,13 @@ namespace Yoakke.SyntaxTree.Generator
     {
         private class SyntaxReceiver : ISyntaxReceiver
         {
-            public IList<TypeDeclarationSyntax> CandidateClasses { get; } = new List<TypeDeclarationSyntax>();
+            public IList<TypeDeclarationSyntax> CandidateTypes { get; } = new List<TypeDeclarationSyntax>();
 
             public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
             {
-                if (syntaxNode is TypeDeclarationSyntax typeDeclSyntax
-                    && typeDeclSyntax.AttributeLists.Count > 0)
+                if (syntaxNode is TypeDeclarationSyntax typeDeclSyntax)
                 {
-                    this.CandidateClasses.Add(typeDeclSyntax);
+                    this.CandidateTypes.Add(typeDeclSyntax);
                 }
             }
         }
@@ -59,7 +58,7 @@ namespace Yoakke.SyntaxTree.Generator
 
             this.RequireLibrary("Yoakke.SyntaxTree");
 
-            this.BuildMetaNodes(receiver.CandidateClasses);
+            this.BuildMetaNodes(receiver.CandidateTypes);
 
             // Now generate each node source
             foreach (var node in this.allNodes.Values) this.GenerateNodeSource(node);
@@ -70,7 +69,7 @@ namespace Yoakke.SyntaxTree.Generator
 
         private void BuildMetaNodes(IList<TypeDeclarationSyntax> classDeclarations)
         {
-            // Collect only the classes that have the AstAttribute
+            // Collect only the classes that have the AstAttribute or inherit from a class that has AstAttribute
             // NOTE: False positive since 3.3.2 update
 #pragma warning disable RS1024 // Compare symbols correctly
             var astNodeSymbols = new HashSet<ISymbol>(SymbolEqualityComparer.Default);
@@ -79,7 +78,7 @@ namespace Yoakke.SyntaxTree.Generator
             {
                 var model = this.Context.Compilation.GetSemanticModel(syntax.SyntaxTree);
                 var symbol = model.GetDeclaredSymbol(syntax) as INamedTypeSymbol;
-                if (!this.HasAttribute(symbol!, TypeNames.SyntaxTreeAttribute)) continue;
+                if (!this.IsSyntaxTreeNode(symbol!)) continue;
                 if (!this.RequirePartial(syntax)) continue;
                 astNodeSymbols.Add(symbol!);
             }
@@ -88,7 +87,7 @@ namespace Yoakke.SyntaxTree.Generator
             // They are all the nodes without a base class or with a base class that's not an AST node
             var rootNodeSymbols = astNodeSymbols
                 .OfType<INamedTypeSymbol>()
-                .Where(sym => sym.BaseType is null || !this.HasAttribute(sym.BaseType, TypeNames.SyntaxTreeAttribute))
+                .Where(sym => sym.BaseType is null || !astNodeSymbols.Contains(sym.BaseType))
                 .ToHashSet(SymbolEqualityComparer.Default);
             this.rootNodes = rootNodeSymbols
                 .OfType<INamedTypeSymbol>()
@@ -182,7 +181,7 @@ namespace {surroundingNamespace} {{
 
         private void GenerateVisitorSource(MetaNode node)
         {
-            var visitors = this.GenerateVisitors(node, new Dictionary<string, (INamedTypeSymbol Root, StringBuilder Content, INamedTypeSymbol ReturnType)>());
+            var visitors = this.GenerateVisitors(node, new Dictionary<string, Visitor>());
             foreach (var visitor in visitors)
             {
                 // Surrounding crud
@@ -198,9 +197,9 @@ namespace {surroundingNamespace} {{
                 var sourceCode = $@"
 namespace {surroundingNamespace} {{
     {nestClassPrefix}
-    partial {visitor.Value.Root.GetTypeKindName()} {visitor.Value.Root.Name} {{
+    partial {visitor.Value.Owner.Symbol.GetTypeKindName()} {visitor.Value.Owner.Name} {{
         public abstract class {visitor.Key} {{
-            {visitor.Value.Content}
+            {visitor.Value.Code}
         }}
     }}
     {nestClassSuffix}
@@ -210,104 +209,90 @@ namespace {surroundingNamespace} {{
             }
         }
 
-        private Dictionary<string, (INamedTypeSymbol Root, StringBuilder Content)> GenerateVisitors(
-            MetaNode node,
-            IReadOnlyDictionary<string, (INamedTypeSymbol Root, StringBuilder Content, INamedTypeSymbol ReturnType)> visitors)
+        private Dictionary<string, Visitor> GenerateVisitors(MetaNode node, IReadOnlyDictionary<string, Visitor> visitors)
         {
             // Get all visitor attributes on this node
-            var visitorAttr = this.LoadSymbol(TypeNames.SyntaxTreeVisitorAttribute);
-            var visitorAttrs = node.Symbol.GetAttributes()
-                .Where(attr => SymbolEquals(attr.AttributeClass, visitorAttr))
-                .ToDictionary(
-                    attr => attr.GetCtorValue(0)!.ToString(),
-                    attr => attr.ConstructorArguments.Length > 1 ? (INamedTypeSymbol)attr.GetCtorValue(1)! : this.LoadSymbol(TypeNames.Void));
-            // Go through all visitors, old or new
-            var newVisitors = new Dictionary<string, (INamedTypeSymbol Root, StringBuilder Content, INamedTypeSymbol ReturnType)>();
-            foreach (var visitorName in visitors.Keys.Union(visitorAttrs.Select(v => v.Key)))
+            var visitorOverrides = this.GetVisitors(node).ToDictionary(n => n.Name);
+            // Go through all visitors, old or new, keep the newer definition
+            var newVisitors = new Dictionary<string, Visitor>();
+            foreach (var name in visitors.Keys.Union(visitorOverrides.Keys))
             {
-                if (visitors.TryGetValue(visitorName, out var old) && visitorAttrs.TryGetValue(visitorName, out var newType))
+                var oldHas = visitors.TryGetValue(name, out var oldDef);
+                var newHas = visitorOverrides.TryGetValue(name, out var newDef);
+                if (oldHas && newHas)
                 {
-                    // Updated return value
-                    newVisitors.Add(visitorName, (old.Root, old.Content, newType));
+                    // Return-type override
+                    newVisitors.Add(name, new(oldDef.Owner, name, newDef.ReturnType) { Code = oldDef.Code });
                 }
-                else if (visitors.TryGetValue(visitorName, out old))
+                else if (newHas)
                 {
-                    // Just the old value
-                    newVisitors.Add(visitorName, (old.Root, old.Content, old.ReturnType));
+                    // Completely new
+                    newVisitors.Add(name, newDef);
                 }
                 else
                 {
-                    // New thing
-                    newVisitors.Add(visitorName, (node.Symbol, new StringBuilder(), visitorAttrs[visitorName]));
+                    // Old
+                    newVisitors.Add(name, oldDef);
                 }
             }
 
             var members = this.GetAllSyntaxTreeNodeChildren(node.Symbol);
             var enumerableInterface = this.LoadSymbol(TypeNames.IEnumerable);
-            foreach (var (root, content, returnType) in newVisitors.Values)
+            foreach (var visitor in newVisitors.Values)
             {
-                var returnTypeStr = returnType.ToDisplayString();
-                content.AppendLine($"protected virtual {returnTypeStr} Visit({node.Symbol.ToDisplayString()} node) {{");
+                var returnTypeStr = visitor.ReturnType.ToDisplayString();
+                visitor.Code
+                    .AppendLine($"protected virtual {returnTypeStr} Visit({node.Symbol.ToDisplayString()} node)")
+                    .AppendLine("{");
                 if (node.Children.Count == 0)
                 {
                     // No subtypes
                     // Visit each member of the type
-                    foreach (var member in members)
-                    {
-                        var type = member switch
-                        {
-                            IFieldSymbol f => f.Type,
-                            IPropertySymbol p => p.Type,
-                            _ => throw new InvalidOperationException(),
-                        };
-                        if (type.ImplementsGenericInterface(enumerableInterface, out var args)
-                         && this.HasAttribute(args![0], TypeNames.SyntaxTreeAttribute))
-                        {
-                            // It's a list of visitable things, visit them
-                            content.AppendLine($"foreach (var item in node.{member.Name}) this.Visit(item);");
-                        }
-                        else if (this.HasAttribute(type, TypeNames.SyntaxTreeAttribute))
-                        {
-                            // It's a subnode, we have to visit it (with a null check)
-                            content.AppendLine($"if (node.{member.Name} is not null) this.Visit(node.{member.Name});");
-                        }
-                    }
+                    this.GenerateMemberVisitors(visitor, members);
                 }
                 else if (node.Children.Count > 0)
                 {
-                    // TODO: Visit fields if non-abstract?
-                    // TODO: error in default case if abstract?
                     // If has subtypes, visit the proper type
                     // Generate visit for concrete type
-                    content.AppendLine("switch (node) {");
+                    visitor.Code.AppendLine("switch (node) {");
                     var i = 0;
                     foreach (var child in node.Children.Values)
                     {
                         var subnodeType = child.Symbol.ToDisplayString();
-                        content.AppendLine($"case {subnodeType} sub{i}:");
+                        visitor.Code.AppendLine($"case {subnodeType} sub{i}:");
                         if (returnTypeStr == "void")
                         {
-                            content.AppendLine($"    Visit(sub{i});");
-                            content.AppendLine("    break;");
+                            visitor.Code.AppendLine($"    this.Visit(sub{i});");
+                            visitor.Code.AppendLine("    break;");
                         }
                         else
                         {
-                            content.AppendLine($"    return Visit(sub{i});");
+                            visitor.Code.AppendLine($"    return this.Visit(sub{i});");
                         }
                         ++i;
                     }
-                    content.AppendLine("}");
+                    // Default case
+                    visitor.Code.AppendLine("default:");
+                    if (node.IsAbstract)
+                    {
+                        visitor.Code.AppendLine($"    throw new {TypeNames.InvalidOperationException}();");
+                    }
+                    else
+                    {
+                        // No a subtype
+                        // Visit each member of the type
+                        this.GenerateMemberVisitors(visitor, members);
+                    }
+                    visitor.Code
+                        .AppendLine("    break;")
+                        .AppendLine("}");
                 }
-                if (returnTypeStr != "void") content.AppendLine("    return default;");
-                content.AppendLine("}");
+                if (returnTypeStr != "void") visitor.Code.AppendLine("    return default;");
+                visitor.Code.AppendLine("}");
             }
 
             // Unify all results
-            var unified = new Dictionary<string, (INamedTypeSymbol Root, StringBuilder Content)>();
-            foreach (var cv in newVisitors)
-            {
-                unified[cv.Key] = (cv.Value.Root, cv.Value.Content);
-            }
+            var unified = newVisitors.Values.ToDictionary(v => v.Name);
             foreach (var child in node.Children.Values)
             {
                 var childResult = this.GenerateVisitors(child, newVisitors);
@@ -316,12 +301,62 @@ namespace {surroundingNamespace} {{
             return unified;
         }
 
+        private void GenerateMemberVisitors(Visitor visitor, IReadOnlyList<ISymbol> members)
+        {
+            var enumerableInterface = this.LoadSymbol(TypeNames.IEnumerable);
+            foreach (var member in members)
+            {
+                var type = member switch
+                {
+                    IFieldSymbol f => f.Type,
+                    IPropertySymbol p => p.Type,
+                    _ => throw new InvalidOperationException(),
+                };
+                if (type.ImplementsGenericInterface(enumerableInterface, out var args)
+                    && args![0] is INamedTypeSymbol sym
+                    && this.IsSyntaxTreeNode(sym))
+                {
+                    // It's a list of visitable things, visit them
+                    visitor.Code.AppendLine($"foreach (var item in node.{member.Name}) this.Visit(item);");
+                }
+                else if (type is INamedTypeSymbol sym2 && this.IsSyntaxTreeNode(sym2))
+                {
+                    // It's a subnode, we have to visit it (with a null check)
+                    visitor.Code.AppendLine($"if (node.{member.Name} is not null) this.Visit(node.{member.Name});");
+                }
+            }
+        }
+
         private List<ISymbol> GetAllSyntaxTreeNodeChildren(ITypeSymbol symbol) => symbol
             .GetMembers()
             .Where(m => !m.IsStatic
                      && m.DeclaredAccessibility != Accessibility.Private
                      && !this.HasAttribute(m, TypeNames.SyntaxTreeIgnoreAttribute)
-                     && (m is IFieldSymbol || m is IPropertySymbol))
+                     && (m is IFieldSymbol || (m is IPropertySymbol p && p.HasBackingField())))
             .ToList();
+
+        private bool IsSyntaxTreeNode(INamedTypeSymbol symbol)
+        {
+            if (this.HasAttribute(symbol, TypeNames.SyntaxTreeIgnoreAttribute)) return false;
+            if (this.HasAttribute(symbol, TypeNames.SyntaxTreeAttribute)) return true;
+            if (symbol.BaseType is null) return false;
+            return this.IsSyntaxTreeNode(symbol.BaseType);
+        }
+
+        private IReadOnlyList<Visitor> GetVisitors(MetaNode node)
+        {
+            var result = new List<Visitor>();
+            var visitorAttr = this.LoadSymbol(TypeNames.SyntaxTreeVisitorAttribute);
+            var voidType = this.LoadSymbol(TypeNames.Void);
+            var visitorAttrs = node.Symbol.GetAttributes()
+                .Where(attr => SymbolEquals(attr.AttributeClass, visitorAttr));
+            foreach (var attr in visitorAttrs)
+            {
+                var name = (string)attr.GetCtorValue(0)!;
+                var type = attr.ConstructorArguments.Length > 1 ? (INamedTypeSymbol)attr.GetCtorValue(1)! : voidType;
+                result.Add(new(node, name, type));
+            }
+            return result;
+        }
     }
 }

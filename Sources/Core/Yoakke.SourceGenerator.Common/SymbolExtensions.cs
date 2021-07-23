@@ -81,5 +81,13 @@ namespace Yoakke.SourceGenerator.Common
             genericArgs = null;
             return false;
         }
+
+        /// <summary>
+        /// Determines if the given property has a backing field or not.
+        /// </summary>
+        /// <param name="symbol">The <see cref="IPropertySymbol"/> to check.</param>
+        /// <returns>True, if <paramref name="symbol"/> has a backing field.</returns>
+        public static bool HasBackingField(this IPropertySymbol symbol) => symbol.ContainingType.GetMembers()
+            .Any(m => m is IFieldSymbol f && SymbolEqualityComparer.Default.Equals(f.AssociatedSymbol, symbol));
     }
 }

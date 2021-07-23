@@ -32,6 +32,11 @@ namespace Yoakke.SyntaxTree.Generator
         public const string IEquatable = "System.IEquatable";
 
         /// <summary>
+        /// System.InvalidOperationException.
+        /// </summary>
+        public const string InvalidOperationException = "System.InvalidOperationException";
+
+        /// <summary>
         /// System.Collections.Generic.IEnumerable.
         /// </summary>
         public const string IEnumerable = "System.Collections.Generic.IEnumerable`1";

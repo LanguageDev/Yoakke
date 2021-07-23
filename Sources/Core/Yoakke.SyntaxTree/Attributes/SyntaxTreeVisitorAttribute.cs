@@ -9,7 +9,7 @@ namespace Yoakke.SyntaxTree.Attributes
     /// <summary>
     /// An attribute to denote the generation of a visitor.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
     public class SyntaxTreeVisitorAttribute : Attribute
     {
         /// <summary>

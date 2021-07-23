@@ -37,7 +37,12 @@ namespace Yoakke.SyntaxTree.Generator
         public bool IsAbstract => this.Symbol.IsAbstract;
 
         /// <summary>
-        /// The list of identifiers this node is nested in.
+        /// True, if this is the root.
+        /// </summary>
+        public bool IsRoot => this.Parent is null;
+
+        /// <summary>
+        /// The list of type identifiers this node is nested in.
         /// </summary>
         public IList<string> Nesting { get; }
 
@@ -45,11 +50,6 @@ namespace Yoakke.SyntaxTree.Generator
         /// The nodes that inherit from this one.
         /// </summary>
         public IDictionary<string, MetaNode> Children { get; } = new Dictionary<string, MetaNode>();
-
-        /// <summary>
-        /// The visitors defined for this node.
-        /// </summary>
-        public IList<(string Name, Type ReturnType)> Visitors { get; } = new List<(string Name, Type ReturnType)>();
 
         /// <summary>
         /// The root node, so the ancestor with no parent.
