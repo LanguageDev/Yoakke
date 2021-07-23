@@ -259,7 +259,9 @@ namespace {surroundingNamespace} {{
                     foreach (var child in node.Children.Values)
                     {
                         var subnodeType = child.Symbol.ToDisplayString();
-                        visitor.Code.AppendLine($"case {subnodeType} sub{i}:");
+                        visitor.Code
+                            .AppendLine($"case {subnodeType} sub{i}:")
+                            .AppendLine("{");
                         if (returnTypeStr == "void")
                         {
                             visitor.Code.AppendLine($"    this.Visit(sub{i});");
@@ -269,10 +271,13 @@ namespace {surroundingNamespace} {{
                         {
                             visitor.Code.AppendLine($"    return this.Visit(sub{i});");
                         }
+                        visitor.Code.AppendLine("}");
                         ++i;
                     }
                     // Default case
-                    visitor.Code.AppendLine("default:");
+                    visitor.Code
+                        .AppendLine("default:")
+                        .AppendLine("{");
                     if (node.IsAbstract)
                     {
                         visitor.Code.AppendLine($"    throw new {TypeNames.InvalidOperationException}();");
@@ -285,6 +290,7 @@ namespace {surroundingNamespace} {{
                     }
                     visitor.Code
                         .AppendLine("    break;")
+                        .AppendLine("}")
                         .AppendLine("}");
                 }
                 if (returnTypeStr != "void") visitor.Code.AppendLine("    return default;");
@@ -347,14 +353,22 @@ namespace {surroundingNamespace} {{
         {
             var result = new List<Visitor>();
             var visitorAttr = this.LoadSymbol(TypeNames.SyntaxTreeVisitorAttribute);
+            var transformerAttr = this.LoadSymbol(TypeNames.SyntaxTreeTransformerAttribute);
             var voidType = this.LoadSymbol(TypeNames.Void);
             var visitorAttrs = node.Symbol.GetAttributes()
-                .Where(attr => SymbolEquals(attr.AttributeClass, visitorAttr));
+                .Where(attr => SymbolEquals(attr.AttributeClass, visitorAttr)
+                            || SymbolEquals(attr.AttributeClass, transformerAttr));
             foreach (var attr in visitorAttrs)
             {
+                var isTransformer = SymbolEquals(attr.AttributeClass, transformerAttr);
                 var name = (string)attr.GetCtorValue(0)!;
-                var type = attr.ConstructorArguments.Length > 1 ? (INamedTypeSymbol)attr.GetCtorValue(1)! : voidType;
-                result.Add(new(node, name, type));
+
+                INamedTypeSymbol returnType;
+                if (attr.ConstructorArguments.Length > 1) returnType = (INamedTypeSymbol)attr.GetCtorValue(1)!;
+                else if (isTransformer) returnType = node.Symbol;
+                else returnType = voidType;
+
+                result.Add(new(node, name, returnType, isTransformer));
             }
             return result;
         }
