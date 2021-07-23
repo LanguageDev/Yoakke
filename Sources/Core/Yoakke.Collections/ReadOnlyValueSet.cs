@@ -59,6 +59,9 @@ namespace Yoakke.Collections
         }
 
         /// <inheritdoc/>
+        public override string ToString() => $"{{ {string.Join(", ", this.Underlying)} }}";
+
+        /// <inheritdoc/>
         public bool Contains(T item) => this.Underlying.Contains(item);
 
         /// <inheritdoc/>

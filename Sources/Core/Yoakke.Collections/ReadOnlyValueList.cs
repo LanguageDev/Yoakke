@@ -78,6 +78,9 @@ namespace Yoakke.Collections
         }
 
         /// <inheritdoc/>
+        public override string ToString() => $"[ {string.Join(", ", this.Underlying)} ]";
+
+        /// <inheritdoc/>
         public IEnumerator<T> GetEnumerator() => this.Underlying.GetEnumerator();
 
         /// <inheritdoc/>

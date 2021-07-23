@@ -77,6 +77,9 @@ namespace Yoakke.Collections
         }
 
         /// <inheritdoc/>
+        public override string ToString() => $"{{ {string.Join(", ", this.Underlying.Select(kv => $"{kv.Key} => {kv.Value}"))} }}";
+
+        /// <inheritdoc/>
         public bool ContainsKey(TKey key) => this.Underlying.ContainsKey(key);
 
         /// <inheritdoc/>
