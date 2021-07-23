@@ -9,11 +9,9 @@ using Yoakke.SyntaxTree.Attributes;
 namespace Yoakke.Sample
 {
     [SyntaxTree]
-    [SyntaxTreeVisitor("PassVisitor", typeof(void))]
-    [SyntaxTreeVisitor("TreeEvaluator", typeof(void))]
-    public abstract partial record AstNode
-    {
-    }
+    [SyntaxTreeVisitor("PassVisitor")]
+    [SyntaxTreeVisitor("TreeEvaluator")]
+    public abstract partial record AstNode;
 
     [SyntaxTree]
     public abstract partial record Statement : AstNode
