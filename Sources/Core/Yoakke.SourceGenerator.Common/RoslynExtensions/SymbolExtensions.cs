@@ -8,7 +8,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 
-namespace Yoakke.SourceGenerator.Common
+namespace Yoakke.SourceGenerator.Common.RoslynExtensions
 {
     /// <summary>
     /// Extension functionalities for <see cref="ISymbol"/>s.

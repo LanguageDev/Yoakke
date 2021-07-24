@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using Yoakke.SourceGenerator.Common;
+using Yoakke.SourceGenerator.Common.RoslynExtensions;
 
 namespace Yoakke.SyntaxTree.Generator
 {

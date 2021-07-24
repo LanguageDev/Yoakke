@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Yoakke.SourceGenerator.Common
+namespace Yoakke.SourceGenerator.Common.RoslynExtensions
 {
     /// <summary>
     /// Extension functionalify for syntax elements.

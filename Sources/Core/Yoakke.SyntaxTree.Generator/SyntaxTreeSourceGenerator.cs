@@ -10,6 +10,7 @@ using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Yoakke.SourceGenerator.Common;
+using Yoakke.SourceGenerator.Common.RoslynExtensions;
 using Yoakke.Utilities.Compatibility;
 
 namespace Yoakke.SyntaxTree.Generator

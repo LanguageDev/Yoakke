@@ -9,6 +9,7 @@ using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Yoakke.SourceGenerator.Common;
+using Yoakke.SourceGenerator.Common.RoslynExtensions;
 using Yoakke.Utilities.FiniteAutomata;
 using Yoakke.Utilities.Intervals;
 using Yoakke.Utilities.RegEx;
