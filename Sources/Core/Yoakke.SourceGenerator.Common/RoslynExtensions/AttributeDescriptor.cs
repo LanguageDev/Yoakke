@@ -45,7 +45,7 @@ namespace Yoakke.SourceGenerator.Common.RoslynExtensions
             {
                 var name = this.parameters[i].Name;
                 var value = attributeData.ConstructorArguments[i];
-                result[this.parameters[i].Name] = value;
+                result[this.parameters[i].Name] = value.Value;
                 uncovered.Remove(name);
             }
 

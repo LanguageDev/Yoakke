@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Reflection;
 using Microsoft.CodeAnalysis;
 
 namespace Yoakke.SourceGenerator.Common.RoslynExtensions
@@ -15,6 +16,29 @@ namespace Yoakke.SourceGenerator.Common.RoslynExtensions
     /// </summary>
     public static class AttributeDataExtensions
     {
+        /// <summary>
+        /// Parses an <see cref="AttributeData"/> into a descriptive class instance.
+        /// </summary>
+        /// <typeparam name="T">The instance to parse into.</typeparam>
+        /// <param name="data">The <see cref="AttributeData"/> to parse.</param>
+        /// <returns>The parsed object.</returns>
+        public static T ParseInto<T>(this AttributeData data)
+            where T : new()
+        {
+            var result = new T();
+
+            // Build the descriptor
+            var desc = new AttributeDescriptor();
+            var props = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            foreach (var prop in props) desc.WithParameter(prop.Name, prop.GetValue(result));
+
+            // Parse
+            var values = data.Parse(desc);
+            foreach (var prop in props) prop.SetValue(result, values[prop.Name]);
+
+            return result;
+        }
+
         /// <summary>
         /// Parses the <see cref="AttributeData"/> based on an <see cref="AttributeDescriptor"/>.
         /// </summary>

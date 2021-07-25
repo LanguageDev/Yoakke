@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
@@ -35,6 +36,21 @@ namespace Yoakke.Lexer.Generator
                     this.CandidateEnums.Add(enumDeclSyntax);
                 }
             }
+        }
+
+        private class LexerAttribute
+        {
+            public string ClassName { get; set; } = string.Empty;
+        }
+
+        private class RegexAttribute
+        {
+            public string Regex { get; set; } = string.Empty;
+        }
+
+        private class TokenAttribute
+        {
+            public string Text { get; set; } = string.Empty;
         }
 
         /// <summary>
@@ -77,9 +93,10 @@ namespace Yoakke.Lexer.Generator
         private string? GenerateImplementation(INamedTypeSymbol symbol)
         {
             var lexerAttribute = this.LoadSymbol(TypeNames.LexerAttribute);
+            var lexerAttributeParams = symbol.GetAttribute(lexerAttribute).ParseInto<LexerAttribute>();
 
             var accessibility = symbol.DeclaredAccessibility.ToString().ToLowerInvariant();
-            var lexerClassName = symbol.GetAttribute(lexerAttribute).GetCtorValue()?.ToString();
+            var lexerClassName = lexerAttributeParams.ClassName;
             var namespaceName = symbol.ContainingNamespace.ToDisplayString();
             var enumName = symbol.ToDisplayString();
             var tokenName = $"{TypeNames.Token}<{enumName}>";
@@ -280,7 +297,7 @@ end_loop:
                 // End token
                 if (member.HasAttribute(endAttr))
                 {
-                    if (result.EndSymbol == null)
+                    if (result.EndSymbol is null)
                     {
                         result.EndSymbol = member;
                     }
@@ -294,7 +311,7 @@ end_loop:
                 // Error token
                 if (member.HasAttribute(errorAttr))
                 {
-                    if (result.ErrorSymbol == null)
+                    if (result.ErrorSymbol is null)
                     {
                         result.ErrorSymbol = member;
                     }
@@ -317,13 +334,13 @@ end_loop:
                     if (SymbolEqualityComparer.Default.Equals(attr.AttributeClass, regexAttr))
                     {
                         // Regex
-                        var regex = attr.GetCtorValue()!.ToString();
+                        var regex = attr.ParseInto<RegexAttribute>().Regex;
                         result.Tokens.Add(new TokenDescription(member, regex, ignore));
                     }
                     else
                     {
                         // Token
-                        var regex = RegExParser.Escape(attr.GetCtorValue()!.ToString());
+                        var regex = RegExParser.Escape(attr.ParseInto<TokenAttribute>().Text);
                         result.Tokens.Add(new TokenDescription(member, regex, ignore));
                     }
                 }

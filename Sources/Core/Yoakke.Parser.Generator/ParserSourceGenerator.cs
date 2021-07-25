@@ -37,6 +37,11 @@ namespace Yoakke.Parser.Generator
             }
         }
 
+        private class RuleAttribute
+        {
+            public string Rule { get; set; }
+        }
+
         private RuleSet? ruleSet;
         private int varIndex;
         private TokenKindSet? tokenKinds;
@@ -469,7 +474,7 @@ namespace {namespaceName}
                 var ruleAttributes = method.GetAttributes().Where(a => SymbolEqualityComparer.Default.Equals(a.AttributeClass, ruleAttr));
                 foreach (var attr in ruleAttributes)
                 {
-                    var bnfString = attr.GetCtorValue()!.ToString();
+                    var bnfString = attr.ParseInto<RuleAttribute>().Rule;
                     var (name, ast) = BnfParser.Parse(bnfString, this.tokenKinds!);
 
                     if (precedenceTable.Count > 0)
