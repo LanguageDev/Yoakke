@@ -37,6 +37,11 @@ namespace Yoakke.SyntaxTree.Generator
         public const string InvalidOperationException = "System.InvalidOperationException";
 
         /// <summary>
+        /// System.NotSupportedException.
+        /// </summary>
+        public const string NotSupportedException = "System.NotSupportedException";
+
+        /// <summary>
         /// System.Collections.Generic.IEnumerable.
         /// </summary>
         public const string IEnumerable = "System.Collections.Generic.IEnumerable`1";
@@ -80,11 +85,6 @@ namespace Yoakke.SyntaxTree.Generator
         /// The attribute to annotate if a visitor should be implemented.
         /// </summary>
         public static readonly string SyntaxTreeVisitorAttribute = $"{AstNamespace}.Attributes.SyntaxTreeVisitorAttribute";
-
-        /// <summary>
-        /// The attribute to annotate if a transformer should be implemented.
-        /// </summary>
-        public static readonly string SyntaxTreeTransformerAttribute = $"{AstNamespace}.Attributes.SyntaxTreeTransformerAttribute";
 
         /// <summary>
         /// The attribute to mark a member to be skipped.
