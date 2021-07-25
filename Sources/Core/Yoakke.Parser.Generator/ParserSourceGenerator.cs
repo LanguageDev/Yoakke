@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
@@ -62,12 +63,15 @@ namespace Yoakke.Parser.Generator
 
             this.RequireLibrary("Yoakke.Parser");
 
+            var parserAttr = this.LoadSymbol(TypeNames.ParserAttribute);
+
             foreach (var syntax in receiver.CandidateClasses)
             {
                 var model = this.Context.Compilation.GetSemanticModel(syntax.SyntaxTree);
                 var symbol = model.GetDeclaredSymbol(syntax) as INamedTypeSymbol;
+                if (symbol is null) continue;
                 // Filter classes without the parser attributes
-                if (!this.HasAttribute(symbol!, TypeNames.ParserAttribute)) continue;
+                if (!symbol.HasAttribute(parserAttr)) continue;
                 // Generate code for it
                 var generated = this.GenerateImplementation(syntax, symbol!);
                 if (generated == null) continue;
@@ -79,7 +83,7 @@ namespace Yoakke.Parser.Generator
         {
             if (!this.RequirePartial(syntax) || !this.RequireNonNested(symbol)) return null;
 
-            var parserAttr = this.GetAttribute(symbol, TypeNames.ParserAttribute);
+            var parserAttr = symbol.GetAttribute(this.LoadSymbol(TypeNames.ParserAttribute));
             if (parserAttr.ConstructorArguments.Length > 0)
             {
                 var tokenType = (INamedTypeSymbol)parserAttr.ConstructorArguments.First().Value!;
@@ -451,12 +455,19 @@ namespace {namespaceName}
             {
                 // Collect associativity attributes in declaration order
                 var precedenceTable = method.GetAttributes()
-                    .Where(a => SymbolEquals(a.AttributeClass, leftAttr) || SymbolEquals(a.AttributeClass, rightAttr))
+                    .Where(a => SymbolEqualityComparer.Default.Equals(a.AttributeClass, leftAttr)
+                             || SymbolEqualityComparer.Default.Equals(a.AttributeClass, rightAttr))
                     .OrderBy(a => a.ApplicationSyntaxReference!.GetSyntax().GetLocation().SourceSpan.Start)
-                    .Select(a => (Left: SymbolEquals(a.AttributeClass, leftAttr), Operators: a.ConstructorArguments.SelectMany(x => x.Values).Select(x => x.Value).ToHashSet()))
+                    .Select(a =>
+                    {
+                        var isLeft = SymbolEqualityComparer.Default.Equals(a.AttributeClass, leftAttr);
+                        var operators = a.ConstructorArguments.SelectMany(x => x.Values).Select(x => x.Value).ToHashSet();
+                        return (Left: isLeft, Operators: operators);
+                    })
                     .ToList();
                 // Since there can be multiple get all rule attributes attached to this method
-                foreach (var attr in method.GetAttributes().Where(a => SymbolEquals(a.AttributeClass, ruleAttr)))
+                var ruleAttributes = method.GetAttributes().Where(a => SymbolEqualityComparer.Default.Equals(a.AttributeClass, ruleAttr));
+                foreach (var attr in ruleAttributes)
                 {
                     var bnfString = attr.GetCtorValue()!.ToString();
                     var (name, ast) = BnfParser.Parse(bnfString, this.tokenKinds!);

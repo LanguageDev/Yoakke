@@ -58,12 +58,15 @@ namespace Yoakke.Lexer.Generator
 
             this.RequireLibrary("Yoakke.Lexer");
 
+            var lexerAttribute = this.LoadSymbol(TypeNames.LexerAttribute);
+
             foreach (var syntax in receiver.CandidateEnums)
             {
                 var model = this.Context.Compilation.GetSemanticModel(syntax.SyntaxTree);
                 var symbol = model.GetDeclaredSymbol(syntax) as INamedTypeSymbol;
+                if (symbol is null) continue;
                 // Filter enums without the lexer attributes
-                if (!this.HasAttribute(symbol!, TypeNames.LexerAttribute)) continue;
+                if (!symbol.HasAttribute(lexerAttribute)) continue;
                 // Generate code for it
                 var generated = this.GenerateImplementation(symbol!);
                 if (generated == null) continue;
@@ -73,8 +76,10 @@ namespace Yoakke.Lexer.Generator
 
         private string? GenerateImplementation(INamedTypeSymbol symbol)
         {
+            var lexerAttribute = this.LoadSymbol(TypeNames.LexerAttribute);
+
             var accessibility = symbol.DeclaredAccessibility.ToString().ToLowerInvariant();
-            var lexerClassName = this.GetAttribute(symbol, TypeNames.LexerAttribute).GetCtorValue()?.ToString();
+            var lexerClassName = symbol.GetAttribute(lexerAttribute).GetCtorValue()?.ToString();
             var namespaceName = symbol.ContainingNamespace.ToDisplayString();
             var enumName = symbol.ToDisplayString();
             var tokenName = $"{TypeNames.Token}<{enumName}>";
@@ -265,12 +270,15 @@ end_loop:
         {
             var regexAttr = this.LoadSymbol(TypeNames.RegexAttribute);
             var tokenAttr = this.LoadSymbol(TypeNames.TokenAttribute);
+            var endAttr = this.LoadSymbol(TypeNames.EndAttribute);
+            var errorAttr = this.LoadSymbol(TypeNames.ErrorAttribute);
+            var ignoreAttr = this.LoadSymbol(TypeNames.IgnoreAttribute);
 
             var result = new LexerDescription();
             foreach (var member in symbol.GetMembers().OfType<IFieldSymbol>())
             {
                 // End token
-                if (this.HasAttribute(member, TypeNames.EndAttribute))
+                if (member.HasAttribute(endAttr))
                 {
                     if (result.EndSymbol == null)
                     {
@@ -284,7 +292,7 @@ end_loop:
                     continue;
                 }
                 // Error token
-                if (this.HasAttribute(member, TypeNames.ErrorAttribute))
+                if (member.HasAttribute(errorAttr))
                 {
                     if (result.ErrorSymbol == null)
                     {
@@ -298,14 +306,15 @@ end_loop:
                     continue;
                 }
                 // Regular token
-                var ignore = this.HasAttribute(member, TypeNames.IgnoreAttribute);
+                var ignore = member.HasAttribute(ignoreAttr);
                 // Ask for all regex and token attributes
                 var relevantAttribs = member.GetAttributes()
-                    .Where(attr => SymbolEquals(attr.AttributeClass, regexAttr) || SymbolEquals(attr.AttributeClass, tokenAttr))
+                    .Where(attr => SymbolEqualityComparer.Default.Equals(attr.AttributeClass, regexAttr)
+                                || SymbolEqualityComparer.Default.Equals(attr.AttributeClass, tokenAttr))
                     .ToList();
                 foreach (var attr in relevantAttribs)
                 {
-                    if (SymbolEquals(attr.AttributeClass, regexAttr))
+                    if (SymbolEqualityComparer.Default.Equals(attr.AttributeClass, regexAttr))
                     {
                         // Regex
                         var regex = attr.GetCtorValue()!.ToString();
@@ -325,7 +334,7 @@ end_loop:
                 }
             }
             // Check if everything has been filled out
-            if (result.EndSymbol == null || result.ErrorSymbol == null)
+            if (result.EndSymbol is null || result.ErrorSymbol is null)
             {
                 this.Report(
                     Diagnostics.FundamentalTokenTypeNotDefined,

@@ -55,7 +55,6 @@ namespace Yoakke.SyntaxTree.Generator
         protected override void GenerateCode(ISyntaxReceiver syntaxReceiver)
         {
             var receiver = (SyntaxReceiver)syntaxReceiver;
-            // Debugger.Launch();
 
             this.RequireLibrary("Yoakke.SyntaxTree");
 
@@ -334,18 +333,25 @@ namespace {surroundingNamespace} {{
             }
         }
 
-        private List<ISymbol> GetAllSyntaxTreeNodeChildren(ITypeSymbol symbol) => symbol
-            .GetMembers()
-            .Where(m => !m.IsStatic
-                     && m.DeclaredAccessibility != Accessibility.Private
-                     && !this.HasAttribute(m, TypeNames.SyntaxTreeIgnoreAttribute)
-                     && (m is IFieldSymbol || (m is IPropertySymbol p && p.HasBackingField())))
-            .ToList();
+        private List<ISymbol> GetAllSyntaxTreeNodeChildren(ITypeSymbol symbol)
+        {
+            var ignoreAttr = this.LoadSymbol(TypeNames.SyntaxTreeIgnoreAttribute);
+            return symbol
+                .GetMembers()
+                .Where(m => !m.IsStatic
+                         && m.DeclaredAccessibility != Accessibility.Private
+                         && !m.HasAttribute(ignoreAttr)
+                         && (m is IFieldSymbol || (m is IPropertySymbol p && p.HasBackingField())))
+                .ToList();
+        }
 
         private bool IsSyntaxTreeNode(INamedTypeSymbol symbol)
         {
-            if (this.HasAttribute(symbol, TypeNames.SyntaxTreeIgnoreAttribute)) return false;
-            if (this.HasAttribute(symbol, TypeNames.SyntaxTreeAttribute)) return true;
+            var ignoreAttr = this.LoadSymbol(TypeNames.SyntaxTreeIgnoreAttribute);
+            var treeAttr = this.LoadSymbol(TypeNames.SyntaxTreeAttribute);
+
+            if (symbol.HasAttribute(ignoreAttr)) return false;
+            if (symbol.HasAttribute(treeAttr)) return true;
             if (symbol.BaseType is null) return false;
             return this.IsSyntaxTreeNode(symbol.BaseType);
         }
@@ -357,11 +363,11 @@ namespace {surroundingNamespace} {{
             var transformerAttr = this.LoadSymbol(TypeNames.SyntaxTreeTransformerAttribute);
             var voidType = this.LoadSymbol(TypeNames.Void);
             var visitorAttrs = node.Symbol.GetAttributes()
-                .Where(attr => SymbolEquals(attr.AttributeClass, visitorAttr)
-                            || SymbolEquals(attr.AttributeClass, transformerAttr));
+                .Where(attr => SymbolEqualityComparer.Default.Equals(attr.AttributeClass, visitorAttr)
+                            || SymbolEqualityComparer.Default.Equals(attr.AttributeClass, transformerAttr));
             foreach (var attr in visitorAttrs)
             {
-                var isTransformer = SymbolEquals(attr.AttributeClass, transformerAttr);
+                var isTransformer = SymbolEqualityComparer.Default.Equals(attr.AttributeClass, transformerAttr);
                 var name = (string)attr.GetCtorValue(0)!;
 
                 INamedTypeSymbol returnType;

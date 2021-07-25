@@ -104,48 +104,6 @@ namespace Yoakke.SourceGenerator.Common
         }
 
         /// <summary>
-        /// Tries to retrieve <see cref="AttributeData"/> attached to a given <see cref="ISymbol"/>.
-        /// </summary>
-        /// <param name="symbol">The <see cref="ISymbol"/> to searched the attribute on.</param>
-        /// <param name="attributeName">The fully-qualified name of the attribute type.</param>
-        /// <param name="result">The found <see cref="AttributeData"/> gets written here, if the attribute
-        /// is attached onto <paramref name="symbol"/>.</param>
-        /// <returns>True, if the attribute with type name <paramref name="attributeName"/> was found on
-        /// <paramref name="symbol"/>.</returns>
-        protected bool TryGetAttribute(ISymbol symbol, string attributeName, out AttributeData result)
-        {
-            var attrSymbol = this.LoadSymbol(attributeName);
-            result = symbol
-                .GetAttributes()
-                .Where(attr => SymbolEquals(attr.AttributeClass, attrSymbol))
-                .FirstOrDefault();
-            return result != null;
-        }
-
-        /// <summary>
-        /// Checks if a given <see cref="ISymbol"/> has a given attribute on it.
-        /// </summary>
-        /// <param name="symbol">The <see cref="ISymbol"/> to check for the attribute.</param>
-        /// <param name="attributeName">The fully-qualified name of the attribute type.</param>
-        /// <returns>True, if the attribute with type name <paramref name="attributeName"/> was found on
-        /// <paramref name="symbol"/>.</returns>
-        protected bool HasAttribute(ISymbol symbol, string attributeName) =>
-            this.TryGetAttribute(symbol, attributeName, out var _);
-
-        /// <summary>
-        /// Retrieves an <see cref="AttributeData"/> attached onto a <see cref="ISymbol"/>.
-        /// </summary>
-        /// <param name="symbol">The <see cref="ISymbol"/> to search for the attribute.</param>
-        /// <param name="attributeName">The fully-qualified name of the attribute type.</param>
-        /// <returns>The <see cref="AttributeData"/> attached to <paramref name="symbol"/> with
-        /// type name <paramref name="attributeName"/>.</returns>
-        protected AttributeData GetAttribute(ISymbol symbol, string attributeName)
-        {
-            if (!this.TryGetAttribute(symbol, attributeName, out var attr)) throw new KeyNotFoundException();
-            return attr;
-        }
-
-        /// <summary>
         /// Adds a source-file to the current <see cref="GeneratorExecutionContext"/>.
         /// </summary>
         /// <param name="fileName">The name of the file to add.</param>
@@ -199,14 +157,5 @@ namespace Yoakke.SourceGenerator.Common
             }
             return true;
         }
-
-        /// <summary>
-        /// Shorthand for <see cref="ISymbol"/> equality.
-        /// </summary>
-        /// <param name="sym1">The first <see cref="ISymbol"/> to compare.</param>
-        /// <param name="sym2">The second <see cref="ISymbol"/> to compare.</param>
-        /// <returns>True, if the two symbols refer to the same thing.</returns>
-        protected static bool SymbolEquals(ISymbol? sym1, ISymbol? sym2) =>
-            SymbolEqualityComparer.Default.Equals(sym1, sym2);
     }
 }
