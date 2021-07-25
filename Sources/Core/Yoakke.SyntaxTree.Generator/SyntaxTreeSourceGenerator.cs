@@ -34,6 +34,13 @@ namespace Yoakke.SyntaxTree.Generator
             }
         }
 
+        private class SyntaxTreeVisitorAttribute
+        {
+            public string ClassName { get; set; } = string.Empty;
+
+            public INamedTypeSymbol? ReturnType { get; set; }
+        }
+
         private Dictionary<string, MetaNode> rootNodes = new();
         private Dictionary<string, MetaNode> allNodes = new();
 
@@ -362,20 +369,11 @@ namespace {surroundingNamespace} {{
             var visitorAttr = this.LoadSymbol(TypeNames.SyntaxTreeVisitorAttribute);
             var transformerAttr = this.LoadSymbol(TypeNames.SyntaxTreeTransformerAttribute);
             var voidType = this.LoadSymbol(TypeNames.Void);
-            var visitorAttrs = node.Symbol.GetAttributes()
-                .Where(attr => SymbolEqualityComparer.Default.Equals(attr.AttributeClass, visitorAttr)
-                            || SymbolEqualityComparer.Default.Equals(attr.AttributeClass, transformerAttr));
+            var visitorAttrs = node.Symbol.GetAttributes<SyntaxTreeVisitorAttribute>(visitorAttr);
             foreach (var attr in visitorAttrs)
             {
-                var isTransformer = SymbolEqualityComparer.Default.Equals(attr.AttributeClass, transformerAttr);
-                var name = (string)attr.GetCtorValue(0)!;
-
-                INamedTypeSymbol returnType;
-                if (attr.ConstructorArguments.Length > 1) returnType = (INamedTypeSymbol)attr.GetCtorValue(1)!;
-                else if (isTransformer) returnType = node.Symbol;
-                else returnType = voidType;
-
-                result.Add(new(node, name, returnType, isTransformer));
+                INamedTypeSymbol returnType = attr.ReturnType ?? voidType;
+                result.Add(new(node, attr.ClassName, returnType));
             }
             return result;
         }

@@ -93,6 +93,30 @@ namespace Yoakke.SourceGenerator.Common.RoslynExtensions
             .Any(m => m is IFieldSymbol f && SymbolEqualityComparer.Default.Equals(f.AssociatedSymbol, symbol));
 
         /// <summary>
+        /// Retrieves all <see cref="AttributeData"/> attached to a <see cref="ISymbol"/> of the same attribute type.
+        /// </summary>
+        /// <typeparam name="T">The element type of the structure to parse into.</typeparam>
+        /// <param name="symbol">The <see cref="ISymbol"/> to search in.</param>
+        /// <param name="attributeSymbol">The symbol of the attribute to search for.</param>
+        /// <returns>The found <see cref="AttributeData"/> list parsed.</returns>
+        public static IReadOnlyList<T> GetAttributes<T>(this ISymbol symbol, INamedTypeSymbol attributeSymbol)
+            where T : new() => symbol
+            .GetAttributes(attributeSymbol)
+            .Select(attr => attr.ParseInto<T>())
+            .ToList();
+
+        /// <summary>
+        /// Retrieves all <see cref="AttributeData"/> attached to a <see cref="ISymbol"/> of the same attribute type.
+        /// </summary>
+        /// <param name="symbol">The <see cref="ISymbol"/> to search in.</param>
+        /// <param name="attributeSymbol">The symbol of the attribute to search for.</param>
+        /// <returns>The found <see cref="AttributeData"/> list.</returns>
+        public static IReadOnlyList<AttributeData> GetAttributes(this ISymbol symbol, INamedTypeSymbol attributeSymbol) => symbol
+            .GetAttributes()
+            .Where(attr => SymbolEqualityComparer.Default.Equals(attr.AttributeClass, attributeSymbol))
+            .ToList();
+
+        /// <summary>
         /// Checks if a <see cref="ISymbol"/> has a given attribute.
         /// </summary>
         /// <param name="symbol">The <see cref="ISymbol"/> to check.</param>
@@ -104,6 +128,20 @@ namespace Yoakke.SourceGenerator.Common.RoslynExtensions
         /// <summary>
         /// Retrieves a given <see cref="AttributeData"/> attached to a <see cref="ISymbol"/>.
         /// </summary>
+        /// <typeparam name="T">The type of the structure to parse into.</typeparam>
+        /// <param name="symbol">The <see cref="ISymbol"/> to search in.</param>
+        /// <param name="attributeSymbol">The symbol of the attribute to search for.</param>
+        /// <returns>The found and parsed <see cref="AttributeData"/>.</returns>
+        public static T GetAttribute<T>(this ISymbol symbol, INamedTypeSymbol attributeSymbol)
+            where T : new()
+        {
+            var attrData = symbol.GetAttribute(attributeSymbol);
+            return attrData.ParseInto<T>();
+        }
+
+        /// <summary>
+        /// Retrieves a given <see cref="AttributeData"/> attached to a <see cref="ISymbol"/>.
+        /// </summary>
         /// <param name="symbol">The <see cref="ISymbol"/> to search in.</param>
         /// <param name="attributeSymbol">The symbol of the attribute to search for.</param>
         /// <returns>The found <see cref="AttributeData"/>.</returns>
@@ -111,6 +149,32 @@ namespace Yoakke.SourceGenerator.Common.RoslynExtensions
         {
             if (!symbol.TryGetAttribute(attributeSymbol, out var result)) throw new InvalidOperationException();
             return result;
+        }
+
+        /// <summary>
+        /// Tries to retrieve a given <see cref="AttributeData"/> attached to a <see cref="ISymbol"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the structure to parse into.</typeparam>
+        /// <param name="symbol">The <see cref="ISymbol"/> to search in.</param>
+        /// <param name="attributeSymbol">The attribute symbol to search for.</param>
+        /// <param name="result">The parsed structure gets written here, an attribute is found.</param>
+        /// <returns>True, if the attribute <paramref name="attributeSymbol"/> is found.</returns>
+        public static bool TryGetAttribute<T>(
+            this ISymbol symbol,
+            INamedTypeSymbol attributeSymbol,
+            [MaybeNullWhen(false)] out T result)
+            where T : new()
+        {
+            if (symbol.TryGetAttribute(attributeSymbol, out var attributeData))
+            {
+                result = attributeData.ParseInto<T>();
+                return true;
+            }
+            else
+            {
+                result = default;
+                return false;
+            }
         }
 
         /// <summary>

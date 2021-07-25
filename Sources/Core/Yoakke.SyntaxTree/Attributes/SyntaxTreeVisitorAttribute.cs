@@ -15,12 +15,12 @@ namespace Yoakke.SyntaxTree.Attributes
         /// <summary>
         /// The name of the visitor to generate.
         /// </summary>
-        public string Name { get; set; }
+        public string ClassName { get; set; }
 
         /// <summary>
         /// The type to return from the visitor calls.
         /// </summary>
-        public Type Type { get; set; }
+        public Type ReturnType { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SyntaxTreeVisitorAttribute"/> class.
@@ -29,8 +29,8 @@ namespace Yoakke.SyntaxTree.Attributes
         /// <param name="type">The type to return from the visitor calls.</param>
         public SyntaxTreeVisitorAttribute(string name, Type type)
         {
-            this.Name = name;
-            this.Type = type;
+            this.ClassName = name;
+            this.ReturnType = type;
         }
 
         /// <summary>

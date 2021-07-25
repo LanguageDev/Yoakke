@@ -30,11 +30,6 @@ namespace Yoakke.SyntaxTree.Generator
         public INamedTypeSymbol ReturnType { get; }
 
         /// <summary>
-        /// True, if this visitor is actually a transformer.
-        /// </summary>
-        public bool IsTransformer { get; }
-
-        /// <summary>
         /// The source code of this visitor.
         /// </summary>
         public StringBuilder Code { get; set; } = new();
@@ -45,13 +40,11 @@ namespace Yoakke.SyntaxTree.Generator
         /// <param name="owner">The owner <see cref="MetaNode"/>.</param>
         /// <param name="name">The name of this visitor.</param>
         /// <param name="returnType">The return type the visitor produces.</param>
-        /// <param name="isTransformer">True, if the visitor is a transformer.</param>
-        public Visitor(MetaNode owner, string name, INamedTypeSymbol returnType, bool isTransformer = false)
+        public Visitor(MetaNode owner, string name, INamedTypeSymbol returnType)
         {
             this.Owner = owner;
             this.Name = name;
             this.ReturnType = returnType;
-            this.IsTransformer = isTransformer;
         }
     }
 }

@@ -37,9 +37,14 @@ namespace Yoakke.Parser.Generator
             }
         }
 
+        private class ParserAttribute
+        {
+            public INamedTypeSymbol? TokenType { get; set; }
+        }
+
         private class RuleAttribute
         {
-            public string Rule { get; set; }
+            public string Rule { get; set; } = string.Empty;
         }
 
         private RuleSet? ruleSet;
@@ -88,16 +93,8 @@ namespace Yoakke.Parser.Generator
         {
             if (!this.RequirePartial(syntax) || !this.RequireNonNested(symbol)) return null;
 
-            var parserAttr = symbol.GetAttribute(this.LoadSymbol(TypeNames.ParserAttribute));
-            if (parserAttr.ConstructorArguments.Length > 0)
-            {
-                var tokenType = (INamedTypeSymbol)parserAttr.ConstructorArguments.First().Value!;
-                this.tokenKinds = new TokenKindSet(tokenType);
-            }
-            else
-            {
-                this.tokenKinds = new TokenKindSet();
-            }
+            var parserAttr = symbol.GetAttribute<ParserAttribute>(this.LoadSymbol(TypeNames.ParserAttribute));
+            this.tokenKinds = new TokenKindSet(parserAttr.TokenType);
             // Extract rules from the method annotations
             this.ruleSet = this.ExtractRuleSet(symbol);
             this.parserType = symbol;
@@ -471,11 +468,10 @@ namespace {namespaceName}
                     })
                     .ToList();
                 // Since there can be multiple get all rule attributes attached to this method
-                var ruleAttributes = method.GetAttributes().Where(a => SymbolEqualityComparer.Default.Equals(a.AttributeClass, ruleAttr));
+                var ruleAttributes = method.GetAttributes<RuleAttribute>(ruleAttr);
                 foreach (var attr in ruleAttributes)
                 {
-                    var bnfString = attr.ParseInto<RuleAttribute>().Rule;
-                    var (name, ast) = BnfParser.Parse(bnfString, this.tokenKinds!);
+                    var (name, ast) = BnfParser.Parse(attr.Rule, this.tokenKinds!);
 
                     if (precedenceTable.Count > 0)
                     {

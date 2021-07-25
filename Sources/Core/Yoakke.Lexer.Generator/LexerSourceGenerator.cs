@@ -93,7 +93,7 @@ namespace Yoakke.Lexer.Generator
         private string? GenerateImplementation(INamedTypeSymbol symbol)
         {
             var lexerAttribute = this.LoadSymbol(TypeNames.LexerAttribute);
-            var lexerAttributeParams = symbol.GetAttribute(lexerAttribute).ParseInto<LexerAttribute>();
+            var lexerAttributeParams = symbol.GetAttribute<LexerAttribute>(lexerAttribute);
 
             var accessibility = symbol.DeclaredAccessibility.ToString().ToLowerInvariant();
             var lexerClassName = lexerAttributeParams.ClassName;
@@ -325,26 +325,12 @@ end_loop:
                 // Regular token
                 var ignore = member.HasAttribute(ignoreAttr);
                 // Ask for all regex and token attributes
-                var relevantAttribs = member.GetAttributes()
-                    .Where(attr => SymbolEqualityComparer.Default.Equals(attr.AttributeClass, regexAttr)
-                                || SymbolEqualityComparer.Default.Equals(attr.AttributeClass, tokenAttr))
-                    .ToList();
-                foreach (var attr in relevantAttribs)
-                {
-                    if (SymbolEqualityComparer.Default.Equals(attr.AttributeClass, regexAttr))
-                    {
-                        // Regex
-                        var regex = attr.ParseInto<RegexAttribute>().Regex;
-                        result.Tokens.Add(new TokenDescription(member, regex, ignore));
-                    }
-                    else
-                    {
-                        // Token
-                        var regex = RegExParser.Escape(attr.ParseInto<TokenAttribute>().Text);
-                        result.Tokens.Add(new TokenDescription(member, regex, ignore));
-                    }
-                }
-                if (relevantAttribs.Count == 0)
+                var regexAttribs = member.GetAttributes<RegexAttribute>(regexAttr);
+                var tokenAttribs = member.GetAttributes<TokenAttribute>(tokenAttr);
+                foreach (var attr in regexAttribs) result.Tokens.Add(new(member, attr.Regex, ignore));
+                foreach (var attr in tokenAttribs) result.Tokens.Add(new(member, RegExParser.Escape(attr.Text), ignore));
+
+                if (regexAttribs.Count == 0 && tokenAttribs.Count == 0)
                 {
                     // No attribute, warn
                     this.Report(Diagnostics.NoAttributeForTokenType, member.Locations.First(), member.Name);
