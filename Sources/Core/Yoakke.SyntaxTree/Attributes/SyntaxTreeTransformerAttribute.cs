@@ -17,32 +17,37 @@ namespace Yoakke.SyntaxTree.Attributes
     public class SyntaxTreeTransformerAttribute : Attribute
     {
         /// <summary>
-        /// The name of the visitor to generate.
+        /// The name of the transformer to generate.
         /// </summary>
-        public string Name { get; set; }
+        public string ClassName { get; set; }
 
         /// <summary>
         /// The type the node gets transformed to. Can be null, if the new type is the same as the original.
         /// </summary>
-        public Type? Type { get; set; }
+        public Type? TargetType { get; set; }
+
+        /// <summary>
+        /// The name of the custom transformer to use. Can be null, if no custom transformer is needed.
+        /// </summary>
+        public string? CustomTransformer { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SyntaxTreeTransformerAttribute"/> class.
         /// </summary>
-        /// <param name="name">The name of the transformer to generate.</param>
-        /// <param name="type">The type to return from the transformer calls.</param>
-        public SyntaxTreeTransformerAttribute(string name, Type? type)
+        /// <param name="className">The name of the transformer to generate.</param>
+        /// <param name="targetType">The type to return from the transformer calls.</param>
+        public SyntaxTreeTransformerAttribute(string className, Type? targetType)
         {
-            this.Name = name;
-            this.Type = type;
+            this.ClassName = className;
+            this.TargetType = targetType;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SyntaxTreeTransformerAttribute"/> class.
         /// </summary>
-        /// <param name="name">The name of the transformer to generate.</param>
-        public SyntaxTreeTransformerAttribute(string name)
-            : this(name, null)
+        /// <param name="className">The name of the transformer to generate.</param>
+        public SyntaxTreeTransformerAttribute(string className)
+            : this(className, null)
         {
         }
     }

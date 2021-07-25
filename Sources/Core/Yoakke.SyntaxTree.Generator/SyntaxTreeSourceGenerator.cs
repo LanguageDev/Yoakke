@@ -41,6 +41,15 @@ namespace Yoakke.SyntaxTree.Generator
             public INamedTypeSymbol? ReturnType { get; set; }
         }
 
+        private class SyntaxTreeTransformerAttribute
+        {
+            public string ClassName { get; set; } = string.Empty;
+
+            public INamedTypeSymbol? TargetType { get; set; }
+
+            public string? CustomTransformer { get; set; }
+        }
+
         private Dictionary<string, MetaNode> rootNodes = new();
         private Dictionary<string, MetaNode> allNodes = new();
 
