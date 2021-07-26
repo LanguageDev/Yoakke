@@ -287,7 +287,7 @@ namespace {surroundingNamespace} {{
                         .AppendLine("{");
                     if (node.IsAbstract)
                     {
-                        visitor.Code.AppendLine($"    throw new {TypeNames.InvalidOperationException}();");
+                        visitor.Code.AppendLine($"    throw new {TypeNames.NotSupportedException}();");
                     }
                     else
                     {
