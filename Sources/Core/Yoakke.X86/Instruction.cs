@@ -12,7 +12,7 @@ namespace Yoakke.X86
     /// <summary>
     /// A wrapper class for all instructions.
     /// </summary>
-    public static class Instructions
+    public static class Instruction
     {
         #region Generated
 

@@ -109,7 +109,7 @@ namespace Yoakke.X86.Readers
                     {
                         op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.Add(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
+                        return new Instruction.Add(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
                     }
                     break;
                 }
@@ -119,7 +119,7 @@ namespace Yoakke.X86.Readers
                     {
                         op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Add(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
+                        return new Instruction.Add(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                     }
                     break;
                 }
@@ -129,7 +129,7 @@ namespace Yoakke.X86.Readers
                     {
                         op1 = this.ParseRM(modrm_byte, DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.Add(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte), op1);
+                        return new Instruction.Add(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte), op1);
                     }
                     break;
                 }
@@ -139,7 +139,7 @@ namespace Yoakke.X86.Readers
                     {
                         op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Add(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                        return new Instruction.Add(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                     }
                     break;
                 }
@@ -147,13 +147,13 @@ namespace Yoakke.X86.Readers
                 {
                     op1 = this.ParseImmediate(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Add(Registers.Al, op1);
+                    return new Instruction.Add(Registers.Al, op1);
                 }
                 case 0x05:
                 {
                     op1 = this.ParseImmediate(HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Add(HasPrefix(0x66) ? Registers.Ax : Registers.Eax, op1);
+                    return new Instruction.Add(HasPrefix(0x66) ? Registers.Ax : Registers.Eax, op1);
                 }
                 case 0x08:
                 {
@@ -161,7 +161,7 @@ namespace Yoakke.X86.Readers
                     {
                         op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.Or(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
+                        return new Instruction.Or(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
                     }
                     break;
                 }
@@ -171,7 +171,7 @@ namespace Yoakke.X86.Readers
                     {
                         op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Or(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
+                        return new Instruction.Or(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                     }
                     break;
                 }
@@ -181,7 +181,7 @@ namespace Yoakke.X86.Readers
                     {
                         op1 = this.ParseRM(modrm_byte, DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.Or(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte), op1);
+                        return new Instruction.Or(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte), op1);
                     }
                     break;
                 }
@@ -191,7 +191,7 @@ namespace Yoakke.X86.Readers
                     {
                         op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Or(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                        return new Instruction.Or(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                     }
                     break;
                 }
@@ -199,13 +199,13 @@ namespace Yoakke.X86.Readers
                 {
                     op1 = this.ParseImmediate(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Or(Registers.Al, op1);
+                    return new Instruction.Or(Registers.Al, op1);
                 }
                 case 0x0d:
                 {
                     op1 = this.ParseImmediate(HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Or(HasPrefix(0x66) ? Registers.Ax : Registers.Eax, op1);
+                    return new Instruction.Or(HasPrefix(0x66) ? Registers.Ax : Registers.Eax, op1);
                 }
                 case 0x0f:
                 {
@@ -222,31 +222,31 @@ namespace Yoakke.X86.Readers
                                 {
                                 case 0xc8:
                                 {
-                                    return new Instructions.Monitor();
+                                    return new Instruction.Monitor();
                                 }
                                 case 0xc9:
                                 {
-                                    return new Instructions.Mwait();
+                                    return new Instruction.Mwait();
                                 }
                                 case 0xd0:
                                 {
-                                    return new Instructions.Xgetbv();
+                                    return new Instruction.Xgetbv();
                                 }
                                 case 0xf9:
                                 {
-                                    return new Instructions.Rdtscp();
+                                    return new Instruction.Rdtscp();
                                 }
                                 case 0xfa:
                                 {
-                                    return new Instructions.Monitorx();
+                                    return new Instruction.Monitorx();
                                 }
                                 case 0xfb:
                                 {
-                                    return new Instructions.Mwaitx();
+                                    return new Instruction.Mwaitx();
                                 }
                                 case 0xfc:
                                 {
-                                    return new Instructions.Clzero();
+                                    return new Instruction.Clzero();
                                 }
                                 }
                                 this.UnparseByte();
@@ -256,7 +256,7 @@ namespace Yoakke.X86.Readers
                         case 0x0b:
                         {
                             length = this.Commit();
-                            return new Instructions.Ud2();
+                            return new Instruction.Ud2();
                         }
                         case 0x0d:
                         {
@@ -268,15 +268,15 @@ namespace Yoakke.X86.Readers
                                 {
                                 case 0x00:
                                 {
-                                    return new Instructions.Prefetch(op0);
+                                    return new Instruction.Prefetch(op0);
                                 }
                                 case 0x01:
                                 {
-                                    return new Instructions.Prefetchw(op0);
+                                    return new Instruction.Prefetchw(op0);
                                 }
                                 case 0x02:
                                 {
-                                    return new Instructions.Prefetchwt1(op0);
+                                    return new Instruction.Prefetchwt1(op0);
                                 }
                                 }
                                 this.UnparseByte();
@@ -286,7 +286,7 @@ namespace Yoakke.X86.Readers
                         case 0x0e:
                         {
                             length = this.Commit();
-                            return new Instructions.Femms();
+                            return new Instruction.Femms();
                         }
                         case 0x18:
                         {
@@ -298,19 +298,19 @@ namespace Yoakke.X86.Readers
                                 {
                                 case 0x00:
                                 {
-                                    return new Instructions.Prefetchnta(op0);
+                                    return new Instruction.Prefetchnta(op0);
                                 }
                                 case 0x01:
                                 {
-                                    return new Instructions.Prefetcht0(op0);
+                                    return new Instruction.Prefetcht0(op0);
                                 }
                                 case 0x02:
                                 {
-                                    return new Instructions.Prefetcht1(op0);
+                                    return new Instruction.Prefetcht1(op0);
                                 }
                                 case 0x03:
                                 {
-                                    return new Instructions.Prefetcht2(op0);
+                                    return new Instruction.Prefetcht2(op0);
                                 }
                                 }
                                 this.UnparseByte();
@@ -323,13 +323,13 @@ namespace Yoakke.X86.Readers
                             {
                                 op1 = this.ParseRM(modrm_byte, DataWidth.Qword);
                                 length = this.Commit();
-                                return new Instructions.Cvttsd2si(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                                return new Instruction.Cvttsd2si(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             if (HasPrefix(0xf3) && this.TryParseByte(out modrm_byte))
                             {
                                 op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cvttss2si(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                                return new Instruction.Cvttss2si(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -339,20 +339,20 @@ namespace Yoakke.X86.Readers
                             {
                                 op1 = this.ParseRM(modrm_byte, DataWidth.Qword);
                                 length = this.Commit();
-                                return new Instructions.Cvtsd2si(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                                return new Instruction.Cvtsd2si(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             if (HasPrefix(0xf3) && this.TryParseByte(out modrm_byte))
                             {
                                 op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cvtss2si(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                                return new Instruction.Cvtss2si(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             break;
                         }
                         case 0x31:
                         {
                             length = this.Commit();
-                            return new Instructions.Rdtsc();
+                            return new Instruction.Rdtsc();
                         }
                         case 0x38:
                         {
@@ -366,19 +366,19 @@ namespace Yoakke.X86.Readers
                                     {
                                         op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                         length = this.Commit();
-                                        return new Instructions.Movbe(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
+                                        return new Instruction.Movbe(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Word), op1);
                                     }
                                     if (HasPrefix(0xf2) && this.TryParseByte(out modrm_byte))
                                     {
                                         op1 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                         length = this.Commit();
-                                        return new Instructions.Crc32(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                                        return new Instruction.Crc32(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                                     }
                                     if (this.TryParseByte(out modrm_byte))
                                     {
                                         op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                         length = this.Commit();
-                                        return new Instructions.Movbe(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                                        return new Instruction.Movbe(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                                     }
                                     break;
                                 }
@@ -388,13 +388,13 @@ namespace Yoakke.X86.Readers
                                     {
                                         op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                         length = this.Commit();
-                                        return new Instructions.Crc32(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                                        return new Instruction.Crc32(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                                     }
                                     if (this.TryParseByte(out modrm_byte))
                                     {
                                         op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                         length = this.Commit();
-                                        return new Instructions.Movbe(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
+                                        return new Instruction.Movbe(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                                     }
                                     break;
                                 }
@@ -404,13 +404,13 @@ namespace Yoakke.X86.Readers
                                     {
                                         op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                         length = this.Commit();
-                                        return new Instructions.Adcx(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                                        return new Instruction.Adcx(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                                     }
                                     if (HasPrefix(0xf3) && this.TryParseByte(out modrm_byte))
                                     {
                                         op1 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                         length = this.Commit();
-                                        return new Instructions.Adox(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                                        return new Instruction.Adox(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                                     }
                                     break;
                                 }
@@ -425,7 +425,7 @@ namespace Yoakke.X86.Readers
                             {
                                 op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovo(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                                return new Instruction.Cmovo(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -435,7 +435,7 @@ namespace Yoakke.X86.Readers
                             {
                                 op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovno(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                                return new Instruction.Cmovno(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -445,19 +445,19 @@ namespace Yoakke.X86.Readers
                             {
                                 op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovb(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                                return new Instruction.Cmovb(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
                                 op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovc(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                                return new Instruction.Cmovc(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
                                 op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovnae(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                                return new Instruction.Cmovnae(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -467,19 +467,19 @@ namespace Yoakke.X86.Readers
                             {
                                 op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovae(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                                return new Instruction.Cmovae(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
                                 op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovnb(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                                return new Instruction.Cmovnb(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
                                 op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovnc(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                                return new Instruction.Cmovnc(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -489,13 +489,13 @@ namespace Yoakke.X86.Readers
                             {
                                 op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmove(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                                return new Instruction.Cmove(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
                                 op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovz(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                                return new Instruction.Cmovz(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -505,13 +505,13 @@ namespace Yoakke.X86.Readers
                             {
                                 op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovne(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                                return new Instruction.Cmovne(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
                                 op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovnz(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                                return new Instruction.Cmovnz(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -521,13 +521,13 @@ namespace Yoakke.X86.Readers
                             {
                                 op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovbe(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                                return new Instruction.Cmovbe(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
                                 op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovna(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                                return new Instruction.Cmovna(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -537,13 +537,13 @@ namespace Yoakke.X86.Readers
                             {
                                 op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmova(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                                return new Instruction.Cmova(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
                                 op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovnbe(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                                return new Instruction.Cmovnbe(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -553,7 +553,7 @@ namespace Yoakke.X86.Readers
                             {
                                 op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovs(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                                return new Instruction.Cmovs(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -563,7 +563,7 @@ namespace Yoakke.X86.Readers
                             {
                                 op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovns(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                                return new Instruction.Cmovns(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -573,13 +573,13 @@ namespace Yoakke.X86.Readers
                             {
                                 op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovp(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                                return new Instruction.Cmovp(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
                                 op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovpe(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                                return new Instruction.Cmovpe(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -589,13 +589,13 @@ namespace Yoakke.X86.Readers
                             {
                                 op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovnp(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                                return new Instruction.Cmovnp(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
                                 op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovpo(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                                return new Instruction.Cmovpo(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -605,13 +605,13 @@ namespace Yoakke.X86.Readers
                             {
                                 op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovl(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                                return new Instruction.Cmovl(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
                                 op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovnge(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                                return new Instruction.Cmovnge(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -621,13 +621,13 @@ namespace Yoakke.X86.Readers
                             {
                                 op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovge(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                                return new Instruction.Cmovge(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
                                 op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovnl(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                                return new Instruction.Cmovnl(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -637,13 +637,13 @@ namespace Yoakke.X86.Readers
                             {
                                 op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovle(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                                return new Instruction.Cmovle(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
                                 op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovng(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                                return new Instruction.Cmovng(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -653,116 +653,116 @@ namespace Yoakke.X86.Readers
                             {
                                 op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovg(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                                return new Instruction.Cmovg(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
                                 op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmovnle(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                                return new Instruction.Cmovnle(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
                         case 0x77:
                         {
                             length = this.Commit();
-                            return new Instructions.Emms();
+                            return new Instruction.Emms();
                         }
                         case 0x80:
                         {
                             op0 = this.ParseCodeOffset(DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Jo(op0);
+                            return new Instruction.Jo(op0);
                         }
                         case 0x81:
                         {
                             op0 = this.ParseCodeOffset(DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Jno(op0);
+                            return new Instruction.Jno(op0);
                         }
                         case 0x82:
                         {
                             op0 = this.ParseCodeOffset(DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Jb(op0);
+                            return new Instruction.Jb(op0);
                         }
                         case 0x83:
                         {
                             op0 = this.ParseCodeOffset(DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Jae(op0);
+                            return new Instruction.Jae(op0);
                         }
                         case 0x84:
                         {
                             op0 = this.ParseCodeOffset(DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Je(op0);
+                            return new Instruction.Je(op0);
                         }
                         case 0x85:
                         {
                             op0 = this.ParseCodeOffset(DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Jne(op0);
+                            return new Instruction.Jne(op0);
                         }
                         case 0x86:
                         {
                             op0 = this.ParseCodeOffset(DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Jbe(op0);
+                            return new Instruction.Jbe(op0);
                         }
                         case 0x87:
                         {
                             op0 = this.ParseCodeOffset(DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Ja(op0);
+                            return new Instruction.Ja(op0);
                         }
                         case 0x88:
                         {
                             op0 = this.ParseCodeOffset(DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Js(op0);
+                            return new Instruction.Js(op0);
                         }
                         case 0x89:
                         {
                             op0 = this.ParseCodeOffset(DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Jns(op0);
+                            return new Instruction.Jns(op0);
                         }
                         case 0x8a:
                         {
                             op0 = this.ParseCodeOffset(DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Jp(op0);
+                            return new Instruction.Jp(op0);
                         }
                         case 0x8b:
                         {
                             op0 = this.ParseCodeOffset(DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Jnp(op0);
+                            return new Instruction.Jnp(op0);
                         }
                         case 0x8c:
                         {
                             op0 = this.ParseCodeOffset(DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Jl(op0);
+                            return new Instruction.Jl(op0);
                         }
                         case 0x8d:
                         {
                             op0 = this.ParseCodeOffset(DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Jge(op0);
+                            return new Instruction.Jge(op0);
                         }
                         case 0x8e:
                         {
                             op0 = this.ParseCodeOffset(DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Jle(op0);
+                            return new Instruction.Jle(op0);
                         }
                         case 0x8f:
                         {
                             op0 = this.ParseCodeOffset(DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Jg(op0);
+                            return new Instruction.Jg(op0);
                         }
                         case 0x90:
                         {
@@ -774,7 +774,7 @@ namespace Yoakke.X86.Readers
                                 {
                                     op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Seto(op0);
+                                    return new Instruction.Seto(op0);
                                 }
                                 }
                                 this.UnparseByte();
@@ -791,7 +791,7 @@ namespace Yoakke.X86.Readers
                                 {
                                     op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Setno(op0);
+                                    return new Instruction.Setno(op0);
                                 }
                                 }
                                 this.UnparseByte();
@@ -808,7 +808,7 @@ namespace Yoakke.X86.Readers
                                 {
                                     op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Setb(op0);
+                                    return new Instruction.Setb(op0);
                                 }
                                 }
                                 this.UnparseByte();
@@ -825,7 +825,7 @@ namespace Yoakke.X86.Readers
                                 {
                                     op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Setae(op0);
+                                    return new Instruction.Setae(op0);
                                 }
                                 }
                                 this.UnparseByte();
@@ -842,7 +842,7 @@ namespace Yoakke.X86.Readers
                                 {
                                     op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Sete(op0);
+                                    return new Instruction.Sete(op0);
                                 }
                                 }
                                 this.UnparseByte();
@@ -859,7 +859,7 @@ namespace Yoakke.X86.Readers
                                 {
                                     op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Setne(op0);
+                                    return new Instruction.Setne(op0);
                                 }
                                 }
                                 this.UnparseByte();
@@ -876,7 +876,7 @@ namespace Yoakke.X86.Readers
                                 {
                                     op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Setbe(op0);
+                                    return new Instruction.Setbe(op0);
                                 }
                                 }
                                 this.UnparseByte();
@@ -893,7 +893,7 @@ namespace Yoakke.X86.Readers
                                 {
                                     op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Seta(op0);
+                                    return new Instruction.Seta(op0);
                                 }
                                 }
                                 this.UnparseByte();
@@ -910,7 +910,7 @@ namespace Yoakke.X86.Readers
                                 {
                                     op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Sets(op0);
+                                    return new Instruction.Sets(op0);
                                 }
                                 }
                                 this.UnparseByte();
@@ -927,7 +927,7 @@ namespace Yoakke.X86.Readers
                                 {
                                     op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Setns(op0);
+                                    return new Instruction.Setns(op0);
                                 }
                                 }
                                 this.UnparseByte();
@@ -944,7 +944,7 @@ namespace Yoakke.X86.Readers
                                 {
                                     op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Setp(op0);
+                                    return new Instruction.Setp(op0);
                                 }
                                 }
                                 this.UnparseByte();
@@ -961,7 +961,7 @@ namespace Yoakke.X86.Readers
                                 {
                                     op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Setnp(op0);
+                                    return new Instruction.Setnp(op0);
                                 }
                                 }
                                 this.UnparseByte();
@@ -978,7 +978,7 @@ namespace Yoakke.X86.Readers
                                 {
                                     op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Setl(op0);
+                                    return new Instruction.Setl(op0);
                                 }
                                 }
                                 this.UnparseByte();
@@ -995,7 +995,7 @@ namespace Yoakke.X86.Readers
                                 {
                                     op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Setge(op0);
+                                    return new Instruction.Setge(op0);
                                 }
                                 }
                                 this.UnparseByte();
@@ -1012,7 +1012,7 @@ namespace Yoakke.X86.Readers
                                 {
                                     op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Setle(op0);
+                                    return new Instruction.Setle(op0);
                                 }
                                 }
                                 this.UnparseByte();
@@ -1029,7 +1029,7 @@ namespace Yoakke.X86.Readers
                                 {
                                     op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Setg(op0);
+                                    return new Instruction.Setg(op0);
                                 }
                                 }
                                 this.UnparseByte();
@@ -1039,7 +1039,7 @@ namespace Yoakke.X86.Readers
                         case 0xa2:
                         {
                             length = this.Commit();
-                            return new Instructions.Cpuid();
+                            return new Instruction.Cpuid();
                         }
                         case 0xa3:
                         {
@@ -1047,7 +1047,7 @@ namespace Yoakke.X86.Readers
                             {
                                 op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Bt(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
+                                return new Instruction.Bt(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                             }
                             break;
                         }
@@ -1058,7 +1058,7 @@ namespace Yoakke.X86.Readers
                                 op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 op2 = this.ParseImmediate(DataWidth.Byte);
                                 length = this.Commit();
-                                return new Instructions.Shld(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op2);
+                                return new Instruction.Shld(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op2);
                             }
                             break;
                         }
@@ -1068,7 +1068,7 @@ namespace Yoakke.X86.Readers
                             {
                                 op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Shld(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), Registers.Cl);
+                                return new Instruction.Shld(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), Registers.Cl);
                             }
                             break;
                         }
@@ -1078,7 +1078,7 @@ namespace Yoakke.X86.Readers
                             {
                                 op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Bts(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
+                                return new Instruction.Bts(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                             }
                             break;
                         }
@@ -1089,7 +1089,7 @@ namespace Yoakke.X86.Readers
                                 op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 op2 = this.ParseImmediate(DataWidth.Byte);
                                 length = this.Commit();
-                                return new Instructions.Shrd(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op2);
+                                return new Instruction.Shrd(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op2);
                             }
                             break;
                         }
@@ -1099,7 +1099,7 @@ namespace Yoakke.X86.Readers
                             {
                                 op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Shrd(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), Registers.Cl);
+                                return new Instruction.Shrd(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), Registers.Cl);
                             }
                             break;
                         }
@@ -1112,15 +1112,15 @@ namespace Yoakke.X86.Readers
                                 {
                                 case 0xe8:
                                 {
-                                    return new Instructions.Lfence();
+                                    return new Instruction.Lfence();
                                 }
                                 case 0xf0:
                                 {
-                                    return new Instructions.Mfence();
+                                    return new Instruction.Mfence();
                                 }
                                 case 0xf8:
                                 {
-                                    return new Instructions.Sfence();
+                                    return new Instruction.Sfence();
                                 }
                                 }
                                 this.UnparseByte();
@@ -1133,13 +1133,13 @@ namespace Yoakke.X86.Readers
                                 {
                                     op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                     length = this.Commit();
-                                    return new Instructions.Ldmxcsr(op0);
+                                    return new Instruction.Ldmxcsr(op0);
                                 }
                                 case 0x03:
                                 {
                                     op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                     length = this.Commit();
-                                    return new Instructions.Stmxcsr(op0);
+                                    return new Instruction.Stmxcsr(op0);
                                 }
                                 case 0x06:
                                 {
@@ -1147,7 +1147,7 @@ namespace Yoakke.X86.Readers
                                     {
                                         op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                         length = this.Commit();
-                                        return new Instructions.Clwb(op0);
+                                        return new Instruction.Clwb(op0);
                                     }
                                     break;
                                 }
@@ -1157,11 +1157,11 @@ namespace Yoakke.X86.Readers
                                     {
                                         op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                         length = this.Commit();
-                                        return new Instructions.Clflushopt(op0);
+                                        return new Instruction.Clflushopt(op0);
                                     }
                                     op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                     length = this.Commit();
-                                    return new Instructions.Clflush(op0);
+                                    return new Instruction.Clflush(op0);
                                 }
                                 }
                                 this.UnparseByte();
@@ -1174,7 +1174,7 @@ namespace Yoakke.X86.Readers
                             {
                                 op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Imul(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                                return new Instruction.Imul(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -1184,7 +1184,7 @@ namespace Yoakke.X86.Readers
                             {
                                 op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                 length = this.Commit();
-                                return new Instructions.Cmpxchg(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
+                                return new Instruction.Cmpxchg(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
                             }
                             break;
                         }
@@ -1194,7 +1194,7 @@ namespace Yoakke.X86.Readers
                             {
                                 op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Cmpxchg(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
+                                return new Instruction.Cmpxchg(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                             }
                             break;
                         }
@@ -1204,7 +1204,7 @@ namespace Yoakke.X86.Readers
                             {
                                 op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Btr(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
+                                return new Instruction.Btr(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                             }
                             break;
                         }
@@ -1214,7 +1214,7 @@ namespace Yoakke.X86.Readers
                             {
                                 op1 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                 length = this.Commit();
-                                return new Instructions.Movzx(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                                return new Instruction.Movzx(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -1224,7 +1224,7 @@ namespace Yoakke.X86.Readers
                             {
                                 op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                 length = this.Commit();
-                                return new Instructions.Movzx(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                                return new Instruction.Movzx(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -1234,7 +1234,7 @@ namespace Yoakke.X86.Readers
                             {
                                 op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Popcnt(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                                return new Instruction.Popcnt(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -1249,19 +1249,19 @@ namespace Yoakke.X86.Readers
                                 {
                                 case 0x04:
                                 {
-                                    return new Instructions.Bt(op0, op1);
+                                    return new Instruction.Bt(op0, op1);
                                 }
                                 case 0x05:
                                 {
-                                    return new Instructions.Bts(op0, op1);
+                                    return new Instruction.Bts(op0, op1);
                                 }
                                 case 0x06:
                                 {
-                                    return new Instructions.Btr(op0, op1);
+                                    return new Instruction.Btr(op0, op1);
                                 }
                                 case 0x07:
                                 {
-                                    return new Instructions.Btc(op0, op1);
+                                    return new Instruction.Btc(op0, op1);
                                 }
                                 }
                                 this.UnparseByte();
@@ -1274,7 +1274,7 @@ namespace Yoakke.X86.Readers
                             {
                                 op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Btc(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
+                                return new Instruction.Btc(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                             }
                             break;
                         }
@@ -1284,13 +1284,13 @@ namespace Yoakke.X86.Readers
                             {
                                 op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Tzcnt(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                                return new Instruction.Tzcnt(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
                                 op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Bsf(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                                return new Instruction.Bsf(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -1300,13 +1300,13 @@ namespace Yoakke.X86.Readers
                             {
                                 op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Lzcnt(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                                return new Instruction.Lzcnt(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             if (this.TryParseByte(out modrm_byte))
                             {
                                 op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Bsr(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                                return new Instruction.Bsr(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -1316,7 +1316,7 @@ namespace Yoakke.X86.Readers
                             {
                                 op1 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                 length = this.Commit();
-                                return new Instructions.Movsx(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                                return new Instruction.Movsx(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -1326,7 +1326,7 @@ namespace Yoakke.X86.Readers
                             {
                                 op1 = this.ParseRM(modrm_byte, DataWidth.Word);
                                 length = this.Commit();
-                                return new Instructions.Movsx(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
+                                return new Instruction.Movsx(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword), op1);
                             }
                             break;
                         }
@@ -1336,7 +1336,7 @@ namespace Yoakke.X86.Readers
                             {
                                 op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                                 length = this.Commit();
-                                return new Instructions.Xadd(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
+                                return new Instruction.Xadd(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
                             }
                             break;
                         }
@@ -1346,7 +1346,7 @@ namespace Yoakke.X86.Readers
                             {
                                 op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Xadd(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
+                                return new Instruction.Xadd(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                             }
                             break;
                         }
@@ -1356,7 +1356,7 @@ namespace Yoakke.X86.Readers
                             {
                                 op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                                 length = this.Commit();
-                                return new Instructions.Movnti(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
+                                return new Instruction.Movnti(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Dword));
                             }
                             break;
                         }
@@ -1370,7 +1370,7 @@ namespace Yoakke.X86.Readers
                                 {
                                     op0 = this.ParseRM(modrm_byte, DataWidth.Qword);
                                     length = this.Commit();
-                                    return new Instructions.Cmpxchg8b(op0);
+                                    return new Instruction.Cmpxchg8b(op0);
                                 }
                                 case 0x06:
                                 case 0x07:
@@ -1392,7 +1392,7 @@ namespace Yoakke.X86.Readers
                         case 0xcf:
                         {
                             length = this.Commit();
-                            return new Instructions.Bswap(FromRegisterIndex(byte1 & 0b111, DataWidth.Dword));
+                            return new Instruction.Bswap(FromRegisterIndex(byte1 & 0b111, DataWidth.Dword));
                         }
                         }
                         this.UnparseByte();
@@ -1405,7 +1405,7 @@ namespace Yoakke.X86.Readers
                     {
                         op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.Adc(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
+                        return new Instruction.Adc(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
                     }
                     break;
                 }
@@ -1415,7 +1415,7 @@ namespace Yoakke.X86.Readers
                     {
                         op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Adc(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
+                        return new Instruction.Adc(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                     }
                     break;
                 }
@@ -1425,7 +1425,7 @@ namespace Yoakke.X86.Readers
                     {
                         op1 = this.ParseRM(modrm_byte, DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.Adc(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte), op1);
+                        return new Instruction.Adc(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte), op1);
                     }
                     break;
                 }
@@ -1435,7 +1435,7 @@ namespace Yoakke.X86.Readers
                     {
                         op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Adc(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                        return new Instruction.Adc(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                     }
                     break;
                 }
@@ -1443,13 +1443,13 @@ namespace Yoakke.X86.Readers
                 {
                     op1 = this.ParseImmediate(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Adc(Registers.Al, op1);
+                    return new Instruction.Adc(Registers.Al, op1);
                 }
                 case 0x15:
                 {
                     op1 = this.ParseImmediate(HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Adc(HasPrefix(0x66) ? Registers.Ax : Registers.Eax, op1);
+                    return new Instruction.Adc(HasPrefix(0x66) ? Registers.Ax : Registers.Eax, op1);
                 }
                 case 0x18:
                 {
@@ -1457,7 +1457,7 @@ namespace Yoakke.X86.Readers
                     {
                         op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.Sbb(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
+                        return new Instruction.Sbb(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
                     }
                     break;
                 }
@@ -1467,7 +1467,7 @@ namespace Yoakke.X86.Readers
                     {
                         op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Sbb(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
+                        return new Instruction.Sbb(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                     }
                     break;
                 }
@@ -1477,7 +1477,7 @@ namespace Yoakke.X86.Readers
                     {
                         op1 = this.ParseRM(modrm_byte, DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.Sbb(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte), op1);
+                        return new Instruction.Sbb(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte), op1);
                     }
                     break;
                 }
@@ -1487,7 +1487,7 @@ namespace Yoakke.X86.Readers
                     {
                         op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Sbb(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                        return new Instruction.Sbb(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                     }
                     break;
                 }
@@ -1495,13 +1495,13 @@ namespace Yoakke.X86.Readers
                 {
                     op1 = this.ParseImmediate(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Sbb(Registers.Al, op1);
+                    return new Instruction.Sbb(Registers.Al, op1);
                 }
                 case 0x1d:
                 {
                     op1 = this.ParseImmediate(HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Sbb(HasPrefix(0x66) ? Registers.Ax : Registers.Eax, op1);
+                    return new Instruction.Sbb(HasPrefix(0x66) ? Registers.Ax : Registers.Eax, op1);
                 }
                 case 0x20:
                 {
@@ -1509,7 +1509,7 @@ namespace Yoakke.X86.Readers
                     {
                         op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.And(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
+                        return new Instruction.And(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
                     }
                     break;
                 }
@@ -1519,7 +1519,7 @@ namespace Yoakke.X86.Readers
                     {
                         op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.And(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
+                        return new Instruction.And(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                     }
                     break;
                 }
@@ -1529,7 +1529,7 @@ namespace Yoakke.X86.Readers
                     {
                         op1 = this.ParseRM(modrm_byte, DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.And(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte), op1);
+                        return new Instruction.And(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte), op1);
                     }
                     break;
                 }
@@ -1539,7 +1539,7 @@ namespace Yoakke.X86.Readers
                     {
                         op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.And(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                        return new Instruction.And(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                     }
                     break;
                 }
@@ -1547,18 +1547,18 @@ namespace Yoakke.X86.Readers
                 {
                     op1 = this.ParseImmediate(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.And(Registers.Al, op1);
+                    return new Instruction.And(Registers.Al, op1);
                 }
                 case 0x25:
                 {
                     op1 = this.ParseImmediate(HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.And(HasPrefix(0x66) ? Registers.Ax : Registers.Eax, op1);
+                    return new Instruction.And(HasPrefix(0x66) ? Registers.Ax : Registers.Eax, op1);
                 }
                 case 0x27:
                 {
                     length = this.Commit();
-                    return new Instructions.Daa();
+                    return new Instruction.Daa();
                 }
                 case 0x28:
                 {
@@ -1566,7 +1566,7 @@ namespace Yoakke.X86.Readers
                     {
                         op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.Sub(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
+                        return new Instruction.Sub(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
                     }
                     break;
                 }
@@ -1576,7 +1576,7 @@ namespace Yoakke.X86.Readers
                     {
                         op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Sub(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
+                        return new Instruction.Sub(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                     }
                     break;
                 }
@@ -1586,7 +1586,7 @@ namespace Yoakke.X86.Readers
                     {
                         op1 = this.ParseRM(modrm_byte, DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.Sub(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte), op1);
+                        return new Instruction.Sub(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte), op1);
                     }
                     break;
                 }
@@ -1596,7 +1596,7 @@ namespace Yoakke.X86.Readers
                     {
                         op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Sub(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                        return new Instruction.Sub(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                     }
                     break;
                 }
@@ -1604,18 +1604,18 @@ namespace Yoakke.X86.Readers
                 {
                     op1 = this.ParseImmediate(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Sub(Registers.Al, op1);
+                    return new Instruction.Sub(Registers.Al, op1);
                 }
                 case 0x2d:
                 {
                     op1 = this.ParseImmediate(HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Sub(HasPrefix(0x66) ? Registers.Ax : Registers.Eax, op1);
+                    return new Instruction.Sub(HasPrefix(0x66) ? Registers.Ax : Registers.Eax, op1);
                 }
                 case 0x2f:
                 {
                     length = this.Commit();
-                    return new Instructions.Das();
+                    return new Instruction.Das();
                 }
                 case 0x30:
                 {
@@ -1623,7 +1623,7 @@ namespace Yoakke.X86.Readers
                     {
                         op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.Xor(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
+                        return new Instruction.Xor(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
                     }
                     break;
                 }
@@ -1633,7 +1633,7 @@ namespace Yoakke.X86.Readers
                     {
                         op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Xor(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
+                        return new Instruction.Xor(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                     }
                     break;
                 }
@@ -1643,7 +1643,7 @@ namespace Yoakke.X86.Readers
                     {
                         op1 = this.ParseRM(modrm_byte, DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.Xor(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte), op1);
+                        return new Instruction.Xor(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte), op1);
                     }
                     break;
                 }
@@ -1653,7 +1653,7 @@ namespace Yoakke.X86.Readers
                     {
                         op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Xor(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                        return new Instruction.Xor(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                     }
                     break;
                 }
@@ -1661,18 +1661,18 @@ namespace Yoakke.X86.Readers
                 {
                     op1 = this.ParseImmediate(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Xor(Registers.Al, op1);
+                    return new Instruction.Xor(Registers.Al, op1);
                 }
                 case 0x35:
                 {
                     op1 = this.ParseImmediate(HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Xor(HasPrefix(0x66) ? Registers.Ax : Registers.Eax, op1);
+                    return new Instruction.Xor(HasPrefix(0x66) ? Registers.Ax : Registers.Eax, op1);
                 }
                 case 0x37:
                 {
                     length = this.Commit();
-                    return new Instructions.Aaa();
+                    return new Instruction.Aaa();
                 }
                 case 0x38:
                 {
@@ -1680,7 +1680,7 @@ namespace Yoakke.X86.Readers
                     {
                         op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.Cmp(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
+                        return new Instruction.Cmp(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
                     }
                     break;
                 }
@@ -1690,7 +1690,7 @@ namespace Yoakke.X86.Readers
                     {
                         op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Cmp(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
+                        return new Instruction.Cmp(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                     }
                     break;
                 }
@@ -1700,7 +1700,7 @@ namespace Yoakke.X86.Readers
                     {
                         op1 = this.ParseRM(modrm_byte, DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.Cmp(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte), op1);
+                        return new Instruction.Cmp(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte), op1);
                     }
                     break;
                 }
@@ -1710,7 +1710,7 @@ namespace Yoakke.X86.Readers
                     {
                         op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Cmp(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                        return new Instruction.Cmp(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                     }
                     break;
                 }
@@ -1718,18 +1718,18 @@ namespace Yoakke.X86.Readers
                 {
                     op1 = this.ParseImmediate(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Cmp(Registers.Al, op1);
+                    return new Instruction.Cmp(Registers.Al, op1);
                 }
                 case 0x3d:
                 {
                     op1 = this.ParseImmediate(HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Cmp(HasPrefix(0x66) ? Registers.Ax : Registers.Eax, op1);
+                    return new Instruction.Cmp(HasPrefix(0x66) ? Registers.Ax : Registers.Eax, op1);
                 }
                 case 0x3f:
                 {
                     length = this.Commit();
-                    return new Instructions.Aas();
+                    return new Instruction.Aas();
                 }
                 case 0x40:
                 case 0x41:
@@ -1741,7 +1741,7 @@ namespace Yoakke.X86.Readers
                 case 0x47:
                 {
                     length = this.Commit();
-                    return new Instructions.Inc(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
+                    return new Instruction.Inc(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x48:
                 case 0x49:
@@ -1753,7 +1753,7 @@ namespace Yoakke.X86.Readers
                 case 0x4f:
                 {
                     length = this.Commit();
-                    return new Instructions.Dec(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
+                    return new Instruction.Dec(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x50:
                 case 0x51:
@@ -1765,7 +1765,7 @@ namespace Yoakke.X86.Readers
                 case 0x57:
                 {
                     length = this.Commit();
-                    return new Instructions.Push(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
+                    return new Instruction.Push(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x58:
                 case 0x59:
@@ -1777,13 +1777,13 @@ namespace Yoakke.X86.Readers
                 case 0x5f:
                 {
                     length = this.Commit();
-                    return new Instructions.Pop(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
+                    return new Instruction.Pop(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x68:
                 {
                     op0 = this.ParseImmediate(DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Push(op0);
+                    return new Instruction.Push(op0);
                 }
                 case 0x69:
                 {
@@ -1792,7 +1792,7 @@ namespace Yoakke.X86.Readers
                         op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         op2 = this.ParseImmediate(HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Imul(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1, op2);
+                        return new Instruction.Imul(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1, op2);
                     }
                     break;
                 }
@@ -1800,7 +1800,7 @@ namespace Yoakke.X86.Readers
                 {
                     op0 = this.ParseImmediate(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Push(op0);
+                    return new Instruction.Push(op0);
                 }
                 case 0x6b:
                 {
@@ -1809,7 +1809,7 @@ namespace Yoakke.X86.Readers
                         op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         op2 = this.ParseImmediate(DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.Imul(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1, op2);
+                        return new Instruction.Imul(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1, op2);
                     }
                     break;
                 }
@@ -1817,97 +1817,97 @@ namespace Yoakke.X86.Readers
                 {
                     op0 = this.ParseCodeOffset(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Jo(op0);
+                    return new Instruction.Jo(op0);
                 }
                 case 0x71:
                 {
                     op0 = this.ParseCodeOffset(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Jno(op0);
+                    return new Instruction.Jno(op0);
                 }
                 case 0x72:
                 {
                     op0 = this.ParseCodeOffset(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Jb(op0);
+                    return new Instruction.Jb(op0);
                 }
                 case 0x73:
                 {
                     op0 = this.ParseCodeOffset(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Jae(op0);
+                    return new Instruction.Jae(op0);
                 }
                 case 0x74:
                 {
                     op0 = this.ParseCodeOffset(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Je(op0);
+                    return new Instruction.Je(op0);
                 }
                 case 0x75:
                 {
                     op0 = this.ParseCodeOffset(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Jne(op0);
+                    return new Instruction.Jne(op0);
                 }
                 case 0x76:
                 {
                     op0 = this.ParseCodeOffset(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Jbe(op0);
+                    return new Instruction.Jbe(op0);
                 }
                 case 0x77:
                 {
                     op0 = this.ParseCodeOffset(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Ja(op0);
+                    return new Instruction.Ja(op0);
                 }
                 case 0x78:
                 {
                     op0 = this.ParseCodeOffset(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Js(op0);
+                    return new Instruction.Js(op0);
                 }
                 case 0x79:
                 {
                     op0 = this.ParseCodeOffset(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Jns(op0);
+                    return new Instruction.Jns(op0);
                 }
                 case 0x7a:
                 {
                     op0 = this.ParseCodeOffset(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Jp(op0);
+                    return new Instruction.Jp(op0);
                 }
                 case 0x7b:
                 {
                     op0 = this.ParseCodeOffset(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Jnp(op0);
+                    return new Instruction.Jnp(op0);
                 }
                 case 0x7c:
                 {
                     op0 = this.ParseCodeOffset(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Jl(op0);
+                    return new Instruction.Jl(op0);
                 }
                 case 0x7d:
                 {
                     op0 = this.ParseCodeOffset(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Jge(op0);
+                    return new Instruction.Jge(op0);
                 }
                 case 0x7e:
                 {
                     op0 = this.ParseCodeOffset(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Jle(op0);
+                    return new Instruction.Jle(op0);
                 }
                 case 0x7f:
                 {
                     op0 = this.ParseCodeOffset(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Jg(op0);
+                    return new Instruction.Jg(op0);
                 }
                 case 0x80:
                 {
@@ -1920,35 +1920,35 @@ namespace Yoakke.X86.Readers
                         {
                         case 0x00:
                         {
-                            return new Instructions.Add(op0, op1);
+                            return new Instruction.Add(op0, op1);
                         }
                         case 0x01:
                         {
-                            return new Instructions.Or(op0, op1);
+                            return new Instruction.Or(op0, op1);
                         }
                         case 0x02:
                         {
-                            return new Instructions.Adc(op0, op1);
+                            return new Instruction.Adc(op0, op1);
                         }
                         case 0x03:
                         {
-                            return new Instructions.Sbb(op0, op1);
+                            return new Instruction.Sbb(op0, op1);
                         }
                         case 0x04:
                         {
-                            return new Instructions.And(op0, op1);
+                            return new Instruction.And(op0, op1);
                         }
                         case 0x05:
                         {
-                            return new Instructions.Sub(op0, op1);
+                            return new Instruction.Sub(op0, op1);
                         }
                         case 0x06:
                         {
-                            return new Instructions.Xor(op0, op1);
+                            return new Instruction.Xor(op0, op1);
                         }
                         case 0x07:
                         {
-                            return new Instructions.Cmp(op0, op1);
+                            return new Instruction.Cmp(op0, op1);
                         }
                         }
                         this.UnparseByte();
@@ -1966,35 +1966,35 @@ namespace Yoakke.X86.Readers
                         {
                         case 0x00:
                         {
-                            return new Instructions.Add(op0, op1);
+                            return new Instruction.Add(op0, op1);
                         }
                         case 0x01:
                         {
-                            return new Instructions.Or(op0, op1);
+                            return new Instruction.Or(op0, op1);
                         }
                         case 0x02:
                         {
-                            return new Instructions.Adc(op0, op1);
+                            return new Instruction.Adc(op0, op1);
                         }
                         case 0x03:
                         {
-                            return new Instructions.Sbb(op0, op1);
+                            return new Instruction.Sbb(op0, op1);
                         }
                         case 0x04:
                         {
-                            return new Instructions.And(op0, op1);
+                            return new Instruction.And(op0, op1);
                         }
                         case 0x05:
                         {
-                            return new Instructions.Sub(op0, op1);
+                            return new Instruction.Sub(op0, op1);
                         }
                         case 0x06:
                         {
-                            return new Instructions.Xor(op0, op1);
+                            return new Instruction.Xor(op0, op1);
                         }
                         case 0x07:
                         {
-                            return new Instructions.Cmp(op0, op1);
+                            return new Instruction.Cmp(op0, op1);
                         }
                         }
                         this.UnparseByte();
@@ -2012,35 +2012,35 @@ namespace Yoakke.X86.Readers
                         {
                         case 0x00:
                         {
-                            return new Instructions.Add(op0, op1);
+                            return new Instruction.Add(op0, op1);
                         }
                         case 0x01:
                         {
-                            return new Instructions.Or(op0, op1);
+                            return new Instruction.Or(op0, op1);
                         }
                         case 0x02:
                         {
-                            return new Instructions.Adc(op0, op1);
+                            return new Instruction.Adc(op0, op1);
                         }
                         case 0x03:
                         {
-                            return new Instructions.Sbb(op0, op1);
+                            return new Instruction.Sbb(op0, op1);
                         }
                         case 0x04:
                         {
-                            return new Instructions.And(op0, op1);
+                            return new Instruction.And(op0, op1);
                         }
                         case 0x05:
                         {
-                            return new Instructions.Sub(op0, op1);
+                            return new Instruction.Sub(op0, op1);
                         }
                         case 0x06:
                         {
-                            return new Instructions.Xor(op0, op1);
+                            return new Instruction.Xor(op0, op1);
                         }
                         case 0x07:
                         {
-                            return new Instructions.Cmp(op0, op1);
+                            return new Instruction.Cmp(op0, op1);
                         }
                         }
                         this.UnparseByte();
@@ -2053,7 +2053,7 @@ namespace Yoakke.X86.Readers
                     {
                         op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.Test(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
+                        return new Instruction.Test(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
                     }
                     break;
                 }
@@ -2063,7 +2063,7 @@ namespace Yoakke.X86.Readers
                     {
                         op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Test(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
+                        return new Instruction.Test(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                     }
                     break;
                 }
@@ -2073,13 +2073,13 @@ namespace Yoakke.X86.Readers
                     {
                         op1 = this.ParseRM(modrm_byte, DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.Xchg(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte), op1);
+                        return new Instruction.Xchg(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte), op1);
                     }
                     if (this.TryParseByte(out modrm_byte))
                     {
                         op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.Xchg(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
+                        return new Instruction.Xchg(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
                     }
                     break;
                 }
@@ -2089,13 +2089,13 @@ namespace Yoakke.X86.Readers
                     {
                         op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Xchg(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                        return new Instruction.Xchg(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                     }
                     if (this.TryParseByte(out modrm_byte))
                     {
                         op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Xchg(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
+                        return new Instruction.Xchg(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                     }
                     break;
                 }
@@ -2105,7 +2105,7 @@ namespace Yoakke.X86.Readers
                     {
                         op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.Mov(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
+                        return new Instruction.Mov(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte));
                     }
                     break;
                 }
@@ -2115,7 +2115,7 @@ namespace Yoakke.X86.Readers
                     {
                         op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Mov(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
+                        return new Instruction.Mov(op0, FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                     }
                     break;
                 }
@@ -2125,7 +2125,7 @@ namespace Yoakke.X86.Readers
                     {
                         op1 = this.ParseRM(modrm_byte, DataWidth.Byte);
                         length = this.Commit();
-                        return new Instructions.Mov(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte), op1);
+                        return new Instruction.Mov(FromRegisterIndex((modrm_byte >> 3) & 0b111, DataWidth.Byte), op1);
                     }
                     break;
                 }
@@ -2135,7 +2135,7 @@ namespace Yoakke.X86.Readers
                     {
                         op1 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                         length = this.Commit();
-                        return new Instructions.Mov(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                        return new Instruction.Mov(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                     }
                     break;
                 }
@@ -2145,7 +2145,7 @@ namespace Yoakke.X86.Readers
                     {
                         op1 = this.ParseRM(modrm_byte, null);
                         length = this.Commit();
-                        return new Instructions.Lea(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                        return new Instruction.Lea(FromRegisterIndex((modrm_byte >> 3) & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                     }
                     break;
                 }
@@ -2159,7 +2159,7 @@ namespace Yoakke.X86.Readers
                         {
                             op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Pop(op0);
+                            return new Instruction.Pop(op0);
                         }
                         }
                         this.UnparseByte();
@@ -2171,15 +2171,15 @@ namespace Yoakke.X86.Readers
                     if (HasPrefix(0x66))
                     {
                         length = this.Commit();
-                        return new Instructions.Xchg(Registers.Ax, FromRegisterIndex(byte0 & 0b111, DataWidth.Word));
+                        return new Instruction.Xchg(Registers.Ax, FromRegisterIndex(byte0 & 0b111, DataWidth.Word));
                     }
                     if (HasPrefix(0xf3))
                     {
                         length = this.Commit();
-                        return new Instructions.Pause();
+                        return new Instruction.Pause();
                     }
                     length = this.Commit();
-                    return new Instructions.Nop();
+                    return new Instruction.Nop();
                 }
                 case 0x91:
                 case 0x92:
@@ -2190,49 +2190,49 @@ namespace Yoakke.X86.Readers
                 case 0x97:
                 {
                     length = this.Commit();
-                    return new Instructions.Xchg(HasPrefix(0x66) ? Registers.Ax : Registers.Eax, FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
+                    return new Instruction.Xchg(HasPrefix(0x66) ? Registers.Ax : Registers.Eax, FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword));
                 }
                 case 0x98:
                 {
                     if (HasPrefix(0x66))
                     {
                         length = this.Commit();
-                        return new Instructions.Cbw();
+                        return new Instruction.Cbw();
                     }
                     length = this.Commit();
-                    return new Instructions.Cwde();
+                    return new Instruction.Cwde();
                 }
                 case 0x99:
                 {
                     if (HasPrefix(0x66))
                     {
                         length = this.Commit();
-                        return new Instructions.Cwd();
+                        return new Instruction.Cwd();
                     }
                     length = this.Commit();
-                    return new Instructions.Cdq();
+                    return new Instruction.Cdq();
                 }
                 case 0x9e:
                 {
                     length = this.Commit();
-                    return new Instructions.Sahf();
+                    return new Instruction.Sahf();
                 }
                 case 0x9f:
                 {
                     length = this.Commit();
-                    return new Instructions.Lahf();
+                    return new Instruction.Lahf();
                 }
                 case 0xa8:
                 {
                     op1 = this.ParseImmediate(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Test(Registers.Al, op1);
+                    return new Instruction.Test(Registers.Al, op1);
                 }
                 case 0xa9:
                 {
                     op1 = this.ParseImmediate(HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Test(HasPrefix(0x66) ? Registers.Ax : Registers.Eax, op1);
+                    return new Instruction.Test(HasPrefix(0x66) ? Registers.Ax : Registers.Eax, op1);
                 }
                 case 0xb0:
                 case 0xb1:
@@ -2245,7 +2245,7 @@ namespace Yoakke.X86.Readers
                 {
                     op1 = this.ParseImmediate(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Byte), op1);
+                    return new Instruction.Mov(FromRegisterIndex(byte0 & 0b111, DataWidth.Byte), op1);
                 }
                 case 0xb8:
                 case 0xb9:
@@ -2258,7 +2258,7 @@ namespace Yoakke.X86.Readers
                 {
                     op1 = this.ParseImmediate(HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Mov(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
+                    return new Instruction.Mov(FromRegisterIndex(byte0 & 0b111, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword), op1);
                 }
                 case 0xc0:
                 {
@@ -2271,31 +2271,31 @@ namespace Yoakke.X86.Readers
                         {
                         case 0x00:
                         {
-                            return new Instructions.Rol(op0, op1);
+                            return new Instruction.Rol(op0, op1);
                         }
                         case 0x01:
                         {
-                            return new Instructions.Ror(op0, op1);
+                            return new Instruction.Ror(op0, op1);
                         }
                         case 0x02:
                         {
-                            return new Instructions.Rcl(op0, op1);
+                            return new Instruction.Rcl(op0, op1);
                         }
                         case 0x03:
                         {
-                            return new Instructions.Rcr(op0, op1);
+                            return new Instruction.Rcr(op0, op1);
                         }
                         case 0x04:
                         {
-                            return new Instructions.Sal(op0, op1);
+                            return new Instruction.Sal(op0, op1);
                         }
                         case 0x05:
                         {
-                            return new Instructions.Shr(op0, op1);
+                            return new Instruction.Shr(op0, op1);
                         }
                         case 0x07:
                         {
-                            return new Instructions.Sar(op0, op1);
+                            return new Instruction.Sar(op0, op1);
                         }
                         }
                         this.UnparseByte();
@@ -2313,31 +2313,31 @@ namespace Yoakke.X86.Readers
                         {
                         case 0x00:
                         {
-                            return new Instructions.Rol(op0, op1);
+                            return new Instruction.Rol(op0, op1);
                         }
                         case 0x01:
                         {
-                            return new Instructions.Ror(op0, op1);
+                            return new Instruction.Ror(op0, op1);
                         }
                         case 0x02:
                         {
-                            return new Instructions.Rcl(op0, op1);
+                            return new Instruction.Rcl(op0, op1);
                         }
                         case 0x03:
                         {
-                            return new Instructions.Rcr(op0, op1);
+                            return new Instruction.Rcr(op0, op1);
                         }
                         case 0x04:
                         {
-                            return new Instructions.Sal(op0, op1);
+                            return new Instruction.Sal(op0, op1);
                         }
                         case 0x05:
                         {
-                            return new Instructions.Shr(op0, op1);
+                            return new Instruction.Shr(op0, op1);
                         }
                         case 0x07:
                         {
-                            return new Instructions.Sar(op0, op1);
+                            return new Instruction.Sar(op0, op1);
                         }
                         }
                         this.UnparseByte();
@@ -2348,12 +2348,12 @@ namespace Yoakke.X86.Readers
                 {
                     op0 = this.ParseImmediate(DataWidth.Word);
                     length = this.Commit();
-                    return new Instructions.Ret(op0);
+                    return new Instruction.Ret(op0);
                 }
                 case 0xc3:
                 {
                     length = this.Commit();
-                    return new Instructions.Ret();
+                    return new Instruction.Ret();
                 }
                 case 0xc6:
                 {
@@ -2366,7 +2366,7 @@ namespace Yoakke.X86.Readers
                             op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                             op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Mov(op0, op1);
+                            return new Instruction.Mov(op0, op1);
                         }
                         }
                         this.UnparseByte();
@@ -2384,7 +2384,7 @@ namespace Yoakke.X86.Readers
                             op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             op1 = this.ParseImmediate(HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Mov(op0, op1);
+                            return new Instruction.Mov(op0, op1);
                         }
                         }
                         this.UnparseByte();
@@ -2396,28 +2396,28 @@ namespace Yoakke.X86.Readers
                     op0 = this.ParseImmediate(DataWidth.Word);
                     op1 = this.ParseImmediate(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Enter(op0, op1);
+                    return new Instruction.Enter(op0, op1);
                 }
                 case 0xc9:
                 {
                     length = this.Commit();
-                    return new Instructions.Leave();
+                    return new Instruction.Leave();
                 }
                 case 0xcc:
                 {
                     length = this.Commit();
-                    return new Instructions.Int(new Constant(3));
+                    return new Instruction.Int(new Constant(3));
                 }
                 case 0xcd:
                 {
                     op0 = this.ParseImmediate(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Int(op0);
+                    return new Instruction.Int(op0);
                 }
                 case 0xce:
                 {
                     length = this.Commit();
-                    return new Instructions.Into();
+                    return new Instruction.Into();
                 }
                 case 0xd0:
                 {
@@ -2429,31 +2429,31 @@ namespace Yoakke.X86.Readers
                         {
                         case 0x00:
                         {
-                            return new Instructions.Rol(op0, new Constant(1));
+                            return new Instruction.Rol(op0, new Constant(1));
                         }
                         case 0x01:
                         {
-                            return new Instructions.Ror(op0, new Constant(1));
+                            return new Instruction.Ror(op0, new Constant(1));
                         }
                         case 0x02:
                         {
-                            return new Instructions.Rcl(op0, new Constant(1));
+                            return new Instruction.Rcl(op0, new Constant(1));
                         }
                         case 0x03:
                         {
-                            return new Instructions.Rcr(op0, new Constant(1));
+                            return new Instruction.Rcr(op0, new Constant(1));
                         }
                         case 0x04:
                         {
-                            return new Instructions.Sal(op0, new Constant(1));
+                            return new Instruction.Sal(op0, new Constant(1));
                         }
                         case 0x05:
                         {
-                            return new Instructions.Shr(op0, new Constant(1));
+                            return new Instruction.Shr(op0, new Constant(1));
                         }
                         case 0x07:
                         {
-                            return new Instructions.Sar(op0, new Constant(1));
+                            return new Instruction.Sar(op0, new Constant(1));
                         }
                         }
                         this.UnparseByte();
@@ -2470,31 +2470,31 @@ namespace Yoakke.X86.Readers
                         {
                         case 0x00:
                         {
-                            return new Instructions.Rol(op0, new Constant(1));
+                            return new Instruction.Rol(op0, new Constant(1));
                         }
                         case 0x01:
                         {
-                            return new Instructions.Ror(op0, new Constant(1));
+                            return new Instruction.Ror(op0, new Constant(1));
                         }
                         case 0x02:
                         {
-                            return new Instructions.Rcl(op0, new Constant(1));
+                            return new Instruction.Rcl(op0, new Constant(1));
                         }
                         case 0x03:
                         {
-                            return new Instructions.Rcr(op0, new Constant(1));
+                            return new Instruction.Rcr(op0, new Constant(1));
                         }
                         case 0x04:
                         {
-                            return new Instructions.Sal(op0, new Constant(1));
+                            return new Instruction.Sal(op0, new Constant(1));
                         }
                         case 0x05:
                         {
-                            return new Instructions.Shr(op0, new Constant(1));
+                            return new Instruction.Shr(op0, new Constant(1));
                         }
                         case 0x07:
                         {
-                            return new Instructions.Sar(op0, new Constant(1));
+                            return new Instruction.Sar(op0, new Constant(1));
                         }
                         }
                         this.UnparseByte();
@@ -2511,31 +2511,31 @@ namespace Yoakke.X86.Readers
                         {
                         case 0x00:
                         {
-                            return new Instructions.Rol(op0, Registers.Cl);
+                            return new Instruction.Rol(op0, Registers.Cl);
                         }
                         case 0x01:
                         {
-                            return new Instructions.Ror(op0, Registers.Cl);
+                            return new Instruction.Ror(op0, Registers.Cl);
                         }
                         case 0x02:
                         {
-                            return new Instructions.Rcl(op0, Registers.Cl);
+                            return new Instruction.Rcl(op0, Registers.Cl);
                         }
                         case 0x03:
                         {
-                            return new Instructions.Rcr(op0, Registers.Cl);
+                            return new Instruction.Rcr(op0, Registers.Cl);
                         }
                         case 0x04:
                         {
-                            return new Instructions.Sal(op0, Registers.Cl);
+                            return new Instruction.Sal(op0, Registers.Cl);
                         }
                         case 0x05:
                         {
-                            return new Instructions.Shr(op0, Registers.Cl);
+                            return new Instruction.Shr(op0, Registers.Cl);
                         }
                         case 0x07:
                         {
-                            return new Instructions.Sar(op0, Registers.Cl);
+                            return new Instruction.Sar(op0, Registers.Cl);
                         }
                         }
                         this.UnparseByte();
@@ -2552,31 +2552,31 @@ namespace Yoakke.X86.Readers
                         {
                         case 0x00:
                         {
-                            return new Instructions.Rol(op0, Registers.Cl);
+                            return new Instruction.Rol(op0, Registers.Cl);
                         }
                         case 0x01:
                         {
-                            return new Instructions.Ror(op0, Registers.Cl);
+                            return new Instruction.Ror(op0, Registers.Cl);
                         }
                         case 0x02:
                         {
-                            return new Instructions.Rcl(op0, Registers.Cl);
+                            return new Instruction.Rcl(op0, Registers.Cl);
                         }
                         case 0x03:
                         {
-                            return new Instructions.Rcr(op0, Registers.Cl);
+                            return new Instruction.Rcr(op0, Registers.Cl);
                         }
                         case 0x04:
                         {
-                            return new Instructions.Sal(op0, Registers.Cl);
+                            return new Instruction.Sal(op0, Registers.Cl);
                         }
                         case 0x05:
                         {
-                            return new Instructions.Shr(op0, Registers.Cl);
+                            return new Instruction.Shr(op0, Registers.Cl);
                         }
                         case 0x07:
                         {
-                            return new Instructions.Sar(op0, Registers.Cl);
+                            return new Instruction.Sar(op0, Registers.Cl);
                         }
                         }
                         this.UnparseByte();
@@ -2592,14 +2592,14 @@ namespace Yoakke.X86.Readers
                         case 0x0a:
                         {
                             length = this.Commit();
-                            return new Instructions.Aam();
+                            return new Instruction.Aam();
                         }
                         }
                         this.UnparseByte();
                     }
                     op0 = this.ParseImmediate(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Aam(op0);
+                    return new Instruction.Aam(op0);
                 }
                 case 0xd5:
                 {
@@ -2610,48 +2610,48 @@ namespace Yoakke.X86.Readers
                         case 0x0a:
                         {
                             length = this.Commit();
-                            return new Instructions.Aad();
+                            return new Instruction.Aad();
                         }
                         }
                         this.UnparseByte();
                     }
                     op0 = this.ParseImmediate(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Aad(op0);
+                    return new Instruction.Aad(op0);
                 }
                 case 0xd7:
                 {
                     length = this.Commit();
-                    return new Instructions.Xlatb();
+                    return new Instruction.Xlatb();
                 }
                 case 0xe3:
                 {
                     op0 = this.ParseCodeOffset(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Jecxz(op0);
+                    return new Instruction.Jecxz(op0);
                 }
                 case 0xe8:
                 {
                     op0 = this.ParseCodeOffset(DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Call(op0);
+                    return new Instruction.Call(op0);
                 }
                 case 0xe9:
                 {
                     op0 = this.ParseCodeOffset(DataWidth.Dword);
                     length = this.Commit();
-                    return new Instructions.Jmp(op0);
+                    return new Instruction.Jmp(op0);
                 }
                 case 0xeb:
                 {
                     op0 = this.ParseCodeOffset(DataWidth.Byte);
                     length = this.Commit();
-                    return new Instructions.Jmp(op0);
+                    return new Instruction.Jmp(op0);
                 }
                 case 0xf5:
                 {
                     length = this.Commit();
-                    return new Instructions.Cmc();
+                    return new Instruction.Cmc();
                 }
                 case 0xf6:
                 {
@@ -2664,43 +2664,43 @@ namespace Yoakke.X86.Readers
                             op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                             op1 = this.ParseImmediate(DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Test(op0, op1);
+                            return new Instruction.Test(op0, op1);
                         }
                         case 0x02:
                         {
                             op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Not(op0);
+                            return new Instruction.Not(op0);
                         }
                         case 0x03:
                         {
                             op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Neg(op0);
+                            return new Instruction.Neg(op0);
                         }
                         case 0x04:
                         {
                             op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Mul(op0);
+                            return new Instruction.Mul(op0);
                         }
                         case 0x05:
                         {
                             op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Imul(op0);
+                            return new Instruction.Imul(op0);
                         }
                         case 0x06:
                         {
                             op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Div(op0);
+                            return new Instruction.Div(op0);
                         }
                         case 0x07:
                         {
                             op0 = this.ParseRM(modrm_byte, DataWidth.Byte);
                             length = this.Commit();
-                            return new Instructions.Idiv(op0);
+                            return new Instruction.Idiv(op0);
                         }
                         }
                         this.UnparseByte();
@@ -2718,43 +2718,43 @@ namespace Yoakke.X86.Readers
                             op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             op1 = this.ParseImmediate(HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Test(op0, op1);
+                            return new Instruction.Test(op0, op1);
                         }
                         case 0x02:
                         {
                             op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Not(op0);
+                            return new Instruction.Not(op0);
                         }
                         case 0x03:
                         {
                             op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Neg(op0);
+                            return new Instruction.Neg(op0);
                         }
                         case 0x04:
                         {
                             op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Mul(op0);
+                            return new Instruction.Mul(op0);
                         }
                         case 0x05:
                         {
                             op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Imul(op0);
+                            return new Instruction.Imul(op0);
                         }
                         case 0x06:
                         {
                             op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Div(op0);
+                            return new Instruction.Div(op0);
                         }
                         case 0x07:
                         {
                             op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Idiv(op0);
+                            return new Instruction.Idiv(op0);
                         }
                         }
                         this.UnparseByte();
@@ -2764,22 +2764,22 @@ namespace Yoakke.X86.Readers
                 case 0xf8:
                 {
                     length = this.Commit();
-                    return new Instructions.Clc();
+                    return new Instruction.Clc();
                 }
                 case 0xf9:
                 {
                     length = this.Commit();
-                    return new Instructions.Stc();
+                    return new Instruction.Stc();
                 }
                 case 0xfc:
                 {
                     length = this.Commit();
-                    return new Instructions.Cld();
+                    return new Instruction.Cld();
                 }
                 case 0xfd:
                 {
                     length = this.Commit();
-                    return new Instructions.Std();
+                    return new Instruction.Std();
                 }
                 case 0xfe:
                 {
@@ -2791,11 +2791,11 @@ namespace Yoakke.X86.Readers
                         {
                         case 0x00:
                         {
-                            return new Instructions.Inc(op0);
+                            return new Instruction.Inc(op0);
                         }
                         case 0x01:
                         {
-                            return new Instructions.Dec(op0);
+                            return new Instruction.Dec(op0);
                         }
                         }
                         this.UnparseByte();
@@ -2812,31 +2812,31 @@ namespace Yoakke.X86.Readers
                         {
                             op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Inc(op0);
+                            return new Instruction.Inc(op0);
                         }
                         case 0x01:
                         {
                             op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Dec(op0);
+                            return new Instruction.Dec(op0);
                         }
                         case 0x02:
                         {
                             op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Call(op0);
+                            return new Instruction.Call(op0);
                         }
                         case 0x04:
                         {
                             op0 = this.ParseRM(modrm_byte, DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Jmp(op0);
+                            return new Instruction.Jmp(op0);
                         }
                         case 0x06:
                         {
                             op0 = this.ParseRM(modrm_byte, HasPrefix(0x66) ? DataWidth.Word : DataWidth.Dword);
                             length = this.Commit();
-                            return new Instructions.Push(op0);
+                            return new Instruction.Push(op0);
                         }
                         }
                         this.UnparseByte();
