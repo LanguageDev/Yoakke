@@ -16,21 +16,21 @@ namespace Yoakke.Ir
     public static class Instruction
     {
         /// <summary>
-        /// Returns from the current procedure.
-        /// </summary>
-        public record Ret(Value? Value) : IInstruction
-        {
-            /// <inheritdoc/>
-            public bool IsBranch => true;
-        }
-
-        /// <summary>
         /// Allocates a local variable with a given type.
         /// </summary>
         public record Local(Type Type) : IInstruction
         {
             /// <inheritdoc/>
             public bool IsBranch => false;
+        }
+
+        /// <summary>
+        /// Returns from the current procedure.
+        /// </summary>
+        public record Ret(Value? Value) : IInstruction
+        {
+            /// <inheritdoc/>
+            public bool IsBranch => true;
         }
     }
 }
