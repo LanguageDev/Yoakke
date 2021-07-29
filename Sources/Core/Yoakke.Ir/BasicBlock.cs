@@ -18,6 +18,12 @@ namespace Yoakke.Ir
         private readonly List<IInstruction> instructions = new();
 
         /// <inheritdoc/>
+        public IProcedure Procedure { get; }
+
+        /// <inheritdoc/>
+        IReadOnlyProcedure IReadOnlyBasicBlock.Procedure => this.Procedure;
+
+        /// <inheritdoc/>
         public string? NameHint { get; init; }
 
         /// <inheritdoc/>
@@ -25,5 +31,14 @@ namespace Yoakke.Ir
 
         /// <inheritdoc/>
         IReadOnlyList<IInstruction> IReadOnlyBasicBlock.Instructions => this.instructions;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BasicBlock"/> class.
+        /// </summary>
+        /// <param name="procedure">The <see cref="IProcedure"/> this <see cref="BasicBlock"/> belongs to.</param>
+        public BasicBlock(IProcedure procedure)
+        {
+            this.Procedure = procedure;
+        }
     }
 }

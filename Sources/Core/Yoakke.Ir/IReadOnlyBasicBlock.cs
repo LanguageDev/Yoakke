@@ -19,6 +19,11 @@ namespace Yoakke.Ir
     public interface IReadOnlyBasicBlock
     {
         /// <summary>
+        /// The <see cref="IReadOnlyProcedure"/> this <see cref="IReadOnlyBasicBlock"/> belongs to.
+        /// </summary>
+        public IReadOnlyProcedure Procedure { get; }
+
+        /// <summary>
         /// The optional name hint for this <see cref="IReadOnlyBasicBlock"/>.
         /// This can be useful to produce nicer, more readable IR code.
         /// </summary>

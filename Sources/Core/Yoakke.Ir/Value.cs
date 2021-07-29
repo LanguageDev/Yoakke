@@ -15,5 +15,9 @@ namespace Yoakke.Ir
     /// </summary>
     public abstract record Value
     {
+        /// <summary>
+        /// An argument reference.
+        /// </summary>
+        public record Arg(int Index) : Value;
     }
 }
