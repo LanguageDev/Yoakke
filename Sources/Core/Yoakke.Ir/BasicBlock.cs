@@ -24,9 +24,6 @@ namespace Yoakke.Ir
         IReadOnlyProcedure IReadOnlyBasicBlock.Procedure => this.Procedure;
 
         /// <inheritdoc/>
-        public string? NameHint { get; init; }
-
-        /// <inheritdoc/>
         public IList<IInstruction> Instructions => this.instructions;
 
         /// <inheritdoc/>

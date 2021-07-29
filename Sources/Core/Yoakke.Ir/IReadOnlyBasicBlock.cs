@@ -24,12 +24,6 @@ namespace Yoakke.Ir
         public IReadOnlyProcedure Procedure { get; }
 
         /// <summary>
-        /// The optional name hint for this <see cref="IReadOnlyBasicBlock"/>.
-        /// This can be useful to produce nicer, more readable IR code.
-        /// </summary>
-        public string? NameHint { get; }
-
-        /// <summary>
         /// The list of <see cref="IInstruction"/>s in this <see cref="IReadOnlyBasicBlock"/>.
         /// </summary>
         public IReadOnlyList<IInstruction> Instructions { get; }
