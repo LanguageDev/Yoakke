@@ -91,14 +91,66 @@ namespace Yoakke.Ir.Writers
         public AssemblyTextWriter WriteLine(object? obj) => this.Write(obj).WriteLine();
 
         /// <summary>
+        /// Writes an <see cref="IReadOnlyAssembly"/> to the underlying <see cref="StringBuilder"/>.
+        /// </summary>
+        /// <param name="assembly">The <see cref="IReadOnlyAssembly"/> to write.</param>
+        /// <returns>This instance to be able to chain calls.</returns>
+        public AssemblyTextWriter Write(IReadOnlyAssembly assembly)
+        {
+            var first = true;
+            foreach (var proc in assembly.Procedures.Values)
+            {
+                if (!first) this.WriteLine().WriteLine();
+                first = false;
+                this.Write(proc);
+            }
+            return this;
+        }
+
+        /// <summary>
+        /// Writes an <see cref="IReadOnlyAssembly"/> to the underlying <see cref="StringBuilder"/>
+        /// and goes to the next line.
+        /// </summary>
+        /// <param name="assembly">The <see cref="IReadOnlyAssembly"/> to write.</param>
+        /// <returns>This instance to be able to chain calls.</returns>
+        public AssemblyTextWriter WriteLine(IReadOnlyAssembly assembly) => this.Write(assembly).WriteLine();
+
+        /// <summary>
+        /// Writes an <see cref="IReadOnlyProcedure"/> to the underlying <see cref="StringBuilder"/>.
+        /// </summary>
+        /// <param name="procedure">The <see cref="IReadOnlyProcedure"/> to write.</param>
+        /// <returns>This instance to be able to chain calls.</returns>
+        public AssemblyTextWriter Write(IReadOnlyProcedure procedure)
+        {
+            this.Write("proc ").Write(procedure.Name).Write("():");
+            for (var i = 0; i < procedure.Locals.Count; ++i)
+            {
+                this.WriteLine().Write("  local(").Write(i).Write(", ").Write(procedure.Locals[i].Type).Write(')');
+            }
+            foreach (var bb in procedure.BasicBlocks) this.WriteLine().Write(bb);
+            return this;
+        }
+
+        /// <summary>
+        /// Writes an <see cref="IReadOnlyProcedure"/> to the underlying <see cref="StringBuilder"/>
+        /// and goes to the next line.
+        /// </summary>
+        /// <param name="procedure">The <see cref="IReadOnlyProcedure"/> to write.</param>
+        /// <returns>This instance to be able to chain calls.</returns>
+        public AssemblyTextWriter WriteLine(IReadOnlyProcedure procedure) => this.Write(procedure).WriteLine();
+
+        /// <summary>
         /// Writes an <see cref="IReadOnlyBasicBlock"/> to the underlying <see cref="StringBuilder"/>.
         /// </summary>
         /// <param name="basicBlock">The <see cref="IReadOnlyBasicBlock"/> to write.</param>
         /// <returns>This instance to be able to chain calls.</returns>
         public AssemblyTextWriter Write(IReadOnlyBasicBlock basicBlock)
         {
-            // TODO: Blocks need an identifier
-            this.Write("block ???:");
+            // NOTE: TIL IReadOnlyList has no IndexOf
+            // Find the block index
+            var index = IndexOf(basicBlock.Procedure.BasicBlocks, basicBlock);
+            // Write it
+            this.Write("block ").Write(index).Write(':');
             foreach (var ins in basicBlock.Instructions) this.WriteLine().Write("  ").Write(ins);
             return this;
         }
@@ -116,11 +168,14 @@ namespace Yoakke.Ir.Writers
         /// </summary>
         /// <param name="instruction">The <see cref="IInstruction"/> to write.</param>
         /// <returns>This instance to be able to chain calls.</returns>
-        public AssemblyTextWriter Write(IInstruction instruction)
+        public AssemblyTextWriter Write(IInstruction instruction) => instruction switch
         {
-            // TODO
-            throw new NotImplementedException();
-        }
+            Instruction.Ret ret => ret.Value is null
+                                    ? this.Write("ret")
+                                    : this.Write("ret ").Write(ret.Value),
+
+            _ => throw new NotSupportedException(),
+        };
 
         /// <summary>
         /// Writes an <see cref="IInstruction"/> to the underlying <see cref="StringBuilder"/>
@@ -168,5 +223,14 @@ namespace Yoakke.Ir.Writers
         /// <param name="type">The <see cref="Type"/> to write.</param>
         /// <returns>This instance to be able to chain calls.</returns>
         public AssemblyTextWriter WriteLine(Type type) => this.Write(type).WriteLine();
+
+        private static int IndexOf<T>(IReadOnlyList<T> items, T value)
+        {
+            for (var i = 0; i < items.Count; ++i)
+            {
+                if (ReferenceEquals(items[i], value)) return i;
+            }
+            return -1;
+        }
     }
 }
