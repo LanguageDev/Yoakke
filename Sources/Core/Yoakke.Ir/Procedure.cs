@@ -16,6 +16,7 @@ namespace Yoakke.Ir
     public class Procedure : IProcedure
     {
         private readonly List<IBasicBlock> basicBlocks = new();
+        private readonly List<Local> locals = new();
 
         /// <inheritdoc/>
         public string Name { get; }
@@ -25,6 +26,12 @@ namespace Yoakke.Ir
 
         /// <inheritdoc/>
         IReadOnlyList<IReadOnlyBasicBlock> IReadOnlyProcedure.BasicBlocks => this.basicBlocks;
+
+        /// <inheritdoc/>
+        public IList<Local> Locals => this.locals;
+
+        /// <inheritdoc/>
+        IReadOnlyList<Local> IReadOnlyProcedure.Locals => this.locals;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Procedure"/> class.

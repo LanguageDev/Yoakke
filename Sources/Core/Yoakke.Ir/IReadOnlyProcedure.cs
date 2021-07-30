@@ -21,6 +21,11 @@ namespace Yoakke.Ir
         public string Name { get; }
 
         /// <summary>
+        /// The <see cref="Local"/> allocations in this <see cref="IReadOnlyProcedure"/>.
+        /// </summary>
+        public IReadOnlyList<Local> Locals { get; }
+
+        /// <summary>
         /// The <see cref="IReadOnlyBasicBlock"/>s this <see cref="IReadOnlyProcedure"/> consists of.
         /// </summary>
         public IReadOnlyList<IReadOnlyBasicBlock> BasicBlocks { get; }

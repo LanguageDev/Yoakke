@@ -11,18 +11,22 @@ using System.Threading.Tasks;
 namespace Yoakke.Ir
 {
     /// <summary>
-    /// An IR procedure that can be read and written.
+    /// A local variable declaration.
     /// </summary>
-    public interface IProcedure : IReadOnlyProcedure
+    public class Local
     {
         /// <summary>
-        /// The <see cref="Local"/> allocations in this <see cref="IProcedure"/>.
+        /// The <see cref="Ir.Type"/> of this <see cref="Local"/>.
         /// </summary>
-        public new IList<Local> Locals { get; }
+        public Type Type { get; }
 
         /// <summary>
-        /// The <see cref="IBasicBlock"/>s this <see cref="IProcedure"/> consists of.
+        /// Initializes a new instance of the <see cref="Local"/> class.
         /// </summary>
-        public new IList<IBasicBlock> BasicBlocks { get; }
+        /// <param name="type">The <see cref="Ir.Type"/> of this local.</param>
+        public Local(Type type)
+        {
+            this.Type = type;
+        }
     }
 }

@@ -88,6 +88,27 @@ namespace Yoakke.Ir
         public AssemblyBuilder DefineBasicBlock() => this.DefineBasicBlock(out var _);
 
         /// <summary>
+        /// Defines a <see cref="Local"/> in the current <see cref="IProcedure"/>.
+        /// </summary>
+        /// <param name="type">The <see cref="Type"/> of the <see cref="Local"/> to define.</param>
+        /// <param name="result">The defined <see cref="Local"/> gets written here.</param>
+        /// <returns>This instance to chain calls.</returns>
+        public AssemblyBuilder DefineLocal(Type type, out Local result)
+        {
+            var proc = this.CurrentProcedure;
+            result = new Local(type);
+            proc.Locals.Add(result);
+            return this;
+        }
+
+        /// <summary>
+        /// Defines a <see cref="Local"/> in the current <see cref="IProcedure"/>.
+        /// </summary>
+        /// <param name="type">The <see cref="Type"/> of the <see cref="Local"/> to define.</param>
+        /// <returns>This instance to chain calls.</returns>
+        public AssemblyBuilder DefineLocal(Type type) => this.DefineLocal(type, out var _);
+
+        /// <summary>
         /// Writes an <see cref="IInstruction"/> to the <see cref="Assembly"/>.
         /// </summary>
         /// <param name="instruction">The <see cref="IInstruction"/> to add.</param>
@@ -99,13 +120,6 @@ namespace Yoakke.Ir
         }
 
         #region Instructions
-
-        /// <summary>
-        /// Writes a local allocation instruction.
-        /// </summary>
-        /// <param name="type">The <see cref="Type"/> of the local to allocate.</param>
-        /// <returns>This instance to chain calls.</returns>
-        public AssemblyBuilder Local(Type type) => this.Write(new Instruction.Local(type));
 
         /// <summary>
         /// Writes a return instruction.
