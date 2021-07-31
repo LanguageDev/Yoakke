@@ -16,6 +16,16 @@ namespace Yoakke.Ir
     public interface IProcedure : IReadOnlyProcedure
     {
         /// <summary>
+        /// The parameter <see cref="Type"/>s this <see cref="IProcedure"/> takes.
+        /// </summary>
+        public new IList<Type> Parameters { get; }
+
+        /// <summary>
+        /// The <see cref="Type"/> this <see cref="IProcedure"/> returns.
+        /// </summary>
+        public new Type Return { get; set; }
+
+        /// <summary>
         /// The <see cref="Local"/> allocations in this <see cref="IProcedure"/>.
         /// </summary>
         public new IList<Local> Locals { get; }

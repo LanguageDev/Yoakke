@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Yoakke.Collections;
 
 namespace Yoakke.Ir
 {
@@ -15,23 +16,39 @@ namespace Yoakke.Ir
     /// </summary>
     public class Procedure : IProcedure
     {
+        private readonly List<Type> parameters = new();
         private readonly List<IBasicBlock> basicBlocks = new();
         private readonly List<Local> locals = new();
+
+        /// <inheritdoc/>
+        public Type Type => new Type.Proc(this.Return, this.parameters.AsValue());
 
         /// <inheritdoc/>
         public string Name { get; }
 
         /// <inheritdoc/>
-        public IList<IBasicBlock> BasicBlocks => this.basicBlocks;
+        public IList<Type> Parameters => this.parameters;
 
         /// <inheritdoc/>
-        IReadOnlyList<IReadOnlyBasicBlock> IReadOnlyProcedure.BasicBlocks => this.basicBlocks;
+        IReadOnlyList<Type> IReadOnlyProcedure.Parameters => this.parameters;
+
+        /// <inheritdoc/>
+        public Type Return { get; set; } = Type.Void.Default;
+
+        /// <inheritdoc/>
+        Type IReadOnlyProcedure.Return => this.Return;
 
         /// <inheritdoc/>
         public IList<Local> Locals => this.locals;
 
         /// <inheritdoc/>
         IReadOnlyList<Local> IReadOnlyProcedure.Locals => this.locals;
+
+        /// <inheritdoc/>
+        public IList<IBasicBlock> BasicBlocks => this.basicBlocks;
+
+        /// <inheritdoc/>
+        IReadOnlyList<IReadOnlyBasicBlock> IReadOnlyProcedure.BasicBlocks => this.basicBlocks;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Procedure"/> class.

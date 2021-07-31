@@ -19,7 +19,13 @@ namespace Yoakke.Ir
         /// <summary>
         /// The nothing <see cref="Type"/>.
         /// </summary>
-        public record Void : Type;
+        public record Void : Type
+        {
+            /// <summary>
+            /// A default <see cref="Void"/> instance.
+            /// </summary>
+            public static readonly Type Default = new Void();
+        }
 
         /// <summary>
         /// An integer <see cref="Type"/>.

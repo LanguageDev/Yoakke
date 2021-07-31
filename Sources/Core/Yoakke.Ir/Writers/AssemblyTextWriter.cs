@@ -122,11 +122,23 @@ namespace Yoakke.Ir.Writers
         /// <returns>This instance to be able to chain calls.</returns>
         public AssemblyTextWriter Write(IReadOnlyProcedure procedure)
         {
-            this.Write("proc ").Write(procedure.Name).Write("():");
+            // Write the procedure header, which is
+            // proc name(arg(0) type0, arg(1) type1, ...) return_type:
+            this.Write("proc ").Write(procedure.Name).Write("(");
+            for (var i = 0; i < procedure.Parameters.Count; ++i)
+            {
+                if (i > 0) this.Write(", ");
+                this.Write("arg(").Write(i).Write(") ").Write(procedure.Parameters[i]);
+            }
+            this.Write(") ").Write(procedure.Return).Write(':');
+
+            // Locals before the first basic block in the form
+            // local(i) type_i
             for (var i = 0; i < procedure.Locals.Count; ++i)
             {
                 this.WriteLine().Write("  local(").Write(i).Write(", ").Write(procedure.Locals[i].Type).Write(')');
             }
+
             foreach (var bb in procedure.BasicBlocks) this.WriteLine().Write(bb);
             return this;
         }
@@ -150,7 +162,7 @@ namespace Yoakke.Ir.Writers
             // Find the block index
             var index = IndexOf(basicBlock.Procedure.BasicBlocks, basicBlock);
             // Write it
-            this.Write("block ").Write(index).Write(':');
+            this.Write("block(").Write(index).Write("):");
             foreach (var ins in basicBlock.Instructions) this.WriteLine().Write("  ").Write(ins);
             return this;
         }

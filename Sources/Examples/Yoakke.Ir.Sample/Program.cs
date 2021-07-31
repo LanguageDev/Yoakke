@@ -8,8 +8,10 @@ namespace Yoakke.Ir.Sample
         static void Main(string[] args)
         {
             var builder = new AssemblyBuilder()
-                .DefineProcedure("main")
-                .Ret();
+                .DefineProcedure("main", out var main)
+                .DefineParameter(new Type.Int(true, 32), out var arg)
+                .Ret(arg);
+            main.Return = new Type.Int(true, 32);
 
             var writer = new AssemblyTextWriter();
             writer.Write(builder.Assembly);

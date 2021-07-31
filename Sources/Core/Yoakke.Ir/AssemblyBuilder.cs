@@ -55,8 +55,10 @@ namespace Yoakke.Ir
         /// Defines a new <see cref="IProcedure"/> in the <see cref="Assembly"/>.
         /// </summary>
         /// <param name="name">The logical name of the procedure.</param>
+        /// <param name="result">The defined <see cref="IProcedure"/> gets
+        /// written here.</param>
         /// <returns>This instance to chain calls.</returns>
-        public AssemblyBuilder DefineProcedure(string name)
+        public AssemblyBuilder DefineProcedure(string name, out IProcedure result)
         {
             var proc = new Procedure(name);
             var bb = new BasicBlock(proc);
@@ -64,8 +66,39 @@ namespace Yoakke.Ir
             this.Assembly.Procedures.Add(name, proc);
             this.currentProcedure = proc;
             this.currentBasicBlock = bb;
+            result = proc;
             return this;
         }
+
+        /// <summary>
+        /// Defines a new <see cref="IProcedure"/> in the <see cref="Assembly"/>.
+        /// </summary>
+        /// <param name="name">The logical name of the procedure.</param>
+        /// <returns>This instance to chain calls.</returns>
+        public AssemblyBuilder DefineProcedure(string name) => this.DefineProcedure(name, out var _);
+
+        /// <summary>
+        /// Defines a new parameter in the current <see cref="IProcedure"/>.
+        /// </summary>
+        /// <param name="type">The type of the argument to define.</param>
+        /// <param name="result">The <see cref="Value"/> gets written here
+        /// that can be used to reference the defined parameter.</param>
+        /// <returns>This instance to chain calls.</returns>
+        public AssemblyBuilder DefineParameter(Type type, out Value result)
+        {
+            var proc = this.CurrentProcedure;
+            var index = proc.Parameters.Count;
+            proc.Parameters.Add(type);
+            result = new Value.Arg(index);
+            return this;
+        }
+
+        /// <summary>
+        /// Defines a new parameter in the current <see cref="IProcedure"/>.
+        /// </summary>
+        /// <param name="type">The type of the argument to define.</param>
+        /// <returns>This instance to chain calls.</returns>
+        public AssemblyBuilder DefineParameter(Type type) => this.DefineParameter(type, out var _);
 
         /// <summary>
         /// Defines a new <see cref="IBasicBlock"/> in the current <see cref="IProcedure"/>.
