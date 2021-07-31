@@ -16,6 +16,15 @@ namespace Yoakke.Ir
     public static class Instruction
     {
         /// <summary>
+        /// Any <see cref="IInstruction"/> that produces a <see cref="Value"/>.
+        /// </summary>
+        public abstract record ValueProducer : IInstruction
+        {
+            /// <inheritdoc/>
+            public bool IsBranch => false;
+        }
+
+        /// <summary>
         /// Returns from the current procedure.
         /// </summary>
         public record Ret(Value? Value) : IInstruction
@@ -23,5 +32,10 @@ namespace Yoakke.Ir
             /// <inheritdoc/>
             public bool IsBranch => true;
         }
+
+        /// <summary>
+        /// Integer addition.
+        /// </summary>
+        public record IntAdd(Value Left, Value Right) : ValueProducer;
     }
 }

@@ -17,6 +17,7 @@ namespace Yoakke.Ir
     {
         private IProcedure? currentProcedure;
         private IBasicBlock? currentBasicBlock;
+        private Dictionary<IProcedure, int> temporaries = new();
 
         /// <summary>
         /// The built <see cref="IAssembly"/>.
@@ -161,6 +162,39 @@ namespace Yoakke.Ir
         /// <returns>This instance to chain calls.</returns>
         public AssemblyBuilder Ret(Value? value = null) => this.Write(new Instruction.Ret(value));
 
+        /// <summary>
+        /// Writes an integer addition instruction.
+        /// </summary>
+        /// <param name="left">The first operand to add.</param>
+        /// <param name="right">The second operand to add.</param>
+        /// <param name="result">The <see cref="Value"/> gets written here
+        /// that can be used to reference the result.</param>
+        /// <returns>This instance to chain calls.</returns>
+        public AssemblyBuilder IntAdd(Value left, Value right, out Value result)
+        {
+            result = this.AllocateTemporary();
+            return this.Write(new Instruction.IntAdd(left, right));
+        }
+
+        /// <summary>
+        /// Writes an integer addition instruction.
+        /// </summary>
+        /// <param name="left">The first operand to add.</param>
+        /// <param name="right">The second operand to add.</param>
+        /// <returns>This instance to chain calls.</returns>
+        public AssemblyBuilder IntAdd(Value left, Value right) => this.IntAdd(left, right, out var _);
+
         #endregion
+
+        private Value AllocateTemporary()
+        {
+            var proc = this.CurrentProcedure;
+            if (!this.temporaries.TryGetValue(proc, out var count))
+            {
+                count = 0;
+            }
+            this.temporaries[proc] = count + 1;
+            return new Value.Temp(count);
+        }
     }
 }

@@ -19,5 +19,16 @@ namespace Yoakke.Ir
         /// An argument reference.
         /// </summary>
         public record Arg(int Index) : Value;
+
+        /// <summary>
+        /// A local variable reference.
+        /// </summary>
+        public record Local(int Index) : Value;
+
+        /// <summary>
+        /// A local temporary reference.
+        /// All instruction/computation results are this.
+        /// </summary>
+        public record Temp(int Index) : Value;
     }
 }
