@@ -24,8 +24,8 @@ namespace Yoakke.Ir
         public new IProcedure Procedure { get; }
 
         /// <summary>
-        /// The list of <see cref="IInstruction"/>s in this <see cref="IBasicBlock"/>.
+        /// The list of <see cref="Instruction"/>s in this <see cref="IBasicBlock"/>.
         /// </summary>
-        public new IList<IInstruction> Instructions { get; }
+        public new IList<Instruction> Instructions { get; }
     }
 }

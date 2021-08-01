@@ -24,8 +24,8 @@ namespace Yoakke.Ir
         public IReadOnlyProcedure Procedure { get; }
 
         /// <summary>
-        /// The list of <see cref="IInstruction"/>s in this <see cref="IReadOnlyBasicBlock"/>.
+        /// The list of <see cref="Instruction"/>s in this <see cref="IReadOnlyBasicBlock"/>.
         /// </summary>
-        public IReadOnlyList<IInstruction> Instructions { get; }
+        public IReadOnlyList<Instruction> Instructions { get; }
     }
 }

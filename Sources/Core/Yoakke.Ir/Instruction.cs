@@ -11,31 +11,45 @@ using System.Threading.Tasks;
 namespace Yoakke.Ir
 {
     /// <summary>
-    /// The collection of <see cref="IInstruction"/>s.
+    /// BBase for all instructions.
     /// </summary>
-    public static class Instruction
+    public abstract record Instruction
     {
         /// <summary>
-        /// Any <see cref="IInstruction"/> that produces a <see cref="Value"/>.
+        /// True, if this is some kind of branching instruction.
         /// </summary>
-        public abstract record ValueProducer : IInstruction
+        public abstract bool IsBranch { get; }
+
+        /// <summary>
+        /// Any <see cref="Instruction"/> that produces a <see cref="Value"/>.
+        /// </summary>
+        public abstract record ValueProducer : Instruction
         {
             /// <inheritdoc/>
-            public bool IsBranch => false;
+            public override bool IsBranch => false;
+
+            /// <summary>
+            /// The result <see cref="Type"/> of this instruction.
+            /// </summary>
+            public abstract Type ResultType { get; }
         }
 
         /// <summary>
         /// Returns from the current procedure.
         /// </summary>
-        public record Ret(Value? Value) : IInstruction
+        public record Ret(Value? Value) : Instruction
         {
             /// <inheritdoc/>
-            public bool IsBranch => true;
+            public override bool IsBranch => true;
         }
 
         /// <summary>
         /// Integer addition.
         /// </summary>
-        public record IntAdd(Value Left, Value Right) : ValueProducer;
+        public record IntAdd(Value Left, Value Right) : ValueProducer
+        {
+            /// <inheritdoc/>
+            public override Type ResultType => this.Left.Type;
+        }
     }
 }

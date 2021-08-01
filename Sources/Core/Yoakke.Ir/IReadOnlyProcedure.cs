@@ -26,12 +26,12 @@ namespace Yoakke.Ir
         public string Name { get; }
 
         /// <summary>
-        /// The parameter <see cref="Type"/>s this <see cref="IReadOnlyProcedure"/> takes.
+        /// The <see cref="Parameter"/>s this <see cref="IReadOnlyProcedure"/> takes.
         /// </summary>
-        public IReadOnlyList<Type> Parameters { get; }
+        public IReadOnlyList<Parameter> Parameters { get; }
 
         /// <summary>
-        /// The <see cref="Type"/> this <see cref="IReadOnlyProcedure"/> returns.
+        /// The <see cref="Ir.Type"/> this <see cref="IReadOnlyProcedure"/> returns.
         /// </summary>
         public Type Return { get; }
 

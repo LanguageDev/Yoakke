@@ -11,20 +11,20 @@ using System.Threading.Tasks;
 namespace Yoakke.Ir
 {
     /// <summary>
-    /// Represents a single, (usually) stack-allocated local variable.
+    /// Represents a single parameter of a procedure.
     /// </summary>
-    public class Local
+    public class Parameter
     {
         /// <summary>
-        /// The <see cref="Ir.Type"/> of the <see cref="Local"/>.
+        /// The <see cref="Type"/> of the <see cref="Parameter"/>.
         /// </summary>
         public Type Type { get; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Local"/> class.
+        /// Initializes a new instance of the <see cref="Parameter"/> class.
         /// </summary>
-        /// <param name="type">The <see cref="Ir.Type"/> of the local.</param>
-        public Local(Type type)
+        /// <param name="type">The <see cref="Ir.Type"/> of the parameter.</param>
+        public Parameter(Type type)
         {
             this.Type = type;
         }

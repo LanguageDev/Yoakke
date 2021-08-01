@@ -16,19 +16,36 @@ namespace Yoakke.Ir
     public abstract record Value
     {
         /// <summary>
+        /// The <see cref="Type"/> of this <see cref="Value"/>.
+        /// </summary>
+        public abstract Type Type { get; }
+
+        /// <summary>
         /// An argument reference.
         /// </summary>
-        public record Arg(int Index) : Value;
+        public record Argument(Parameter Parameter) : Value
+        {
+            /// <inheritdoc/>
+            public override Type Type => this.Parameter.Type;
+        }
 
         /// <summary>
         /// A local variable reference.
         /// </summary>
-        public record Local(int Index) : Value;
+        public record Local(Ir.Local Definition) : Value
+        {
+            /// <inheritdoc/>
+            public override Type Type => this.Definition.Type;
+        }
 
         /// <summary>
         /// A local temporary reference.
         /// All instruction/computation results are this.
         /// </summary>
-        public record Temp(int Index) : Value;
+        public record Temp(Instruction.ValueProducer Instruction) : Value
+        {
+            /// <inheritdoc/>
+            public override Type Type => this.Instruction.ResultType;
+        }
     }
 }

@@ -17,7 +17,6 @@ namespace Yoakke.Ir
     {
         private IProcedure? currentProcedure;
         private IBasicBlock? currentBasicBlock;
-        private Dictionary<IProcedure, int> temporaries = new();
 
         /// <summary>
         /// The built <see cref="IAssembly"/>.
@@ -88,9 +87,9 @@ namespace Yoakke.Ir
         public AssemblyBuilder DefineParameter(Type type, out Value result)
         {
             var proc = this.CurrentProcedure;
-            var index = proc.Parameters.Count;
-            proc.Parameters.Add(type);
-            result = new Value.Arg(index);
+            var param = new Parameter(type);
+            result = new Value.Argument(param);
+            proc.Parameters.Add(param);
             return this;
         }
 
@@ -122,16 +121,17 @@ namespace Yoakke.Ir
         public AssemblyBuilder DefineBasicBlock() => this.DefineBasicBlock(out var _);
 
         /// <summary>
-        /// Defines a <see cref="Local"/> in the current <see cref="IProcedure"/>.
+        /// Defines a local in the current <see cref="IProcedure"/>.
         /// </summary>
-        /// <param name="type">The <see cref="Type"/> of the <see cref="Local"/> to define.</param>
-        /// <param name="result">The defined <see cref="Local"/> gets written here.</param>
+        /// <param name="type">The <see cref="Type"/> of the local to define.</param>
+        /// <param name="result">The reference to the local gets written here.</param>
         /// <returns>This instance to chain calls.</returns>
-        public AssemblyBuilder DefineLocal(Type type, out Local result)
+        public AssemblyBuilder DefineLocal(Type type, out Value result)
         {
             var proc = this.CurrentProcedure;
-            result = new Local(type);
-            proc.Locals.Add(result);
+            var local = new Local(type);
+            result = new Value.Local(local);
+            proc.Locals.Add(local);
             return this;
         }
 
@@ -143,11 +143,11 @@ namespace Yoakke.Ir
         public AssemblyBuilder DefineLocal(Type type) => this.DefineLocal(type, out var _);
 
         /// <summary>
-        /// Writes an <see cref="IInstruction"/> to the <see cref="Assembly"/>.
+        /// Writes an <see cref="Instruction"/> to the <see cref="Assembly"/>.
         /// </summary>
-        /// <param name="instruction">The <see cref="IInstruction"/> to add.</param>
+        /// <param name="instruction">The <see cref="Instruction"/> to add.</param>
         /// <returns>This instance to chain calls.</returns>
-        public AssemblyBuilder Write(IInstruction instruction)
+        public AssemblyBuilder Write(Instruction instruction)
         {
             this.CurrentBasicBlock.Instructions.Add(instruction);
             return this;
@@ -170,11 +170,8 @@ namespace Yoakke.Ir
         /// <param name="result">The <see cref="Value"/> gets written here
         /// that can be used to reference the result.</param>
         /// <returns>This instance to chain calls.</returns>
-        public AssemblyBuilder IntAdd(Value left, Value right, out Value result)
-        {
-            result = this.AllocateTemporary();
-            return this.Write(new Instruction.IntAdd(left, right));
-        }
+        public AssemblyBuilder IntAdd(Value left, Value right, out Value result) =>
+            this.WriteValueProducer(new Instruction.IntAdd(left, right), out result);
 
         /// <summary>
         /// Writes an integer addition instruction.
@@ -186,15 +183,12 @@ namespace Yoakke.Ir
 
         #endregion
 
-        private Value AllocateTemporary()
+        private AssemblyBuilder WriteValueProducer(Instruction.ValueProducer ins, out Value result)
         {
-            var proc = this.CurrentProcedure;
-            if (!this.temporaries.TryGetValue(proc, out var count))
-            {
-                count = 0;
-            }
-            this.temporaries[proc] = count + 1;
-            return new Value.Temp(count);
+            var bb = this.CurrentBasicBlock;
+            result = new Value.Temp(ins);
+            bb.Instructions.Add(ins);
+            return this;
         }
     }
 }

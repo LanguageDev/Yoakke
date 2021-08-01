@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Yoakke.Collections;
 
 namespace Yoakke.Ir.Writers
 {
@@ -15,10 +16,24 @@ namespace Yoakke.Ir.Writers
     /// </summary>
     public class AssemblyTextWriter
     {
+        // Just for friendly names we keep a context per-procedure
+        private class ProcedureContext
+        {
+            public IReadOnlyDictionary<Parameter, int> Parameters { get; init; } = new Dictionary<Parameter, int>();
+
+            public IReadOnlyDictionary<Local, int> Locals { get; init; } = new Dictionary<Local, int>();
+
+            public IReadOnlyDictionary<IReadOnlyBasicBlock, int> Blocks { get; init; } = new Dictionary<IReadOnlyBasicBlock, int>();
+
+            public IReadOnlyDictionary<Instruction, int> Temporaries { get; init; } = new Dictionary<Instruction, int>(ReferenceEqualityComparer.Instance);
+        }
+
         /// <summary>
         /// The underlying <see cref="StringBuilder"/> this <see cref="AssemblyTextWriter"/> writes to.
         /// </summary>
         public StringBuilder Result { get; }
+
+        private ProcedureContext procedureContext = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AssemblyTextWriter"/> class.
@@ -122,13 +137,15 @@ namespace Yoakke.Ir.Writers
         /// <returns>This instance to be able to chain calls.</returns>
         public AssemblyTextWriter Write(IReadOnlyProcedure procedure)
         {
+            // First set the context
+            this.ConstructProcedureContext(procedure);
             // Write the procedure header, which is
             // proc name(arg(0) type0, arg(1) type1, ...) return_type:
             this.Write("proc ").Write(procedure.Name).Write("(");
             for (var i = 0; i < procedure.Parameters.Count; ++i)
             {
                 if (i > 0) this.Write(", ");
-                this.Write("arg(").Write(i).Write(") ").Write(procedure.Parameters[i]);
+                this.Write("arg(").Write(i).Write(") ").Write(procedure.Parameters[i].Type);
             }
             this.Write(") ").Write(procedure.Return).Write(':');
 
@@ -158,12 +175,17 @@ namespace Yoakke.Ir.Writers
         /// <returns>This instance to be able to chain calls.</returns>
         public AssemblyTextWriter Write(IReadOnlyBasicBlock basicBlock)
         {
-            // NOTE: TIL IReadOnlyList has no IndexOf
-            // Find the block index
-            var index = IndexOf(basicBlock.Procedure.BasicBlocks, basicBlock);
             // Write it
-            this.Write("block(").Write(index).Write("):");
-            foreach (var ins in basicBlock.Instructions) this.WriteLine().Write("  ").Write(ins);
+            this.Write("block(").Write(this.procedureContext.Blocks[basicBlock]).Write("):");
+            foreach (var ins in basicBlock.Instructions)
+            {
+                this.WriteLine().Write("  ");
+                if (ins is Instruction.ValueProducer v)
+                {
+                    this.Write("temp(").Write(this.procedureContext.Temporaries[v]).Write(") ").Write(v.ResultType).Write(" = ");
+                }
+                this.Write(ins);
+            }
             return this;
         }
 
@@ -176,26 +198,27 @@ namespace Yoakke.Ir.Writers
         public AssemblyTextWriter WriteLine(IReadOnlyBasicBlock basicBlock) => this.Write(basicBlock).WriteLine();
 
         /// <summary>
-        /// Writes an <see cref="IInstruction"/> to the underlying <see cref="StringBuilder"/>.
+        /// Writes an <see cref="Instruction"/> to the underlying <see cref="StringBuilder"/>.
         /// </summary>
-        /// <param name="instruction">The <see cref="IInstruction"/> to write.</param>
+        /// <param name="instruction">The <see cref="Instruction"/> to write.</param>
         /// <returns>This instance to be able to chain calls.</returns>
-        public AssemblyTextWriter Write(IInstruction instruction) => instruction switch
+        public AssemblyTextWriter Write(Instruction instruction) => instruction switch
         {
             Instruction.Ret ret => ret.Value is null
                                     ? this.Write("ret")
                                     : this.Write("ret ").Write(ret.Value),
+            Instruction.IntAdd iadd => this.Write("int_add ").Write(iadd.Left).Write(", ").Write(iadd.Right),
 
             _ => throw new NotSupportedException(),
         };
 
         /// <summary>
-        /// Writes an <see cref="IInstruction"/> to the underlying <see cref="StringBuilder"/>
+        /// Writes an <see cref="Instruction"/> to the underlying <see cref="StringBuilder"/>
         /// and goes to the next line.
         /// </summary>
-        /// <param name="instruction">The <see cref="IInstruction"/> to write.</param>
+        /// <param name="instruction">The <see cref="Instruction"/> to write.</param>
         /// <returns>This instance to be able to chain calls.</returns>
-        public AssemblyTextWriter WriteLine(IInstruction instruction) => this.Write(instruction).WriteLine();
+        public AssemblyTextWriter WriteLine(Instruction instruction) => this.Write(instruction).WriteLine();
 
         /// <summary>
         /// Writes a <see cref="Value"/> to the underlying <see cref="StringBuilder"/>.
@@ -204,7 +227,9 @@ namespace Yoakke.Ir.Writers
         /// <returns>This instance to be able to chain calls.</returns>
         public AssemblyTextWriter Write(Value value) => value switch
         {
-            Value.Arg a => this.Write("arg(").Write(a.Index).Write(')'),
+            Value.Argument a => this.Write("arg(").Write(this.procedureContext.Parameters[a.Parameter]).Write(')'),
+            Value.Local l => this.Write("local(").Write(this.procedureContext.Locals[l.Definition]).Write(')'),
+            Value.Temp t => this.Write("temp(").Write(this.procedureContext.Temporaries[t.Instruction]).Write(')'),
 
             _ => throw new NotSupportedException(),
         };
@@ -236,13 +261,27 @@ namespace Yoakke.Ir.Writers
         /// <returns>This instance to be able to chain calls.</returns>
         public AssemblyTextWriter WriteLine(Type type) => this.Write(type).WriteLine();
 
-        private static int IndexOf<T>(IReadOnlyList<T> items, T value)
+        private void ConstructProcedureContext(IReadOnlyProcedure procedure)
         {
-            for (var i = 0; i < items.Count; ++i)
+            var valueIns = procedure.BasicBlocks
+                .SelectMany(bb => bb.Instructions)
+                .OfType<Instruction.ValueProducer>()
+                .ToList();
+            var temporaries = Enumerable.Range(0, valueIns.Count)
+                .Zip(valueIns)
+                .ToDictionary(p => p.Second, p => p.First, ReferenceEqualityComparer<Instruction>.Default);
+
+            this.procedureContext = new()
             {
-                if (ReferenceEquals(items[i], value)) return i;
-            }
-            return -1;
+                Parameters = ToIndexDictionary(procedure.Parameters),
+                Locals = ToIndexDictionary(procedure.Locals),
+                Blocks = ToIndexDictionary(procedure.BasicBlocks),
+                Temporaries = temporaries,
+            };
         }
+
+        private static IReadOnlyDictionary<T, int> ToIndexDictionary<T>(IReadOnlyList<T> values)
+            where T : notnull =>
+            Enumerable.Range(0, values.Count).Zip(values).ToDictionary(p => p.Second, p => p.First);
     }
 }

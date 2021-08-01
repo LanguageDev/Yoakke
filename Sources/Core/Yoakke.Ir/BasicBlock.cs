@@ -15,7 +15,7 @@ namespace Yoakke.Ir
     /// </summary>
     public class BasicBlock : IBasicBlock
     {
-        private readonly List<IInstruction> instructions = new();
+        private readonly List<Instruction> instructions = new();
 
         /// <inheritdoc/>
         public IProcedure Procedure { get; }
@@ -24,10 +24,10 @@ namespace Yoakke.Ir
         IReadOnlyProcedure IReadOnlyBasicBlock.Procedure => this.Procedure;
 
         /// <inheritdoc/>
-        public IList<IInstruction> Instructions => this.instructions;
+        public IList<Instruction> Instructions => this.instructions;
 
         /// <inheritdoc/>
-        IReadOnlyList<IInstruction> IReadOnlyBasicBlock.Instructions => this.instructions;
+        IReadOnlyList<Instruction> IReadOnlyBasicBlock.Instructions => this.instructions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BasicBlock"/> class.

@@ -16,21 +16,22 @@ namespace Yoakke.Ir
     /// </summary>
     public class Procedure : IProcedure
     {
-        private readonly List<Type> parameters = new();
+        private readonly List<Parameter> parameters = new();
         private readonly List<IBasicBlock> basicBlocks = new();
         private readonly List<Local> locals = new();
 
         /// <inheritdoc/>
-        public Type Type => new Type.Proc(this.Return, this.parameters.AsValue());
+        public Type Type =>
+            new Type.Proc(this.Return, this.parameters.Select(p => p.Type).ToList().AsValue());
 
         /// <inheritdoc/>
         public string Name { get; }
 
         /// <inheritdoc/>
-        public IList<Type> Parameters => this.parameters;
+        public IList<Parameter> Parameters => this.parameters;
 
         /// <inheritdoc/>
-        IReadOnlyList<Type> IReadOnlyProcedure.Parameters => this.parameters;
+        IReadOnlyList<Parameter> IReadOnlyProcedure.Parameters => this.parameters;
 
         /// <inheritdoc/>
         public Type Return { get; set; } = Type.Void.Default;
