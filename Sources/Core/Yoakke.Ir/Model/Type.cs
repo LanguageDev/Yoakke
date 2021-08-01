@@ -14,7 +14,7 @@ namespace Yoakke.Ir.Model
     /// <summary>
     /// The base for all IR types.
     /// </summary>
-    public abstract record Type
+    public abstract record Type : IInstructionArg
     {
         /// <summary>
         /// The nothing <see cref="Type"/>.

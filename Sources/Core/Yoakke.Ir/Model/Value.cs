@@ -13,7 +13,7 @@ namespace Yoakke.Ir.Model
     /// <summary>
     /// The base for all IR values.
     /// </summary>
-    public abstract record Value
+    public abstract record Value : IInstructionArg
     {
         /// <summary>
         /// The <see cref="Type"/> of this <see cref="Value"/>.

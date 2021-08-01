@@ -16,6 +16,11 @@ namespace Yoakke.Ir.Model
     public abstract record Instruction
     {
         /// <summary>
+        /// The arguments of this <see cref="Instruction"/>.
+        /// </summary>
+        public abstract IEnumerable<IInstructionArg> Arguments { get; }
+
+        /// <summary>
         /// True, if this is some kind of branching instruction.
         /// </summary>
         public abstract bool IsBranch { get; }
@@ -40,6 +45,15 @@ namespace Yoakke.Ir.Model
         public record Ret(Value? Value) : Instruction
         {
             /// <inheritdoc/>
+            public override IEnumerable<IInstructionArg> Arguments
+            {
+                get
+                {
+                    if (this.Value is not null) yield return this.Value;
+                }
+            }
+
+            /// <inheritdoc/>
             public override bool IsBranch => true;
         }
 
@@ -48,6 +62,16 @@ namespace Yoakke.Ir.Model
         /// </summary>
         public record IntAdd(Value Left, Value Right) : ValueProducer
         {
+            /// <inheritdoc/>
+            public override IEnumerable<IInstructionArg> Arguments
+            {
+                get
+                {
+                    yield return this.Left;
+                    yield return this.Right;
+                }
+            }
+
             /// <inheritdoc/>
             public override Type ResultType => this.Left.Type;
         }
