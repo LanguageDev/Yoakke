@@ -23,16 +23,18 @@ namespace Yoakke.Ir.Model
         /// <summary>
         /// True, if this is some kind of branching instruction.
         /// </summary>
-        public abstract bool IsBranch { get; }
+        public virtual bool IsBranch => false;
+
+        /// <summary>
+        /// True, if this is a side-effect-free instruction.
+        /// </summary>
+        public virtual bool IsPure => true;
 
         /// <summary>
         /// Any <see cref="Instruction"/> that produces a <see cref="Value"/>.
         /// </summary>
         public abstract record ValueProducer : Instruction
         {
-            /// <inheritdoc/>
-            public override bool IsBranch => false;
-
             /// <summary>
             /// The result <see cref="Type"/> of this instruction.
             /// </summary>
@@ -55,6 +57,9 @@ namespace Yoakke.Ir.Model
 
             /// <inheritdoc/>
             public override bool IsBranch => true;
+
+            /// <inheritdoc/>
+            public override bool IsPure => false;
         }
 
         /// <summary>
