@@ -1,5 +1,6 @@
 using System;
 using Yoakke.Ir.Writers;
+using Type = Yoakke.Ir.Model.Type;
 
 namespace Yoakke.Ir.Sample
 {

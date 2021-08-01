@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Yoakke.Ir
+namespace Yoakke.Ir.Model
 {
     /// <summary>
     /// BBase for all instructions.

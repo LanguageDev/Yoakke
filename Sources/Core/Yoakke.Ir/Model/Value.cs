@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Yoakke.Ir
+namespace Yoakke.Ir.Model
 {
     /// <summary>
     /// The base for all IR values.
@@ -32,7 +32,7 @@ namespace Yoakke.Ir
         /// <summary>
         /// A local variable reference.
         /// </summary>
-        public record Local(Ir.Local Definition) : Value
+        public record Local(Model.Local Definition) : Value
         {
             /// <inheritdoc/>
             public override Type Type => this.Definition.Type;

@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Yoakke.Ir
+namespace Yoakke.Ir.Model
 {
     /// <summary>
     /// Represents a single parameter of a procedure.

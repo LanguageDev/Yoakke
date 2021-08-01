@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Yoakke.Collections;
 
-namespace Yoakke.Ir
+namespace Yoakke.Ir.Model
 {
     /// <summary>
     /// A default implementation for <see cref="IProcedure"/>.
