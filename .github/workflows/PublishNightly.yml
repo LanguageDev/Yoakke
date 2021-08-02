@@ -17,7 +17,7 @@ jobs:
       uses: 1466587594/get-current-time@v2
       id: current-time
       with:
-        format: YYYY.MM.DD-HH.mm.ss
+        format: Y.M.D-H.m.s
     - name: Build and package
       run: dotnet build Sources/Yoakke.sln --configuration Release /p:VersionPrefix=${{ steps.current-time.outputs.formattedTime }} /p:VersionSuffix=nightly /p:PackageReleaseNotes="Nightly build"
     - name: Upload to NuGet.org
