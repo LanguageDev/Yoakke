@@ -33,7 +33,7 @@ some other line");
             var result = new StringWriter();
             var renderer = new TextDiagnosticsPresenter(result);
             renderer.Present(diag);
-            Assert.AreEqual(
+            AssertUtils.AreEqualIgnoreNewlineEncoding(
                 @"error[E0001]: Some error message
   ┌─ simple.txt:3:11
   │
@@ -64,7 +64,7 @@ last line");
             var result = new StringWriter();
             var renderer = new TextDiagnosticsPresenter(result);
             renderer.Present(diag);
-            Assert.AreEqual(
+            AssertUtils.AreEqualIgnoreNewlineEncoding(
                 @"error[E0001]: Some error message
   ┌─ simple.txt:3:11
   │
@@ -98,7 +98,7 @@ last line");
             var result = new StringWriter();
             var renderer = new TextDiagnosticsPresenter(result);
             renderer.Present(diag);
-            Assert.AreEqual(
+            AssertUtils.AreEqualIgnoreNewlineEncoding(
                 @"error[E0001]: Some error message
   ┌─ simple.txt:3:11
   │
@@ -134,7 +134,7 @@ last line");
             var result = new StringWriter();
             var renderer = new TextDiagnosticsPresenter(result);
             renderer.Present(diag);
-            Assert.AreEqual(
+            AssertUtils.AreEqualIgnoreNewlineEncoding(
                 @"error[E0001]: Some error message
   ┌─ simple.txt:3:11
   │
@@ -172,7 +172,7 @@ last line");
             var result = new StringWriter();
             var renderer = new TextDiagnosticsPresenter(result);
             renderer.Present(diag);
-            Assert.AreEqual(
+            AssertUtils.AreEqualIgnoreNewlineEncoding(
                 @"error[E0001]: Some error message
   ┌─ simple.txt:3:11
   │
@@ -212,7 +212,7 @@ last line");
             var result = new StringWriter();
             var renderer = new TextDiagnosticsPresenter(result);
             renderer.Present(diag);
-            Assert.AreEqual(
+            AssertUtils.AreEqualIgnoreNewlineEncoding(
                 @"error[E0001]: Some error message
   ┌─ simple.txt:3:11
   │
@@ -253,7 +253,7 @@ context
             var renderer = new TextDiagnosticsPresenter(result);
             renderer.Style.TrimEmptySourceLinesAtEdges = true;
             renderer.Present(diag);
-            Assert.AreEqual(
+            AssertUtils.AreEqualIgnoreNewlineEncoding(
             @"error[E0001]: Some error message
   ┌─ simple.txt:4:7
   │
@@ -289,7 +289,7 @@ bye
             var renderer = new TextDiagnosticsPresenter(result);
             renderer.Style.TrimEmptySourceLinesAtEdges = true;
             renderer.Present(diag);
-            Assert.AreEqual(
+            AssertUtils.AreEqualIgnoreNewlineEncoding(
             @"error[E0001]: Some error message
   ┌─ simple.txt:2:1
   │
