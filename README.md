@@ -24,6 +24,8 @@ Yoakke is a collection of libraries aimed at compiler- and language developers t
 
 Yoakke is still early in development. You can play around with the libraries, but there may be bugs or missing features. Please open an issue if you find a bug, or miss an important feature. All contributions are welcome!
 
+If you want to try out the latest features, there are nightly releases on [NuGet](https://www.nuget.org/packages?q=Yoakke+owner%3ALanguageDev)!
+
 ## A note for Visual Studio users
 
 If you are experiencing build issues when using Visual Studio around Source Generators, please try enabling the [option described here](https://languagedev.github.io/Yoakke/articles/fixing-vs-issues.html).
