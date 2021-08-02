@@ -27,7 +27,7 @@ namespace Yoakke.Ir.Writers
 
             public IReadOnlyDictionary<IReadOnlyBasicBlock, int> Blocks { get; init; } = new Dictionary<IReadOnlyBasicBlock, int>();
 
-            public IReadOnlyDictionary<Instruction, int> Temporaries { get; init; } = new Dictionary<Instruction, int>(ReferenceEqualityComparer.Instance);
+            public IReadOnlyDictionary<Instruction, int> Temporaries { get; init; } = new Dictionary<Instruction, int>();
         }
 
         /// <summary>
@@ -268,22 +268,20 @@ namespace Yoakke.Ir.Writers
             var valueIns = procedure.BasicBlocks
                 .SelectMany(bb => bb.Instructions)
                 .OfType<Instruction.ValueProducer>()
-                .ToList();
-            var temporaries = Enumerable.Range(0, valueIns.Count)
-                .Zip(valueIns)
-                .ToDictionary(p => p.Second, p => p.First, ReferenceEqualityComparer<Instruction>.Default);
+                .Cast<Instruction>();
 
             this.procedureContext = new()
             {
                 Parameters = ToIndexDictionary(procedure.Parameters),
                 Locals = ToIndexDictionary(procedure.Locals),
                 Blocks = ToIndexDictionary(procedure.BasicBlocks),
-                Temporaries = temporaries,
+                Temporaries = ToIndexDictionary(valueIns),
             };
         }
 
-        private static IReadOnlyDictionary<T, int> ToIndexDictionary<T>(IReadOnlyList<T> values)
-            where T : notnull =>
-            Enumerable.Range(0, values.Count).Zip(values).ToDictionary(p => p.Second, p => p.First);
+        private static IReadOnlyDictionary<T, int> ToIndexDictionary<T>(IEnumerable<T> values)
+            where T : notnull => values
+            .Select((v, idx) => new KeyValuePair<T, int>(v, idx))
+            .ToDictionary(kv => kv.Key, kv => kv.Value);
     }
 }

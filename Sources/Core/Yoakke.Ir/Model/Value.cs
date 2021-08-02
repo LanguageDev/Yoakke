@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -46,6 +47,12 @@ namespace Yoakke.Ir.Model
         {
             /// <inheritdoc/>
             public override Type Type => this.Instruction.ResultType;
+
+            /// <inheritdoc/>
+            public virtual bool Equals(Temp? other) => ReferenceEquals(this.Instruction, other?.Instruction);
+
+            /// <inheritdoc/>
+            public override int GetHashCode() => RuntimeHelpers.GetHashCode(this.Instruction);
         }
     }
 }
