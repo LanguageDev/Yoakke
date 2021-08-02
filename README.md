@@ -24,6 +24,10 @@ Yoakke is a collection of libraries aimed at compiler- and language developers t
 
 Yoakke is still early in development. You can play around with the libraries, but there may be bugs or missing features. Please open an issue if you find a bug, or miss an important feature. All contributions are welcome!
 
+## A note for Visual Studio users
+
+If you are experiencing build issues when using Visual Studio around Source Generators, please try enabling the [option described here](https://languagedev.github.io/Yoakke/articles/fixing-vs-issues.html).
+
 ## What components are there?
 
 - Lexing: Lexers can be defined completely declaratively, as regular expression annotations - inspired by [Logos](https://github.com/maciejhirsz/logos) - over token types. Do not worry, the regular expressions are compiled into _Deterministic Finite Automatas_, so the resulting code is a lot more efficient, than your average RegEx engine.
