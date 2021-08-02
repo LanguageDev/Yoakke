@@ -1,0 +1,24 @@
+name: 'Publish nightly'
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 2 * * *' # run at 2 AM UTC
+
+jobs:
+  deployment:
+    runs-on: windows-latest
+    steps:
+    - name: Clone the repo
+      uses: actions/checkout@v2
+    - name: Setup .NET 5
+      uses: actions/setup-dotnet@v1
+    - name: Get current time
+      uses: 1466587594/get-current-time@v2
+      id: current-time
+      with:
+        format: YYYY.MM.DD-HH.mm.ss
+    - name: Build and package
+      run: dotnet build Sources/Yoakke.sln --configuration Release /p:VersionPrefix=${{ steps.current-time.outputs.formattedTime }} /p:VersionSuffix=nightly /p:PackageReleaseNotes="Nightly build"
+    - name: Upload to NuGet.org
+      run: dotnet nuget push Sources/Core/**/*${{ steps.current-time.outputs.formattedTime }}-nightly.nupkg --api-key ${{ secrets.NUGET_TOKEN }} --source https://api.nuget.org/v3/index.json --no-symbols true
