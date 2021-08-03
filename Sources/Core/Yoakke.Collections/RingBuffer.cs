@@ -189,7 +189,7 @@ namespace Yoakke.Collections
 
         private void CheckIndexBounds(int index)
         {
-            if (index >= this.Count) throw new ArgumentOutOfRangeException(nameof(index));
+            if (index < 0 || index >= this.Count) throw new ArgumentOutOfRangeException(nameof(index));
         }
 
         private static int Mod(int a, int b)

@@ -70,22 +70,31 @@ namespace Yoakke.Ir.Runtime
             var instruction = this.instructions[this.InstructionPointer++];
             switch (instruction)
             {
+            case Instruction.ValueProducer valProducer:
+            {
+                var value = this.Evaluate(valProducer);
+                var top = this.callStack.Peek();
+                var temp = new Value.Temp(valProducer);
+                top.Locals[temp] = value;
+            }
+            break;
+
             case Instruction.Ret ret:
+            {
                 var returnValue = ret.Value is null ? Value.Void.Instance : this.Unwrap(ret.Value);
                 var top = this.callStack.Pop();
                 top.WriteReturnValue(returnValue);
-                break;
-
-            case Instruction.IntAdd intAdd:
-                var left = this.Unwrap(intAdd.Left);
-                var right = this.Unwrap(intAdd.Right);
-                // TODO
-                throw new NotImplementedException();
-                break;
+            }
+            break;
 
             default: throw new NotImplementedException();
             }
         }
+
+        private Value Evaluate(Instruction.ValueProducer valueProducer) => valueProducer switch
+        {
+            _ => throw new NotImplementedException(),
+        };
 
         private Value Unwrap(Value value) => value switch
         {
