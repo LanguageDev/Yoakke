@@ -24,7 +24,7 @@ namespace Yoakke.Ir.Model
             /// <summary>
             /// A default <see cref="Void"/> instance.
             /// </summary>
-            public static readonly Type Default = new Void();
+            public static readonly Type Instance = new Void();
         }
 
         /// <summary>

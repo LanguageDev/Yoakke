@@ -40,7 +40,7 @@ namespace Yoakke.Utilities.RegEx
             public override (State Start, State End) ThompsonConstruct(DenseNfa<char> denseNfa)
             {
                 var (start, end) = this.Subexpr.ThompsonConstruct(denseNfa);
-                denseNfa.AddTransition(start, Epsilon.Default, end);
+                denseNfa.AddTransition(start, Epsilon.Instance, end);
                 return (start, end);
             }
         }

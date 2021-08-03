@@ -34,7 +34,7 @@ namespace Yoakke.Ir.Model
         IReadOnlyList<Parameter> IReadOnlyProcedure.Parameters => this.parameters;
 
         /// <inheritdoc/>
-        public Type Return { get; set; } = Type.Void.Default;
+        public Type Return { get; set; } = Type.Void.Instance;
 
         /// <inheritdoc/>
         Type IReadOnlyProcedure.Return => this.Return;

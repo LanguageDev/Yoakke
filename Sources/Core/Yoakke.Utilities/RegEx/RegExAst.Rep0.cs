@@ -44,10 +44,10 @@ namespace Yoakke.Utilities.RegEx
                 var newStart = denseNfa.NewState();
                 var newEnd = denseNfa.NewState();
 
-                denseNfa.AddTransition(newStart, Epsilon.Default, start);
-                denseNfa.AddTransition(end, Epsilon.Default, newEnd);
-                denseNfa.AddTransition(end, Epsilon.Default, start);
-                denseNfa.AddTransition(newStart, Epsilon.Default, newEnd);
+                denseNfa.AddTransition(newStart, Epsilon.Instance, start);
+                denseNfa.AddTransition(end, Epsilon.Instance, newEnd);
+                denseNfa.AddTransition(end, Epsilon.Instance, start);
+                denseNfa.AddTransition(newStart, Epsilon.Instance, newEnd);
 
                 return (newStart, newEnd);
             }

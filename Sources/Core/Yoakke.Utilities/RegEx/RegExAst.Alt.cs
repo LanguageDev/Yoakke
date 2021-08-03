@@ -55,11 +55,11 @@ namespace Yoakke.Utilities.RegEx
                 var (firstStart, firstEnd) = this.First.ThompsonConstruct(denseNfa);
                 var (secondStart, secondEnd) = this.Second.ThompsonConstruct(denseNfa);
 
-                denseNfa.AddTransition(newStart, Epsilon.Default, firstStart);
-                denseNfa.AddTransition(newStart, Epsilon.Default, secondStart);
+                denseNfa.AddTransition(newStart, Epsilon.Instance, firstStart);
+                denseNfa.AddTransition(newStart, Epsilon.Instance, secondStart);
 
-                denseNfa.AddTransition(firstEnd, Epsilon.Default, newEnd);
-                denseNfa.AddTransition(secondEnd, Epsilon.Default, newEnd);
+                denseNfa.AddTransition(firstEnd, Epsilon.Instance, newEnd);
+                denseNfa.AddTransition(secondEnd, Epsilon.Instance, newEnd);
 
                 return (newStart, newEnd);
             }
