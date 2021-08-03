@@ -22,6 +22,20 @@ namespace Yoakke.Ir.Model
         public abstract Type Type { get; }
 
         /// <summary>
+        /// A simple nothing value.
+        /// </summary>
+        public record Void : Value
+        {
+            /// <summary>
+            /// A default instance to use.
+            /// </summary>
+            public static readonly Value Instance = new Void();
+
+            /// <inheritdoc/>
+            public override Type Type => Type.Void.Instance;
+        }
+
+        /// <summary>
         /// An argument reference.
         /// </summary>
         public record Argument(Parameter Parameter) : Value
