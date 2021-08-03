@@ -54,7 +54,7 @@ This is a list of the libraries that are planned for implementation, along with 
 | C syntax <br /> (pre-processor, lexer, parser)     | 🚧      | [![Nuget version (Yoakke.C.Syntax)](https://img.shields.io/nuget/v/Yoakke.C.Syntax.svg?logo=nuget&style=flat-square&logoColor=white&labelColor=004880&logoWidth=18&label=Yoakke.C.Syntax)](https://www.nuget.org/packages/Yoakke.C.Syntax) |       |
 | Type-system                                 | 📝      |      |       |
 | Virtual Machine                             | 📝      |      |       |
-| X86 Assembly                                | 🚧      | [![Nuget version (Yoakke.X86)](https://img.shields.io/nuget/v/Yoakke.X86.svg?logo=nuget&style=flat-square&logoColor=white&labelColor=004880&logoWidth=18&label=Yoakke.X86)](https://www.nuget.org/packages/Yoakke.X86)|       |
+| X86 Assembly                                | 🚧      | [![Nuget version (Yoakke.Platform.X86)](https://img.shields.io/nuget/v/Yoakke.Platform.X86.svg?logo=nuget&style=flat-square&logoColor=white&labelColor=004880&logoWidth=18&label=Yoakke.Platform.X86)](https://www.nuget.org/packages/Yoakke.Platform.X86)|       |
 | Debugger                                    | 📝      |      |       |
 | Dependency system <br /> (incremental compilation) | 📝      |      |       |
 | Debug adapter protocol                      | 📝      |      |       |
