@@ -12,6 +12,6 @@ namespace Yoakke.Utilities.FiniteAutomata
         /// <summary>
         /// A constant singleton value to not have to instantiate it all the time.
         /// </summary>
-        public static readonly Epsilon Default = new();
+        public static readonly Epsilon Instance = new();
     }
 }

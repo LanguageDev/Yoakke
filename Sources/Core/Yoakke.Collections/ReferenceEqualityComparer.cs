@@ -20,7 +20,7 @@ namespace Yoakke.Collections
         /// <summary>
         /// A default instance to use.
         /// </summary>
-        public static readonly ReferenceEqualityComparer<T> Default = new();
+        public static readonly ReferenceEqualityComparer<T> Instance = new();
 
         /// <inheritdoc/>
         public bool Equals(T? x, T? y) => ReferenceEqualityComparer.Instance.Equals(x, y);

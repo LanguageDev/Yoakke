@@ -251,7 +251,7 @@ end_loop:
                     // Construct it into the NFA
                     var (start, end) = regex.ThompsonConstruct(nfa);
                     // Wire the initial state to the start of the construct
-                    nfa.AddTransition(nfa.InitalState, Epsilon.Default, start);
+                    nfa.AddTransition(nfa.InitalState, Epsilon.Instance, start);
                     // Mark the state as accepting
                     nfa.AcceptingStates.Add(end);
                     // Save the final state as a state that accepts this token

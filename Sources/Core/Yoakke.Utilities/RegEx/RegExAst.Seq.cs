@@ -51,7 +51,7 @@ namespace Yoakke.Utilities.RegEx
             {
                 var (firstStart, firstEnd) = this.First.ThompsonConstruct(denseNfa);
                 var (secondStart, secondEnd) = this.Second.ThompsonConstruct(denseNfa);
-                denseNfa.AddTransition(firstEnd, Epsilon.Default, secondStart);
+                denseNfa.AddTransition(firstEnd, Epsilon.Instance, secondStart);
                 return (firstStart, secondEnd);
             }
         }
