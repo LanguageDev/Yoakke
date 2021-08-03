@@ -96,9 +96,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ir", "Ir", "{B042CA2F-FAD5-
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Ir", "Core\Yoakke.Ir\Yoakke.Ir.csproj", "{D9A26C9B-EB6D-4EDB-923B-ED529E4C5A8D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yoakke.Ir.Sample", "Examples\Yoakke.Ir.Sample\Yoakke.Ir.Sample.csproj", "{B5C7DD29-4D2C-46B7-B940-FA5C2680C382}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Ir.Sample", "Examples\Yoakke.Ir.Sample\Yoakke.Ir.Sample.csproj", "{B5C7DD29-4D2C-46B7-B940-FA5C2680C382}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Platforms", "Platforms", "{A482C708-3225-47F3-8DE3-BB354888CC51}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yoakke.NugetMaintainer", "Tools\Yoakke.NugetMaintainer\Yoakke.NugetMaintainer.csproj", "{7BD28C2F-18D6-4C3A-9899-469775B001D8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -246,6 +248,10 @@ Global
 		{B5C7DD29-4D2C-46B7-B940-FA5C2680C382}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5C7DD29-4D2C-46B7-B940-FA5C2680C382}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5C7DD29-4D2C-46B7-B940-FA5C2680C382}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7BD28C2F-18D6-4C3A-9899-469775B001D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BD28C2F-18D6-4C3A-9899-469775B001D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7BD28C2F-18D6-4C3A-9899-469775B001D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7BD28C2F-18D6-4C3A-9899-469775B001D8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
