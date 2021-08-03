@@ -53,7 +53,7 @@ namespace Yoakke.SourceGenerator.Common.RoslynExtensions
         /// <param name="interfaceSymbol">The generic interface symbol to search for.</param>
         /// <returns>True, if <paramref name="symbol"/> implements <paramref name="interfaceSymbol"/>.</returns>
         public static bool ImplementsGenericInterface(this ITypeSymbol symbol, INamedTypeSymbol interfaceSymbol) =>
-            ImplementsGenericInterface(symbol, interfaceSymbol, out var _);
+            ImplementsGenericInterface(symbol, interfaceSymbol, out _);
 
         /// <summary>
         /// Checks, if a <see cref="ISymbol"/> implements a generic interface.
@@ -123,7 +123,7 @@ namespace Yoakke.SourceGenerator.Common.RoslynExtensions
         /// <param name="attributeSymbol">The attribute symbol to search for.</param>
         /// <returns>True, if <paramref name="symbol"/> has an attribut <paramref name="attributeSymbol"/>.</returns>
         public static bool HasAttribute(this ISymbol symbol, INamedTypeSymbol attributeSymbol) =>
-            symbol.TryGetAttribute(attributeSymbol, out var _);
+            symbol.TryGetAttribute(attributeSymbol, out _);
 
         /// <summary>
         /// Retrieves a given <see cref="AttributeData"/> attached to a <see cref="ISymbol"/>.

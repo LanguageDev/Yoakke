@@ -93,7 +93,7 @@ namespace Yoakke.C.Syntax
             if (peek == '/' && this.MatchesEscaped('/', ref offset))
             {
                 // Line-comment, go until the end of line
-                while (this.MatchesEscaped(ch => !IsNewline(ch), out var _, ref offset))
+                while (this.MatchesEscaped(ch => !IsNewline(ch), out _, ref offset))
                 {
                     // Pass
                 }
@@ -192,7 +192,7 @@ namespace Yoakke.C.Syntax
             case '.':
                 if (this.MatchesEscaped("..", ref offset)) return Make(CTokenType.Ellipsis, "...");
                 // If it's a digit, it's a float, don't handle it here
-                if (!char.IsDigit(this.ParseEscaped(offset, out var _))) return Make(CTokenType.Dot, ".");
+                if (!char.IsDigit(this.ParseEscaped(offset, out _))) return Make(CTokenType.Dot, ".");
                 break;
             }
 

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -80,7 +80,7 @@ namespace Yoakke.Utilities.Intervals
         public void Clear() => this.values.Clear();
 
         /// <inheritdoc/>
-        public bool ContainsKey(TKey key) => this.TryGetValue(key, out var _);
+        public bool ContainsKey(TKey key) => this.TryGetValue(key, out _);
 
         /// <inheritdoc/>
         public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue? value)

@@ -77,7 +77,7 @@ namespace Yoakke.Ir
         /// </summary>
         /// <param name="name">The logical name of the procedure.</param>
         /// <returns>This instance to chain calls.</returns>
-        public AssemblyBuilder DefineProcedure(string name) => this.DefineProcedure(name, out var _);
+        public AssemblyBuilder DefineProcedure(string name) => this.DefineProcedure(name, out _);
 
         /// <summary>
         /// Defines a new parameter in the current <see cref="IProcedure"/>.
@@ -100,7 +100,7 @@ namespace Yoakke.Ir
         /// </summary>
         /// <param name="type">The type of the argument to define.</param>
         /// <returns>This instance to chain calls.</returns>
-        public AssemblyBuilder DefineParameter(Type type) => this.DefineParameter(type, out var _);
+        public AssemblyBuilder DefineParameter(Type type) => this.DefineParameter(type, out _);
 
         /// <summary>
         /// Defines a new <see cref="IBasicBlock"/> in the current <see cref="IProcedure"/>.
@@ -120,7 +120,7 @@ namespace Yoakke.Ir
         /// Defines a new <see cref="IBasicBlock"/> in the current <see cref="IProcedure"/>.
         /// </summary>
         /// <returns>This instance to chain calls.</returns>
-        public AssemblyBuilder DefineBasicBlock() => this.DefineBasicBlock(out var _);
+        public AssemblyBuilder DefineBasicBlock() => this.DefineBasicBlock(out _);
 
         /// <summary>
         /// Defines a local in the current <see cref="IProcedure"/>.
@@ -142,7 +142,7 @@ namespace Yoakke.Ir
         /// </summary>
         /// <param name="type">The <see cref="Type"/> of the <see cref="Local"/> to define.</param>
         /// <returns>This instance to chain calls.</returns>
-        public AssemblyBuilder DefineLocal(Type type) => this.DefineLocal(type, out var _);
+        public AssemblyBuilder DefineLocal(Type type) => this.DefineLocal(type, out _);
 
         /// <summary>
         /// Writes an <see cref="Instruction"/> to the <see cref="Assembly"/>.
@@ -181,7 +181,7 @@ namespace Yoakke.Ir
         /// <param name="left">The first operand to add.</param>
         /// <param name="right">The second operand to add.</param>
         /// <returns>This instance to chain calls.</returns>
-        public AssemblyBuilder IntAdd(Value left, Value right) => this.IntAdd(left, right, out var _);
+        public AssemblyBuilder IntAdd(Value left, Value right) => this.IntAdd(left, right, out _);
 
         #endregion
 

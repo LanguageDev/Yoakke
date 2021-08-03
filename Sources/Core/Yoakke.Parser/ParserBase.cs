@@ -129,7 +129,7 @@ namespace Yoakke.Parser
         /// <returns>True, if the tokens were successfully consumed.</returns>
         protected bool TryConsume(int length)
         {
-            if (!this.TryPeek(length - 1, out var _)) return false;
+            if (!this.TryPeek(length - 1, out _)) return false;
             for (var i = 0; i < length; ++i) this.peek.RemoveFront();
             return true;
         }

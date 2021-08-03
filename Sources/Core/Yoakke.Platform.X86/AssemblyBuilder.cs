@@ -93,7 +93,7 @@ namespace Yoakke.Platform.X86
         /// </summary>
         /// <param name="label">The <see cref="X86.Label"/> to add.</param>
         /// <returns>This instance to chain calls.</returns>
-        public AssemblyBuilder Label(Label label) => this.Label(label, out var _);
+        public AssemblyBuilder Label(Label label) => this.Label(label, out _);
 
         /// <summary>
         /// Adds a <see cref="X86.Label"/> to the code, which can be used as a jump target.

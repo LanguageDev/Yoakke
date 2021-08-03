@@ -127,7 +127,7 @@ namespace Yoakke.Parser.Generator.Syntax
             return token!;
         }
 
-        private bool TryMatch(BnfTokenType type) => this.TryMatch(type, out var _);
+        private bool TryMatch(BnfTokenType type) => this.TryMatch(type, out _);
 
         private bool TryMatch(BnfTokenType type, [MaybeNullWhen(false)] out BnfToken? token)
         {

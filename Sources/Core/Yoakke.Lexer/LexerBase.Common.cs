@@ -25,7 +25,7 @@ namespace Yoakke.Lexer
         /// <summary>
         /// True, if the end of the source has been reached.
         /// </summary>
-        public bool IsEnd => !this.TryPeek(out var _);
+        public bool IsEnd => !this.TryPeek(out _);
 
         private readonly TextReader reader;
         private readonly RingBuffer<char> peek;
@@ -61,7 +61,7 @@ namespace Yoakke.Lexer
             // To avoid peeking -1, we pre-check empty string
             if (text.Length == 0) return true;
             // Check if we even have enough characters
-            if (!this.TryPeek(out var _, offset + text.Length - 1)) return false;
+            if (!this.TryPeek(out _, offset + text.Length - 1)) return false;
             // If so, we can do a linear match without the overhead of the peek call
             for (var i = 0; i < text.Length; ++i)
             {

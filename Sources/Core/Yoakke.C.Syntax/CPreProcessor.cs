@@ -235,7 +235,7 @@ namespace Yoakke.C.Syntax
 
             case "endif":
                 // Just pop off the condition stack
-                if (!this.conditionStack.TryPop(out var _))
+                if (!this.conditionStack.TryPop(out _))
                 {
                     // TODO: Proper error handling
                     throw new NotImplementedException("Stray #endif");
@@ -289,7 +289,7 @@ namespace Yoakke.C.Syntax
             }
 
             // We require parenthesis
-            if (!this.TrySkip(CTokenType.OpenParen, out var _))
+            if (!this.TrySkip(CTokenType.OpenParen, out _))
             {
                 // We required parenthesis but we didn't get any, don't count as invocation
                 // We don't know better for now, put back the taken identifier
@@ -331,7 +331,7 @@ namespace Yoakke.C.Syntax
                     // If it's variadic, we only consider it a separator, if we are past the fixed arguments
                     else if (depth == 0
                          && (!variadic || args.Count < macro.Parameters.Count - 1)
-                         && this.TrySkip(CTokenType.Comma, out var _))
+                         && this.TrySkip(CTokenType.Comma, out _))
                     {
                         // End of argument
                         break;
@@ -363,12 +363,12 @@ namespace Yoakke.C.Syntax
             }
 
             List<string>? args = null;
-            if (this.TrySkipInline(macroName, CTokenType.OpenParen, out var _))
+            if (this.TrySkipInline(macroName, CTokenType.OpenParen, out _))
             {
                 // We have an argument list
                 args = new();
 
-                if (!this.TrySkipInline(macroName, CTokenType.CloseParen, out var _))
+                if (!this.TrySkipInline(macroName, CTokenType.CloseParen, out _))
                 {
                     // At least one arg
                     while (true)
@@ -379,7 +379,7 @@ namespace Yoakke.C.Syntax
                             // We have an identifier
                             args.Add(arg.LogicalText);
                         }
-                        else if (this.TrySkipInline(macroName, CTokenType.Ellipsis, out var _))
+                        else if (this.TrySkipInline(macroName, CTokenType.Ellipsis, out _))
                         {
                             // We have an ellipsis, a close paren must come after
                             args.Add("...");
@@ -392,14 +392,14 @@ namespace Yoakke.C.Syntax
                         }
 
                         // If we don't get a comma, we need a close paren
-                        if (!mustBeLast && this.TrySkipInline(macroName, CTokenType.Comma, out var _))
+                        if (!mustBeLast && this.TrySkipInline(macroName, CTokenType.Comma, out _))
                         {
                             // Next argument
                             continue;
                         }
 
                         // Not a comma, need a close paren
-                        if (!this.TrySkipInline(macroName, CTokenType.CloseParen, out var _))
+                        if (!this.TrySkipInline(macroName, CTokenType.CloseParen, out _))
                         {
                             // TODO: Proper error handling
                             throw new NotImplementedException();
@@ -429,7 +429,7 @@ namespace Yoakke.C.Syntax
         {
             if (!this.TryParseMacroBodyElement1(name, out result)) return false;
             // We have an element, check for a paste token repeatedly
-            while (this.TrySkipInline(name, CTokenType.HashHash, out var _))
+            while (this.TrySkipInline(name, CTokenType.HashHash, out _))
             {
                 if (!this.TryParseMacroBodyElement1(name, out var right))
                 {
@@ -444,7 +444,7 @@ namespace Yoakke.C.Syntax
         // Stringified elements
         private bool TryParseMacroBodyElement1(CToken name, [MaybeNullWhen(false)] out MacroElement result)
         {
-            if (this.TrySkipInline(name, CTokenType.Hash, out var _))
+            if (this.TrySkipInline(name, CTokenType.Hash, out _))
             {
                 // We have a hash, we expect an identifier
                 if (!this.TrySkipInline(name, IsIdentifier, out var arg))
