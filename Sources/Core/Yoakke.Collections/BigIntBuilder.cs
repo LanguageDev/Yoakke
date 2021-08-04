@@ -88,6 +88,13 @@ namespace Yoakke.Collections
         }
 
         /// <summary>
+        /// Creates a new <see cref="BigIntBuilder"/> with a given capacity specified in bits.
+        /// </summary>
+        /// <param name="bits">The number of bits as required capacity.</param>
+        /// <returns>The created <see cref="BigIntBuilder"/>.</returns>
+        public static BigIntBuilder WithBitCapacity(int bits) => new((bits + 7) / 8);
+
+        /// <summary>
         /// Creates a new instance of <see cref="BigIntBuilder"/> by cloning a given
         /// bytte sequennce.
         /// </summary>
