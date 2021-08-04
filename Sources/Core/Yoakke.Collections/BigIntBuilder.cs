@@ -17,6 +17,13 @@ namespace Yoakke.Collections
     {
         private static readonly byte[] One = new byte[] { 1 };
 
+        private static readonly byte[] MaskOffBits = new byte[]
+        {
+            0b00000000, 0b00000001, 0b00000011, 0b00000111,
+            0b00001111, 0b00011111, 0b00111111, 0b01111111,
+            0b11111111,
+        };
+
         /// <summary>
         /// The bytes that get modified from the operations.
         /// </summary>
@@ -70,6 +77,34 @@ namespace Yoakke.Collections
         {
             this.Bytes = bytes;
         }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BigIntBuilder"/> class.
+        /// </summary>
+        /// <param name="length">The length of the builder in bytes.</param>
+        public BigIntBuilder(int length)
+            : this(new byte[length])
+        {
+        }
+
+        /// <summary>
+        /// Creates a new instance of <see cref="BigIntBuilder"/> by cloning a given
+        /// bytte sequennce.
+        /// </summary>
+        /// <param name="bytes">The bytes to clone.</param>
+        /// <returns>A new <see cref="BigIntBuilder"/>.</returns>
+        public static BigIntBuilder CloneFrom(ReadOnlySpan<byte> bytes)
+        {
+            var bytesClone = new byte[bytes.Length];
+            bytes.CopyTo(bytesClone);
+            return new(bytesClone);
+        }
+
+        /// <summary>
+        /// Clones this instance.
+        /// </summary>
+        /// <returns>A cloned <see cref="BigIntBuilder"/> of this.</returns>
+        public BigIntBuilder Clone() => CloneFrom(this.Bytes.Span);
 
         /// <summary>
         /// Sets all bytes to the same value.
@@ -136,10 +171,10 @@ namespace Yoakke.Collections
         /// <summary>
         /// Subtracts bytes from this.
         /// </summary>
-        /// <param name="other">The bytes to add. Will be in-place modified.</param>
+        /// <param name="other">The bytes to add.</param>
         /// <param name="underflow">True gets written here, if underflow happened.</param>
         public void Subtract(ReadOnlySpan<byte> other, out bool underflow) =>
-            this.Subtract(new BigIntBuilder(other.ToArray()), out underflow);
+            this.Subtract(CloneFrom(other), out underflow);
 
         /// <summary>
         /// Subtracts bytes from this.
@@ -155,10 +190,10 @@ namespace Yoakke.Collections
         /// <summary>
         /// Multiplies another number with this.
         /// </summary>
-        /// <param name="other">The bytes to multiply with. Will be in-place modified.</param>
+        /// <param name="other">The bytes to multiply with.</param>
         /// <param name="overflow">True gets written here, if underflow happened.</param>
         public void Multiply(ReadOnlySpan<byte> other, out bool overflow) =>
-            this.Multiply(new BigIntBuilder(other.ToArray()), out overflow);
+            this.Multiply(CloneFrom(other), out overflow);
 
         /// <summary>
         /// Multiplies another number with this.
@@ -167,7 +202,7 @@ namespace Yoakke.Collections
         /// <param name="overflow">True gets written here, if underflow happened.</param>
         public void Multiply(BigIntBuilder other, out bool overflow)
         {
-            var left = new BigIntBuilder(this.Bytes.ToArray());
+            var left = this.Clone();
             this.SetAllBitsZero();
             overflow = false;
 
@@ -185,7 +220,39 @@ namespace Yoakke.Collections
             }
         }
 
-        // TODO: Divide
+        /// <summary>
+        /// Integer-divides this number with another.
+        /// </summary>
+        /// <param name="other">The bytes to divide with.</param>
+        /// <param name="remainder">The remainder of the division gets written here.</param>
+        public void Divide(ReadOnlySpan<byte> other, out BigIntBuilder remainder) =>
+            this.Divide(CloneFrom(other), out remainder);
+
+        /// <summary>
+        /// Integer-divides this number with another.
+        /// </summary>
+        /// <param name="other">The bytes to divide with. Will be in-place modified.</param>
+        /// <param name="remainder">The remainder of the division gets written here.</param>
+        public void Divide(BigIntBuilder other, out BigIntBuilder remainder)
+        {
+            if (other.IsZero) throw new DivideByZeroException();
+
+            var left = this.Clone();
+            this.SetAllBitsZero();
+            remainder = new BigIntBuilder(this.Bytes.Length);
+            other.TwosComplement();
+
+            for (var i = (left.Bytes.Length * 8) - 1; i >= 0; --i)
+            {
+                remainder.ShiftLeft(1);
+                remainder[0] = left[i];
+                if (Compare(remainder.Bytes.Span, other.Bytes.Span) >= 0)
+                {
+                    remainder.Add(other.Bytes.Span, out _);
+                    this[i] = true;
+                }
+            }
+        }
 
         /// <summary>
         /// Performs bitwise-and.
@@ -223,7 +290,8 @@ namespace Yoakke.Collections
         /// <param name="amount">The amount to shift.</param>
         public void ShiftLeft(int amount)
         {
-            if (amount < 0) throw new ArgumentOutOfRangeException(nameof(amount));
+            if (amount == 0) return;
+            if (amount < 0) this.ShiftRight(-amount);
 
             var byteShift = amount / 8;
             var bitShift = amount % 8;
@@ -247,7 +315,8 @@ namespace Yoakke.Collections
         /// <param name="amount">The amount to shift.</param>
         public void ShiftRight(int amount)
         {
-            if (amount < 0) throw new ArgumentOutOfRangeException(nameof(amount));
+            if (amount == 0) return;
+            if (amount < 0) this.ShiftLeft(-amount);
 
             var byteShift = amount / 8;
             var bitShift = amount % 8;
@@ -266,6 +335,17 @@ namespace Yoakke.Collections
         }
 
         /// <summary>
+        /// Masks off the bits to a certain bit-width.
+        /// </summary>
+        /// <param name="width">The width to mask to in bits.</param>
+        public void MaskToWidth(int width)
+        {
+            var maskIndex = 8 - (width % 8);
+            var mask = MaskOffBits[maskIndex];
+            this.Bytes.Span[^1] &= mask;
+        }
+
+        /// <summary>
         /// Compares two byte sequences as unsigned numbers.
         /// </summary>
         /// <param name="left">The first number to compare.</param>
@@ -274,11 +354,13 @@ namespace Yoakke.Collections
         /// 0 if they are equal, greater than 0 otherwise.</returns>
         public static int Compare(ReadOnlySpan<byte> left, ReadOnlySpan<byte> right)
         {
-            if (left.Length != right.Length) throw new ArgumentException("The two byte sequences must be of same length");
+            var maxLen = Math.Max(left.Length, right.Length);
 
-            for (var i = left.Length - 1; i >= 0; --i)
+            for (var i = maxLen - 1; i >= 0; --i)
             {
-                var diff = left[i] - right[i];
+                var leftValue = i >= left.Length ? 0 : left[i];
+                var rightValue = i >= right.Length ? 0 : right[i];
+                var diff = leftValue - rightValue;
                 if (diff != 0) return diff;
             }
             return 0;
