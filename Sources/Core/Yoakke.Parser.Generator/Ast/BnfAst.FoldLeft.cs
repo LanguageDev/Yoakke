@@ -3,6 +3,8 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Yoakke.Utilities.Compatibility;
 
@@ -22,46 +24,45 @@ namespace Yoakke.Parser.Generator.Ast
             public BnfAst First { get; }
 
             /// <summary>
-            /// The element to apply repeatedly after.
+            /// The alternative elements to apply repeatedly after.
             /// </summary>
-            public BnfAst Second { get; }
-
-            /// <summary>
-            /// The transformation method that does the folding.
-            /// </summary>
-            public IMethodSymbol Method { get; }
+            public IReadOnlyList<(BnfAst Node, IMethodSymbol Method)> Seconds { get; }
 
             /// <summary>
             /// Initializes a new instance of the <see cref="FoldLeft"/> class.
             /// </summary>
             /// <param name="first">The first element of the fold.</param>
-            /// <param name="second">The second element of the fold, that will be repeated.</param>
-            /// <param name="method">The folding transformation.</param>
-            public FoldLeft(BnfAst first, BnfAst second, IMethodSymbol method)
+            /// <param name="seconds">The second elements and transformations of the fold, that will be repeated.</param>
+            public FoldLeft(BnfAst first, IReadOnlyList<(BnfAst Node, IMethodSymbol Method)> seconds)
             {
                 this.First = first;
-                this.Second = second;
-                this.Method = method;
+                this.Seconds = seconds;
             }
 
+            // TODO: Probably not corret
             /// <inheritdoc/>
             public override bool Equals(BnfAst other) => other is FoldLeft fl
                 && this.First.Equals(fl.First)
-                && this.Second.Equals(fl.Second)
-                && SymbolEqualityComparer.Default.Equals(this.Method, fl.Method);
+                && this.Seconds.SequenceEqual(fl.Seconds);
+
+            // TODO: Probably not corret
+            /// <inheritdoc/>
+            public override int GetHashCode() => this.First.GetHashCode();
 
             /// <inheritdoc/>
-            public override int GetHashCode() => HashCode.Combine(this.First, this.Second, this.Method);
-
-            /// <inheritdoc/>
-            public override BnfAst Desugar() => new FoldLeft(this.First.Desugar(), this.Second.Desugar(), this.Method);
+            public override BnfAst Desugar() => new FoldLeft(
+                this.First.Desugar(),
+                this.Seconds.Select(s => (s.Node.Desugar(), s.Method)).ToList());
 
             /// <inheritdoc/>
             public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens)
             {
                 var firstType = this.First.GetParsedType(ruleSet, tokens);
-                var mappedType = this.Method.ReturnType.ToDisplayString();
-                if (firstType != mappedType) throw new InvalidOperationException("Incompatible folded types");
+                foreach (var (_, method) in this.Seconds)
+                {
+                    var mappedType = method.ReturnType.ToDisplayString();
+                    if (firstType != mappedType) throw new InvalidOperationException("Incompatible folded types");
+                }
                 return firstType;
             }
         }

@@ -34,6 +34,9 @@ namespace Yoakke.Parser
         /// <param name="tokens">The tokens to lex.</param>
         protected ParserBase(IEnumerable<IToken> tokens)
         {
+            // TODO: We could eliminate the null lexer by implementing a lexer
+            // that simply feeds off of an IEnumerable like this
+            // Whould get rid of a nasty null-check
             // TODO: Make this lazy instead of loading it into the peek-buffer?
             this.peek = new RingBuffer<IToken>();
             foreach (var token in tokens) this.peek.AddBack(token);

@@ -89,9 +89,8 @@ namespace Yoakke.Parser.Generator
 
         private static BnfAst EliminateLeftRecursionInAlternation(Rule rule, BnfAst.Alt alt)
         {
-            var alphas = new List<BnfAst>();
+            var alphas = new List<(BnfAst Node, IMethodSymbol Method)>();
             var betas = new List<BnfAst>();
-            IMethodSymbol? fold = null;
             foreach (var child in alt.Elements)
             {
                 // If the inside has no transformation, we don't care
@@ -103,15 +102,7 @@ namespace Yoakke.Parser.Generator
                 // We found a left-recursive sequence inside an alternative, add it as alpha
                 if (transform.Subexpr is BnfAst.Seq seq && TrySplitLeftRecursion(rule, seq, out var alpha))
                 {
-                    if (fold == null)
-                    {
-                        fold = transform.Method;
-                    }
-                    else if (!SymbolEqualityComparer.Default.Equals(fold, transform.Method))
-                    {
-                        throw new InvalidOperationException("Incompatible fold functions");
-                    }
-                    alphas.Add(alpha!);
+                    alphas.Add((alpha!, transform.Method));
                 }
                 else
                 {
@@ -121,8 +112,7 @@ namespace Yoakke.Parser.Generator
             if (alphas.Count == 0 || betas.Count == 0) return alt;
             // We have left-recursion
             var betaNode = betas.Count == 1 ? betas[0] : new BnfAst.Alt(betas);
-            var alphaNode = alphas.Count == 1 ? alphas[0] : new BnfAst.Alt(alphas);
-            return new BnfAst.FoldLeft(betaNode, alphaNode, fold!);
+            return new BnfAst.FoldLeft(betaNode, alphas);
         }
 
         private static bool TrySplitLeftRecursion(Rule rule, BnfAst.Seq seq, [MaybeNullWhen(false)] out BnfAst? alpha)

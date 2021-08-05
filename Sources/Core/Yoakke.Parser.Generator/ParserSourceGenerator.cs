@@ -192,7 +192,7 @@ namespace {namespaceName}
         {
             BnfAst.Alt alt => alt.Elements.All(this.CheckBnfAst),
             BnfAst.Seq seq => seq.Elements.All(this.CheckBnfAst),
-            BnfAst.FoldLeft foldl => this.CheckBnfAst(foldl.First) && this.CheckBnfAst(foldl.Second),
+            BnfAst.FoldLeft foldl => this.CheckBnfAst(foldl.First) && foldl.Seconds.Select(s => s.Node).All(this.CheckBnfAst),
             BnfAst.Opt opt => this.CheckBnfAst(opt.Subexpr),
             BnfAst.Group grp => this.CheckBnfAst(grp.Subexpr),
             BnfAst.Rep0 rep0 => this.CheckBnfAst(rep0.Subexpr),
@@ -253,21 +253,36 @@ namespace {namespaceName}
 
             case BnfAst.FoldLeft fold:
             {
-                var binder = this.GetTopLevelPattern(fold.Second);
-                var flattenedValues = FlattenBind(binder);
                 var firstVar = this.GenerateBnf(code, rule, fold.First, lastIndex);
-                var call = $"{fold.Method.Name}({resultVar}.Ok.Value, {flattenedValues})";
+                var nextResultVar = this.AllocateVarName();
                 code.AppendLine($"if ({firstVar}.IsOk) {{");
                 code.AppendLine($"    {resultVar} = {firstVar};");
                 code.AppendLine("    while (true) {");
-                var secondVar = this.GenerateBnf(code, rule, fold.Second, $"{resultVar}.Ok.Offset");
-                var errMerge = $"{TypeNames.ParseError}.Unify({resultVar}.FurthestError, {secondVar}.FurthestError)";
-                code.AppendLine($"        if ({secondVar}.IsError) {{");
-                code.AppendLine($"            {resultVar} = {TypeNames.ParserBase}.MergeError({resultVar}.Ok, {secondVar}.Error);");
+                code.AppendLine($"        var {nextResultVar} = {resultVar};");
+
+                foreach (var (second, method) in fold.Seconds)
+                {
+                    var binder = this.GetTopLevelPattern(second);
+                    var flattenedValues = FlattenBind(binder);
+                    var call = $"{method.Name}({resultVar}.Ok.Value, {flattenedValues})";
+                    var secondVar = this.GenerateBnf(code, rule, second, $"{resultVar}.Ok.Offset");
+                    var errMerge = $"{TypeNames.ParseError}.Unify({nextResultVar}.FurthestError, {secondVar}.FurthestError)";
+                    var makeOk = $"{TypeNames.ParserBase}.Ok({call}, {secondVar}.Ok.Offset, {errMerge})";
+
+                    code.AppendLine($"if ({secondVar}.IsError) {{");
+                    code.AppendLine($"    {nextResultVar} = {TypeNames.ParserBase}.MergeError({nextResultVar}.Ok, {secondVar}.Error);");
+                    code.AppendLine("} else {");
+                    code.AppendLine($"    var {binder} = {secondVar}.Ok.Value;");
+                    code.AppendLine($"    {nextResultVar} = {TypeNames.ParserBase}.MergeAlternatives({makeOk}, {nextResultVar});");
+                    code.AppendLine("}");
+                }
+
+                code.AppendLine($"        if ({nextResultVar}.Ok.Offset == {resultVar}.Ok.Offset) {{");
+                code.AppendLine($"            {resultVar} = {nextResultVar};");
                 code.AppendLine("            break;");
+                code.AppendLine("        } else {");
+                code.AppendLine($"            {resultVar} = {nextResultVar};");
                 code.AppendLine("        }");
-                code.AppendLine($"        var {binder} = {secondVar}.Ok.Value;");
-                code.AppendLine($"        {resultVar} = {TypeNames.ParserBase}.Ok({call}, {secondVar}.Ok.Offset, {errMerge});");
                 code.AppendLine("    }");
                 code.AppendLine("} else {");
                 code.AppendLine($"    {resultVar} = {firstVar}.Error;");
