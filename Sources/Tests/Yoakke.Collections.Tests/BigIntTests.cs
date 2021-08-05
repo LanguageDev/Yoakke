@@ -24,6 +24,10 @@ namespace Yoakke.Collections.Tests
             new object[] { 8, new BigInteger(127), new byte[] { 0b01111111 } },
             new object[] { 8, new BigInteger(-128), new byte[] { 0b10000000 } },
             new object[] { 8, new BigInteger(-1), new byte[] { 0b11111111 } },
+            new object[] { 16, new BigInteger(256), new byte[] { 0, 1 } },
+            new object[] { 16, new BigInteger(-256), new byte[] { 0, 0b11111111 } },
+            new object[] { 10, new BigInteger(256), new byte[] { 0, 1 } },
+            new object[] { 10, new BigInteger(-256), new byte[] { 0, 0b11 } },
         };
 
         [DynamicData(nameof(FromBigIntegerInputs))]

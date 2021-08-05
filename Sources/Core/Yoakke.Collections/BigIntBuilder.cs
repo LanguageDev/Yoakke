@@ -19,9 +19,8 @@ namespace Yoakke.Collections
 
         private static readonly byte[] MaskOffBits = new byte[]
         {
-            0b00000000, 0b00000001, 0b00000011, 0b00000111,
+            0b11111111, 0b00000001, 0b00000011, 0b00000111,
             0b00001111, 0b00011111, 0b00111111, 0b01111111,
-            0b11111111,
         };
 
         /// <summary>
@@ -348,7 +347,7 @@ namespace Yoakke.Collections
         /// <returns>True, if there were nonzero bits masked off.</returns>
         public bool MaskToWidth(int width)
         {
-            var maskIndex = 8 - (width % 8);
+            var maskIndex = width % 8;
             var mask = MaskOffBits[maskIndex];
             var oldByte = this.Bytes.Span[^1];
             this.Bytes.Span[^1] &= mask;
