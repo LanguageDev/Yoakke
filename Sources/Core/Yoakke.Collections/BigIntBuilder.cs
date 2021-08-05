@@ -345,11 +345,14 @@ namespace Yoakke.Collections
         /// Masks off the bits to a certain bit-width.
         /// </summary>
         /// <param name="width">The width to mask to in bits.</param>
-        public void MaskToWidth(int width)
+        /// <returns>True, if there were nonzero bits masked off.</returns>
+        public bool MaskToWidth(int width)
         {
             var maskIndex = 8 - (width % 8);
             var mask = MaskOffBits[maskIndex];
+            var oldByte = this.Bytes.Span[^1];
             this.Bytes.Span[^1] &= mask;
+            return this.Bytes.Span[^1] != oldByte;
         }
 
         /// <summary>
