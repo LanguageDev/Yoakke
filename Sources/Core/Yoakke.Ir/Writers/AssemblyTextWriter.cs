@@ -177,7 +177,6 @@ namespace Yoakke.Ir.Writers
         /// <returns>This instance to be able to chain calls.</returns>
         public AssemblyTextWriter Write(IReadOnlyBasicBlock basicBlock)
         {
-            // Write it
             this.Write("block(").Write(this.procedureContext.Blocks[basicBlock]).Write("):");
             foreach (var ins in basicBlock.Instructions)
             {
@@ -224,6 +223,14 @@ namespace Yoakke.Ir.Writers
                     ? this.Write("ret")
                     : this.Write("ret ").Write(ret.Value);
 
+            case Instruction.Jump jump:
+                return this.Write("jump ").Write(jump.Target);
+
+            case Instruction.JumpIf jump:
+                return this.Write("jump_if ").Write(jump.Condition)
+                    .Write(" then ").Write(jump.Then)
+                    .Write(" else ").Write(jump.Else);
+
             case Instruction.IntAdd iadd:
                 return this.Write("int_add ").Write(iadd.Left).Write(", ").Write(iadd.Right);
 
@@ -247,6 +254,7 @@ namespace Yoakke.Ir.Writers
         public AssemblyTextWriter Write(Value value) => value switch
         {
             Value.Proc p => this.Write(p.Procedure.Name),
+            Value.BasicBlock b => this.Write("block(").Write(this.procedureContext.Blocks[b.Block]).Write(")"),
             Value.Argument a => this.Write("arg(").Write(this.procedureContext.Parameters[a.Parameter]).Write(')'),
             Value.Local l => this.Write("local(").Write(this.procedureContext.Locals[l.Definition]).Write(')'),
             Value.Temp t => this.Write("temp(").Write(this.procedureContext.Temporaries[t.Instruction]).Write(')'),

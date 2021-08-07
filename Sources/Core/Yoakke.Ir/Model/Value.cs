@@ -48,6 +48,15 @@ namespace Yoakke.Ir.Model
         }
 
         /// <summary>
+        /// A basic block reference.
+        /// </summary>
+        public record BasicBlock(IReadOnlyBasicBlock Block) : Value
+        {
+            /// <inheritdoc/>
+            public override Type Type => new Type.Ptr(Type.Void.Instance);
+        }
+
+        /// <summary>
         /// An argument reference.
         /// </summary>
         public record Argument(Parameter Parameter) : Value

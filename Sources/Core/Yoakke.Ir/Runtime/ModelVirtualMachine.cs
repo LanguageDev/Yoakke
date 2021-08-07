@@ -57,7 +57,7 @@ namespace Yoakke.Ir.Runtime
                 foreach (var bb in proc.BasicBlocks)
                 {
                     // TODO
-                    // this.bbToAddress.Add(bb, this.instructions.Count);
+                    this.valuesToAddress.Add(new Value.BasicBlock(bb), this.instructions.Count);
                     this.instructions.AddRange(bb.Instructions);
                 }
             }
@@ -111,6 +111,22 @@ namespace Yoakke.Ir.Runtime
                 top.WriteReturnValue(returnValue);
                 // Jump
                 this.InstructionPointer = top.ReturnAddress;
+            }
+            break;
+
+            case Instruction.Jump jump:
+            {
+                var target = (Value.BasicBlock)this.Unwrap(jump.Target);
+                this.InstructionPointer = this.valuesToAddress[target];
+            }
+            break;
+
+            case Instruction.JumpIf jumpIf:
+            {
+                var condition = (Value.Int)this.Unwrap(jumpIf.Condition);
+                var then = (Value.BasicBlock)this.Unwrap(jumpIf.Then);
+                var @else = (Value.BasicBlock)this.Unwrap(jumpIf.Else);
+                this.InstructionPointer = this.valuesToAddress[condition.Value.IsZero ? @else : then];
             }
             break;
 

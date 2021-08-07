@@ -186,6 +186,23 @@ namespace Yoakke.Ir
         public AssemblyBuilder Ret(Value? value = null) => this.Write(new Instruction.Ret(value));
 
         /// <summary>
+        /// Writes an unconditional jump instruction.
+        /// </summary>
+        /// <param name="target">The target to jump to.</param>
+        /// <returns>This instance to chain calls.</returns>
+        public AssemblyBuilder Jump(Value target) => this.Write(new Instruction.Jump(target));
+
+        /// <summary>
+        /// Writes a conditional jump instruction.
+        /// </summary>
+        /// <param name="condition">The condition to jump based on.</param>
+        /// <param name="then">The place to jump to if <paramref name="condition"/> is truthy.</param>
+        /// <param name="else">The place to jump to if <paramref name="condition"/> is falsy.</param>
+        /// <returns>This instance to chain calls.</returns>
+        public AssemblyBuilder JumpIf(Value condition, Value then, Value @else) =>
+            this.Write(new Instruction.JumpIf(condition, then, @else));
+
+        /// <summary>
         /// Writes an integer addition instruction.
         /// </summary>
         /// <param name="left">The first operand to add.</param>

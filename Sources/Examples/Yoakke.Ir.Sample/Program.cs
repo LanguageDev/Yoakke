@@ -25,10 +25,20 @@ namespace Yoakke.Ir.Sample
                 .Ret(added);
             foo.Return = i32;
 
+            builder.DefineProcedure("main", out var main);
+            var lastBb = builder.CurrentBasicBlock;
+            builder.DefineBasicBlock(out var thenBb);
+            builder.DefineBasicBlock(out var elseBb);
+            builder.CurrentBasicBlock = lastBb;
+            builder.JumpIf(MakeInt(0), new Value.BasicBlock(thenBb), new Value.BasicBlock(elseBb));
+            builder.CurrentBasicBlock = thenBb;
             builder
-                .DefineProcedure("main", out var main)
                 .Call(new Value.Proc(foo), new Value[] { MakeInt(1), MakeInt(2) }.AsValue(), out var callRes)
                 .Ret(callRes);
+            builder.CurrentBasicBlock = elseBb;
+            builder
+                .Call(new Value.Proc(foo), new Value[] { MakeInt(4), MakeInt(7) }.AsValue(), out var callRes2)
+                .Ret(callRes2);
             main.Return = i32;
 
             var pass = new RemoveUnreferencedLocals();
@@ -40,7 +50,7 @@ namespace Yoakke.Ir.Sample
 
             var vm = new ModelVirtualMachine(builder.Assembly);
             var result = vm.Execute(new Value.Proc(main), new Value[] { });
-            Console.WriteLine($"Process returned {((Value.Int)result).Value.ToString(true)}");
+            Console.WriteLine($"\n\nProcess returned {((Value.Int)result).Value.ToString(true)}");
         }
     }
 }

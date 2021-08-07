@@ -36,5 +36,10 @@ namespace Yoakke.Ir.Model
         /// A procedure <see cref="Type"/>.
         /// </summary>
         public record Proc(Type Return, IReadOnlyValueList<Type> Parameters) : Type;
+
+        /// <summary>
+        /// A pointer <see cref="Type"/>.
+        /// </summary>
+        public record Ptr(Type Element) : Type;
     }
 }

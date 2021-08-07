@@ -19,7 +19,7 @@ namespace Yoakke.Ir.Model
         /// <summary>
         /// The operands of this <see cref="Instruction"/>.
         /// </summary>
-        public abstract IEnumerable<IInstructionArg> Operands { get; }
+        public IReadOnlyList<IInstructionArg> Operands { get; }
 
         /// <summary>
         /// True, if this is some kind of branching instruction.
@@ -29,7 +29,16 @@ namespace Yoakke.Ir.Model
         /// <summary>
         /// True, if this is a side-effect-free instruction.
         /// </summary>
-        public virtual bool IsPure => true;
+        public virtual bool IsPure => false;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Instruction"/> class.
+        /// </summary>
+        /// <param name="operands">The operannds of this <see cref="Instruction"/>.</param>
+        public Instruction(params IInstructionArg[] operands)
+        {
+            this.Operands = operands;
+        }
 
         /// <summary>
         /// Any <see cref="Instruction"/> that produces a <see cref="Value"/>.
@@ -40,23 +49,26 @@ namespace Yoakke.Ir.Model
             /// The result <see cref="Type"/> of this instruction.
             /// </summary>
             public abstract Type ResultType { get; }
+
+            /// <inheritdoc/>
+            public override bool IsPure => true;
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="ValueProducer"/> class.
+            /// </summary>
+            /// <param name="operands">The operands of this <see cref="Instruction"/>.</param>
+            public ValueProducer(params IInstructionArg[] operands)
+                : base(operands)
+            {
+            }
         }
 
         /// <summary>
         /// Calls a procedure.
         /// </summary>
-        public record Call(Value Procedure, IReadOnlyValueList<Value> Arguments) : ValueProducer
+        public record Call(Value Procedure, IReadOnlyValueList<Value> Arguments)
+            : ValueProducer(Arguments.Prepend(Procedure).ToArray())
         {
-            /// <inheritdoc/>
-            public override IEnumerable<IInstructionArg> Operands
-            {
-                get
-                {
-                    yield return this.Procedure;
-                    foreach (var arg in this.Arguments) yield return arg;
-                }
-            }
-
             /// <inheritdoc/>
             public override bool IsPure => false;
 
@@ -67,17 +79,18 @@ namespace Yoakke.Ir.Model
         /// <summary>
         /// Returns from the current procedure.
         /// </summary>
-        public record Ret(Value? Value) : Instruction
+        public record Ret(Value? Value)
+            : Instruction(Value is null ? Array.Empty<Value>() : new[] { Value })
         {
             /// <inheritdoc/>
-            public override IEnumerable<IInstructionArg> Operands
-            {
-                get
-                {
-                    if (this.Value is not null) yield return this.Value;
-                }
-            }
+            public override bool IsBranch => true;
+        }
 
+        /// <summary>
+        /// An unconditional jump.
+        /// </summary>
+        public record Jump(Value Target) : Instruction(Target)
+        {
             /// <inheritdoc/>
             public override bool IsBranch => true;
 
@@ -86,20 +99,20 @@ namespace Yoakke.Ir.Model
         }
 
         /// <summary>
-        /// Integer addition.
+        /// A conditional jump.
         /// </summary>
-        public record IntAdd(Value Left, Value Right) : ValueProducer
+        public record JumpIf(Value Condition, Value Then, Value Else)
+            : Instruction(Condition, Then, Else)
         {
             /// <inheritdoc/>
-            public override IEnumerable<IInstructionArg> Operands
-            {
-                get
-                {
-                    yield return this.Left;
-                    yield return this.Right;
-                }
-            }
+            public override bool IsBranch => true;
+        }
 
+        /// <summary>
+        /// Integer addition.
+        /// </summary>
+        public record IntAdd(Value Left, Value Right) : ValueProducer(Left, Right)
+        {
             /// <inheritdoc/>
             public override Type ResultType => this.Left.Type;
         }
