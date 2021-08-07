@@ -289,23 +289,23 @@ namespace Yoakke.Collections
         }
 
         /// <summary>
-        /// Multiplies two <see cref="BigInt"/>s together.
+        /// Unsigned multiplies two <see cref="BigInt"/>s together.
         /// </summary>
         /// <param name="lhs">The first <see cref="BigInt"/> to multiply.</param>
         /// <param name="rhs">The second <see cref="BigInt"/> to multiply.</param>
         /// <returns>A new <see cref="BigInt"/>, that is the product of <paramref name="lhs"/>
         /// and <paramref name="rhs"/>, and its width will be the width of <paramref name="lhs"/>.</returns>
-        public static BigInt Multiply(BigInt lhs, BigInt rhs) => Multiply(lhs, rhs, out _);
+        public static BigInt UnsignedMultiply(BigInt lhs, BigInt rhs) => UnsignedMultiply(lhs, rhs, out _);
 
         /// <summary>
-        /// Multiplies two <see cref="BigInt"/>s together.
+        /// Unsigned multiplies two <see cref="BigInt"/>s together.
         /// </summary>
         /// <param name="lhs">The first <see cref="BigInt"/> to multiply.</param>
         /// <param name="rhs">The second <see cref="BigInt"/> to multiply.</param>
         /// <param name="overflow">True gets written here, if overflow happened.</param>
         /// <returns>A new <see cref="BigInt"/>, that is the product of <paramref name="lhs"/>
         /// and <paramref name="rhs"/>, and its width will be the width of <paramref name="lhs"/>.</returns>
-        public static BigInt Multiply(BigInt lhs, BigInt rhs, out bool overflow)
+        public static BigInt UnsignedMultiply(BigInt lhs, BigInt rhs, out bool overflow)
         {
             var builder = lhs.builder.Clone();
             builder.Multiply(rhs.Bytes.Span, out overflow);
@@ -314,7 +314,7 @@ namespace Yoakke.Collections
         }
 
         /// <summary>
-        /// Divides a <see cref="BigInt"/> with another.
+        /// Unsigned divides a <see cref="BigInt"/> with another.
         /// </summary>
         /// <param name="lhs">The <see cref="BigInt"/> to divide.</param>
         /// <param name="rhs">The <see cref="BigInt"/> to divide by.</param>
@@ -322,7 +322,7 @@ namespace Yoakke.Collections
         /// the width of <paramref name="lhs"/>.</param>
         /// <returns>A new <see cref="BigInt"/> that is the result of dividing
         /// <paramref name="lhs"/> by <paramref name="rhs"/> and has the width of <paramref name="lhs"/>.</returns>
-        public static BigInt Divide(BigInt lhs, BigInt rhs, out BigInt remainder)
+        public static BigInt UnsignedDivide(BigInt lhs, BigInt rhs, out BigInt remainder)
         {
             var builder = lhs.builder.Clone();
             builder.Divide(rhs.Bytes.Span, out var remBuilder);
@@ -331,25 +331,106 @@ namespace Yoakke.Collections
         }
 
         /// <summary>
-        /// Divides a <see cref="BigInt"/> with another.
+        /// Unsigned divides a <see cref="BigInt"/> with another.
         /// </summary>
         /// <param name="lhs">The <see cref="BigInt"/> to divide.</param>
         /// <param name="rhs">The <see cref="BigInt"/> to divide by.</param>
         /// <returns>A new <see cref="BigInt"/> that is the result of dividing
         /// <paramref name="lhs"/> by <paramref name="rhs"/> and has the width of <paramref name="lhs"/>.</returns>
-        public static BigInt Divide(BigInt lhs, BigInt rhs) => Divide(lhs, rhs, out _);
+        public static BigInt UnsignedDivide(BigInt lhs, BigInt rhs) => UnsignedDivide(lhs, rhs, out _);
 
         /// <summary>
-        /// Calculates the remainder when dividing a <see cref="BigInt"/> with another.
+        /// Calculates the remainder when unsigned dividing a <see cref="BigInt"/> with another.
         /// </summary>
         /// <param name="lhs">The <see cref="BigInt"/> to divide.</param>
         /// <param name="rhs">The <see cref="BigInt"/> to divide by.</param>
         /// <returns>A new <see cref="BigInt"/> that is the remainder when dividing
         /// <paramref name="lhs"/> by <paramref name="rhs"/>. The remainder has the width
         /// of <paramref name="lhs"/>.</returns>
-        public static BigInt Modulo(BigInt lhs, BigInt rhs)
+        public static BigInt UnsignedModulo(BigInt lhs, BigInt rhs)
         {
-            _ = Divide(lhs, rhs, out var rem);
+            _ = UnsignedDivide(lhs, rhs, out var rem);
+            return rem;
+        }
+
+        /////////////////////////////
+
+        /// <summary>
+        /// Signed multiplies two <see cref="BigInt"/>s together.
+        /// </summary>
+        /// <param name="lhs">The first <see cref="BigInt"/> to multiply.</param>
+        /// <param name="rhs">The second <see cref="BigInt"/> to multiply.</param>
+        /// <returns>A new <see cref="BigInt"/>, that is the product of <paramref name="lhs"/>
+        /// and <paramref name="rhs"/>, and its width will be the width of <paramref name="lhs"/>.</returns>
+        public static BigInt SignedMultiply(BigInt lhs, BigInt rhs) => SignedMultiply(lhs, rhs, out _);
+
+        /// <summary>
+        /// Signed multiplies two <see cref="BigInt"/>s together.
+        /// </summary>
+        /// <param name="lhs">The first <see cref="BigInt"/> to multiply.</param>
+        /// <param name="rhs">The second <see cref="BigInt"/> to multiply.</param>
+        /// <param name="overflow">True gets written here, if overflow happened.</param>
+        /// <returns>A new <see cref="BigInt"/>, that is the product of <paramref name="lhs"/>
+        /// and <paramref name="rhs"/>, and its width will be the width of <paramref name="lhs"/>.</returns>
+        public static BigInt SignedMultiply(BigInt lhs, BigInt rhs, out bool overflow)
+        {
+            var negate = lhs.SignBit != rhs.SignBit;
+            if (lhs.SignBit) lhs = -lhs;
+            if (rhs.SignBit) rhs = -rhs;
+            var builder = lhs.builder.Clone();
+            builder.Multiply(rhs.Bytes.Span, out overflow);
+            if (negate) builder.TwosComplement();
+            overflow = builder.MaskToWidth(lhs.Width) || overflow;
+            return new(lhs.Width, builder);
+        }
+
+        /// <summary>
+        /// Signed divides a <see cref="BigInt"/> with another.
+        /// </summary>
+        /// <param name="lhs">The <see cref="BigInt"/> to divide.</param>
+        /// <param name="rhs">The <see cref="BigInt"/> to divide by.</param>
+        /// <param name="remainder">The remainder gets written here. Its width will be
+        /// the width of <paramref name="lhs"/>.</param>
+        /// <returns>A new <see cref="BigInt"/> that is the result of dividing
+        /// <paramref name="lhs"/> by <paramref name="rhs"/> and has the width of <paramref name="lhs"/>.</returns>
+        public static BigInt SignedDivide(BigInt lhs, BigInt rhs, out BigInt remainder)
+        {
+            var negate = lhs.SignBit != rhs.SignBit;
+            if (lhs.SignBit) lhs = -lhs;
+            if (rhs.SignBit) rhs = -rhs;
+            var builder = lhs.builder.Clone();
+            builder.Divide(rhs.Bytes.Span, out var remBuilder);
+            if (negate)
+            {
+                builder.TwosComplement();
+                builder.MaskToWidth(lhs.Width);
+                remBuilder.TwosComplement();
+                remBuilder.MaskToWidth(lhs.Width);
+            }
+            remainder = new(lhs.Width, remBuilder);
+            return new(lhs.Width, builder);
+        }
+
+        /// <summary>
+        /// Signed divides a <see cref="BigInt"/> with another.
+        /// </summary>
+        /// <param name="lhs">The <see cref="BigInt"/> to divide.</param>
+        /// <param name="rhs">The <see cref="BigInt"/> to divide by.</param>
+        /// <returns>A new <see cref="BigInt"/> that is the result of dividing
+        /// <paramref name="lhs"/> by <paramref name="rhs"/> and has the width of <paramref name="lhs"/>.</returns>
+        public static BigInt SignedDivide(BigInt lhs, BigInt rhs) => SignedDivide(lhs, rhs, out _);
+
+        /// <summary>
+        /// Calculates the remainder when signed dividing a <see cref="BigInt"/> with another.
+        /// </summary>
+        /// <param name="lhs">The <see cref="BigInt"/> to divide.</param>
+        /// <param name="rhs">The <see cref="BigInt"/> to divide by.</param>
+        /// <returns>A new <see cref="BigInt"/> that is the remainder when dividing
+        /// <paramref name="lhs"/> by <paramref name="rhs"/>. The remainder has the width
+        /// of <paramref name="lhs"/>.</returns>
+        public static BigInt SignedModulo(BigInt lhs, BigInt rhs)
+        {
+            _ = SignedDivide(lhs, rhs, out var rem);
             return rem;
         }
 
@@ -407,6 +488,7 @@ namespace Yoakke.Collections
         {
             var builder = bigInt.builder.Clone();
             builder.ShiftLeft(amount);
+            builder.MaskToWidth(bigInt.Width);
             return new(bigInt.Width, builder);
         }
 
@@ -473,33 +555,6 @@ namespace Yoakke.Collections
         public static BigInt operator -(BigInt left, BigInt right) => Subtract(left, right);
 
         /// <summary>
-        /// Multiplies two <see cref="BigInt"/>s together.
-        /// </summary>
-        /// <param name="left">The first <see cref="BigInt"/> to multiply.</param>
-        /// <param name="right">The second <see cref="BigInt"/> to multiply.</param>
-        /// <returns>The product of <paramref name="left"/> and <paramref name="right"/>
-        /// with the width of <paramref name="left"/>.</returns>
-        public static BigInt operator *(BigInt left, BigInt right) => Multiply(left, right);
-
-        /// <summary>
-        /// Divides a <see cref="BigInt"/> by another.
-        /// </summary>
-        /// <param name="left">The <see cref="BigInt"/> to divide.</param>
-        /// <param name="right">The <see cref="BigInt"/> to divide by.</param>
-        /// <returns>The result of dividing <paramref name="left"/> by <paramref name="right"/>
-        /// with the width of <paramref name="left"/>.</returns>
-        public static BigInt operator /(BigInt left, BigInt right) => Divide(left, right);
-
-        /// <summary>
-        /// Calculates the remainder when dividing a <see cref="BigInt"/> by another.
-        /// </summary>
-        /// <param name="left">The <see cref="BigInt"/> to divide.</param>
-        /// <param name="right">The <see cref="BigInt"/> to divide by.</param>
-        /// <returns>The remainder when dividing <paramref name="left"/> by <paramref name="right"/>
-        /// with the width of <paramref name="left"/>.</returns>
-        public static BigInt operator %(BigInt left, BigInt right) => Modulo(left, right);
-
-        /// <summary>
         /// Bitwise ands together two <see cref="BigInt"/>s.
         /// </summary>
         /// <param name="left">The fist <see cref="BigInt"/> to bitwise-and.</param>
@@ -541,5 +596,53 @@ namespace Yoakke.Collections
         /// <param name="right">The amount to shift by.</param>
         /// <returns>The result of shifting <paramref name="left"/> right by <paramref name="right"/>.</returns>
         public static BigInt operator >>(BigInt left, int right) => ShiftRight(left, right);
+
+        /// <summary>
+        /// Converts a <see cref="BigInt"/> to a <see cref="byte"/>.
+        /// </summary>
+        /// <param name="bigInt">The <see cref="BigInt"/> to convert.</param>
+        public static explicit operator byte(BigInt bigInt) => bigInt.Bytes.Span[0];
+
+        /// <summary>
+        /// Converts a <see cref="BigInt"/> to a <see cref="sbyte"/>.
+        /// </summary>
+        /// <param name="bigInt">The <see cref="BigInt"/> to convert.</param>
+        public static explicit operator sbyte(BigInt bigInt) => (sbyte)bigInt.Bytes.Span[0];
+
+        /// <summary>
+        /// Converts a <see cref="BigInt"/> to a <see cref="short"/>.
+        /// </summary>
+        /// <param name="bigInt">The <see cref="BigInt"/> to convert.</param>
+        public static explicit operator short(BigInt bigInt) => BitConverter.ToInt16(bigInt.Bytes.Span);
+
+        /// <summary>
+        /// Converts a <see cref="BigInt"/> to a <see cref="ushort"/>.
+        /// </summary>
+        /// <param name="bigInt">The <see cref="BigInt"/> to convert.</param>
+        public static explicit operator ushort(BigInt bigInt) => BitConverter.ToUInt16(bigInt.Bytes.Span);
+
+        /// <summary>
+        /// Converts a <see cref="BigInt"/> to an <see cref="int"/>.
+        /// </summary>
+        /// <param name="bigInt">The <see cref="BigInt"/> to convert.</param>
+        public static explicit operator int(BigInt bigInt) => BitConverter.ToInt32(bigInt.Bytes.Span);
+
+        /// <summary>
+        /// Converts a <see cref="BigInt"/> to a <see cref="uint"/>.
+        /// </summary>
+        /// <param name="bigInt">The <see cref="BigInt"/> to convert.</param>
+        public static explicit operator uint(BigInt bigInt) => BitConverter.ToUInt32(bigInt.Bytes.Span);
+
+        /// <summary>
+        /// Converts a <see cref="BigInt"/> to a <see cref="long"/>.
+        /// </summary>
+        /// <param name="bigInt">The <see cref="BigInt"/> to convert.</param>
+        public static explicit operator long(BigInt bigInt) => BitConverter.ToInt64(bigInt.Bytes.Span);
+
+        /// <summary>
+        /// Converts a <see cref="BigInt"/> to a <see cref="ulong"/>.
+        /// </summary>
+        /// <param name="bigInt">The <see cref="BigInt"/> to convert.</param>
+        public static explicit operator ulong(BigInt bigInt) => BitConverter.ToUInt64(bigInt.Bytes.Span);
     }
 }

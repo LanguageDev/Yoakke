@@ -61,7 +61,8 @@ namespace Yoakke.SyntaxTree.Tests
         [TestMethod]
         public void VoidVisitorBasic()
         {
-            var ast = new Ast.Node2(new Ast[] {
+            var ast = new Ast.Node2(new Ast[]
+            {
                 new Ast.Node1(1, 2),
                 new Ast.Node2(new Ast[] { new Ast.Node1(3, 4) }),
                 new Ast.Node1(5, 6),
@@ -86,7 +87,8 @@ namespace Yoakke.SyntaxTree.Tests
         [TestMethod]
         public void StrVisitorBasic()
         {
-            var ast = new Ast.Node2(new Ast[] {
+            var ast = new Ast.Node2(new Ast[]
+            {
                 new Ast.Node1(1, 2),
                 new Ast.Node2(new Ast[] { new Ast.Node1(3, 4) }),
                 new Ast.Node1(5, 6),

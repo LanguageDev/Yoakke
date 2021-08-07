@@ -217,7 +217,7 @@ namespace Yoakke.Collections
             {
                 if (other.IsOdd)
                 {
-                    this.Add(this.Bytes.Span, out var o);
+                    this.Add(left.Bytes.Span, out var o);
                     overflow = overflow || o;
                 }
 
@@ -246,7 +246,6 @@ namespace Yoakke.Collections
             var left = this.Clone();
             this.SetAllBitsZero();
             remainder = new BigIntBuilder(this.Bytes.Length);
-            other.TwosComplement();
 
             for (var i = (left.Bytes.Length * 8) - 1; i >= 0; --i)
             {
@@ -254,7 +253,7 @@ namespace Yoakke.Collections
                 remainder[0] = left[i];
                 if (Compare(remainder.Bytes.Span, other.Bytes.Span) >= 0)
                 {
-                    remainder.Add(other.Bytes.Span, out _);
+                    remainder.Subtract(other.Bytes.Span, out _);
                     this[i] = true;
                 }
             }
@@ -305,7 +304,7 @@ namespace Yoakke.Collections
             var topMask = (byte)(0xff << shiftBack);
 
             var carry = 0;
-            for (var i = this.Bytes.Length - 1 - byteShift; i >= 0; --i)
+            for (var i = 0; i < this.Bytes.Length - byteShift; ++i)
             {
                 var toIndex = i + byteShift;
                 var fromByte = this.Bytes.Span[i];
@@ -330,7 +329,7 @@ namespace Yoakke.Collections
             var bottomMask = (byte)(0xff >> shiftFront);
 
             var carry = 0;
-            for (var i = byteShift; i < this.Bytes.Length; ++i)
+            for (var i = this.Bytes.Length - 1; i >= byteShift; --i)
             {
                 var toIndex = i - byteShift;
                 var fromByte = this.Bytes.Span[i];
