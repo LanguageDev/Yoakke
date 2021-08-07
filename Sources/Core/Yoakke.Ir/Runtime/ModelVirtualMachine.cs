@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Yoakke.Ir.Model;
+using Type = Yoakke.Ir.Model.Type;
 
 namespace Yoakke.Ir.Runtime
 {
@@ -33,8 +34,7 @@ namespace Yoakke.Ir.Runtime
 
         private readonly IReadOnlyAssembly assembly;
         private readonly List<Instruction> instructions = new();
-        private readonly Dictionary<IReadOnlyProcedure, int> procToAddress = new();
-        private readonly Dictionary<IReadOnlyBasicBlock, int> bbToAddress = new();
+        private readonly Dictionary<Value, int> valuesToAddress = new();
         private readonly Stack<StackFrame> callStack = new();
 
         /// <summary>
@@ -53,13 +53,32 @@ namespace Yoakke.Ir.Runtime
             // Flatten our assembly
             foreach (var proc in assembly.Procedures.Values)
             {
-                this.procToAddress.Add(proc, this.instructions.Count);
+                this.valuesToAddress.Add(new Value.Proc(proc), this.instructions.Count);
                 foreach (var bb in proc.BasicBlocks)
                 {
-                    this.bbToAddress.Add(bb, this.instructions.Count);
+                    // TODO
+                    // this.bbToAddress.Add(bb, this.instructions.Count);
                     this.instructions.AddRange(bb.Instructions);
                 }
             }
+        }
+
+        /// <summary>
+        /// Executes a given procedure.
+        /// </summary>
+        /// <param name="proc">The procedure to execute.</param>
+        /// <param name="args">The arguments to call the procedure with.</param>
+        /// <returns>The value that the called procedure returns.</returns>
+        public Value Execute(Value proc, IReadOnlyList<Value> args)
+        {
+            var returnValue = Value.Void.Instance;
+            var stackSize = this.callStack.Count;
+            this.Call(proc, args, v => returnValue = v);
+            for (; this.callStack.Count != stackSize; this.ExecuteCycle())
+            {
+                // Pass
+            }
+            return returnValue;
         }
 
         /// <summary>
@@ -70,6 +89,31 @@ namespace Yoakke.Ir.Runtime
             var instruction = this.instructions[this.InstructionPointer++];
             switch (instruction)
             {
+            case Instruction.Call call:
+            {
+                // Construct the action that describes returning
+                var locals = this.callStack.Peek().Locals;
+                var result = new Value.Temp(call);
+                var proc = this.Unwrap(call.Procedure);
+                // Do the call
+                this.Call(call.Procedure, call.Arguments, value => locals[result] = value);
+            }
+            break;
+
+            case Instruction.Ret ret:
+            {
+                // Evaluate return value
+                var returnValue = Value.Void.Instance;
+                if (ret.Value is not null) returnValue = this.Unwrap(ret.Value);
+                // Pop stack
+                var top = this.callStack.Pop();
+                // Write return value
+                top.WriteReturnValue(returnValue);
+                // Jump
+                this.InstructionPointer = top.ReturnAddress;
+            }
+            break;
+
             case Instruction.ValueProducer valProducer:
             {
                 var value = this.Evaluate(valProducer);
@@ -79,22 +123,22 @@ namespace Yoakke.Ir.Runtime
             }
             break;
 
-            case Instruction.Ret ret:
-            {
-                var returnValue = ret.Value is null ? Value.Void.Instance : this.Unwrap(ret.Value);
-                var top = this.callStack.Pop();
-                top.WriteReturnValue(returnValue);
-            }
-            break;
-
             default: throw new NotImplementedException();
             }
         }
 
-        private Value Evaluate(Instruction.ValueProducer valueProducer) => valueProducer switch
+        private Value Evaluate(Instruction.ValueProducer valueProducer)
         {
-            _ => throw new NotImplementedException(),
-        };
+            switch (valueProducer)
+            {
+            case Instruction.IntAdd iadd:
+                var left = (Value.Int)this.Unwrap(iadd.Left);
+                var right = (Value.Int)this.Unwrap(iadd.Right);
+                return new Value.Int(((Type.Int)left.Type).Signed, left.Value + right.Value);
+
+            default: throw new NotImplementedException();
+            }
+        }
 
         private Value Unwrap(Value value) => value switch
         {
@@ -103,5 +147,21 @@ namespace Yoakke.Ir.Runtime
             or Value.Temp => this.callStack.Peek().Locals[value],
             _ => value,
         };
+
+        private void Call(Value procValue, IReadOnlyList<Value> args, Action<Value> writeReturnValue)
+        {
+            var proc = ((Value.Proc)procValue).Procedure;
+            // Create the new frame and tell it where to return the value
+            var top = new StackFrame(this.InstructionPointer, writeReturnValue);
+            // Register arguments
+            for (var i = 0; i < proc.Parameters.Count; ++i)
+            {
+                var param = new Value.Argument(proc.Parameters[i]);
+                top.Locals[param] = this.Unwrap(args[i]);
+            }
+            // Push, jump
+            this.callStack.Push(top);
+            this.InstructionPointer = this.valuesToAddress[procValue];
+        }
     }
 }

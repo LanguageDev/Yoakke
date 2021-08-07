@@ -2,6 +2,7 @@ using System;
 using Yoakke.Collections;
 using Yoakke.Ir.Model;
 using Yoakke.Ir.Passes;
+using Yoakke.Ir.Runtime;
 using Yoakke.Ir.Writers;
 using Type = Yoakke.Ir.Model.Type;
 
@@ -36,6 +37,10 @@ namespace Yoakke.Ir.Sample
             var writer = new AssemblyTextWriter();
             writer.Write(builder.Assembly);
             Console.WriteLine(writer.Result);
+
+            var vm = new ModelVirtualMachine(builder.Assembly);
+            var result = vm.Execute(new Value.Proc(main), new Value[] { });
+            Console.WriteLine($"Process returned {((Value.Int)result).Value.ToString(true)}");
         }
     }
 }
