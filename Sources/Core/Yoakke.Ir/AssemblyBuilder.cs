@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Yoakke.Collections;
 using Yoakke.Ir.Model;
 using Type = Yoakke.Ir.Model.Type;
 
@@ -156,6 +157,26 @@ namespace Yoakke.Ir
         }
 
         #region Instructions
+
+        /// <summary>
+        /// Writes a call instruction.
+        /// </summary>
+        /// <param name="proc">The procedure to call.</param>
+        /// <param name="args">The arguments to pass in.</param>
+        /// <param name="result">The <see cref="Value"/> gets written here
+        /// that can be used to reference the result.</param>
+        /// <returns>This instance to chain calls.</returns>
+        public AssemblyBuilder Call(Value proc, IReadOnlyValueList<Value> args, out Value result) =>
+            this.WriteValueProducer(new Instruction.Call(proc, args), out result);
+
+        /// <summary>
+        /// Writes a call instruction.
+        /// </summary>
+        /// <param name="proc">The procedure to call.</param>
+        /// <param name="args">The arguments to pass in.</param>
+        /// <returns>This instance to chain calls.</returns>
+        public AssemblyBuilder Call(Value proc, IReadOnlyValueList<Value> args) =>
+            this.WriteValueProducer(new Instruction.Call(proc, args), out _);
 
         /// <summary>
         /// Writes a return instruction.

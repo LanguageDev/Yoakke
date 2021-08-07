@@ -8,6 +8,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using Yoakke.Collections;
 
 namespace Yoakke.Ir.Model
 {
@@ -33,6 +34,17 @@ namespace Yoakke.Ir.Model
 
             /// <inheritdoc/>
             public override Type Type => Type.Void.Instance;
+        }
+
+        /// <summary>
+        /// A procedure reference.
+        /// </summary>
+        public record Proc(IReadOnlyProcedure Procedure) : Value
+        {
+            /// <inheritdoc/>
+            public override Type Type => new Type.Proc(
+                this.Procedure.Return,
+                this.Procedure.Parameters.Select(p => p.Type).ToList().AsValue());
         }
 
         /// <summary>
@@ -67,6 +79,37 @@ namespace Yoakke.Ir.Model
 
             /// <inheritdoc/>
             public override int GetHashCode() => RuntimeHelpers.GetHashCode(this.Instruction);
+        }
+
+        /// <summary>
+        /// A signed or unsigned integer constant.
+        /// </summary>
+        public record Int : Value
+        {
+            /// <inheritdoc/>
+            public override Type Type { get; }
+
+            /// <summary>
+            /// The value of this <see cref="Int"/>.
+            /// </summary>
+            public BigInt Value { get; init; }
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Int"/> class.
+            /// </summary>
+            /// <param name="signed">True, if the value should be signed.</param>
+            /// <param name="value">The <see cref="BigInt"/> representing the value.</param>
+            public Int(bool signed, BigInt value)
+            {
+                this.Type = new Type.Int(signed, value.Width);
+                this.Value = value;
+            }
+
+            /// <summary>
+            /// Deconstructs this <see cref="Int"/>.
+            /// </summary>
+            /// <param name="value">The <see cref="Value"/> gets written here.</param>
+            public void Deconstruct(out BigInt value) => value = this.Value;
         }
     }
 }

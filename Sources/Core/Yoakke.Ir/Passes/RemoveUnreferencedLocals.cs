@@ -26,7 +26,7 @@ namespace Yoakke.Ir.Passes
             var instructions = procedure.BasicBlocks.SelectMany(bb => bb.Instructions);
             // Select all local references from them
             var localsReferences = instructions
-                .SelectMany(i => i.Arguments)
+                .SelectMany(i => i.Operands)
                 .OfType<Value.Local>()
                 .Select(v => v.Definition)
                 .ToHashSet();

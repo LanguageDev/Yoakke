@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Yoakke.Collections;
 
 namespace Yoakke.Ir.Model
 {
@@ -16,9 +17,9 @@ namespace Yoakke.Ir.Model
     public abstract record Instruction
     {
         /// <summary>
-        /// The arguments of this <see cref="Instruction"/>.
+        /// The operands of this <see cref="Instruction"/>.
         /// </summary>
-        public abstract IEnumerable<IInstructionArg> Arguments { get; }
+        public abstract IEnumerable<IInstructionArg> Operands { get; }
 
         /// <summary>
         /// True, if this is some kind of branching instruction.
@@ -42,12 +43,34 @@ namespace Yoakke.Ir.Model
         }
 
         /// <summary>
+        /// Calls a procedure.
+        /// </summary>
+        public record Call(Value Procedure, IReadOnlyValueList<Value> Arguments) : ValueProducer
+        {
+            /// <inheritdoc/>
+            public override IEnumerable<IInstructionArg> Operands
+            {
+                get
+                {
+                    yield return this.Procedure;
+                    foreach (var arg in this.Arguments) yield return arg;
+                }
+            }
+
+            /// <inheritdoc/>
+            public override bool IsPure => false;
+
+            /// <inheritdoc/>
+            public override Type ResultType => ((Type.Proc)this.Procedure.Type).Return;
+        }
+
+        /// <summary>
         /// Returns from the current procedure.
         /// </summary>
         public record Ret(Value? Value) : Instruction
         {
             /// <inheritdoc/>
-            public override IEnumerable<IInstructionArg> Arguments
+            public override IEnumerable<IInstructionArg> Operands
             {
                 get
                 {
@@ -68,7 +91,7 @@ namespace Yoakke.Ir.Model
         public record IntAdd(Value Left, Value Right) : ValueProducer
         {
             /// <inheritdoc/>
-            public override IEnumerable<IInstructionArg> Arguments
+            public override IEnumerable<IInstructionArg> Operands
             {
                 get
                 {

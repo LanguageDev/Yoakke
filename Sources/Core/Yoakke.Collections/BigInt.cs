@@ -84,6 +84,15 @@ namespace Yoakke.Collections
         }
 
         /// <summary>
+        /// Converts this <see cref="BigInt"/> to a readable string representation.
+        /// </summary>
+        /// <param name="signed">True, if should be interpreted as signed.</param>
+        /// <param name="format">The optional format provider to use.</param>
+        /// <returns>The string representation of the number.</returns>
+        public string ToString(bool signed, IFormatProvider? format = null) =>
+            this.ToBigInteger(signed).ToString(format);
+
+        /// <summary>
         /// Attempts to write <see cref="Bytes"/> to a <see cref="Span{Byte}"/>.
         /// </summary>
         /// <param name="destination">The <see cref="Span{Byte}"/> to write to.</param>

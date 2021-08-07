@@ -204,15 +204,32 @@ namespace Yoakke.Ir.Writers
         /// </summary>
         /// <param name="instruction">The <see cref="Instruction"/> to write.</param>
         /// <returns>This instance to be able to chain calls.</returns>
-        public AssemblyTextWriter Write(Instruction instruction) => instruction switch
+        public AssemblyTextWriter Write(Instruction instruction)
         {
-            Instruction.Ret ret => ret.Value is null
-                                    ? this.Write("ret")
-                                    : this.Write("ret ").Write(ret.Value),
-            Instruction.IntAdd iadd => this.Write("int_add ").Write(iadd.Left).Write(", ").Write(iadd.Right),
+            switch (instruction)
+            {
+            case Instruction.Call call:
+                this.Write("call ").Write(call.Procedure).Write('(');
+                var first = true;
+                foreach (var arg in call.Arguments)
+                {
+                    if (!first) this.Write(", ");
+                    first = false;
+                    this.Write(arg);
+                }
+                return this.Write(')');
 
-            _ => throw new NotSupportedException(),
-        };
+            case Instruction.Ret ret:
+                return ret.Value is null
+                    ? this.Write("ret")
+                    : this.Write("ret ").Write(ret.Value);
+
+            case Instruction.IntAdd iadd:
+                return this.Write("int_add ").Write(iadd.Left).Write(", ").Write(iadd.Right);
+
+            default: throw new NotSupportedException();
+            }
+        }
 
         /// <summary>
         /// Writes an <see cref="Instruction"/> to the underlying <see cref="StringBuilder"/>
@@ -229,9 +246,11 @@ namespace Yoakke.Ir.Writers
         /// <returns>This instance to be able to chain calls.</returns>
         public AssemblyTextWriter Write(Value value) => value switch
         {
+            Value.Proc p => this.Write(p.Procedure.Name),
             Value.Argument a => this.Write("arg(").Write(this.procedureContext.Parameters[a.Parameter]).Write(')'),
             Value.Local l => this.Write("local(").Write(this.procedureContext.Locals[l.Definition]).Write(')'),
             Value.Temp t => this.Write("temp(").Write(this.procedureContext.Temporaries[t.Instruction]).Write(')'),
+            Value.Int i => this.Write(i.Type).Write('(').Write(i.Value.ToString(((Type.Int)i.Type).Signed)).Write(')'),
 
             _ => throw new NotSupportedException(),
         };
