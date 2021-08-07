@@ -14,14 +14,15 @@ namespace Yoakke.Collections
     /// <summary>
     /// A fixed-width implementation of <see cref="BigInteger"/> with twos-complement representation.
     /// </summary>
-    public readonly struct BigInt : IComparable<BigInt>, IEquatable<BigInt>
+    public readonly struct BigInt : IEquatable<BigInt>
     {
-        private readonly BigIntBuilder builder;
+        private static readonly byte[] TopFillMasks = new byte[]
+        {
+            0b00000000, 0b10000000, 0b11000000, 0b11100000,
+            0b11110000, 0b11111000, 0b11111100, 0b11111110,
+        };
 
-        /// <summary>
-        /// True, if the <see cref="BigInt"/> should be considered signed.
-        /// </summary>
-        public readonly bool IsSigned;
+        private readonly BigIntBuilder builder;
 
         /// <summary>
         /// The width of the <see cref="BigInt"/> in bits.
@@ -60,9 +61,8 @@ namespace Yoakke.Collections
         /// <returns>True, if the bit at <paramref name="index"/> is set to 1.</returns>
         public bool this[int index] => this.builder[index];
 
-        private BigInt(bool signed, int width, BigIntBuilder builder)
+        private BigInt(int width, BigIntBuilder builder)
         {
-            this.IsSigned = signed;
             this.Width = width;
             this.builder = builder;
         }
@@ -70,16 +70,14 @@ namespace Yoakke.Collections
         /// <summary>
         /// Initializes a new instance of the <see cref="BigInt"/> struct.
         /// </summary>
-        /// <param name="signed">True, if the number should be considered signed.</param>
         /// <param name="width">The width of the number in bits.</param>
         /// <param name="bytes">The initial bytes to assign.</param>
-        public BigInt(bool signed, int width, ReadOnlySpan<byte> bytes)
+        public BigInt(int width, ReadOnlySpan<byte> bytes)
         {
             var bytesLen = (width + 7) / 8;
             var resultBytes = new byte[bytesLen];
             bytes.TryCopyTo(resultBytes);
 
-            this.IsSigned = signed;
             this.Width = width;
             this.builder = new(resultBytes);
             this.builder.MaskToWidth(width);
@@ -88,11 +86,10 @@ namespace Yoakke.Collections
         /// <summary>
         /// Creates a <see cref="BigInt"/> from a <see cref="BigInteger"/>.
         /// </summary>
-        /// <param name="signed">True, if the resulting <see cref="BigInt"/> should be signed.</param>
         /// <param name="width">The width of the resulting <see cref="BigInt"/> in bits.</param>
         /// <param name="bigInteger">The <see cref="BigInteger"/> to convert.</param>
         /// <returns>A new <see cref="BigInt"/> with equivalent value to <paramref name="bigInteger"/>.</returns>
-        public static BigInt FromBigInteger(bool signed, int width, BigInteger bigInteger)
+        public static BigInt FromBigInteger(int width, BigInteger bigInteger)
         {
             var negate = false;
             if (bigInteger.Sign < 0)
@@ -106,33 +103,44 @@ namespace Yoakke.Collections
             if (negate) builder.TwosComplement();
             builder.MaskToWidth(width);
 
-            return new(signed, width, builder);
+            return new(width, builder);
         }
 
         /// <summary>
         /// Converts this <see cref="BigInt"/> to a <see cref="BigInteger"/>.
         /// </summary>
-        /// <param name="signed">True, if the result should be interpreted as signed.</param>
+        /// <param name="signed">True, if the bytes should be interpreted as signed.</param>
         /// <returns>A <see cref="BigInteger"/> equivalent to this number.</returns>
-        public BigInteger ToBigInteger(bool signed) => new(this.builder.Bytes.Span, !signed);
+        public BigInteger ToBigInteger(bool signed)
+        {
+            // On byte-border or unsigned, simple conversion
+            if (this.Width % 8 == 0 || !signed || !this.SignBit) return new(this.Bytes.Span, !signed);
+
+            // It's signed but the sign bit is not aligned to a byte border
+            var builder = this.builder.Clone();
+            var fillMaskIndex = (8 - (this.Width % 8)) % 8;
+            var fillMask = TopFillMasks[fillMaskIndex];
+            builder.Bytes.Span[^1] |= fillMask;
+            return new(builder.Bytes.Span, false);
+        }
 
         /// <summary>
         /// Returns the smallest <see cref="BigInt"/> possible with the given width.
         /// </summary>
-        /// <param name="signed">True, if should be signed.</param>
+        /// <param name="signed">True, if should be the signed minimum value.</param>
         /// <param name="width">The width of the requested <see cref="BigInt"/>.</param>
         /// <returns>The smallest <see cref="BigInt"/> possible with the given width and signedness.</returns>
         public static BigInt MinValue(bool signed, int width)
         {
             var builder = BigIntBuilder.WithBitCapacity(width);
             if (signed) builder[width - 1] = true;
-            return new(signed, width, builder);
+            return new(width, builder);
         }
 
         /// <summary>
         /// Returns the largest <see cref="BigInt"/> possible with the given width.
         /// </summary>
-        /// <param name="signed">True, if should be signed.</param>
+        /// <param name="signed">True, if should be the signed maximum value.</param>
         /// <param name="width">The width of the requested <see cref="BigInt"/>.</param>
         /// <returns>The largest <see cref="BigInt"/> possible with the given width and signedness.</returns>
         public static BigInt MaxValue(bool signed, int width)
@@ -141,7 +149,7 @@ namespace Yoakke.Collections
             builder.SetAllBitsOne();
             builder.MaskToWidth(width);
             if (signed) builder[width - 1] = false;
-            return new(signed, width, builder);
+            return new(width, builder);
         }
 
         /// <summary>
@@ -154,7 +162,7 @@ namespace Yoakke.Collections
             var builder = bigInt.builder.Clone();
             builder.BitwiseNegate();
             builder.MaskToWidth(bigInt.Width);
-            return new(bigInt.IsSigned, bigInt.Width, builder);
+            return new(bigInt.Width, builder);
         }
 
         /// <summary>
@@ -167,20 +175,33 @@ namespace Yoakke.Collections
             var builder = bigInt.builder.Clone();
             builder.TwosComplement();
             builder.MaskToWidth(bigInt.Width);
-            return new(bigInt.IsSigned, bigInt.Width, builder);
+            return new(bigInt.Width, builder);
         }
 
         /// <inheritdoc/>
         public override bool Equals(object? obj) => obj is BigInt other && this.Equals(other);
 
         /// <inheritdoc/>
-        public bool Equals(BigInt other) => this.CompareTo(other) == 0;
+        public bool Equals(BigInt other) => this.UnsignedCompareTo(other) == 0;
 
-        /// <inheritdoc/>
-        public int CompareTo(BigInt other)
+        /// <summary>
+        /// Compates this <see cref="BigInt"/> with another using unsigned comparison.
+        /// </summary>
+        /// <param name="other">The other <see cref="BigInt"/> to compare with.</param>
+        /// <returns>Negative number, if this is smaller than <paramref name="other"/>,
+        /// 0 if they are equal, positive number otherwise.</returns>
+        public int UnsignedCompareTo(BigInt other) => BigIntBuilder.Compare(this.builder.Bytes.Span, other.builder.Bytes.Span);
+
+        /// <summary>
+        /// Compates this <see cref="BigInt"/> with another using signed comparison.
+        /// </summary>
+        /// <param name="other">The other <see cref="BigInt"/> to compare with.</param>
+        /// <returns>Negative number, if this is smaller than <paramref name="other"/>,
+        /// 0 if they are equal, positive number otherwise.</returns>
+        public int SignedCompareTo(BigInt other)
         {
-            var cmp = BigIntBuilder.Compare(this.builder.Bytes.Span, other.builder.Bytes.Span);
-            if (this.IsSigned != other.IsSigned) cmp = -cmp;
+            var cmp = this.UnsignedCompareTo(other);
+            if (this.SignBit != other.SignBit) cmp = -cmp;
             return cmp;
         }
 
@@ -217,37 +238,5 @@ namespace Yoakke.Collections
         /// <param name="right">The second <see cref="BigInt"/> to compare.</param>
         /// <returns>True, if <paramref name="left"/> and <paramref name="right"/> are not equal.</returns>
         public static bool operator !=(BigInt left, BigInt right) => !(left == right);
-
-        /// <summary>
-        /// Less-than compares two <see cref="BigInt"/>s.
-        /// </summary>
-        /// <param name="left">The first <see cref="BigInt"/> to compare.</param>
-        /// <param name="right">The second <see cref="BigInt"/> to compare.</param>
-        /// <returns>True, if <paramref name="left"/> is less than <paramref name="right"/>.</returns>
-        public static bool operator <(BigInt left, BigInt right) => left.CompareTo(right) < 0;
-
-        /// <summary>
-        /// Less-than or equal compares two <see cref="BigInt"/>s.
-        /// </summary>
-        /// <param name="left">The first <see cref="BigInt"/> to compare.</param>
-        /// <param name="right">The second <see cref="BigInt"/> to compare.</param>
-        /// <returns>True, if <paramref name="left"/> is less than or equal to <paramref name="right"/>.</returns>
-        public static bool operator <=(BigInt left, BigInt right) => left.CompareTo(right) <= 0;
-
-        /// <summary>
-        /// Greater-than compares two <see cref="BigInt"/>s.
-        /// </summary>
-        /// <param name="left">The first <see cref="BigInt"/> to compare.</param>
-        /// <param name="right">The second <see cref="BigInt"/> to compare.</param>
-        /// <returns>True, if <paramref name="left"/> is greater than <paramref name="right"/>.</returns>
-        public static bool operator >(BigInt left, BigInt right) => left.CompareTo(right) > 0;
-
-        /// <summary>
-        /// Greater-than or equal compares two <see cref="BigInt"/>s.
-        /// </summary>
-        /// <param name="left">The first <see cref="BigInt"/> to compare.</param>
-        /// <param name="right">The second <see cref="BigInt"/> to compare.</param>
-        /// <returns>True, if <paramref name="left"/> is greater than or equal to <paramref name="right"/>.</returns>
-        public static bool operator >=(BigInt left, BigInt right) => left.CompareTo(right) >= 0;
     }
 }

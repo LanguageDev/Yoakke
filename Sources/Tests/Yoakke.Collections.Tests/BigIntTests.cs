@@ -15,7 +15,7 @@ namespace Yoakke.Collections.Tests
     [TestClass]
     public class BigIntTests
     {
-        private static IEnumerable<object[]> FromBigIntegerInputs { get; } = new object[][]
+        private static IEnumerable<object[]> BigIntegerConversionInputs { get; } = new object[][]
         {
             /*           width    big integer       bytes          */
             new object[] { 8, new BigInteger(0), new byte[] { 0 } },
@@ -30,14 +30,16 @@ namespace Yoakke.Collections.Tests
             new object[] { 10, new BigInteger(-256), new byte[] { 0, 0b11 } },
         };
 
-        [DynamicData(nameof(FromBigIntegerInputs))]
+        [DynamicData(nameof(BigIntegerConversionInputs))]
         [DataTestMethod]
-        public void FromBigIntegerTests(int width, BigInteger bigInteger, byte[] expectedBytes)
+        public void BigIntegerConversionTests(int width, BigInteger bigInteger, byte[] expectedBytes)
         {
-            var bigInt = BigInt.FromBigInteger(false, width, bigInteger);
+            var bigInt = BigInt.FromBigInteger(width, bigInteger);
+            var bigIntegerBack = bigInt.ToBigInteger(bigInteger < 0);
 
             Assert.AreEqual(expectedBytes.Length, bigInt.Bytes.Length);
             Assert.IsTrue(bigInt.Bytes.Span.SequenceEqual(expectedBytes));
+            Assert.AreEqual(bigInteger, bigIntegerBack);
         }
     }
 }
