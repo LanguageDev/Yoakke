@@ -37,9 +37,38 @@ namespace Yoakke.Collections.Tests
             var bigInt = BigInt.FromBigInteger(width, bigInteger);
             var bigIntegerBack = bigInt.ToBigInteger(bigInteger < 0);
 
+            // Exact byte
             Assert.AreEqual(expectedBytes.Length, bigInt.Bytes.Length);
             Assert.IsTrue(bigInt.Bytes.Span.SequenceEqual(expectedBytes));
+            // Back conversion
             Assert.AreEqual(bigInteger, bigIntegerBack);
+        }
+
+        [DataRow(5)]
+        [DataRow(8)]
+        [DataRow(10)]
+        [DataRow(15)]
+        [DataRow(16)]
+        [DataRow(17)]
+        [DataRow(20)]
+        [DataRow(32)]
+        [DataRow(35)]
+        [DataTestMethod]
+        public void MinMaxValuesTests(int width)
+        {
+            // Unsigned minimum and maximum
+            var umin = new BigInteger(0);
+            var umax = (new BigInteger(1) << width) - 1;
+
+            // Signed minimum and maximum
+            var smin = -(new BigInteger(1) << (width - 1));
+            var smax = (new BigInteger(1) << (width - 1)) - 1;
+
+            // Assert them
+            Assert.AreEqual(BigInt.MinValue(false, width), BigInt.FromBigInteger(width, umin));
+            Assert.AreEqual(BigInt.MinValue(true, width), BigInt.FromBigInteger(width, smin));
+            Assert.AreEqual(BigInt.MaxValue(false, width), BigInt.FromBigInteger(width, umax));
+            Assert.AreEqual(BigInt.MaxValue(true, width), BigInt.FromBigInteger(width, smax));
         }
     }
 }

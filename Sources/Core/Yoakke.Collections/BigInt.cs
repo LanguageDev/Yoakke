@@ -84,6 +84,21 @@ namespace Yoakke.Collections
         }
 
         /// <summary>
+        /// Attempts to write <see cref="Bytes"/> to a <see cref="Span{Byte}"/>.
+        /// </summary>
+        /// <param name="destination">The <see cref="Span{Byte}"/> to write to.</param>
+        /// <param name="bytesWritten">The number of bytes successfully written gets written here.</param>
+        /// <returns>True, if all bytes were written suvvessfully.</returns>
+        public bool TryWriteBytes(Span<byte> destination, out int bytesWritten)
+        {
+            var bytes = this.Bytes.Span;
+            var minSize = Math.Min(destination.Length, bytes.Length);
+            for (var i = 0; i < minSize; ++i) destination[i] = bytes[i];
+            bytesWritten = minSize;
+            return destination.Length >= bytes.Length;
+        }
+
+        /// <summary>
         /// Creates a <see cref="BigInt"/> from a <see cref="BigInteger"/>.
         /// </summary>
         /// <param name="width">The width of the resulting <see cref="BigInt"/> in bits.</param>
@@ -152,32 +167,6 @@ namespace Yoakke.Collections
             return new(width, builder);
         }
 
-        /// <summary>
-        /// Bitwise negates the given <see cref="BigInt"/>.
-        /// </summary>
-        /// <param name="bigInt">The <see cref="BigInt"/> to negate.</param>
-        /// <returns>A bitwise negation of <paramref name="bigInt"/>.</returns>
-        public static BigInt operator ~(BigInt bigInt)
-        {
-            var builder = bigInt.builder.Clone();
-            builder.BitwiseNegate();
-            builder.MaskToWidth(bigInt.Width);
-            return new(bigInt.Width, builder);
-        }
-
-        /// <summary>
-        /// Negates a <see cref="BigInt"/> using twos-complement.
-        /// </summary>
-        /// <param name="bigInt">The <see cref="BigInt"/> to negate.</param>
-        /// <returns>The negated <paramref name="bigInt"/>.</returns>
-        public static BigInt operator -(BigInt bigInt)
-        {
-            var builder = bigInt.builder.Clone();
-            builder.TwosComplement();
-            builder.MaskToWidth(bigInt.Width);
-            return new(bigInt.Width, builder);
-        }
-
         /// <inheritdoc/>
         public override bool Equals(object? obj) => obj is BigInt other && this.Equals(other);
 
@@ -224,6 +213,218 @@ namespace Yoakke.Collections
         }
 
         /// <summary>
+        /// Bitwise negates the given <see cref="BigInt"/>.
+        /// </summary>
+        /// <param name="bigInt">The <see cref="BigInt"/> to negate.</param>
+        /// <returns>A bitwise negation of <paramref name="bigInt"/>.</returns>
+        public static BigInt BitwiseNegate(BigInt bigInt)
+        {
+            var builder = bigInt.builder.Clone();
+            builder.BitwiseNegate();
+            builder.MaskToWidth(bigInt.Width);
+            return new(bigInt.Width, builder);
+        }
+
+        /// <summary>
+        /// Negates a <see cref="BigInt"/> using twos-complement.
+        /// </summary>
+        /// <param name="bigInt">The <see cref="BigInt"/> to negate.</param>
+        /// <returns>The negated <paramref name="bigInt"/>.</returns>
+        public static BigInt Negate(BigInt bigInt)
+        {
+            var builder = bigInt.builder.Clone();
+            builder.TwosComplement();
+            builder.MaskToWidth(bigInt.Width);
+            return new(bigInt.Width, builder);
+        }
+
+        /// <summary>
+        /// Adds two <see cref="BigInt"/>s together.
+        /// </summary>
+        /// <param name="lhs">The first <see cref="BigInt"/> to add.</param>
+        /// <param name="rhs">The second <see cref="BigInt"/> to add.</param>
+        /// <returns>A new <see cref="BigInt"/>, that is the sum of <paramref name="lhs"/>
+        /// and <paramref name="rhs"/>, and its width will be the width of <paramref name="lhs"/>.</returns>
+        public static BigInt Add(BigInt lhs, BigInt rhs) => Add(lhs, rhs, out _);
+
+        /// <summary>
+        /// Adds two <see cref="BigInt"/>s together.
+        /// </summary>
+        /// <param name="lhs">The first <see cref="BigInt"/> to add.</param>
+        /// <param name="rhs">The second <see cref="BigInt"/> to add.</param>
+        /// <param name="overflow">True gets written here, if overflow happened.</param>
+        /// <returns>A new <see cref="BigInt"/>, that is the sum of <paramref name="lhs"/>
+        /// and <paramref name="rhs"/>, and its width will be the width of <paramref name="lhs"/>.</returns>
+        public static BigInt Add(BigInt lhs, BigInt rhs, out bool overflow)
+        {
+            var builder = lhs.builder.Clone();
+            builder.Add(rhs.Bytes.Span, out overflow);
+            overflow = builder.MaskToWidth(lhs.Width) || overflow;
+            return new(lhs.Width, builder);
+        }
+
+        /// <summary>
+        /// Subtracts two <see cref="BigInt"/>s from eachother.
+        /// </summary>
+        /// <param name="lhs">The <see cref="BigInt"/> to subtract from.</param>
+        /// <param name="rhs">The <see cref="BigInt"/> to subtract.</param>
+        /// <returns>A new <see cref="BigInt"/>, that is <paramref name="rhs"/> subtracted from
+        /// <paramref name="lhs"/>, and its width will be the width of <paramref name="lhs"/>.</returns>
+        public static BigInt Subtract(BigInt lhs, BigInt rhs) => Subtract(lhs, rhs, out _);
+
+        /// <summary>
+        /// Subtracts two <see cref="BigInt"/>s from eachother.
+        /// </summary>
+        /// <param name="lhs">The <see cref="BigInt"/> to subtract from.</param>
+        /// <param name="rhs">The <see cref="BigInt"/> to subtract.</param>
+        /// <param name="underflow">True gets written here, if underflow happened.</param>
+        /// <returns>A new <see cref="BigInt"/>, that is <paramref name="rhs"/> subtracted from
+        /// <paramref name="lhs"/>, and its width will be the width of <paramref name="lhs"/>.</returns>
+        public static BigInt Subtract(BigInt lhs, BigInt rhs, out bool underflow)
+        {
+            var builder = lhs.builder.Clone();
+            builder.Subtract(rhs.Bytes.Span, out underflow);
+            underflow = builder.MaskToWidth(lhs.Width) || underflow;
+            return new(lhs.Width, builder);
+        }
+
+        /// <summary>
+        /// Multiplies two <see cref="BigInt"/>s together.
+        /// </summary>
+        /// <param name="lhs">The first <see cref="BigInt"/> to multiply.</param>
+        /// <param name="rhs">The second <see cref="BigInt"/> to multiply.</param>
+        /// <returns>A new <see cref="BigInt"/>, that is the product of <paramref name="lhs"/>
+        /// and <paramref name="rhs"/>, and its width will be the width of <paramref name="lhs"/>.</returns>
+        public static BigInt Multiply(BigInt lhs, BigInt rhs) => Multiply(lhs, rhs, out _);
+
+        /// <summary>
+        /// Multiplies two <see cref="BigInt"/>s together.
+        /// </summary>
+        /// <param name="lhs">The first <see cref="BigInt"/> to multiply.</param>
+        /// <param name="rhs">The second <see cref="BigInt"/> to multiply.</param>
+        /// <param name="overflow">True gets written here, if overflow happened.</param>
+        /// <returns>A new <see cref="BigInt"/>, that is the product of <paramref name="lhs"/>
+        /// and <paramref name="rhs"/>, and its width will be the width of <paramref name="lhs"/>.</returns>
+        public static BigInt Multiply(BigInt lhs, BigInt rhs, out bool overflow)
+        {
+            var builder = lhs.builder.Clone();
+            builder.Multiply(rhs.Bytes.Span, out overflow);
+            overflow = builder.MaskToWidth(lhs.Width) || overflow;
+            return new(lhs.Width, builder);
+        }
+
+        /// <summary>
+        /// Divides a <see cref="BigInt"/> with another.
+        /// </summary>
+        /// <param name="lhs">The <see cref="BigInt"/> to divide.</param>
+        /// <param name="rhs">The <see cref="BigInt"/> to divide by.</param>
+        /// <param name="remainder">The remainder gets written here. Its width will be
+        /// the width of <paramref name="lhs"/>.</param>
+        /// <returns>A new <see cref="BigInt"/> that is the result of dividing
+        /// <paramref name="lhs"/> by <paramref name="rhs"/> and has the width of <paramref name="lhs"/>.</returns>
+        public static BigInt Divide(BigInt lhs, BigInt rhs, out BigInt remainder)
+        {
+            var builder = lhs.builder.Clone();
+            builder.Divide(rhs.Bytes.Span, out var remBuilder);
+            remainder = new(lhs.Width, remBuilder);
+            return new(lhs.Width, builder);
+        }
+
+        /// <summary>
+        /// Divides a <see cref="BigInt"/> with another.
+        /// </summary>
+        /// <param name="lhs">The <see cref="BigInt"/> to divide.</param>
+        /// <param name="rhs">The <see cref="BigInt"/> to divide by.</param>
+        /// <returns>A new <see cref="BigInt"/> that is the result of dividing
+        /// <paramref name="lhs"/> by <paramref name="rhs"/> and has the width of <paramref name="lhs"/>.</returns>
+        public static BigInt Divide(BigInt lhs, BigInt rhs) => Divide(lhs, rhs, out _);
+
+        /// <summary>
+        /// Calculates the remainder when dividing a <see cref="BigInt"/> with another.
+        /// </summary>
+        /// <param name="lhs">The <see cref="BigInt"/> to divide.</param>
+        /// <param name="rhs">The <see cref="BigInt"/> to divide by.</param>
+        /// <returns>A new <see cref="BigInt"/> that is the remainder when dividing
+        /// <paramref name="lhs"/> by <paramref name="rhs"/>. The remainder has the width
+        /// of <paramref name="lhs"/>.</returns>
+        public static BigInt Modulo(BigInt lhs, BigInt rhs)
+        {
+            _ = Divide(lhs, rhs, out var rem);
+            return rem;
+        }
+
+        /// <summary>
+        /// Ands together the bits of two <see cref="BigInt"/>s.
+        /// </summary>
+        /// <param name="left">The first <see cref="BigInt"/> to and.</param>
+        /// <param name="right">The second <see cref="BigInt"/> to and.</param>
+        /// <returns>The result of anding together the bits of <paramref name="left"/> and
+        /// <paramref name="right"/> with the width of <paramref name="left"/>.</returns>
+        public static BigInt BitwiseAnd(BigInt left, BigInt right)
+        {
+            var builder = left.builder.Clone();
+            builder.BitwiseAnd(right.Bytes.Span);
+            return new(left.Width, builder);
+        }
+
+        /// <summary>
+        /// Ors together the bits of two <see cref="BigInt"/>s.
+        /// </summary>
+        /// <param name="left">The first <see cref="BigInt"/> to or.</param>
+        /// <param name="right">The second <see cref="BigInt"/> to or.</param>
+        /// <returns>The result of oring together the bits of <paramref name="left"/> and
+        /// <paramref name="right"/> with the width of <paramref name="left"/>.</returns>
+        public static BigInt BitwiseOr(BigInt left, BigInt right)
+        {
+            var builder = left.builder.Clone();
+            builder.BitwiseOr(right.Bytes.Span);
+            return new(left.Width, builder);
+        }
+
+        /// <summary>
+        /// Xors together the bits of two <see cref="BigInt"/>s.
+        /// </summary>
+        /// <param name="left">The first <see cref="BigInt"/> to xor.</param>
+        /// <param name="right">The second <see cref="BigInt"/> to xor.</param>
+        /// <returns>The result of xoring together the bits of <paramref name="left"/> and
+        /// <paramref name="right"/> with the width of <paramref name="left"/>.</returns>
+        public static BigInt BitwiseXor(BigInt left, BigInt right)
+        {
+            var builder = left.builder.Clone();
+            builder.BitwiseXor(right.Bytes.Span);
+            builder.MaskToWidth(left.Width);
+            return new(left.Width, builder);
+        }
+
+        /// <summary>
+        /// Bitwise shifts a given <see cref="BigInt"/> left by a given amount.
+        /// </summary>
+        /// <param name="bigInt">The <see cref="BigInt"/> to shift.</param>
+        /// <param name="amount">The amount to shift by.</param>
+        /// <returns>The result if shifting <paramref name="bigInt"/> by <paramref name="amount"/>
+        /// to the left.</returns>
+        public static BigInt ShiftLeft(BigInt bigInt, int amount)
+        {
+            var builder = bigInt.builder.Clone();
+            builder.ShiftLeft(amount);
+            return new(bigInt.Width, builder);
+        }
+
+        /// <summary>
+        /// Bitwise shifts a given <see cref="BigInt"/> right by a given amount.
+        /// </summary>
+        /// <param name="bigInt">The <see cref="BigInt"/> to shift.</param>
+        /// <param name="amount">The amount to shift by.</param>
+        /// <returns>The result if shifting <paramref name="bigInt"/> by <paramref name="amount"/>
+        /// to the right.</returns>
+        public static BigInt ShiftRight(BigInt bigInt, int amount)
+        {
+            var builder = bigInt.builder.Clone();
+            builder.ShiftRight(amount);
+            return new(bigInt.Width, builder);
+        }
+
+        /// <summary>
         /// Compares two <see cref="BigInt"/>s for equality.
         /// </summary>
         /// <param name="left">The first <see cref="BigInt"/> to compare.</param>
@@ -238,5 +439,107 @@ namespace Yoakke.Collections
         /// <param name="right">The second <see cref="BigInt"/> to compare.</param>
         /// <returns>True, if <paramref name="left"/> and <paramref name="right"/> are not equal.</returns>
         public static bool operator !=(BigInt left, BigInt right) => !(left == right);
+
+        /// <summary>
+        /// Bitwise negates the given <see cref="BigInt"/>.
+        /// </summary>
+        /// <param name="bigInt">The <see cref="BigInt"/> to negate.</param>
+        /// <returns>A bitwise negation of <paramref name="bigInt"/>.</returns>
+        public static BigInt operator ~(BigInt bigInt) => BitwiseNegate(bigInt);
+
+        /// <summary>
+        /// Negates a <see cref="BigInt"/> using twos-complement.
+        /// </summary>
+        /// <param name="bigInt">The <see cref="BigInt"/> to negate.</param>
+        /// <returns>The negated <paramref name="bigInt"/>.</returns>
+        public static BigInt operator -(BigInt bigInt) => Negate(bigInt);
+
+        /// <summary>
+        /// Adds two <see cref="BigInt"/>s together.
+        /// </summary>
+        /// <param name="left">The first <see cref="BigInt"/> to add.</param>
+        /// <param name="right">The second <see cref="BigInt"/> to add.</param>
+        /// <returns>The sum of <paramref name="left"/> and <paramref name="right"/>
+        /// with the width of <paramref name="left"/>.</returns>
+        public static BigInt operator +(BigInt left, BigInt right) => Add(left, right);
+
+        /// <summary>
+        /// Subtracts two <see cref="BigInt"/>s from eachother.
+        /// </summary>
+        /// <param name="left">The <see cref="BigInt"/> to subtract from.</param>
+        /// <param name="right">The <see cref="BigInt"/> to subtract.</param>
+        /// <returns>The result of <paramref name="right"/> subtracted from <paramref name="left"/>.
+        /// The width of the result will be the width of <paramref name="left"/>.</returns>
+        public static BigInt operator -(BigInt left, BigInt right) => Subtract(left, right);
+
+        /// <summary>
+        /// Multiplies two <see cref="BigInt"/>s together.
+        /// </summary>
+        /// <param name="left">The first <see cref="BigInt"/> to multiply.</param>
+        /// <param name="right">The second <see cref="BigInt"/> to multiply.</param>
+        /// <returns>The product of <paramref name="left"/> and <paramref name="right"/>
+        /// with the width of <paramref name="left"/>.</returns>
+        public static BigInt operator *(BigInt left, BigInt right) => Multiply(left, right);
+
+        /// <summary>
+        /// Divides a <see cref="BigInt"/> by another.
+        /// </summary>
+        /// <param name="left">The <see cref="BigInt"/> to divide.</param>
+        /// <param name="right">The <see cref="BigInt"/> to divide by.</param>
+        /// <returns>The result of dividing <paramref name="left"/> by <paramref name="right"/>
+        /// with the width of <paramref name="left"/>.</returns>
+        public static BigInt operator /(BigInt left, BigInt right) => Divide(left, right);
+
+        /// <summary>
+        /// Calculates the remainder when dividing a <see cref="BigInt"/> by another.
+        /// </summary>
+        /// <param name="left">The <see cref="BigInt"/> to divide.</param>
+        /// <param name="right">The <see cref="BigInt"/> to divide by.</param>
+        /// <returns>The remainder when dividing <paramref name="left"/> by <paramref name="right"/>
+        /// with the width of <paramref name="left"/>.</returns>
+        public static BigInt operator %(BigInt left, BigInt right) => Modulo(left, right);
+
+        /// <summary>
+        /// Bitwise ands together two <see cref="BigInt"/>s.
+        /// </summary>
+        /// <param name="left">The fist <see cref="BigInt"/> to bitwise-and.</param>
+        /// <param name="right">The second <see cref="BigInt"/> to bitwise-and.</param>
+        /// <returns>The result of bitwise and-ing together <paramref name="left"/> and
+        /// <paramref name="right"/> with the width of <paramref name="left"/>.</returns>
+        public static BigInt operator &(BigInt left, BigInt right) => BitwiseAnd(left, right);
+
+        /// <summary>
+        /// Bitwise ors together two <see cref="BigInt"/>s.
+        /// </summary>
+        /// <param name="left">The fist <see cref="BigInt"/> to bitwise-or.</param>
+        /// <param name="right">The second <see cref="BigInt"/> to bitwise-or.</param>
+        /// <returns>The result of bitwise or-ing together <paramref name="left"/> and
+        /// <paramref name="right"/> with the width of <paramref name="left"/>.</returns>
+        public static BigInt operator |(BigInt left, BigInt right) => BitwiseOr(left, right);
+
+        /// <summary>
+        /// Bitwise xors together two <see cref="BigInt"/>s.
+        /// </summary>
+        /// <param name="left">The fist <see cref="BigInt"/> to bitwise-xor.</param>
+        /// <param name="right">The second <see cref="BigInt"/> to bitwise-xor.</param>
+        /// <returns>The result of bitwise xor-ing together <paramref name="left"/> and
+        /// <paramref name="right"/> with the width of <paramref name="left"/>.</returns>
+        public static BigInt operator ^(BigInt left, BigInt right) => BitwiseXor(left, right);
+
+        /// <summary>
+        /// Bitwise-shifts a <see cref="BigInt"/> left by a given amount.
+        /// </summary>
+        /// <param name="left">The <see cref="BigInt"/> to shift.</param>
+        /// <param name="right">The amount to shift by.</param>
+        /// <returns>The result of shifting <paramref name="left"/> left by <paramref name="right"/>.</returns>
+        public static BigInt operator <<(BigInt left, int right) => ShiftLeft(left, right);
+
+        /// <summary>
+        /// Bitwise-shifts a <see cref="BigInt"/> right by a given amount.
+        /// </summary>
+        /// <param name="left">The <see cref="BigInt"/> to shift.</param>
+        /// <param name="right">The amount to shift by.</param>
+        /// <returns>The result of shifting <paramref name="left"/> right by <paramref name="right"/>.</returns>
+        public static BigInt operator >>(BigInt left, int right) => ShiftRight(left, right);
     }
 }
