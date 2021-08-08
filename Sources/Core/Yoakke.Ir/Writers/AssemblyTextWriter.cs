@@ -231,8 +231,16 @@ namespace Yoakke.Ir.Writers
                     .Write(" then ").Write(jump.Then)
                     .Write(" else ").Write(jump.Else);
 
-            case Instruction.IntAdd iadd:
-                return this.Write("int_add ").Write(iadd.Left).Write(", ").Write(iadd.Right);
+            case Instruction.Add add:
+                return this.Write("add ").Write(add.Left).Write(", ").Write(add.Right);
+
+            case Instruction.Sub sub:
+                return this.Write("sub ").Write(sub.Left).Write(", ").Write(sub.Right);
+
+            case Instruction.Cmp cmp:
+                return this.Write("cmp ").Write(ComparisonToString(cmp.Comparison))
+                    .Write(' ').Write(cmp.Left)
+                    .Write(", ").Write(cmp.Right);
 
             default: throw new NotSupportedException();
             }
@@ -310,5 +318,17 @@ namespace Yoakke.Ir.Writers
             where T : notnull => values
             .Select((v, idx) => new KeyValuePair<T, int>(v, idx))
             .ToDictionary(kv => kv.Key, kv => kv.Value);
+
+        private static string ComparisonToString(Comparison comparison) => comparison switch
+        {
+            Comparison.Less => "le",
+            Comparison.LessEqual => "le_eq",
+            Comparison.Greater => "gr",
+            Comparison.GreaterEqual => "gr_eq",
+            Comparison.Equal => "eq",
+            Comparison.NotEqual => "ne",
+
+            _ => throw new InvalidOperationException(),
+        };
     }
 }

@@ -241,7 +241,7 @@ namespace Yoakke.Platform.X86.Writers
                 var operandSize = instruction.Operands.Select(op => op.GetSize()).FirstOrDefault(op => op is not null);
                 if (operandSize is not null)
                 {
-                    var suffix = this.GetATnTSuffix(operandSize.Value);
+                    var suffix = GetATnTSuffix(operandSize.Value);
                     ins = $"{ins}{suffix}";
                 }
             }
@@ -469,7 +469,7 @@ namespace Yoakke.Platform.X86.Writers
             .Write(this.Settings.SyntaxFlavor == SyntaxFlavor.ATnT ? "%" : string.Empty)
             .Write(this.Settings.RegistersUpperCase ? name.ToUpper() : name);
 
-        private string GetATnTSuffix(DataWidth size) => size switch
+        private static string GetATnTSuffix(DataWidth size) => size switch
         {
             DataWidth.Byte => "b",
             DataWidth.Word => "w",

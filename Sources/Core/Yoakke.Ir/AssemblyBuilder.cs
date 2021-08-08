@@ -163,8 +163,7 @@ namespace Yoakke.Ir
         /// </summary>
         /// <param name="proc">The procedure to call.</param>
         /// <param name="args">The arguments to pass in.</param>
-        /// <param name="result">The <see cref="Value"/> gets written here
-        /// that can be used to reference the result.</param>
+        /// <param name="result">The <see cref="Value"/> gets written here that can be used to reference the result.</param>
         /// <returns>This instance to chain calls.</returns>
         public AssemblyBuilder Call(Value proc, IReadOnlyValueList<Value> args, out Value result) =>
             this.WriteValueProducer(new Instruction.Call(proc, args), out result);
@@ -203,23 +202,60 @@ namespace Yoakke.Ir
             this.Write(new Instruction.JumpIf(condition, then, @else));
 
         /// <summary>
-        /// Writes an integer addition instruction.
+        /// Writes an addition instruction.
         /// </summary>
         /// <param name="left">The first operand to add.</param>
         /// <param name="right">The second operand to add.</param>
-        /// <param name="result">The <see cref="Value"/> gets written here
-        /// that can be used to reference the result.</param>
+        /// <param name="result">The <see cref="Value"/> gets written here that can be used to reference the result.</param>
         /// <returns>This instance to chain calls.</returns>
-        public AssemblyBuilder IntAdd(Value left, Value right, out Value result) =>
-            this.WriteValueProducer(new Instruction.IntAdd(left, right), out result);
+        public AssemblyBuilder Add(Value left, Value right, out Value result) =>
+            this.WriteValueProducer(new Instruction.Add(left, right), out result);
 
         /// <summary>
-        /// Writes an integer addition instruction.
+        /// Writes an addition instruction.
         /// </summary>
         /// <param name="left">The first operand to add.</param>
         /// <param name="right">The second operand to add.</param>
         /// <returns>This instance to chain calls.</returns>
-        public AssemblyBuilder IntAdd(Value left, Value right) => this.IntAdd(left, right, out _);
+        public AssemblyBuilder Add(Value left, Value right) => this.Add(left, right, out _);
+
+        /// <summary>
+        /// Writes a subtraction instruction.
+        /// </summary>
+        /// <param name="left">The first operand to subtract from.</param>
+        /// <param name="right">The second operand to subtract.</param>
+        /// <param name="result">The <see cref="Value"/> gets written here that can be used to reference the result.</param>
+        /// <returns>This instance to chain calls.</returns>
+        public AssemblyBuilder Sub(Value left, Value right, out Value result) =>
+            this.WriteValueProducer(new Instruction.Sub(left, right), out result);
+
+        /// <summary>
+        /// Writes a subtraction instruction.
+        /// </summary>
+        /// <param name="left">The first operand to subtract from.</param>
+        /// <param name="right">The second operand to subtract.</param>
+        /// <returns>This instance to chain calls.</returns>
+        public AssemblyBuilder Sub(Value left, Value right) => this.Sub(left, right, out _);
+
+        /// <summary>
+        /// Writes a comparison instruction.
+        /// </summary>
+        /// <param name="comparison">The <see cref="Comparison"/> type to do.</param>
+        /// <param name="left">The first operand to compare.</param>
+        /// <param name="right">The second operand to compare.</param>
+        /// <param name="result">The <see cref="Value"/> gets written here that can be used to reference the result.</param>
+        /// <returns>This instance to chain calls.</returns>
+        public AssemblyBuilder Cmp(Comparison comparison, Value left, Value right, out Value result) =>
+            this.WriteValueProducer(new Instruction.Cmp(comparison, left, right), out result);
+
+        /// <summary>
+        /// Writes a comparison instruction.
+        /// </summary>
+        /// <param name="comparison">The <see cref="Comparison"/> type to do.</param>
+        /// <param name="left">The first operand to compare.</param>
+        /// <param name="right">The second operand to compare.</param>
+        /// <returns>This instance to chain calls.</returns>
+        public AssemblyBuilder Cmp(Comparison comparison, Value left, Value right) => this.Cmp(comparison, left, right, out _);
 
         #endregion
 

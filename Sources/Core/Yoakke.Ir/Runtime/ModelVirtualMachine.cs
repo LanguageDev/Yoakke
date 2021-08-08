@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Yoakke.Collections;
 using Yoakke.Ir.Model;
 using Type = Yoakke.Ir.Model.Type;
 
@@ -147,10 +148,11 @@ namespace Yoakke.Ir.Runtime
         {
             switch (valueProducer)
             {
-            case Instruction.IntAdd iadd:
-                var left = (Value.Int)this.Unwrap(iadd.Left);
-                var right = (Value.Int)this.Unwrap(iadd.Right);
-                return new Value.Int(((Type.Int)left.Type).Signed, left.Value + right.Value);
+            case Instruction.Binary bin:
+                var left = this.Unwrap(bin.Left);
+                var right = this.Unwrap(bin.Right);
+                var resultType = bin.ResultType;
+                return EvaluateBinary(bin, resultType, left, right);
 
             default: throw new NotImplementedException();
             }
@@ -158,9 +160,9 @@ namespace Yoakke.Ir.Runtime
 
         private Value Unwrap(Value value) => value switch
         {
-               Value.Argument
-            or Value.Local
-            or Value.Temp => this.callStack.Peek().Locals[value],
+            Value.Argument
+         or Value.Local
+         or Value.Temp => this.callStack.Peek().Locals[value],
             _ => value,
         };
 
@@ -179,5 +181,45 @@ namespace Yoakke.Ir.Runtime
             this.callStack.Push(top);
             this.InstructionPointer = this.valuesToAddress[procValue];
         }
+
+        private static Value EvaluateBinary(Instruction.Binary bin, Type resultType, Value left, Value right) => resultType switch
+        {
+            Type.Int => bin switch
+            {
+                Instruction.Add => EvaluateBinaryInt(resultType, left, right, (a, b) => a + b),
+                Instruction.Sub => EvaluateBinaryInt(resultType, left, right, (a, b) => a - b),
+                Instruction.Cmp cmp => EvaluateIntComparison(cmp.Comparison, left, right),
+
+                _ => throw new NotImplementedException(),
+            },
+
+            _ => throw new NotImplementedException(),
+        };
+
+        private static Value EvaluateBinaryInt(Type resultType, Value left, Value right, Func<BigInt, BigInt, BigInt> eval) =>
+            new Value.Int(((Type.Int)resultType).Signed, eval(((Value.Int)left).Value, ((Value.Int)right).Value));
+
+        private static Value EvaluateIntComparison(Comparison comparison, Value left, Value right)
+        {
+            var leftType = (Type.Int)left.Type;
+            var leftValue = ((Value.Int)left).Value;
+            var rightValue = ((Value.Int)right).Value;
+            var result = leftType.Signed
+                ? leftValue.SignedCompareTo(rightValue)
+                : leftValue.UnsignedCompareTo(rightValue);
+            return MakeBool(comparison switch
+            {
+                Comparison.Less => result < 0,
+                Comparison.LessEqual => result <= 0,
+                Comparison.Greater => result > 0,
+                Comparison.GreaterEqual => result >= 0,
+                Comparison.Equal => result == 0,
+                Comparison.NotEqual => result != 0,
+                _ => throw new InvalidOperationException(),
+            });
+        }
+
+        private static Value MakeBool(bool value) =>
+            new Value.Int(false, new BigInt(1, new[] { (byte)(value ? 1 : 0) }));
     }
 }

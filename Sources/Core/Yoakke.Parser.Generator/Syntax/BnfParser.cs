@@ -111,12 +111,12 @@ namespace Yoakke.Parser.Generator.Syntax
                     return new BnfAst.Call(ident.Value);
                 }
             }
-            if (this.TryMatch(BnfTokenType.StringLiteral, out var str)) return new BnfAst.Literal(this.StrToString(str!));
+            if (this.TryMatch(BnfTokenType.StringLiteral, out var str)) return new BnfAst.Literal(StrToString(str!));
 
             throw new FormatException($"Unexpected token {this.Peek().Type} (index {this.Peek().Index})");
         }
 
-        private string StrToString(BnfToken token) => token.Value.Substring(1, token.Value.Length - 2);
+        private static string StrToString(BnfToken token) => token.Value.Substring(1, token.Value.Length - 2);
 
         private BnfToken Expect(BnfTokenType type)
         {

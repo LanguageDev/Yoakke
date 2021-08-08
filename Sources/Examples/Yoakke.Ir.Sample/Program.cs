@@ -17,29 +17,31 @@ namespace Yoakke.Ir.Sample
             Value MakeInt(int v) => new Value.Int(true, new BigInt(32, BitConverter.GetBytes(v)));
 
             var builder = new AssemblyBuilder()
-                .DefineProcedure("foo", out var foo)
-                .DefineLocal(i32)
-                .DefineParameter(i32, out var arg0)
-                .DefineParameter(i32, out var arg1)
-                .IntAdd(arg0, arg1, out var added)
-                .Ret(added);
-            foo.Return = i32;
-
-            builder.DefineProcedure("main", out var main);
+                .DefineProcedure("fib", out var fib)
+                .DefineParameter(i32, out var n);
             var lastBb = builder.CurrentBasicBlock;
             builder.DefineBasicBlock(out var thenBb);
             builder.DefineBasicBlock(out var elseBb);
             builder.CurrentBasicBlock = lastBb;
-            builder.JumpIf(MakeInt(0), new Value.BasicBlock(thenBb), new Value.BasicBlock(elseBb));
-            builder.CurrentBasicBlock = thenBb;
             builder
-                .Call(new Value.Proc(foo), new Value[] { MakeInt(1), MakeInt(2) }.AsValue(), out var callRes)
-                .Ret(callRes);
+                .Cmp(Comparison.LessEqual, n, MakeInt(1), out var cmpResult)
+                .JumpIf(cmpResult, new Value.BasicBlock(thenBb), new Value.BasicBlock(elseBb));
+            builder.CurrentBasicBlock = thenBb;
+            builder.Ret(MakeInt(1));
             builder.CurrentBasicBlock = elseBb;
             builder
-                .Call(new Value.Proc(foo), new Value[] { MakeInt(4), MakeInt(7) }.AsValue(), out var callRes2)
-                .Ret(callRes2);
-            main.Return = i32;
+                .Sub(n, MakeInt(1), out var nMinusOne)
+                .Sub(n, MakeInt(2), out var nMinusTwo)
+                .Call(new Value.Proc(fib), new Value[] { nMinusOne }.AsValue(), out var fibNminusOne)
+                .Call(new Value.Proc(fib), new Value[] { nMinusTwo }.AsValue(), out var fibNminusTwo)
+                .Add(fibNminusOne, fibNminusTwo, out var fibRes)
+                .Ret(fibRes);
+            fib.Return = i32;
+
+            builder
+                .DefineProcedure("main", out var main)
+                .Call(new Value.Proc(fib), new Value[] { MakeInt(10) }.AsValue(), out var callRes)
+                .Ret(callRes);
 
             var pass = new RemoveUnreferencedLocals();
             foreach (var proc in builder.Assembly.Procedures.Values) pass.Pass(proc);

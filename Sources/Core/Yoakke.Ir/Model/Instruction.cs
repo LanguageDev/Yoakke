@@ -14,7 +14,7 @@ namespace Yoakke.Ir.Model
     /// <summary>
     /// BBase for all instructions.
     /// </summary>
-    public abstract record Instruction
+    public abstract partial record Instruction
     {
         /// <summary>
         /// The operands of this <see cref="Instruction"/>.
@@ -64,6 +64,15 @@ namespace Yoakke.Ir.Model
         }
 
         /// <summary>
+        /// A binary operation.
+        /// </summary>
+        public abstract record Binary(Value Left, Value Right) : ValueProducer(Left, Right)
+        {
+            /// <inheritdoc/>
+            public override Type ResultType => this.Left.Type;
+        }
+
+        /// <summary>
         /// Calls a procedure.
         /// </summary>
         public record Call(Value Procedure, IReadOnlyValueList<Value> Arguments)
@@ -109,12 +118,23 @@ namespace Yoakke.Ir.Model
         }
 
         /// <summary>
-        /// Integer addition.
+        /// Addition.
         /// </summary>
-        public record IntAdd(Value Left, Value Right) : ValueProducer(Left, Right)
+        public record Add(Value Left, Value Right) : Binary(Left, Right);
+
+        /// <summary>
+        /// Subtraction.
+        /// </summary>
+        public record Sub(Value Left, Value Right) : Binary(Left, Right);
+
+        /// <summary>
+        /// Comparison (less, equal, greater).
+        /// </summary>
+        public record Cmp(Comparison Comparison, Value Left, Value Right)
+            : Binary(Left, Right)
         {
             /// <inheritdoc/>
-            public override Type ResultType => this.Left.Type;
+            public override Type ResultType => new Type.Int(false, 1);
         }
     }
 }

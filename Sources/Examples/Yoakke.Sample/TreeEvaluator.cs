@@ -131,7 +131,7 @@ namespace Yoakke.Sample
         /// <inheritdoc/>
         protected override object Visit(Expression.Binary bin) => bin.Op switch
         {
-            BinOp.Add => this.PerformAdd(this.Visit(bin.Left), (int)this.Visit(bin.Right)),
+            BinOp.Add => PerformAdd(this.Visit(bin.Left), (int)this.Visit(bin.Right)),
 
             BinOp.Sub => (int)this.Visit(bin.Left) - (int)this.Visit(bin.Right),
             BinOp.Mul => (int)this.Visit(bin.Left) * (int)this.Visit(bin.Right),
@@ -192,7 +192,7 @@ namespace Yoakke.Sample
             }
         }
 
-        private object PerformAdd(object left, object right)
+        private static object PerformAdd(object left, object right)
         {
             if (left is string || right is string) return $"{left}{right}";
             return (int)left + (int)right;
