@@ -141,9 +141,9 @@ namespace Yoakke.Lexer.Generator
 
                     var matchCondition = (lower, upper) switch
                     {
-                        (char l, char h) => $"case char ch when '{Escape(l)}' <= currentChar && currentChar <= '{Escape(h)}':",
-                        (char l, null) => $"case char ch when '{Escape(l)}' <= currentChar:",
-                        (null, char h) => $"case char ch when currentChar <= '{Escape(h)}':",
+                        (char l, char h) => $"case >= '{Escape(l)}' and <= '{Escape(h)}':",
+                        (char l, null) => $"case >= '{Escape(l)}':",
+                        (null, char h) => $"case <= '{Escape(h)}':",
                         (null, null) => "case char ch:",
                     };
                     transitionTable.AppendLine(matchCondition);
