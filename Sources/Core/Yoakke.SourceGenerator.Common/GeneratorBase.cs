@@ -152,7 +152,7 @@ namespace Yoakke.SourceGenerator.Common
         {
             if (!symbol.IsPartial())
             {
-                this.Report(Diagnostics.TypeDefinitionIsNotPartial, symbol.Name);
+                this.Report(Diagnostics.TypeDefinitionIsNotPartial, symbol.Locations.First(), symbol.Name);
                 return false;
             }
             return true;
