@@ -41,7 +41,7 @@ namespace Yoakke.Lexer
         ///
         /// Note that this CANNOT represent all IEEE-754 floating point values, as special values such as infinity or NaN are not supported.
         /// </remarks>
-        /// <seealso cref="IeeeFloatLiteral(string, string)"/>
+        /// <seealso cref="IeeeFloatLiteral"/>
         public const string RealNumberLiteral = "(([0-9]*.)|([0-9]+[0-9_]*.))?[0-9]+[0-9_]*((e|E)[+-]?[0-9]+)?";
 
         /// <summary>
@@ -53,12 +53,9 @@ namespace Yoakke.Lexer
         /// A leading sign (<c>+</c> or <c>-</c>) may be indicated, but only if the whole part is provided and begins with a number.
         /// Digits may be separated with <c>_</c>, but this symbol may not appear in the first position (<c>1_234.1</c> means <c>1234.1</c>).
         /// Scientific notation is supported by appending <c>e</c> or <c>E</c> and then using an integer exponent, which may be optionally negative.
+        /// Special cases <c>infinity</c> and <c>NaN</c> are supported, where positive and negative infinity are disambiguated using a leading sign.
         /// </remarks>
-        /// <param name="infinityLiteral">The keyword to represent the infinity value. Positive and negative infinity are disambiguated with a leading sign.</param>
-        /// <param name="nanLiteral">The keyword to represent the NaN (Not a Number) value.</param>
-        /// <returns>A regular expression capable of accepting representations for all values of IEEE-754 floating point numbers with the provided parameters.</returns>
-        public static string IeeeFloatLiteral(string infinityLiteral = "infinity", string nanLiteral = "NaN") =>
-            $"((([0-9]*.)|([+-]?[0-9]+[0-9_]*.))?[0-9]+[0-9_]*((e|E)[+-]?[0-9]+)?)|([+-]?{infinityLiteral})|({nanLiteral})";
+        public const string IeeeFloatLiteral = "((([0-9]*.)|([+-]?[0-9]+[0-9_]*.))?[0-9]+[0-9_]*((e|E)[+-]?[0-9]+)?)|([+-]?infinity)|(NaN)";
 
         /// <summary>
         /// A single-line string.
