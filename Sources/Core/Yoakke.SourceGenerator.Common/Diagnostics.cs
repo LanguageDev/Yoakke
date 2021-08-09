@@ -46,6 +46,17 @@ namespace Yoakke.SourceGenerator.Common
             DiagnosticSeverity.Error,
             isEnabledByDefault: true);
 
+        /// <summary>
+        /// Descriptor for a <see cref="Diagnostic"/> when a symbol is required to accept external declarations, but it does not.
+        /// </summary>
+        public static readonly DiagnosticDescriptor SymbolDoesNotAcceptExternalDeclarations = new(
+            id: "YKGEN004",
+            title: "Symbol is not partial or a namespace",
+            messageFormat: "The symbol {0} is not partial or a namespace",
+            category: "Yoakke.Generator",
+            DiagnosticSeverity.Error,
+            isEnabledByDefault: true);
+
 #pragma warning restore RS2008 // Enable analyzer release tracking
     }
 }

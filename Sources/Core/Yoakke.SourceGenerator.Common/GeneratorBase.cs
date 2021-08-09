@@ -143,6 +143,22 @@ namespace Yoakke.SourceGenerator.Common
         }
 
         /// <summary>
+        /// Requires an <see cref="ITypeSymbol"/> to be declared partial.
+        /// If it is not, a <see cref="Diagnostic"/> error is raised.
+        /// </summary>
+        /// <param name="symbol">The <see cref="ITypeSymbol"/> to check.</param>
+        /// <returns>True, if <paramref name="symbol"/> is partial.</returns>
+        protected bool RequirePartial(ITypeSymbol symbol)
+        {
+            if (!symbol.IsPartial())
+            {
+                this.Report(Diagnostics.TypeDefinitionIsNotPartial, symbol.Name);
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
         /// Requires a <see cref="ISymbol"/> not to be a nested type.
         /// If it is a nested type, a <see cref="Diagnostic"/> error is raised.
         /// </summary>
@@ -153,6 +169,23 @@ namespace Yoakke.SourceGenerator.Common
             if (symbol.IsNested())
             {
                 this.Report(Diagnostics.SymbolIsNested, symbol.Locations.First(), symbol.Name);
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Requires a <see cref="ISymbol"/> to be able to accept declarations inside from external sources.
+        /// This can mean that the symbol is a namespace or partial.
+        /// If it does not, a <see cref="Diagnostic"/> error is raised.
+        /// </summary>
+        /// <param name="symbol">The <see cref="ISymbol"/> to check.</param>
+        /// <returns>True, if <paramref name="symbol"/> accepts declarations inside from external sources.</returns>
+        protected bool RequireDeclarableInside(ISymbol symbol)
+        {
+            if (!symbol.CanDeclareInsideExternally())
+            {
+                this.Report(Diagnostics.SymbolDoesNotAcceptExternalDeclarations, symbol.Locations.First(), symbol.Name);
                 return false;
             }
             return true;
