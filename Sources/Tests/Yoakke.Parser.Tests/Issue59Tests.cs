@@ -38,7 +38,7 @@ namespace Yoakke.Parser.Tests
     }
 
     [TestClass]
-    public class Issue59Tests
+    public partial class Issue59Tests
     {
         [Lexer("LeftRecursionAltsIssueLexer")]
         public enum TokenType

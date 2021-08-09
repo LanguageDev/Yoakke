@@ -39,7 +39,7 @@ namespace Yoakke.Parser.Tests
     }
 
     [TestClass]
-    public class ExpressionParserTests
+    public partial class ExpressionParserTests
     {
         [Lexer("ExprLexer")]
         public enum TokenType

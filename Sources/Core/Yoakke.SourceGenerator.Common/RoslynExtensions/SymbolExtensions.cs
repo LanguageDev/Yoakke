@@ -74,9 +74,9 @@ namespace Yoakke.SourceGenerator.Common.RoslynExtensions
                 if (symbol is null) return;
                 if (symbol is ITypeSymbol type)
                 {
-                    Debug.Assert(type.IsPartial(), "Type declaration must be partial");
+                    if (!type.IsPartial()) throw new InvalidOperationException("Non-partial type nesting");
                     DeclareInsideExternallyRec(symbol.ContainingSymbol);
-                    prefixBuilder!.AppendLine($"partial {type.GetTypeKindName()} {{");
+                    prefixBuilder!.AppendLine($"partial {type.GetTypeKindName()} {type.Name} {{");
                     suffixBuilder!.AppendLine("}");
                     return;
                 }
@@ -86,7 +86,7 @@ namespace Yoakke.SourceGenerator.Common.RoslynExtensions
                     suffixBuilder!.AppendLine("}");
                     return;
                 }
-                throw new InvalidOperationException();
+                throw new InvalidOperationException("Unknown symbol to nest in");
             }
 
             DeclareInsideExternallyRec(symbol);

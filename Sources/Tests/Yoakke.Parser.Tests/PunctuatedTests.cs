@@ -27,7 +27,7 @@ namespace Yoakke.Parser.Tests
     }
 
     [TestClass]
-    public class PunctuatedTests
+    public partial class PunctuatedTests
     {
         [Lexer("ListLexer")]
         public enum TokenType

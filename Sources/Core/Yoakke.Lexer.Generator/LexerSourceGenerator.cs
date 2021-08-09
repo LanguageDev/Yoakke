@@ -85,19 +85,20 @@ namespace Yoakke.Lexer.Generator
                 if (!symbol.HasAttribute(lexerAttribute)) continue;
                 // Generate code for it
                 var generated = this.GenerateImplementation(symbol!);
-                if (generated == null) continue;
+                if (generated is null) continue;
                 this.AddSource($"{symbol!.ToDisplayString()}.Generated.cs", generated);
             }
         }
 
         private string? GenerateImplementation(INamedTypeSymbol symbol)
         {
+            if (!this.RequireDeclarableInside(symbol.ContainingSymbol)) return null;
+
             var lexerAttribute = this.LoadSymbol(TypeNames.LexerAttribute);
             var lexerAttributeParams = symbol.GetAttribute<LexerAttribute>(lexerAttribute);
 
             var accessibility = symbol.DeclaredAccessibility.ToString().ToLowerInvariant();
             var lexerClassName = lexerAttributeParams.ClassName;
-            var namespaceName = symbol.ContainingNamespace.ToDisplayString();
             var enumName = symbol.ToDisplayString();
             var tokenName = $"{TypeNames.Token}<{enumName}>";
 
@@ -176,59 +177,60 @@ namespace Yoakke.Lexer.Generator
 
             // TODO: Consuming a single token on error might not be the best strategy
             // Also we might want to report if there was a token type that was being matched, while the error occurred
+
+            var (prefix, suffix) = symbol.ContainingSymbol.DeclareInsideExternally();
             return $@"
-namespace {namespaceName}
+{prefix}
+{accessibility} class {lexerClassName} : {TypeNames.LexerBase}<{tokenName}>
 {{
-    {accessibility} class {lexerClassName} : {TypeNames.LexerBase}<{tokenName}>
+    public {lexerClassName}({TypeNames.TextReader} reader)
+        : base(reader)
     {{
-        public {lexerClassName}({TypeNames.TextReader} reader)
-            : base(reader)
-        {{
-        }}
+    }}
 
-        public {lexerClassName}(string text)
-            : base(text)
-        {{
-        }}
+    public {lexerClassName}(string text)
+        : base(text)
+    {{
+    }}
 
-        public override {tokenName} Next()
-        {{
+    public override {tokenName} Next()
+    {{
 begin:
-            if (this.Peek() == '\0') 
-            {{
-                return this.TakeToken({enumName}.{description.EndSymbol!.Name}, 0);
-            }}
+        if (this.Peek() == '\0') 
+        {{
+            return this.TakeToken({enumName}.{description.EndSymbol!.Name}, 0);
+        }}
 
-            var currentState = {dfaStateIdents[dfa.InitalState]};
-            var currentOffset = 0;
+        var currentState = {dfaStateIdents[dfa.InitalState]};
+        var currentOffset = 0;
 
-            {enumName}? lastTokenType = null;
-            var lastOffset = 0;
+        {enumName}? lastTokenType = null;
+        var lastOffset = 0;
 
-            while (true)
-            {{
-                var currentChar = this.Peek(currentOffset);
-                if (currentChar == '\0') break;
-                ++currentOffset;
-                {transitionTable}
-            }}
+        while (true)
+        {{
+            var currentChar = this.Peek(currentOffset);
+            if (currentChar == '\0') break;
+            ++currentOffset;
+            {transitionTable}
+        }}
 end_loop:
-            if (lastOffset > 0)
+        if (lastOffset > 0)
+        {{
+            if (lastTokenType == null) 
             {{
-                if (lastTokenType == null) 
-                {{
-                    this.Skip(lastOffset);
-                    goto begin;
-                }}
-                return this.TakeToken(lastTokenType.Value, lastOffset);
+                this.Skip(lastOffset);
+                goto begin;
             }}
-            else
-            {{
-                return this.TakeToken({enumName}.{description.ErrorSymbol!.Name}, 1);
-            }}
+            return this.TakeToken(lastTokenType.Value, lastOffset);
+        }}
+        else
+        {{
+            return this.TakeToken({enumName}.{description.ErrorSymbol!.Name}, 1);
         }}
     }}
 }}
+{suffix}
 ";
         }
 

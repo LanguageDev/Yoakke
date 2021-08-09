@@ -51,8 +51,8 @@ namespace Yoakke.SourceGenerator.Common
         /// </summary>
         public static readonly DiagnosticDescriptor SymbolDoesNotAcceptExternalDeclarations = new(
             id: "YKGEN004",
-            title: "Symbol is not partial or a namespace",
-            messageFormat: "The symbol {0} is not partial or a namespace",
+            title: "Symbol is not surrounded by partial types or a namespaces",
+            messageFormat: "The symbol {0} is not surrounded by partial types or a namespaces",
             category: "Yoakke.Generator",
             DiagnosticSeverity.Error,
             isEnabledByDefault: true);
