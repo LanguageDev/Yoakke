@@ -12,12 +12,16 @@ using Yoakke.Lexer;
 using Yoakke.Lexer.Attributes;
 using Yoakke.Parser.Attributes;
 using IgnoreAttribute = Yoakke.Lexer.Attributes.IgnoreAttribute;
-using Token = Yoakke.Lexer.IToken<Yoakke.Parser.Tests.LeftRecursionAltsIssueTests.TokenType>;
+using Token = Yoakke.Lexer.IToken<Yoakke.Parser.Tests.Issue59Tests.TokenType>;
 
 namespace Yoakke.Parser.Tests
 {
-    [Parser(typeof(LeftRecursionAltsIssueTests.TokenType))]
-    internal partial class LeftRecursionAltsIssueParser
+    /*
+     https://github.com/LanguageDev/Yoakke/issues/59
+     */
+
+    [Parser(typeof(Issue59Tests.TokenType))]
+    internal partial class Issue59Parser
     {
         [Rule("expression : call")]
         [Rule("call : primary")]
@@ -34,7 +38,7 @@ namespace Yoakke.Parser.Tests
     }
 
     [TestClass]
-    public class LeftRecursionAltsIssueTests
+    public class Issue59Tests
     {
         [Lexer("LeftRecursionAltsIssueLexer")]
         public enum TokenType
@@ -51,7 +55,7 @@ namespace Yoakke.Parser.Tests
         }
 
         private static string Parse(string source) =>
-           new LeftRecursionAltsIssueParser(new LeftRecursionAltsIssueLexer(source)).ParseCall().Ok.Value;
+           new Issue59Parser(new LeftRecursionAltsIssueLexer(source)).ParseCall().Ok.Value;
 
         [TestMethod]
         public void TestPrimary() => Assert.AreEqual("x", Parse("x"));
