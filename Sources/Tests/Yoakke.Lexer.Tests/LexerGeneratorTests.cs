@@ -9,7 +9,7 @@ using IgnoreAttribute = Yoakke.Lexer.Attributes.IgnoreAttribute;
 namespace Yoakke.Lexer.Tests
 {
     [TestClass]
-    public class LexerGeneratorTests : TestBase<LexerGeneratorTests.TokenType>
+    public partial class LexerGeneratorTests : TestBase<LexerGeneratorTests.TokenType>
     {
         [Lexer("Lexer")]
         public enum TokenType

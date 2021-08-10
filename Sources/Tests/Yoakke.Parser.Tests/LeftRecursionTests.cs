@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -16,22 +16,11 @@ namespace Yoakke.Parser.Tests
 
      Proposal: When we detect direct left-recursion that we can't resolve, error out and suggest that it's a possible typo
      */
-
-    [Parser(typeof(LeftRecursionTests.TokenType))]
-    internal partial class LeftRecursionParser
-    {
-        [Rule("grouping : grouping Identifier")]
-        private static string Group(string group, IToken next) => $"({group}, {next.Text})";
-
-        [Rule("grouping: Identifier")]
-        private static string Ident(IToken t) => t.Text;
-    }
-
     [TestClass]
-    public class LeftRecursionTests
+    public partial class LeftRecursionTests
     {
-        [Lexer("LeftRecursionLexer")]
-        public enum TokenType
+        [Lexer("Lexer")]
+        internal enum TokenType
         {
             [End] End,
             [Error] Error,
@@ -40,8 +29,18 @@ namespace Yoakke.Parser.Tests
             [Regex(Regexes.Identifier)] Identifier,
         }
 
+        [Parser(typeof(TokenType))]
+        internal partial class Parser
+        {
+            [Rule("grouping : grouping Identifier")]
+            private static string Group(string group, IToken next) => $"({group}, {next.Text})";
+
+            [Rule("grouping: Identifier")]
+            private static string Ident(IToken t) => t.Text;
+        }
+
         private static string Parse(string source) =>
-            new LeftRecursionParser(new LeftRecursionLexer(source)).ParseGrouping().Ok.Value;
+            new Parser(new Lexer(source)).ParseGrouping().Ok.Value;
 
         [TestMethod]
         public void TestOne() => Assert.AreEqual("a", Parse("a"));

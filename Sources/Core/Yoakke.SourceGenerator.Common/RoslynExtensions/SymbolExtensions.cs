@@ -4,9 +4,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Text;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Yoakke.SourceGenerator.Common.RoslynExtensions
 {
@@ -17,6 +20,7 @@ namespace Yoakke.SourceGenerator.Common.RoslynExtensions
     {
         /// <summary>
         /// Retrieves the type kind of a <see cref="ISymbol"/> that can be used in codegen.
+        /// This can be 'class', 'struct' or 'record'.
         /// </summary>
         /// <param name="symbol">The <see cref="ISymbol"/> to get the kind of.</param>
         /// <returns>The code-friendly name of the type kind.</returns>
@@ -29,12 +33,66 @@ namespace Yoakke.SourceGenerator.Common.RoslynExtensions
         };
 
         /// <summary>
+        /// Checks, if a <see cref="ITypeSymbol"/>s declaration is partial.
+        /// </summary>
+        /// <param name="symbol">The <see cref="ITypeSymbol"/> to check.</param>
+        /// <returns>True, if <paramref name="symbol"/> is declared partial.</returns>
+        public static bool IsPartial(this ITypeSymbol symbol) => symbol.DeclaringSyntaxReferences
+            .Any(syntaxRef => syntaxRef.GetSyntax() is TypeDeclarationSyntax typeDecl && typeDecl.IsPartial());
+
+        /// <summary>
         /// Checks, if a <see cref="ISymbol"/> is a nested type.
         /// </summary>
         /// <param name="symbol">The <see cref="ISymbol"/> to check.</param>
         /// <returns>True, if <paramref name="symbol"/> is a nested type.</returns>
-        public static bool IsNested(this ISymbol symbol) =>
-            !SymbolEqualityComparer.Default.Equals(symbol.ContainingSymbol, symbol.ContainingNamespace);
+        public static bool IsNested(this ISymbol symbol) => symbol.ContainingSymbol is ITypeSymbol;
+
+        /// <summary>
+        /// Checks, if an <see cref="ISymbol"/> can accept declarations from other source files.
+        /// This usually means that the symbol is a namespace or is in partial type definitions.
+        /// </summary>
+        /// <param name="symbol">The <see cref="ISymbol"/> to check.</param>
+        /// <returns>True, if <paramref name="symbol"/> accepts declarations inside it from other sources.</returns>
+        public static bool CanDeclareInsideExternally(this ISymbol symbol)
+        {
+            if (symbol is null || symbol is INamespaceSymbol) return true;
+            if (symbol is ITypeSymbol type) return type.IsPartial() && (type.ContainingSymbol?.CanDeclareInsideExternally() ?? true);
+            return false;
+        }
+
+        /// <summary>
+        /// Builds up code that is required to define something inside an <see cref="ISymbol"/>.
+        /// </summary>
+        /// <param name="symbol">The <see cref="ISymbol"/> to build up the code for.</param>
+        /// <returns>A pair of prefix and suffix text, that is enough to write declarations inside <paramref name="symbol"/>.</returns>
+        public static (string Prefix, string Suffix) DeclareInsideExternally(this ISymbol symbol)
+        {
+            var prefixBuilder = new StringBuilder();
+            var suffixBuilder = new StringBuilder();
+
+            void DeclareInsideExternallyRec(ISymbol symbol)
+            {
+                if (symbol is null) return;
+                if (symbol is ITypeSymbol type)
+                {
+                    if (!type.IsPartial()) throw new InvalidOperationException("Non-partial type nesting");
+                    DeclareInsideExternallyRec(symbol.ContainingSymbol);
+                    prefixBuilder!.AppendLine($"partial {type.GetTypeKindName()} {type.Name} {{");
+                    suffixBuilder!.AppendLine("}");
+                    return;
+                }
+                if (symbol is INamespaceSymbol ns)
+                {
+                    prefixBuilder!.AppendLine($"namespace {ns.ToDisplayString()} {{");
+                    suffixBuilder!.AppendLine("}");
+                    return;
+                }
+                throw new InvalidOperationException("Unknown symbol to nest in");
+            }
+
+            DeclareInsideExternallyRec(symbol);
+            return (prefixBuilder.ToString(), suffixBuilder.ToString());
+        }
 
         /// <summary>
         /// Checks, if a <see cref="ISymbol"/> implements a given interface.
