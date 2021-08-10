@@ -25,14 +25,13 @@ namespace Yoakke.Parser.Generator
     {
         private class SyntaxReceiver : ISyntaxReceiver
         {
-            public IList<ClassDeclarationSyntax> CandidateClasses { get; } = new List<ClassDeclarationSyntax>();
+            public IList<TypeDeclarationSyntax> CandidateTypes { get; } = new List<TypeDeclarationSyntax>();
 
             public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
             {
-                if (syntaxNode is ClassDeclarationSyntax classDeclSyntax
-                    && classDeclSyntax.AttributeLists.Count > 0)
+                if (syntaxNode is TypeDeclarationSyntax typeDeclSyntax && typeDeclSyntax.AttributeLists.Count > 0)
                 {
-                    this.CandidateClasses.Add(classDeclSyntax);
+                    this.CandidateTypes.Add(typeDeclSyntax);
                 }
             }
         }
@@ -75,7 +74,7 @@ namespace Yoakke.Parser.Generator
 
             var parserAttr = this.LoadSymbol(TypeNames.ParserAttribute);
 
-            foreach (var syntax in receiver.CandidateClasses)
+            foreach (var syntax in receiver.CandidateTypes)
             {
                 var model = this.Context.Compilation.GetSemanticModel(syntax.SyntaxTree);
                 var symbol = model.GetDeclaredSymbol(syntax) as INamedTypeSymbol;
