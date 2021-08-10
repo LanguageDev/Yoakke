@@ -14,7 +14,7 @@ namespace Yoakke.Parser
     /// </summary>
     public abstract class ParserBase
     {
-        private readonly ILexer? lexer;
+        private readonly ILexer lexer;
         private readonly RingBuffer<IToken> peek;
         private bool pushedEnd;
 
@@ -33,13 +33,8 @@ namespace Yoakke.Parser
         /// </summary>
         /// <param name="tokens">The tokens to lex.</param>
         protected ParserBase(IEnumerable<IToken> tokens)
+            : this(new MemoryLexer(tokens))
         {
-            // TODO: We could eliminate the null lexer by implementing a lexer
-            // that simply feeds off of an IEnumerable like this
-            // Whould get rid of a nasty null-check
-            // TODO: Make this lazy instead of loading it into the peek-buffer?
-            this.peek = new RingBuffer<IToken>();
-            foreach (var token in tokens) this.peek.AddBack(token);
         }
 
         /// <summary>
@@ -80,37 +75,24 @@ namespace Yoakke.Parser
         /// <returns>True, if there were enough tokens to peek ahead the amount.</returns>
         protected bool TryPeek(int offset, [MaybeNullWhen(false)] out IToken? token)
         {
-            if (this.lexer == null)
+            while (this.peek.Count <= offset)
             {
-                if (this.peek.Count <= offset)
+                if (this.lexer.IsEnd)
                 {
-                    token = null;
-                    return false;
-                }
-                token = this.peek[offset];
-                return true;
-            }
-            else
-            {
-                while (this.peek.Count <= offset)
-                {
-                    if (this.lexer.IsEnd)
+                    if (this.pushedEnd)
                     {
-                        if (this.pushedEnd)
-                        {
-                            token = null;
-                            return false;
-                        }
-                        else
-                        {
-                            this.pushedEnd = true;
-                        }
+                        token = null;
+                        return false;
                     }
-                    this.peek.AddBack(this.lexer.Next());
+                    else
+                    {
+                        this.pushedEnd = true;
+                    }
                 }
-                token = this.peek[offset];
-                return true;
+                this.peek.AddBack(this.lexer.Next());
             }
+            token = this.peek[offset];
+            return true;
         }
 
         /// <summary>
@@ -132,6 +114,7 @@ namespace Yoakke.Parser
         /// <returns>True, if the tokens were successfully consumed.</returns>
         protected bool TryConsume(int length)
         {
+            if (length == 0) return true;
             if (!this.TryPeek(length - 1, out _)) return false;
             for (var i = 0; i < length; ++i) this.peek.RemoveFront();
             return true;

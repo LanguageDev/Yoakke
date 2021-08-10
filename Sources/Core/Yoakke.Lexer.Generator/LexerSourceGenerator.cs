@@ -196,7 +196,7 @@ namespace Yoakke.Lexer.Generator
     public override {tokenName} Next()
     {{
 begin:
-        if (this.Peek() == '\0') 
+        if (this.IsEnd) 
         {{
             return this.TakeToken({enumName}.{description.EndSymbol!.Name}, 0);
         }}
@@ -209,8 +209,7 @@ begin:
 
         while (true)
         {{
-            var currentChar = this.Peek(currentOffset);
-            if (currentChar == '\0') break;
+            if (!this.TryPeek(out var currentChar, currentOffset)) break;
             ++currentOffset;
             {transitionTable}
         }}
