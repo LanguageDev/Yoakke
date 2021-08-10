@@ -9,7 +9,7 @@ namespace Yoakke.Lexer
     /// <summary>
     /// Base-class to provide common functionality for lexers, if a custom solution is needed.
     /// </summary>
-    public abstract class LexerBase : LexerBaseCommon, ILexer
+    public abstract class LexerBase : LexerBase<IToken>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="LexerBase"/> class.
@@ -28,11 +28,5 @@ namespace Yoakke.Lexer
             : base(source)
         {
         }
-
-        /// <summary>
-        /// Lexes the next <see cref="IToken"/> in the input.
-        /// </summary>
-        /// <returns>The lexed <see cref="IToken"/>.</returns>
-        public abstract IToken Next();
     }
 }
