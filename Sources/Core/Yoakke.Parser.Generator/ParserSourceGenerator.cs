@@ -83,15 +83,15 @@ namespace Yoakke.Parser.Generator
                 // Filter classes without the parser attributes
                 if (!symbol.HasAttribute(parserAttr)) continue;
                 // Generate code for it
-                var generated = this.GenerateImplementation(syntax, symbol!);
+                var generated = this.GenerateImplementation(symbol);
                 if (generated == null) continue;
                 this.AddSource($"{symbol!.ToDisplayString()}.Generated.cs", generated);
             }
         }
 
-        private string? GenerateImplementation(ClassDeclarationSyntax syntax, INamedTypeSymbol symbol)
+        private string? GenerateImplementation(INamedTypeSymbol symbol)
         {
-            if (!this.RequirePartial(syntax) || !this.RequireNonNested(symbol)) return null;
+            if (!this.RequireDeclarableInside(symbol)) return null;
 
             var parserAttr = symbol.GetAttribute<ParserAttribute>(this.LoadSymbol(TypeNames.ParserAttribute));
             this.tokenKinds = new TokenKindSet(parserAttr.TokenType);
@@ -100,7 +100,6 @@ namespace Yoakke.Parser.Generator
             this.parserType = symbol;
             if (!this.CheckRuleSet()) return null;
 
-            var namespaceName = symbol.ContainingNamespace.ToDisplayString();
             var className = symbol.Name;
 
             var parserMethods = new StringBuilder();
@@ -150,34 +149,34 @@ namespace Yoakke.Parser.Generator
                 parserMethods.AppendLine("}");
             }
 
+            var (prefix, suffix) = symbol.ContainingSymbol.DeclareInsideExternally();
             return $@"
-namespace {namespaceName} 
+{prefix} 
+partial {symbol.GetTypeKindName()} {className} : {TypeNames.ParserBase}
 {{
-    partial class {className} : {TypeNames.ParserBase}
+    public {className}({TypeNames.ILexer} lexer)
+        : base(lexer)
     {{
-        public {className}({TypeNames.ILexer} lexer)
-            : base(lexer)
-        {{
-        }}
+    }}
 
-        public {className}({TypeNames.IEnumerable}<{TypeNames.IToken}> tokens)
-            : base(tokens)
-        {{
-        }}
+    public {className}({TypeNames.IEnumerable}<{TypeNames.IToken}> tokens)
+        : base(tokens)
+    {{
+    }}
 
 #nullable enable
-#pragma warning disable CS8632
+#pragma warning disable CS8600
 #pragma warning disable CS8604
 #pragma warning disable CS8619
-#pragma warning disable CS8600
+#pragma warning disable CS8632
         {parserMethods}
-#pragma warning restore CS8600
+#pragma warning restore CS8632
 #pragma warning restore CS8619
 #pragma warning restore CS8604
-#pragma warning restore CS8632
+#pragma warning restore CS8600
 #nullable restore
-    }}
 }}
+{suffix}
 ";
         }
 

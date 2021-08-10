@@ -14,23 +14,11 @@ using Token = Yoakke.Lexer.IToken<Yoakke.Parser.Tests.PunctuatedTests.TokenType>
 
 namespace Yoakke.Parser.Tests
 {
-    [Parser(typeof(PunctuatedTests.TokenType))]
-    internal partial class ListParser
-    {
-        [Rule("any0_no_trailing : Lparen (Identifier (',' Identifier)*)? Rparen")]
-        private static List<string> ZeroOrMoreNoTrailing(IToken _lp, Punctuated<Token, Token> elements, IToken _rp) =>
-            elements.Values.Select(t => t.Text).ToList();
-
-        [Rule("any1_no_trailing : Lparen (Identifier (',' Identifier)*) Rparen")]
-        private static List<string> OneOrMoreNoTrailing(IToken _lp, Punctuated<Token, Token> elements, IToken _rp) =>
-            elements.Values.Select(t => t.Text).ToList();
-    }
-
     [TestClass]
     public partial class PunctuatedTests
     {
-        [Lexer("ListLexer")]
-        public enum TokenType
+        [Lexer("Lexer")]
+        internal enum TokenType
         {
             [End] End,
             [Error] Error,
@@ -42,9 +30,21 @@ namespace Yoakke.Parser.Tests
             [Regex(Regexes.Identifier)] Identifier,
         }
 
-        private static List<string> Any0NoTrailing(string source) => new ListParser(new ListLexer(source)).ParseAny0NoTrailing().Ok.Value;
+        [Parser(typeof(TokenType))]
+        internal partial class Parser
+        {
+            [Rule("any0_no_trailing : Lparen (Identifier (',' Identifier)*)? Rparen")]
+            private static List<string> ZeroOrMoreNoTrailing(IToken _lp, Punctuated<Token, Token> elements, IToken _rp) =>
+                elements.Values.Select(t => t.Text).ToList();
 
-        private static List<string> Any1NoTrailing(string source) => new ListParser(new ListLexer(source)).ParseAny1NoTrailing().Ok.Value;
+            [Rule("any1_no_trailing : Lparen (Identifier (',' Identifier)*) Rparen")]
+            private static List<string> OneOrMoreNoTrailing(IToken _lp, Punctuated<Token, Token> elements, IToken _rp) =>
+                elements.Values.Select(t => t.Text).ToList();
+        }
+
+        private static List<string> Any0NoTrailing(string source) => new Parser(new Lexer(source)).ParseAny0NoTrailing().Ok.Value;
+
+        private static List<string> Any1NoTrailing(string source) => new Parser(new Lexer(source)).ParseAny1NoTrailing().Ok.Value;
 
         [TestMethod]
         public void Empty0NoTrailing() => Assert.IsTrue(Any0NoTrailing("()").SequenceEqual(Array.Empty<string>()));

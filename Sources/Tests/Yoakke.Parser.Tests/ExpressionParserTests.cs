@@ -11,38 +11,11 @@ using IgnoreAttribute = Yoakke.Lexer.Attributes.IgnoreAttribute;
 
 namespace Yoakke.Parser.Tests
 {
-    [Parser(typeof(ExpressionParserTests.TokenType))]
-    internal partial class ExprParser
-    {
-        [Rule("top_expression : expression End")]
-        private static int TopLevel(int n, IToken _) => n;
-
-        [Right("^")]
-        [Left("*", "/")]
-        [Left("+", "-")]
-        [Rule("expression")]
-        private static int Op(int left, IToken op, int right) => op.Text switch
-        {
-            "+" => left + right,
-            "-" => left - right,
-            "*" => left * right,
-            "/" => left / right,
-            "^" => (int)Math.Pow(left, right),
-            _ => throw new InvalidOperationException(),
-        };
-
-        [Rule("expression : '(' expression ')'")]
-        private static int Grouping(IToken _1, int n, IToken _2) => n;
-
-        [Rule("expression : Number")]
-        private static int Number(IToken tok) => int.Parse(tok.Text);
-    }
-
     [TestClass]
     public partial class ExpressionParserTests
     {
-        [Lexer("ExprLexer")]
-        public enum TokenType
+        [Lexer("Lexer")]
+        internal enum TokenType
         {
             [End] End,
             [Error] Error,
@@ -58,7 +31,34 @@ namespace Yoakke.Parser.Tests
             [Token(")")] Rparen,
         }
 
-        private static int Eval(string s) => new ExprParser(new ExprLexer(s)).ParseTopExpression().Ok.Value;
+        [Parser(typeof(TokenType))]
+        internal partial class Parser
+        {
+            [Rule("top_expression : expression End")]
+            private static int TopLevel(int n, IToken _) => n;
+
+            [Right("^")]
+            [Left("*", "/")]
+            [Left("+", "-")]
+            [Rule("expression")]
+            private static int Op(int left, IToken op, int right) => op.Text switch
+            {
+                "+" => left + right,
+                "-" => left - right,
+                "*" => left * right,
+                "/" => left / right,
+                "^" => (int)Math.Pow(left, right),
+                _ => throw new InvalidOperationException(),
+            };
+
+            [Rule("expression : '(' expression ')'")]
+            private static int Grouping(IToken _1, int n, IToken _2) => n;
+
+            [Rule("expression : Number")]
+            private static int Number(IToken tok) => int.Parse(tok.Text);
+        }
+
+        private static int Eval(string s) => new Parser(new Lexer(s)).ParseTopExpression().Ok.Value;
 
         [TestMethod]
         public void Tests()

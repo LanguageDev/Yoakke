@@ -20,6 +20,7 @@ namespace Yoakke.SourceGenerator.Common.RoslynExtensions
     {
         /// <summary>
         /// Retrieves the type kind of a <see cref="ISymbol"/> that can be used in codegen.
+        /// This can be 'class', 'struct' or 'record'.
         /// </summary>
         /// <param name="symbol">The <see cref="ISymbol"/> to get the kind of.</param>
         /// <returns>The code-friendly name of the type kind.</returns>

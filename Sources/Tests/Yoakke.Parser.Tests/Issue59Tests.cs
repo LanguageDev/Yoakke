@@ -16,32 +16,12 @@ using Token = Yoakke.Lexer.IToken<Yoakke.Parser.Tests.Issue59Tests.TokenType>;
 
 namespace Yoakke.Parser.Tests
 {
-    /*
-     https://github.com/LanguageDev/Yoakke/issues/59
-     */
-
-    [Parser(typeof(Issue59Tests.TokenType))]
-    internal partial class Issue59Parser
-    {
-        [Rule("expression : call")]
-        [Rule("call : primary")]
-        public static string Identity(string expression) => expression;
-
-        [Rule("call : call '(' ')'")]
-        public static string FunctionCall(string callee, Token _open, Token _close) => $"({callee}())";
-
-        [Rule("call : call '.' Identifier")]
-        public static string MemberAccess(string @object, Token _dot, Token identifier) => $"({@object}.{identifier.Text})";
-
-        [Rule("primary : Identifier")]
-        public static string Primary(Token atom) => atom.Text;
-    }
-
+    // https://github.com/LanguageDev/Yoakke/issues/59
     [TestClass]
     public partial class Issue59Tests
     {
-        [Lexer("LeftRecursionAltsIssueLexer")]
-        public enum TokenType
+        [Lexer("Lexer")]
+        internal enum TokenType
         {
             [End] End,
             [Error] Error,
@@ -54,8 +34,25 @@ namespace Yoakke.Parser.Tests
             [Token(")")] CloseParen,
         }
 
+        [Parser(typeof(TokenType))]
+        internal partial class Parser
+        {
+            [Rule("expression : call")]
+            [Rule("call : primary")]
+            public static string Identity(string expression) => expression;
+
+            [Rule("call : call '(' ')'")]
+            public static string FunctionCall(string callee, Token _open, Token _close) => $"({callee}())";
+
+            [Rule("call : call '.' Identifier")]
+            public static string MemberAccess(string @object, Token _dot, Token identifier) => $"({@object}.{identifier.Text})";
+
+            [Rule("primary : Identifier")]
+            public static string Primary(Token atom) => atom.Text;
+        }
+
         private static string Parse(string source) =>
-           new Issue59Parser(new LeftRecursionAltsIssueLexer(source)).ParseCall().Ok.Value;
+           new Parser(new Lexer(source)).ParseCall().Ok.Value;
 
         [TestMethod]
         public void TestPrimary() => Assert.AreEqual("x", Parse("x"));
