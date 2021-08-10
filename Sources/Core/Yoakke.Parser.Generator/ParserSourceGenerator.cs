@@ -254,9 +254,11 @@ partial {symbol.GetTypeKindName()} {className} : {TypeNames.ParserBase}
             {
                 var firstVar = this.GenerateBnf(code, rule, fold.First, lastIndex);
                 var nextResultVar = this.AllocateVarName();
+                var anySuccessVar = this.AllocateVarName();
                 code.AppendLine($"if ({firstVar}.IsOk) {{");
                 code.AppendLine($"    {resultVar} = {firstVar};");
                 code.AppendLine("    while (true) {");
+                code.AppendLine($"        var {anySuccessVar} = false;");
                 code.AppendLine($"        var {nextResultVar} = {resultVar};");
 
                 foreach (var (second, method) in fold.Seconds)
@@ -273,15 +275,12 @@ partial {symbol.GetTypeKindName()} {className} : {TypeNames.ParserBase}
                     code.AppendLine("} else {");
                     code.AppendLine($"    var {binder} = {secondVar}.Ok.Value;");
                     code.AppendLine($"    {nextResultVar} = {TypeNames.ParserBase}.MergeAlternatives({makeOk}, {nextResultVar});");
+                    code.AppendLine($"    {anySuccessVar} = true;");
                     code.AppendLine("}");
                 }
 
-                code.AppendLine($"        if ({nextResultVar}.Ok.Offset == {resultVar}.Ok.Offset) {{");
-                code.AppendLine($"            {resultVar} = {nextResultVar};");
-                code.AppendLine("            break;");
-                code.AppendLine("        } else {");
-                code.AppendLine($"            {resultVar} = {nextResultVar};");
-                code.AppendLine("        }");
+                code.AppendLine($"        {resultVar} = {nextResultVar};");
+                code.AppendLine($"        if (!{anySuccessVar}) break;");
                 code.AppendLine("    }");
                 code.AppendLine("} else {");
                 code.AppendLine($"    {resultVar} = {firstVar}.Error;");
