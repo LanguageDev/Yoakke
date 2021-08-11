@@ -43,6 +43,8 @@ namespace Yoakke.SyntaxTree.Generator
 
             public INamedTypeSymbol? ReturnType { get; set; }
 
+            public string? GenericReturnType { get; set; }
+
             public string? MethodName { get; set; }
         }
 
@@ -111,10 +113,16 @@ namespace Yoakke.SyntaxTree.Generator
                 var visitor = new Visitor(symbol!);
                 foreach (var attr in attrs)
                 {
+                    if (attr.ReturnType is not null && attr.GenericReturnType is not null)
+                    {
+                        this.Report(Diagnostics.BothReturnTypeAndGenericReturnTypeSpecified, syntax.GetLocation());
+                        continue;
+                    }
+
                     visitor.Overrides[attr.NodeType!] = new(attr.NodeType!)
                     {
                         MethodName = attr.MethodName,
-                        ReturnType = attr.ReturnType,
+                        ReturnType = (object?)attr.ReturnType ?? attr.GenericReturnType,
                     };
                 }
                 visitors.Add(visitor);
@@ -190,6 +198,18 @@ namespace Yoakke.SyntaxTree.Generator
                 .Select(m => (m.Name, m.Parameters[0].Type))
                 .ToHashSet(NameSymbolPairComparer.Instance);
 
+            ITypeSymbol GetGenericParam(string name)
+            {
+                foreach (var param in visitor.VisitorClass.TypeParameters)
+                {
+                    if (param.Name == name) return param;
+                }
+
+                // Not found, error
+                this.Report(Diagnostics.GenericTypeNotDefined, visitor.VisitorClass.Locations[0], visitor.VisitorClass.Name, name);
+                return voidType;
+            }
+
             void GenerateMembersVisitor(MetaNode currentNode)
             {
                 var enumerableInterface = this.LoadSymbol(TypeNames.IEnumerable);
@@ -226,7 +246,13 @@ namespace Yoakke.SyntaxTree.Generator
                 if (!currentNode.VisitorOverrides.TryGetValue(visitor, out var overrides)) return;
 
                 // Otherwise we need to generate code, as the visitor deals with this node
-                var returnType = overrides.ReturnType ?? voidType;
+                var returnType = overrides.ReturnType switch
+                {
+                    INamedTypeSymbol t => t,
+                    string genericParamName => GetGenericParam(genericParamName),
+                    null => voidType,
+                    _ => throw new InvalidOperationException(),
+                };
                 var returnTypeStr = returnType.ToDisplayString();
                 var methodName = overrides.MethodName ?? "Visit";
 
