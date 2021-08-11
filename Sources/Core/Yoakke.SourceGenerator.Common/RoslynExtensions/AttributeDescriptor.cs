@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
@@ -52,7 +53,7 @@ namespace Yoakke.SourceGenerator.Common.RoslynExtensions
             // Then deal with named
             foreach (var kv in attributeData.NamedArguments)
             {
-                result[kv.Key] = kv.Value;
+                result[kv.Key] = kv.Value.Value;
                 uncovered.Remove(kv.Key);
             }
 

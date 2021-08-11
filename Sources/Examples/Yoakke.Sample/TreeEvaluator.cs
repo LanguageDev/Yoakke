@@ -11,7 +11,7 @@ using Yoakke.SyntaxTree.Attributes;
 namespace Yoakke.Sample
 {
     [SyntaxTreeVisitor(typeof(AstNode))]
-    [SyntaxTreeVisitor(typeof(Expression), typeof(object))]
+    [SyntaxTreeVisitor(typeof(Expression), ReturnType = typeof(object))]
     public abstract partial class TreeEvaluatorBase { }
 
     public class TreeEvaluator : TreeEvaluatorBase
