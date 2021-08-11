@@ -15,6 +15,11 @@ namespace Yoakke.SyntaxTree.Generator
     internal class VisitorOverride
     {
         /// <summary>
+        /// The node class this override applies to.
+        /// </summary>
+        public INamedTypeSymbol NodeClass { get; }
+
+        /// <summary>
         /// Override for the method name.
         /// </summary>
         public string? MethodName { get; set; }
@@ -23,5 +28,14 @@ namespace Yoakke.SyntaxTree.Generator
         /// Override for the method return type.
         /// </summary>
         public INamedTypeSymbol? ReturnType { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="VisitorOverride"/> class.
+        /// </summary>
+        /// <param name="nodeClass">The node class this override applies to.</param>
+        public VisitorOverride(INamedTypeSymbol nodeClass)
+        {
+            this.NodeClass = nodeClass;
+        }
     }
 }
