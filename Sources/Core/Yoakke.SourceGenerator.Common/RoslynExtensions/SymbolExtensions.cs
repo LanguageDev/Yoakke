@@ -252,5 +252,46 @@ namespace Yoakke.SourceGenerator.Common.RoslynExtensions
                 .FirstOrDefault(attr => SymbolEqualityComparer.Default.Equals(attr.AttributeClass, attributeSymbol));
             return attributeData is not null;
         }
+
+        /// <summary>
+        /// Retrieves all <see cref="INamedTypeSymbol"/>s defined in the given <see cref="IAssemblySymbol"/>.
+        /// </summary>
+        /// <param name="assembly">The <see cref="IAssemblySymbol"/> to search for types.</param>
+        /// <returns>The sequence of declared types in <paramref name="assembly"/>.</returns>
+        public static IEnumerable<INamedTypeSymbol> GetAllDeclaredTypes(this IAssemblySymbol assembly) =>
+            assembly.GlobalNamespace.GetAllDeclaredTypes();
+
+        /// <summary>
+        /// Retrieves all <see cref="INamedTypeSymbol"/>s defined in the given <see cref="INamespaceSymbol"/>.
+        /// </summary>
+        /// <param name="namespace">The <see cref="INamespaceSymbol"/> to search for types.</param>
+        /// <returns>The sequence of declared types in <paramref name="namespace"/>.</returns>
+        public static IEnumerable<INamedTypeSymbol> GetAllDeclaredTypes(this INamespaceSymbol @namespace)
+        {
+            foreach (var subNs in @namespace.GetNamespaceMembers())
+            {
+                foreach (var type in subNs.GetAllDeclaredTypes()) yield return type;
+            }
+
+            foreach (var type in @namespace.GetTypeMembers())
+            {
+                yield return type;
+                foreach (var subType in type.GetAllDeclaredTypes()) yield return subType;
+            }
+        }
+
+        /// <summary>
+        /// Retrieves all <see cref="INamedTypeSymbol"/>s defined in the given <see cref="INamedTypeSymbol"/>.
+        /// </summary>
+        /// <param name="type">The <see cref="INamedTypeSymbol"/> to search for types.</param>
+        /// <returns>The sequence of declared types in <paramref name="type"/>.</returns>
+        public static IEnumerable<INamedTypeSymbol> GetAllDeclaredTypes(this INamedTypeSymbol type)
+        {
+            foreach (var subType in type.GetTypeMembers())
+            {
+                yield return subType;
+                foreach (var subSubType in subType.GetAllDeclaredTypes()) yield return subSubType;
+            }
+        }
     }
 }

@@ -99,7 +99,7 @@ namespace Yoakke.SyntaxTree.Generator
                 var visitor = new Visitor(symbol!);
                 foreach (var attr in attrs)
                 {
-                    visitor.Overrides[attr.NodeType!] = new()
+                    visitor.Overrides[attr.NodeType!] = new(attr.NodeType!)
                     {
                         MethodName = attr.MethodName,
                         ReturnType = attr.ReturnType,
@@ -108,8 +108,11 @@ namespace Yoakke.SyntaxTree.Generator
                 visitors.Add(visitor);
             }
 
+            // We recollect all nodes the visitors reference, as those can be in different assemblies
+            var visitableNodes = this.CollectVisitorReferencedNodes(visitors);
+
             // For the visitors we build a node hierarchy
-            var rootNodes = BuildNodeHierarchy(nodes);
+            var rootNodes = BuildNodeHierarchy(visitableNodes);
             // We fill up the hierarchy with visitor information
             foreach (var visitor in visitors)
             {
@@ -282,7 +285,7 @@ namespace Yoakke.SyntaxTree.Generator
             if (visitor.Overrides.TryGetValue(currentNode.NodeClass, out var newOverride))
             {
                 // We override by filling in anything new that has been provided
-                currentOverride = new()
+                currentOverride = new(currentNode.NodeClass)
                 {
                     MethodName = newOverride.MethodName ?? currentOverride?.MethodName ?? "Visit",
                     ReturnType = newOverride.ReturnType ?? currentOverride?.ReturnType ?? voidType,
@@ -294,6 +297,33 @@ namespace Yoakke.SyntaxTree.Generator
 
             // Visit children
             foreach (var child in currentNode.Children) this.PopulateNodeWithVisitorOverrides(visitor, currentOverride, child);
+        }
+
+        private HashSet<INamedTypeSymbol> CollectVisitorReferencedNodes(List<Visitor> visitors)
+        {
+            // NOTE: False positive
+#pragma warning disable RS1024 // Compare symbols correctly
+            var visitableNodes = new HashSet<INamedTypeSymbol>(SymbolEqualityComparer.Default);
+            var visitedAssemblys = new HashSet<IAssemblySymbol>(SymbolEqualityComparer.Default);
+#pragma warning restore RS1024 // Compare symbols correctly
+            foreach (var visitor in visitors)
+            {
+                foreach (var nodeClass in visitor.Overrides.Values.Select(o => o.NodeClass))
+                {
+                    // If the assembly of the node is already visited, skip the recursive check
+                    if (!visitedAssemblys.Add(nodeClass.ContainingAssembly)) continue;
+
+                    // New, unvisited assembly, filter out relevant nodes
+                    var typesInAssembly = nodeClass.ContainingAssembly.GetAllDeclaredTypes();
+                    foreach (var symbol in typesInAssembly)
+                    {
+                        if (!this.IsSyntaxTreeNode(symbol)) continue;
+                        // NOTE: Here we don't require it to be declarable inside, since the visitor is completely external
+                        visitableNodes.Add(symbol);
+                    }
+                }
+            }
+            return visitableNodes;
         }
 
         private static List<MetaNode> BuildNodeHierarchy(HashSet<INamedTypeSymbol> symbols)
