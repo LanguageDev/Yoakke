@@ -23,14 +23,21 @@ namespace Yoakke.SyntaxTree.Attributes
         public Type ReturnType { get; set; }
 
         /// <summary>
+        /// The method name to use. The default is 'Visit'.
+        /// </summary>
+        public string? MethodName { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="SyntaxTreeVisitorAttribute"/> class.
         /// </summary>
         /// <param name="nodeType">The type of the node the visitor visits.</param>
         /// <param name="returnType">The type to return from the visitor calls.</param>
-        public SyntaxTreeVisitorAttribute(Type nodeType, Type returnType)
+        /// <param name="methodName">The method name to use.</param>
+        public SyntaxTreeVisitorAttribute(Type nodeType, Type returnType, string? methodName = null)
         {
             this.NodeType = nodeType;
             this.ReturnType = returnType;
+            this.MethodName = methodName;
         }
 
         /// <summary>

@@ -7,57 +7,61 @@ using Yoakke.SyntaxTree.Attributes;
 
 namespace Yoakke.SyntaxTree.Tests
 {
-    [SyntaxTree]
-    [SyntaxTreeVisitor("AstVoidVisitor")]
-    [SyntaxTreeVisitor("AstStrVisitor", typeof(string))]
-    public abstract partial record Ast
-    {
-        public partial record Node1(int Foo, int Bar) : Ast;
-
-        public partial record Node2(IList<Ast> Values) : Ast;
-
-        [SyntaxTreeIgnore]
-        public partial record Node3(int Baz) : Ast
-        {
-            public override int ChildCount => throw new NotImplementedException();
-
-            public override object GetChild(int index) => throw new NotImplementedException();
-        }
-    }
-
-    public class MyVoidVisitor : Ast.AstVoidVisitor
-    {
-        public StringBuilder Text { get; set; } = new();
-
-        public void Call(Ast n) => this.Visit(n);
-
-        protected override void Visit(Ast.Node1 n)
-        {
-            this.Text.Append($"N1[{n.Foo}, {n.Bar}](");
-            base.Visit(n);
-            this.Text.Append(')');
-        }
-
-        protected override void Visit(Ast.Node2 n)
-        {
-            this.Text.Append($"N2(");
-            base.Visit(n);
-            this.Text.Append(')');
-        }
-    }
-
-    public class MyStrVisitor : Ast.AstStrVisitor
-    {
-        public string Call(Ast n) => this.Visit(n);
-
-        protected override string Visit(Ast.Node1 n) => $"N1({n.Foo}, {n.Bar})";
-
-        protected override string Visit(Ast.Node2 n) => $"N2({string.Join(", ", n.Values.Select(this.Visit))})";
-    }
-
     [TestClass]
-    public class VisitorTests
+    public partial class VisitorTests
     {
+        [SyntaxTree]
+        internal abstract partial record Ast
+        {
+            public partial record Node1(int Foo, int Bar) : Ast;
+
+            public partial record Node2(IList<Ast> Values) : Ast;
+
+            [SyntaxTreeIgnore]
+            public partial record Node3(int Baz) : Ast
+            {
+                public override int ChildCount => throw new NotImplementedException();
+
+                public override object GetChild(int index) => throw new NotImplementedException();
+            }
+        }
+
+        [SyntaxTreeVisitor(typeof(Ast))]
+        internal abstract partial class VoidVisitorBase { }
+
+        internal class MyVoidVisitor : VoidVisitorBase
+        {
+            public StringBuilder Text { get; set; } = new();
+
+            public void Call(Ast n) => this.Visit(n);
+
+            protected override void Visit(Ast.Node1 n)
+            {
+                this.Text.Append($"N1[{n.Foo}, {n.Bar}](");
+                base.Visit(n);
+                this.Text.Append(')');
+            }
+
+            protected override void Visit(Ast.Node2 n)
+            {
+                this.Text.Append($"N2(");
+                base.Visit(n);
+                this.Text.Append(')');
+            }
+        }
+
+        [SyntaxTreeVisitor(typeof(Ast), typeof(string))]
+        internal abstract partial class StrVisitorBase { }
+
+        internal class MyStrVisitor : StrVisitorBase
+        {
+            public string Call(Ast n) => this.Visit(n);
+
+            protected override string Visit(Ast.Node1 n) => $"N1({n.Foo}, {n.Bar})";
+
+            protected override string Visit(Ast.Node2 n) => $"N2({string.Join(", ", n.Values.Select(this.Visit))})";
+        }
+
         [TestMethod]
         public void VoidVisitorBasic()
         {
