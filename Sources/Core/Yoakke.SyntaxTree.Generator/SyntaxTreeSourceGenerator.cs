@@ -46,6 +46,18 @@ namespace Yoakke.SyntaxTree.Generator
             public string? MethodName { get; set; }
         }
 
+        private class NameSymbolPairComparer : IEqualityComparer<(string Name, ITypeSymbol Type)>
+        {
+            public static readonly NameSymbolPairComparer Instance = new();
+
+            public bool Equals((string Name, ITypeSymbol Type) x, (string Name, ITypeSymbol Type) y) =>
+                   x.Name == y.Name
+                && SymbolEqualityComparer.Default.Equals(x.Type, y.Type);
+
+            public int GetHashCode((string Name, ITypeSymbol Type) obj) =>
+                (obj.Name, SymbolEqualityComparer.Default.GetHashCode(obj.Type)).GetHashCode();
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SyntaxTreeSourceGenerator"/> class.
         /// </summary>
@@ -168,6 +180,16 @@ namespace Yoakke.SyntaxTree.Generator
             var voidType = this.LoadSymbol(TypeNames.Void);
             var definitions = new StringBuilder();
 
+            // A lookup table for user-defined single-parameter methods in the visitor class
+            // Creates a set of (name, type), so we can easily filter out methods that are defined by the user,
+            // so we don't duplicate them
+            var userDefinedVisitors = visitor.VisitorClass
+                .GetMembers()
+                .OfType<IMethodSymbol>()
+                .Where(m => m.Parameters.Length == 1)
+                .Select(m => (m.Name, m.Parameters[0].Type))
+                .ToHashSet(NameSymbolPairComparer.Instance);
+
             void GenerateMembersVisitor(MetaNode currentNode)
             {
                 var enumerableInterface = this.LoadSymbol(TypeNames.IEnumerable);
@@ -207,6 +229,10 @@ namespace Yoakke.SyntaxTree.Generator
                 var returnType = overrides.ReturnType ?? voidType;
                 var returnTypeStr = returnType.ToDisplayString();
                 var methodName = overrides.MethodName ?? "Visit";
+
+                // Here we can check, if the method is already defined by the user and early-terminate, if so
+                if (userDefinedVisitors.Contains((methodName, currentNode.NodeClass))) return;
+
                 definitions.AppendLine($"protected virtual {returnTypeStr} {methodName}({currentNode.NodeClass.ToDisplayString()} node) {{");
 
                 if (currentNode.Children.Count == 0)
