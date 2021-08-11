@@ -108,7 +108,7 @@ namespace Yoakke.SourceGenerator.Common
         /// </summary>
         /// <param name="fileName">The name of the file to add.</param>
         /// <param name="text">The contents of the file to add.</param>
-        protected void AddSource(string fileName, string text) => this.Context.AddSource(fileName, text);
+        protected void AddSource(string fileName, string text) => this.Context.AddSource(SanitizeFileName(fileName), text);
 
         /// <summary>
         /// Requires a library to be referenced by the user.
@@ -190,5 +190,9 @@ namespace Yoakke.SourceGenerator.Common
             }
             return true;
         }
+
+        private static string SanitizeFileName(string str) => str
+            .Replace("<", "_lt_")
+            .Replace(">", "_gt_");
     }
 }

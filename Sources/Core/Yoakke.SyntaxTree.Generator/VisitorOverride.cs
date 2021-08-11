@@ -26,8 +26,9 @@ namespace Yoakke.SyntaxTree.Generator
 
         /// <summary>
         /// Override for the method return type.
+        /// Can be either a <see cref="INamedTypeSymbol"/>, or a generic parameter name as a <see cref="string"/>.
         /// </summary>
-        public INamedTypeSymbol? ReturnType { get; set; }
+        public object? ReturnType { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VisitorOverride"/> class.

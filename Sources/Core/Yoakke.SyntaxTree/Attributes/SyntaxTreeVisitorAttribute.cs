@@ -20,7 +20,12 @@ namespace Yoakke.SyntaxTree.Attributes
         /// <summary>
         /// The type to return from the visitor calls.
         /// </summary>
-        public Type ReturnType { get; set; }
+        public Type? ReturnType { get; set; }
+
+        /// <summary>
+        /// The generic type name to return from the visitor calls.
+        /// </summary>
+        public string? GenericReturnType { get; set; }
 
         /// <summary>
         /// The method name to use. The default is 'Visit'.
@@ -33,7 +38,7 @@ namespace Yoakke.SyntaxTree.Attributes
         /// <param name="nodeType">The type of the node the visitor visits.</param>
         /// <param name="returnType">The type to return from the visitor calls.</param>
         /// <param name="methodName">The method name to use.</param>
-        public SyntaxTreeVisitorAttribute(Type nodeType, Type returnType, string? methodName = null)
+        public SyntaxTreeVisitorAttribute(Type nodeType, Type? returnType, string? methodName = null)
         {
             this.NodeType = nodeType;
             this.ReturnType = returnType;
@@ -45,7 +50,7 @@ namespace Yoakke.SyntaxTree.Attributes
         /// </summary>
         /// <param name="nodeType">The type of the node the visitor visits.</param>
         public SyntaxTreeVisitorAttribute(Type nodeType)
-            : this(nodeType, typeof(void))
+            : this(nodeType, null)
         {
         }
     }
