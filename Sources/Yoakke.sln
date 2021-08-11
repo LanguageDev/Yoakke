@@ -100,7 +100,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Ir.Sample", "Example
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Platforms", "Platforms", "{A482C708-3225-47F3-8DE3-BB354888CC51}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yoakke.NugetMaintainer", "Tools\Yoakke.NugetMaintainer\Yoakke.NugetMaintainer.csproj", "{7BD28C2F-18D6-4C3A-9899-469775B001D8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.NugetMaintainer", "Tools\Yoakke.NugetMaintainer\Yoakke.NugetMaintainer.csproj", "{7BD28C2F-18D6-4C3A-9899-469775B001D8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yoakke.SyntaxTree.Tests.Tree", "Tests\Yoakke.SyntaxTree.Tests.Tree\Yoakke.SyntaxTree.Tests.Tree.csproj", "{2E1E2A07-9EC8-462D-B001-8AB44F973286}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -252,6 +254,10 @@ Global
 		{7BD28C2F-18D6-4C3A-9899-469775B001D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7BD28C2F-18D6-4C3A-9899-469775B001D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7BD28C2F-18D6-4C3A-9899-469775B001D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E1E2A07-9EC8-462D-B001-8AB44F973286}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E1E2A07-9EC8-462D-B001-8AB44F973286}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E1E2A07-9EC8-462D-B001-8AB44F973286}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E1E2A07-9EC8-462D-B001-8AB44F973286}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -284,6 +290,7 @@ Global
 		{04888C13-EA59-4AC4-9DFE-BEE103AFA006} = {58417641-179E-4F53-9528-234B4E87944E}
 		{D9A26C9B-EB6D-4EDB-923B-ED529E4C5A8D} = {B042CA2F-FAD5-4148-89C8-3310AF17BC14}
 		{B5C7DD29-4D2C-46B7-B940-FA5C2680C382} = {B042CA2F-FAD5-4148-89C8-3310AF17BC14}
+		{2E1E2A07-9EC8-462D-B001-8AB44F973286} = {58417641-179E-4F53-9528-234B4E87944E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1EDE8F07-AE3A-4556-AEF0-3AC518F18F92}
