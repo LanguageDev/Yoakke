@@ -73,11 +73,13 @@ namespace Yoakke.SourceGenerator.Common.RoslynExtensions
             void DeclareInsideExternallyRec(ISymbol symbol)
             {
                 if (symbol is null) return;
-                if (symbol is ITypeSymbol type)
+                if (symbol is INamedTypeSymbol type)
                 {
                     if (!type.IsPartial()) throw new InvalidOperationException("Non-partial type nesting");
                     DeclareInsideExternallyRec(symbol.ContainingSymbol);
-                    prefixBuilder!.AppendLine($"partial {type.GetTypeKindName()} {type.Name} {{");
+
+                    var (genericTypes, genericConstraints) = type.GetGenericCrud();
+                    prefixBuilder!.AppendLine($"partial {type.GetTypeKindName()} {type.Name}{genericTypes} {genericConstraints} {{");
                     suffixBuilder!.AppendLine("}");
                     return;
                 }
@@ -92,6 +94,37 @@ namespace Yoakke.SourceGenerator.Common.RoslynExtensions
 
             DeclareInsideExternallyRec(symbol);
             return (prefixBuilder.ToString(), suffixBuilder.ToString());
+        }
+
+        /// <summary>
+        /// Retrieves the generic crud needed for a type definition.
+        /// Useful for partial types
+        /// </summary>
+        /// <param name="symbol">The type symbol to get the crud for.</param>
+        /// <returns>The pair of type parameter list and generic constraints as strings.</returns>
+        public static (string TypeParameters, string Constraints) GetGenericCrud(this INamedTypeSymbol symbol)
+        {
+            if (symbol.TypeParameters.Length == 0) return (string.Empty, string.Empty);
+
+            var typeParams = $"<{string.Join(", ", symbol.TypeParameters.Select(p => p.Name))}>";
+
+            var constraints = new StringBuilder();
+            foreach (var param in symbol.TypeParameters)
+            {
+                // First type constraints
+                var constraintList = param.ConstraintTypes.Select(t => t.ToDisplayString()).ToList();
+
+                // Then all other
+                if (param.HasConstructorConstraint) constraintList.Add("new()");
+                if (param.HasNotNullConstraint) constraintList.Add("notnull");
+                if (param.HasReferenceTypeConstraint) constraintList.Add("class");
+                if (param.HasUnmanagedTypeConstraint) constraintList.Add("unmanaged");
+                if (param.HasValueTypeConstraint) constraintList.Add("struct");
+
+                if (constraintList.Count > 0) constraints.AppendLine($"where {param.Name} : {string.Join(", ", constraintList)}");
+            }
+
+            return (typeParams, constraints.ToString());
         }
 
         /// <summary>

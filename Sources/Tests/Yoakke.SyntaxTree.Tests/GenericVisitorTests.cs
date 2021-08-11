@@ -37,7 +37,7 @@ namespace Yoakke.SyntaxTree.Tests
             protected override int Visit(Ast.Bar bar) => 2;
         }
 
-        private class StringVisitor : GenericVisitorBase<int>
+        private class StringVisitor : GenericVisitorBase<string>
         {
             public string GetString(Ast ast) => this.Visit(ast);
 
