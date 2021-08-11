@@ -10,41 +10,31 @@ using Microsoft.CodeAnalysis;
 namespace Yoakke.SyntaxTree.Generator
 {
     /// <summary>
-    /// Describes a visitor.
+    /// Description of a single visitor.
     /// </summary>
     internal class Visitor
     {
         /// <summary>
-        /// The node that defined or overrode this visitor.
+        /// The visitor class that is annotated.
         /// </summary>
-        public MetaNode Owner { get; }
+        public INamedTypeSymbol VisitorClass { get; }
 
         /// <summary>
-        /// The name of this visitor.
+        /// A node class to return-type override map.
         /// </summary>
-        public string Name { get; }
-
-        /// <summary>
-        /// The type the visitor returns.
-        /// </summary>
-        public INamedTypeSymbol ReturnType { get; }
-
-        /// <summary>
-        /// The source code of this visitor.
-        /// </summary>
-        public StringBuilder Code { get; set; } = new();
+        // NOTE: False-positive
+#pragma warning disable RS1024 // Compare symbols correctly
+        public IDictionary<INamedTypeSymbol, VisitorOverride> Overrides { get; }
+            = new Dictionary<INamedTypeSymbol, VisitorOverride>(SymbolEqualityComparer.Default);
+#pragma warning restore RS1024 // Compare symbols correctly
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Visitor"/> class.
         /// </summary>
-        /// <param name="owner">The owner <see cref="MetaNode"/>.</param>
-        /// <param name="name">The name of this visitor.</param>
-        /// <param name="returnType">The return type the visitor produces.</param>
-        public Visitor(MetaNode owner, string name, INamedTypeSymbol returnType)
+        /// <param name="visitorClass">The visitor class that is annotated.</param>
+        public Visitor(INamedTypeSymbol visitorClass)
         {
-            this.Owner = owner;
-            this.Name = name;
-            this.ReturnType = returnType;
+            this.VisitorClass = visitorClass;
         }
     }
 }

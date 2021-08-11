@@ -6,10 +6,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Yoakke.Symbols;
+using Yoakke.SyntaxTree.Attributes;
 
 namespace Yoakke.Sample
 {
-    public class TreeEvaluator : AstNode.TreeEvaluator
+    [SyntaxTreeVisitor(typeof(AstNode))]
+    [SyntaxTreeVisitor(typeof(Expression), typeof(object))]
+    public abstract partial class TreeEvaluatorBase { }
+
+    public class TreeEvaluator : TreeEvaluatorBase
     {
         private class Return : Exception
         {

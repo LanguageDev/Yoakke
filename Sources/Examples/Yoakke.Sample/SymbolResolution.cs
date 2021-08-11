@@ -1,17 +1,21 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System;
 using System.Collections.Generic;
 using Yoakke.Symbols;
+using Yoakke.SyntaxTree.Attributes;
 
 namespace Yoakke.Sample
 {
+    [SyntaxTreeVisitor(typeof(AstNode))]
+    public abstract partial class PassVisitorBase { }
+
     public class SymbolResolution
     {
         // Define scopes
-        private class ScopePass : AstNode.PassVisitor
+        private class ScopePass : PassVisitorBase
         {
             public Dictionary<AstNode, IScope> Scopes { get; } = new();
 
@@ -52,7 +56,7 @@ namespace Yoakke.Sample
         }
 
         // Define order-independent constants (so far only functions)
-        private class ConstPass : AstNode.PassVisitor
+        private class ConstPass : PassVisitorBase
         {
             public Dictionary<AstNode, ISymbol> Symbols { get; } = new();
 
@@ -80,7 +84,7 @@ namespace Yoakke.Sample
         }
 
         // Define order-dependent variables
-        private class VarPass : AstNode.PassVisitor
+        private class VarPass : PassVisitorBase
         {
             public Dictionary<object, ISymbol> Symbols { get; } = new();
 

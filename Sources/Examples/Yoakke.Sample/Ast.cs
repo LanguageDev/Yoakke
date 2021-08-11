@@ -9,8 +9,6 @@ using Yoakke.SyntaxTree.Attributes;
 namespace Yoakke.Sample
 {
     [SyntaxTree]
-    [SyntaxTreeVisitor("PassVisitor")]
-    [SyntaxTreeVisitor("TreeEvaluator")]
     public abstract partial record AstNode;
 
     public abstract partial record Statement : AstNode
@@ -32,7 +30,6 @@ namespace Yoakke.Sample
         public partial record Expr(Expression Expression) : Statement;
     }
 
-    [SyntaxTreeVisitor("TreeEvaluator", typeof(object))]
     public abstract partial record Expression : AstNode
     {
         public partial record Call(Expression Function, IReadOnlyValueList<Expression> Arguments) : Expression;

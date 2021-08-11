@@ -30,8 +30,7 @@ namespace Yoakke.Lexer.Generator
 
             public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
             {
-                if (syntaxNode is EnumDeclarationSyntax enumDeclSyntax
-                    && enumDeclSyntax.AttributeLists.Count > 0)
+                if (syntaxNode is EnumDeclarationSyntax enumDeclSyntax && enumDeclSyntax.AttributeLists.Count > 0)
                 {
                     this.CandidateEnums.Add(enumDeclSyntax);
                 }
