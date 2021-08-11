@@ -149,9 +149,10 @@ namespace Yoakke.Parser.Generator
             }
 
             var (prefix, suffix) = symbol.ContainingSymbol.DeclareInsideExternally();
+            var (genericTypes, genericConstraints) = symbol.GetGenericCrud();
             return $@"
 {prefix} 
-partial {symbol.GetTypeKindName()} {className} : {TypeNames.ParserBase}
+partial {symbol.GetTypeKindName()} {className}{genericTypes} : {TypeNames.ParserBase} {genericConstraints}
 {{
     public {className}({TypeNames.ILexer} lexer)
         : base(lexer)
