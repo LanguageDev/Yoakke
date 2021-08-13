@@ -35,7 +35,7 @@ jobs:
           --api-key ${{ secrets.NUGET_TOKEN }} ^
           --nightly-suffix nightly ^
           --timestamp ${{ steps.current-time.outputs.formattedTime }} ^
-          --timestamp-format yyyy.M.d-H.m.s-
+          --timestamp-format yyyy.M.d-H.m.s- ^
           --lookbehind-days 3
           --delay-between-requests 5 ^
     - name: Upload to NuGet.org
