@@ -34,6 +34,9 @@ namespace Yoakke.NugetMaintainer
 
             [Option("timestamp", Required = true, HelpText = "The timestamp used for the currently built nightly packages.")]
             public string Timestamp { get; set; } = string.Empty;
+
+            [Option("delay-between-requests", Required = false, HelpText = "The number of seconds to wait between requests.", Default = 60)]
+            public int DelayBetweenRequests { get; set; } = 60;
         }
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -102,6 +105,7 @@ namespace Yoakke.NugetMaintainer
 
             foreach (var version in versions)
             {
+                await Task.Delay(options.DelayBetweenRequests * 1000);
                 await updateResource.Delete(
                     id,
                     version,
