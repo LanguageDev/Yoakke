@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -34,6 +35,12 @@ namespace Yoakke.NugetMaintainer
 
             [Option("timestamp", Required = true, HelpText = "The timestamp used for the currently built nightly packages.")]
             public string Timestamp { get; set; } = string.Empty;
+
+            [Option("timestamp-format", Required = true, HelpText = "The timestamp date-time format.")]
+            public string TimestampFormat { get; set; } = string.Empty;
+
+            [Option("lookbehind-days", Required = false, HelpText = "How many days to look behind for versions. Set to -1 for infinite.", Default = -1)]
+            public int LookbehindDays { get; set; }
 
             [Option("delay-between-requests", Required = false, HelpText = "The number of seconds to wait between requests.", Default = 60)]
             public int DelayBetweenRequests { get; set; }
@@ -118,6 +125,24 @@ namespace Yoakke.NugetMaintainer
         private static async Task<IReadOnlyList<string>> GetNightlyPackageVersions(Options options, string id) =>
             (await GetAllPackageVersions(id))
                 .Where(v => v.EndsWith(options.NightlySuffix))
+                .Where(v =>
+                {
+                    // Now we take lookbehind into account
+                    if (options.LookbehindDays == -1) return true;
+
+                    // We gotta count days back
+                    var versionDatePart = v[..^options.NightlySuffix.Length];
+                    // If we fail date-parsing, assume no list
+                    if (!DateTime.TryParseExact(
+                        versionDatePart,
+                        options.TimestampFormat,
+                        CultureInfo.InvariantCulture,
+                        DateTimeStyles.AssumeUniversal,
+                        out var date)) return false;
+
+                    // Only list, if in the given range
+                    return date >= DateTime.Now.AddDays(-options.LookbehindDays);
+                })
                 .ToList();
 
         private static async Task<IReadOnlyList<string>> GetAllPackageVersions(string id)
