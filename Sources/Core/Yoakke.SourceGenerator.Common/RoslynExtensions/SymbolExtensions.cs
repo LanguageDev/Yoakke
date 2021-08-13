@@ -98,7 +98,7 @@ namespace Yoakke.SourceGenerator.Common.RoslynExtensions
 
         /// <summary>
         /// Retrieves the generic crud needed for a type definition.
-        /// Useful for partial types
+        /// Useful for partial types.
         /// </summary>
         /// <param name="symbol">The type symbol to get the crud for.</param>
         /// <returns>The pair of type parameter list and generic constraints as strings.</returns>

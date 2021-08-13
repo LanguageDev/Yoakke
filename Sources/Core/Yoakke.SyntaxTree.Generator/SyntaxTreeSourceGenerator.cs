@@ -133,13 +133,14 @@ namespace Yoakke.SyntaxTree.Generator
 
             // For the visitors we build a node hierarchy
             var rootNodes = BuildNodeHierarchy(visitableNodes);
+            var allNodes = CollectAllMetaNodes(rootNodes);
             // We fill up the hierarchy with visitor information
             foreach (var visitor in visitors)
             {
                 foreach (var rootNode in rootNodes) this.PopulateNodeWithVisitorOverrides(visitor, null, rootNode);
             }
             // Now we generate the source for each visitor
-            foreach (var visitor in visitors) this.GenerateVisitorSource(visitor, rootNodes);
+            foreach (var visitor in visitors) this.GenerateVisitorSource(visitor, rootNodes, allNodes);
         }
 
         private void GenerateNodeSource(INamedTypeSymbol nodeSymbol)
@@ -183,7 +184,10 @@ namespace Yoakke.SyntaxTree.Generator
             this.AddSource($"{nodeSymbol.ToDisplayString()}.Generated.cs", sourceCode);
         }
 
-        private void GenerateVisitorSource(Visitor visitor, List<MetaNode> rootNodes)
+        private void GenerateVisitorSource(
+            Visitor visitor,
+            List<MetaNode> rootNodes,
+            Dictionary<INamedTypeSymbol, MetaNode> allNodes)
         {
             var voidType = this.LoadSymbol(TypeNames.Void);
             var definitions = new StringBuilder();
@@ -227,12 +231,16 @@ namespace Yoakke.SyntaxTree.Generator
                         && this.IsSyntaxTreeNode(sym))
                     {
                         // It's a list of visitable things, visit them
-                        definitions!.AppendLine($"foreach (var item in node.{member.Name}) this.Visit(item);");
+                        var child = allNodes[sym];
+                        var methodName = child.VisitorOverrides[visitor].MethodName ?? "Visit";
+                        definitions!.AppendLine($"foreach (var item in node.{member.Name}) this.{methodName}(item);");
                     }
                     else if (type is INamedTypeSymbol sym2 && this.IsSyntaxTreeNode(sym2))
                     {
                         // It's a subnode, we have to visit it (with a null check)
-                        definitions!.AppendLine($"if (node.{member.Name} is not null) this.Visit(node.{member.Name});");
+                        var child = allNodes[sym2];
+                        var methodName = child.VisitorOverrides[visitor].MethodName ?? "Visit";
+                        definitions!.AppendLine($"if (node.{member.Name} is not null) this.{methodName}(node.{member.Name});");
                     }
                 }
             }
@@ -376,6 +384,24 @@ namespace Yoakke.SyntaxTree.Generator
                 }
             }
             return visitableNodes;
+        }
+
+        private static Dictionary<INamedTypeSymbol, MetaNode> CollectAllMetaNodes(List<MetaNode> rootNodes)
+        {
+            // NOTE: False-positive
+#pragma warning disable RS1024 // Compare symbols correctly
+            var result = new Dictionary<INamedTypeSymbol, MetaNode>(SymbolEqualityComparer.Default);
+#pragma warning restore RS1024 // Compare symbols correctly
+
+            void CollectAllMetaNodesRec(MetaNode current)
+            {
+                result.Add(current.NodeClass, current);
+                foreach (var node in current.Children) CollectAllMetaNodesRec(node);
+            }
+
+            foreach (var node in rootNodes) CollectAllMetaNodesRec(node);
+
+            return result;
         }
 
         private static List<MetaNode> BuildNodeHierarchy(HashSet<INamedTypeSymbol> symbols)
