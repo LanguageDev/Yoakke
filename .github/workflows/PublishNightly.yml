@@ -19,12 +19,14 @@ jobs:
       with:
         format: Y.M.D-H.m.s
     - name: Build and package
+      shell: cmd
       run: |
         dotnet build Sources/Yoakke.sln ^
           --configuration Release ^
           /p:VersionPrefix=${{ steps.current-time.outputs.formattedTime }} ^
           /p:VersionSuffix=nightly /p:PackageReleaseNotes="Nightly build"
     - name: Clean up NuGet.org packages
+      shell: cmd
       run: |
         dotnet run --project Sources/Tools/Yoakke.NugetMaintainer/Yoakke.NugetMaintainer.csproj -- ^
           --local-root Sources/Core ^
@@ -37,6 +39,7 @@ jobs:
           --lookbehind-days 3
           --delay-between-requests 5 ^
     - name: Upload to NuGet.org
+      shell: cmd
       run: |
         dotnet nuget push Sources/Core/**/*${{ steps.current-time.outputs.formattedTime }}-nightly.nupkg ^
           --api-key ${{ secrets.NUGET_TOKEN }} --source https://api.nuget.org/v3/index.json --no-symbols true
