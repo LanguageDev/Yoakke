@@ -36,7 +36,7 @@ namespace Yoakke.NugetMaintainer
             public string Timestamp { get; set; } = string.Empty;
 
             [Option("delay-between-requests", Required = false, HelpText = "The number of seconds to wait between requests.", Default = 60)]
-            public int DelayBetweenRequests { get; set; } = 60;
+            public int DelayBetweenRequests { get; set; }
         }
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -100,11 +100,10 @@ namespace Yoakke.NugetMaintainer
             var logger = NullLogger.Instance;
             var cancellationToken = CancellationToken.None;
 
-            Console.WriteLine($"Unlisting versions for {id}:");
-            foreach (var version in versions) Console.WriteLine($"  {version}");
-
+            Console.WriteLine($"Unlisting versions for {id} (wait time between request: {options.DelayBetweenRequests} seconds):");
             foreach (var version in versions)
             {
+                Console.WriteLine($"  {version}");
                 await Task.Delay(options.DelayBetweenRequests * 1000);
                 await updateResource.Delete(
                     id,
