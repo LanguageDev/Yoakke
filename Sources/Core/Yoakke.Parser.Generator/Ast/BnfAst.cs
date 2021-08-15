@@ -3,6 +3,7 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System;
+using System.Collections.Generic;
 
 namespace Yoakke.Parser.Generator.Ast
 {
@@ -11,6 +12,34 @@ namespace Yoakke.Parser.Generator.Ast
     /// </summary>
     internal abstract partial class BnfAst
     {
+        /// <summary>
+        /// Substitutes a node by reference.
+        /// </summary>
+        /// <param name="find">The node to substitute.</param>
+        /// <param name="replaceWith">The node to substituite <paramref name="find"/> for.</param>
+        /// <returns>A node that has all <paramref name="find"/> nodes substituted to
+        /// <paramref name="replaceWith"/>, by reference.</returns>
+        public BnfAst SubstituteByReference(BnfAst find, BnfAst replaceWith) => ReferenceEquals(this, find)
+            ? replaceWith
+            : this.SubstituteByReferenceImpl(find, replaceWith);
+
+        /// <summary>
+        /// Implements <see cref="SubstituteByReference(BnfAst, BnfAst)"/>, when this instance is not equal to
+        /// <paramref name="replaceWith"/>.
+        /// </summary>
+        /// <param name="find">The node to substitute.</param>
+        /// <param name="replaceWith">The node to substituite <paramref name="find"/> for.</param>
+        /// <returns>A node that has all <paramref name="find"/> nodes substituted to
+        /// <paramref name="replaceWith"/>, by reference.</returns>
+        protected abstract BnfAst SubstituteByReferenceImpl(BnfAst find, BnfAst replaceWith);
+
+        /// <summary>
+        /// Retrieves the first <see cref="Call"/>s this node makes, if any. Useful for left-recursion detection.
+        /// </summary>
+        /// <returns>The sequence of <see cref="Call"/>s that the node can make when matching without doing anything else
+        /// previously.</returns>
+        public abstract IEnumerable<Call> FirstCalls();
+
         /// <summary>
         /// Desugars the AST into simpler elements.
         ///

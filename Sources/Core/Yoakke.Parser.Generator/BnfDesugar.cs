@@ -17,12 +17,23 @@ namespace Yoakke.Parser.Generator
     internal static class BnfDesugar
     {
         /// <summary>
-        /// Eliminates indirect left-recursion in a set of <see cref="Rule"/>s.
+        /// Eliminates left-recursion in a set of <see cref="Rule"/>s.
         /// </summary>
         /// <param name="rules">The left-recursion eliminated <see cref="Rule"/>.</param>
-        public static void EliminateIndirectLeftRecursion(IDictionary<string, Rule> rules)
+        public static void EliminateLeftRecursion(IDictionary<string, Rule> rules)
         {
-            // TODO
+            // First we need to find the indirect cycles
+            var indirectCycles = FindLeftRecursionCycles(rules)
+                .Where(cycle => cycle.Count > 1)
+                .ToList();
+            // Eliminate the indirect cycles
+            foreach (var cycle in indirectCycles) EliminateIndirectLeftRecursionCycle(rules, cycle);
+
+            // Eliminate direct left-recursion
+            var directCycles = FindLeftRecursionCycles(rules);
+            if (!directCycles.All(cycle => cycle.Count == 1)) throw new InvalidOperationException("Indirect cycle elimination failed: indirect cycles remained.");
+            var directLrRules = directCycles.Select(c => c[0]);
+            foreach (var rule in directLrRules) EliminateDirectLeftRecursion(rule);
         }
 
         /// <summary>
@@ -91,7 +102,7 @@ namespace Yoakke.Parser.Generator
 
         }
 
-        private static List<List<Rule>> FindIndirectLeftRecursionCycles(IDictionary<string, Rule> rules)
+        private static List<List<Rule>> FindLeftRecursionCycles(IDictionary<string, Rule> rules)
         {
             var result = new List<List<Rule>>();
             var touched = new HashSet<Rule>();
@@ -115,9 +126,7 @@ namespace Yoakke.Parser.Generator
                 var index = ruleStack.IndexOf(current);
                 if (index != -1)
                 {
-                    // TODO: If we remove this limit, we can just detect direct LR too, maybe useful to clean up that one
                     // Found a cycle, only store it, if it's an indirect one (<=> the stack has more than 1 element)
-                    if (ruleStack.Count == 1) return;
                     result.Add(ruleStack.GetRange(index, ruleStack.Count - index));
                     return;
                 }

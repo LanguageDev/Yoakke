@@ -41,6 +41,15 @@ namespace Yoakke.Parser.Generator.Ast
             }
 
             /// <inheritdoc/>
+            protected override BnfAst SubstituteByReferenceImpl(BnfAst find, BnfAst replaceWith) =>
+                new Seq(this.Elements.Select(e => e.SubstituteByReference(find, replaceWith)));
+
+            /// <inheritdoc/>
+            public override IEnumerable<Call> FirstCalls() => this.Elements.Count > 0
+                ? this.Elements[0].FirstCalls()
+                : Enumerable.Empty<Call>();
+
+            /// <inheritdoc/>
             public override BnfAst Desugar()
             {
                 if (this.Elements.Count == 1) return this.Elements[0].Desugar();

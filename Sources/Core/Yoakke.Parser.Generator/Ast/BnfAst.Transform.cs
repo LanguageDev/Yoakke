@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Yoakke.Utilities.Compatibility;
@@ -35,6 +36,13 @@ namespace Yoakke.Parser.Generator.Ast
                 this.Subexpr = subexpr;
                 this.Method = method;
             }
+
+            /// <inheritdoc/>
+            protected override BnfAst SubstituteByReferenceImpl(BnfAst find, BnfAst replaceWith) =>
+                new Transform(this.Subexpr.SubstituteByReference(find, replaceWith), this.Method);
+
+            /// <inheritdoc/>
+            public override IEnumerable<Call> FirstCalls() => this.Subexpr.FirstCalls();
 
             /// <inheritdoc/>
             public override BnfAst Desugar()

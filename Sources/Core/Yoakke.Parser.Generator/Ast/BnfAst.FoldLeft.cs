@@ -40,6 +40,14 @@ namespace Yoakke.Parser.Generator.Ast
             }
 
             /// <inheritdoc/>
+            protected override BnfAst SubstituteByReferenceImpl(BnfAst find, BnfAst replaceWith) => new FoldLeft(
+                this.First.SubstituteByReference(find, replaceWith),
+                this.Seconds.Select(s => (s.Node.SubstituteByReference(find, replaceWith), s.Method)).ToList());
+
+            /// <inheritdoc/>
+            public override IEnumerable<Call> FirstCalls() => this.First.FirstCalls();
+
+            /// <inheritdoc/>
             public override BnfAst Desugar() => new FoldLeft(
                 this.First.Desugar(),
                 this.Seconds.Select(s => (s.Node.Desugar(), s.Method)).ToList());

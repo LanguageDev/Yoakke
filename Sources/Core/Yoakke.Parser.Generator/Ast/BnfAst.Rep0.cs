@@ -2,6 +2,8 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
+using System.Collections.Generic;
+
 namespace Yoakke.Parser.Generator.Ast
 {
     internal partial class BnfAst
@@ -24,6 +26,13 @@ namespace Yoakke.Parser.Generator.Ast
             {
                 this.Subexpr = subexpr;
             }
+
+            /// <inheritdoc/>
+            protected override BnfAst SubstituteByReferenceImpl(BnfAst find, BnfAst replaceWith) =>
+                new Rep0(this.Subexpr.SubstituteByReference(find, replaceWith));
+
+            /// <inheritdoc/>
+            public override IEnumerable<Call> FirstCalls() => this.Subexpr.FirstCalls();
 
             /// <inheritdoc/>
             public override BnfAst Desugar() => new Rep0(this.Subexpr.Desugar());
