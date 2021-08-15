@@ -23,7 +23,7 @@ namespace Yoakke.SyntaxTree.Tests
             public partial record Bar : Ast;
         }
 
-        [SyntaxTreeVisitor(typeof(Ast), GenericReturnType = nameof(TReturn))]
+        [Visitor(typeof(Ast), GenericReturnType = nameof(TReturn))]
         internal abstract partial class GenericVisitorBase<TReturn>
         {
         }

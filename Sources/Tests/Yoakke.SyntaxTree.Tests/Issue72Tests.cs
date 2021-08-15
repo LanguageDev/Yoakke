@@ -18,7 +18,7 @@ namespace Yoakke.SyntaxTree.Tests
     [TestClass]
     public partial class Issue72Tests
     {
-        [SyntaxTreeVisitor(typeof(ExternalAst), ReturnType = typeof(string))]
+        [Visitor(typeof(ExternalAst), ReturnType = typeof(string))]
         internal abstract partial class ExternalVisitorBase
         {
         }

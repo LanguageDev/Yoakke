@@ -23,7 +23,7 @@ namespace Yoakke.SyntaxTree.Tests
             public partial record Node2(IList<Ast> Values) : Ast;
         }
 
-        [SyntaxTreeVisitor(typeof(Ast), ReturnType = typeof(string), MethodName = "Stringify")]
+        [Visitor(typeof(Ast), ReturnType = typeof(string), MethodName = "Stringify")]
         internal partial class MyStrVisitor
         {
             public string Call(Ast n) => this.Stringify(n);
