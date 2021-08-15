@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
@@ -306,6 +307,7 @@ namespace Yoakke.SyntaxTree.Generator
             foreach (var @override in visitor.Overrides.Values)
             {
                 var node = new MetaNode(@override.NodeClass);
+                visitableNodes[node.NodeClass] = node;
                 if (node.NodeClass.BaseType is not null
                  && visitableNodes.TryGetValue(node.NodeClass.BaseType, out var parent))
                 {
