@@ -17,15 +17,27 @@ namespace Yoakke.Parser.Generator
     internal static class BnfDesugar
     {
         /// <summary>
+        /// Eliminates indirect left-recursion in a set of <see cref="Rule"/>s.
+        /// </summary>
+        /// <param name="rules">The left-recursion eliminated <see cref="Rule"/>.</param>
+        public static void EliminateIndirectLeftRecursion(IDictionary<string, Rule> rules)
+        {
+            // TODO
+        }
+
+        /// <summary>
         /// Eliminates direct left-recursion in a <see cref="Rule"/>.
         /// </summary>
         /// <param name="rule">The <see cref="Rule"/> to eliminate direct left-recursion in.</param>
         /// <returns>The left-recursion eliminated <see cref="Rule"/>.</returns>
-        public static Rule EliminateLeftRecursion(Rule rule)
+        public static Rule EliminateDirectLeftRecursion(Rule rule)
         {
+            // TODO: We should probably do something a bit more sophisticated
+            // Like what about potential grouping?
+            // A good starting point could be what we do at GetFirstCall
             if (rule.Ast is BnfAst.Alt alt)
             {
-                var newAlt = EliminateLeftRecursionInAlternation(rule, alt);
+                var newAlt = EliminateDirectLeftRecursionInAlternation(rule, alt);
                 return new Rule(rule.Name, newAlt, rule.PublicApi) { VisualName = rule.VisualName };
             }
             return rule;
@@ -64,7 +76,7 @@ namespace Yoakke.Parser.Generator
                     else toAdd = new BnfAst.Alt(toAdd, alt);
                 }
                 // Default is always stepping a level down
-                if (toAdd == null) toAdd = nextCall;
+                if (toAdd is null) toAdd = nextCall;
                 else toAdd = new BnfAst.Alt(toAdd, nextCall);
 
                 result.Add(new Rule(currentCall.Name, toAdd, i == 0) { VisualName = rule.VisualName });
@@ -72,7 +84,53 @@ namespace Yoakke.Parser.Generator
             return result;
         }
 
-        // Left-recursion //////////////////////////////////////////////////////
+        // Indirect left-recursion /////////////////////////////////////////////
+
+        private static List<List<Rule>> FindIndirectLeftRecursionCycles(IDictionary<string, Rule> rules)
+        {
+            var result = new List<List<Rule>>();
+            var touched = new HashSet<Rule>();
+
+            IEnumerable<Rule> GetFirstCalls(BnfAst ast) => ast switch
+            {
+                BnfAst.Alt alt => alt.Elements.SelectMany(GetFirstCalls),
+                BnfAst.Seq seq => seq.Elements.Count > 0
+                    ? GetFirstCalls(seq.Elements[0])
+                    : Enumerable.Empty<Rule>(),
+                BnfAst.Call call => rules.TryGetValue(call.Name, out var rule)
+                    ? new[] { rule }
+                    : Enumerable.Empty<Rule>(),
+                BnfAst.Group grp => GetFirstCalls(grp.Subexpr),
+                BnfAst.Transform trafo => GetFirstCalls(trafo.Subexpr),
+                _ => Enumerable.Empty<Rule>(),
+            };
+
+            void Cycle(List<Rule> ruleStack, Rule current)
+            {
+                var index = ruleStack.IndexOf(current);
+                if (index != -1)
+                {
+                    // Found a cycle, only store it, if it's an indirect one (<=> the stack has more than 1 element)
+                    if (ruleStack.Count == 1) return;
+                    result.Add(ruleStack.GetRange(index, ruleStack.Count - index));
+                    return;
+                }
+                // If we already touched the rule, skip it from further processing
+                if (!touched.Add(current)) return;
+                // Otherwise we push on, go to each called subrule
+                ruleStack.Add(current);
+                // Get all the leftmost rules this one gets expanded into
+                var nextRules = GetFirstCalls(current.Ast);
+                // Try for cycles
+                foreach (var next in nextRules) Cycle(ruleStack, next);
+                ruleStack.RemoveAt(ruleStack.Count - 1);
+            }
+
+            foreach (var rule in rules.Values) Cycle(new(), rule);
+            return result;
+        }
+
+        // Direct left-recursion ///////////////////////////////////////////////
 
         /*
          We need to find alternatives that are left recursive
@@ -87,7 +145,7 @@ namespace Yoakke.Parser.Generator
          A -> FoldLeft((C | D)(X | Y)*)
          */
 
-        private static BnfAst EliminateLeftRecursionInAlternation(Rule rule, BnfAst.Alt alt)
+        private static BnfAst EliminateDirectLeftRecursionInAlternation(Rule rule, BnfAst.Alt alt)
         {
             var alphas = new List<(BnfAst Node, IMethodSymbol Method)>();
             var betas = new List<BnfAst>();
@@ -100,7 +158,7 @@ namespace Yoakke.Parser.Generator
                     continue;
                 }
                 // We found a left-recursive sequence inside an alternative, add it as alpha
-                if (transform.Subexpr is BnfAst.Seq seq && TrySplitLeftRecursion(rule, seq, out var alpha))
+                if (transform.Subexpr is BnfAst.Seq seq && TrySplitDirectLeftRecursion(rule, seq, out var alpha))
                 {
                     alphas.Add((alpha!, transform.Method));
                 }
@@ -115,7 +173,7 @@ namespace Yoakke.Parser.Generator
             return new BnfAst.FoldLeft(betaNode, alphas);
         }
 
-        private static bool TrySplitLeftRecursion(Rule rule, BnfAst.Seq seq, [MaybeNullWhen(false)] out BnfAst? alpha)
+        private static bool TrySplitDirectLeftRecursion(Rule rule, BnfAst.Seq seq, [MaybeNullWhen(false)] out BnfAst? alpha)
         {
             if (seq.Elements[0] is BnfAst.Call call && call.Name == rule.Name)
             {

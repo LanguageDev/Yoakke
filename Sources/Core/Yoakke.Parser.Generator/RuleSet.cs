@@ -88,7 +88,7 @@ namespace Yoakke.Parser.Generator
             foreach (var r in this.Rules.Values) r.Ast = r.Ast.Desugar();
             // Eliminate left-recursion
             this.Rules = this.Rules.Values
-                .Select(BnfDesugar.EliminateLeftRecursion)
+                .Select(BnfDesugar.EliminateDirectLeftRecursion)
                 .ToDictionary(r => r.Name);
         }
     }
