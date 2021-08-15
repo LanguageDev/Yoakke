@@ -29,7 +29,7 @@ namespace Yoakke.SyntaxTree.Generator
 
             public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
             {
-                if (syntaxNode is TypeDeclarationSyntax typeDeclSyntax && typeDeclSyntax.AttributeLists.Count > 0)
+                if (syntaxNode is TypeDeclarationSyntax typeDeclSyntax)
                 {
                     this.CandidateTypes.Add(typeDeclSyntax);
                 }

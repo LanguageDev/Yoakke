@@ -27,7 +27,7 @@ namespace Yoakke.SyntaxTree.Generator
             DiagnosticSeverity.Error,
             isEnabledByDefault: true);
 
-        // <summary>
+        /// <summary>
         /// Happens, when the visitor specifies a generic return type that is not defined by the visitor.
         /// </summary>
         public static readonly DiagnosticDescriptor GenericTypeNotDefined = new(
