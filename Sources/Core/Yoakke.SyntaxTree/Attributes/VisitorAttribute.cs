@@ -10,7 +10,7 @@ namespace Yoakke.SyntaxTree.Attributes
     /// An attribute to denote the generation of a visitor.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = true)]
-    public class SyntaxTreeVisitorAttribute : Attribute
+    public class VisitorAttribute : Attribute
     {
         /// <summary>
         /// The type of the node the visitor visits.
@@ -33,12 +33,12 @@ namespace Yoakke.SyntaxTree.Attributes
         public string? MethodName { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SyntaxTreeVisitorAttribute"/> class.
+        /// Initializes a new instance of the <see cref="VisitorAttribute"/> class.
         /// </summary>
         /// <param name="nodeType">The type of the node the visitor visits.</param>
         /// <param name="returnType">The type to return from the visitor calls.</param>
         /// <param name="methodName">The method name to use.</param>
-        public SyntaxTreeVisitorAttribute(Type nodeType, Type? returnType, string? methodName = null)
+        public VisitorAttribute(Type nodeType, Type? returnType, string? methodName = null)
         {
             this.NodeType = nodeType;
             this.ReturnType = returnType;
@@ -46,10 +46,10 @@ namespace Yoakke.SyntaxTree.Attributes
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SyntaxTreeVisitorAttribute"/> class.
+        /// Initializes a new instance of the <see cref="VisitorAttribute"/> class.
         /// </summary>
         /// <param name="nodeType">The type of the node the visitor visits.</param>
-        public SyntaxTreeVisitorAttribute(Type nodeType)
+        public VisitorAttribute(Type nodeType)
             : this(nodeType, null)
         {
         }

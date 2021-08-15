@@ -9,7 +9,7 @@ using Yoakke.SyntaxTree.Attributes;
 
 namespace Yoakke.Sample
 {
-    [SyntaxTreeVisitor(typeof(AstNode))]
+    [Visitor(typeof(AstNode))]
     public abstract partial class PassVisitorBase { }
 
     public class SymbolResolution

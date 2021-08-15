@@ -31,7 +31,7 @@ namespace Yoakke.SyntaxTree.Tests
             }
         }
 
-        [SyntaxTreeVisitor(typeof(Ast))]
+        [Visitor(typeof(Ast))]
         internal partial class MyVoidVisitor
         {
             public StringBuilder Text { get; set; } = new();
@@ -51,7 +51,7 @@ namespace Yoakke.SyntaxTree.Tests
             }
         }
 
-        [SyntaxTreeVisitor(typeof(Ast), typeof(string))]
+        [Visitor(typeof(Ast), typeof(string))]
         internal partial class MyStrVisitor
         {
             public string Call(Ast n) => this.Visit(n);

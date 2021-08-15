@@ -26,7 +26,7 @@ namespace Yoakke.SyntaxTree.Tests
             }
         }
 
-        [SyntaxTreeVisitor(typeof(Ast))]
+        [Visitor(typeof(Ast))]
         internal abstract partial class VoidVisitorBase
         {
         }
@@ -52,7 +52,7 @@ namespace Yoakke.SyntaxTree.Tests
             }
         }
 
-        [SyntaxTreeVisitor(typeof(Ast), typeof(string))]
+        [Visitor(typeof(Ast), typeof(string))]
         internal abstract partial class StrVisitorBase
         {
         }

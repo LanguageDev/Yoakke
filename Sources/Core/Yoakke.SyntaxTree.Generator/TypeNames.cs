@@ -82,11 +82,6 @@ namespace Yoakke.SyntaxTree.Generator
         public static readonly string SyntaxTreeAttribute = $"{AstNamespace}.Attributes.SyntaxTreeAttribute";
 
         /// <summary>
-        /// The attribute to annotate if a visitor should be implemented.
-        /// </summary>
-        public static readonly string SyntaxTreeVisitorAttribute = $"{AstNamespace}.Attributes.SyntaxTreeVisitorAttribute";
-
-        /// <summary>
         /// The attribute to mark a member to be skipped.
         /// </summary>
         public static readonly string SyntaxTreeIgnoreAttribute = $"{AstNamespace}.Attributes.SyntaxTreeIgnoreAttribute";
@@ -95,5 +90,10 @@ namespace Yoakke.SyntaxTree.Generator
         /// The common interface for AST nodes.
         /// </summary>
         public static readonly string ISyntaxTreeNode = $"{AstNamespace}.ISyntaxTreeNode";
+
+        /// <summary>
+        /// The attribute to annotate if a visitor should be implemented.
+        /// </summary>
+        public static readonly string VisitorAttribute = $"{AstNamespace}.Attributes.VisitorAttribute";
     }
 }

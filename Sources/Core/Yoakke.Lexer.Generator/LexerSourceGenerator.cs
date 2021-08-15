@@ -179,6 +179,7 @@ namespace Yoakke.Lexer.Generator
 
             var (prefix, suffix) = symbol.ContainingSymbol.DeclareInsideExternally();
             return $@"
+#pragma warning disable CS0162
 {prefix}
 {accessibility} class {lexerClassName} : {TypeNames.LexerBase}<{tokenName}>
 {{
@@ -229,6 +230,7 @@ end_loop:
     }}
 }}
 {suffix}
+#pragma warning restore CS0162
 ";
         }
 
