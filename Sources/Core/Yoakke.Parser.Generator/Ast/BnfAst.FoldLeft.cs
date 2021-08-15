@@ -39,16 +39,6 @@ namespace Yoakke.Parser.Generator.Ast
                 this.Seconds = seconds;
             }
 
-            // TODO: Probably not corret
-            /// <inheritdoc/>
-            public override bool Equals(BnfAst other) => other is FoldLeft fl
-                && this.First.Equals(fl.First)
-                && this.Seconds.SequenceEqual(fl.Seconds);
-
-            // TODO: Probably not corret
-            /// <inheritdoc/>
-            public override int GetHashCode() => this.First.GetHashCode();
-
             /// <inheritdoc/>
             public override BnfAst Desugar() => new FoldLeft(
                 this.First.Desugar(),

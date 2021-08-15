@@ -41,18 +41,6 @@ namespace Yoakke.Parser.Generator.Ast
             }
 
             /// <inheritdoc/>
-            public override bool Equals(BnfAst other) => other is Alt alt
-                && this.Elements.SequenceEqual(alt.Elements);
-
-            /// <inheritdoc/>
-            public override int GetHashCode()
-            {
-                var hash = default(HashCode);
-                foreach (var e in this.Elements) hash.Add(e);
-                return hash.ToHashCode();
-            }
-
-            /// <inheritdoc/>
             public override BnfAst Desugar()
             {
                 if (this.Elements.Count == 1) return this.Elements[0].Desugar();

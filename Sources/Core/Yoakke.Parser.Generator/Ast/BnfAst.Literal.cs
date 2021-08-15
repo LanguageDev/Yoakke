@@ -26,13 +26,6 @@ namespace Yoakke.Parser.Generator.Ast
             }
 
             /// <inheritdoc/>
-            public override bool Equals(BnfAst other) => other is Literal lit
-                && this.Value.Equals(lit.Value);
-
-            /// <inheritdoc/>
-            public override int GetHashCode() => this.Value.GetHashCode();
-
-            /// <inheritdoc/>
             public override BnfAst Desugar() => this;
 
             /// <inheritdoc/>

@@ -26,13 +26,6 @@ namespace Yoakke.Parser.Generator.Ast
             }
 
             /// <inheritdoc/>
-            public override bool Equals(BnfAst other) => other is Call call
-                && this.Name.Equals(call.Name);
-
-            /// <inheritdoc/>
-            public override int GetHashCode() => this.Name.GetHashCode();
-
-            /// <inheritdoc/>
             public override BnfAst Desugar() => this;
 
             /// <inheritdoc/>

@@ -26,13 +26,6 @@ namespace Yoakke.Parser.Generator.Ast
             }
 
             /// <inheritdoc/>
-            public override bool Equals(BnfAst other) => other is Opt opt
-                && this.Subexpr.Equals(opt.Subexpr);
-
-            /// <inheritdoc/>
-            public override int GetHashCode() => this.Subexpr.GetHashCode();
-
-            /// <inheritdoc/>
             public override BnfAst Desugar() => new Opt(this.Subexpr.Desugar());
 
             /// <inheritdoc/>

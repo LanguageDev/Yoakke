@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -9,19 +9,12 @@ namespace Yoakke.Parser.Generator.Ast
     /// <summary>
     /// Base-class for the grammar syntax-tree nodes.
     /// </summary>
-    internal abstract partial class BnfAst : IEquatable<BnfAst>
+    internal abstract partial class BnfAst
     {
-        /// <inheritdoc/>
-        public override bool Equals(object obj) => obj is BnfAst bnf && this.Equals(bnf);
-
-        /// <inheritdoc/>
-        public abstract bool Equals(BnfAst other);
-
-        /// <inheritdoc/>
-        public override abstract int GetHashCode();
-
         /// <summary>
         /// Desugars the AST into simpler elements.
+        ///
+        /// The order of elements from top level to lower levels is Alt, Transform, Seq and finally everything else.
         /// </summary>
         /// <returns>The desugared <see cref="BnfAst"/>.</returns>
         public abstract BnfAst Desugar();

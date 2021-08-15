@@ -86,6 +86,11 @@ namespace Yoakke.Parser.Generator
 
         // Indirect left-recursion /////////////////////////////////////////////
 
+        private static void EliminateIndirectLeftRecursionCycle(IDictionary<string, Rule> rules, List<Rule> cycle)
+        {
+
+        }
+
         private static List<List<Rule>> FindIndirectLeftRecursionCycles(IDictionary<string, Rule> rules)
         {
             var result = new List<List<Rule>>();
@@ -110,6 +115,7 @@ namespace Yoakke.Parser.Generator
                 var index = ruleStack.IndexOf(current);
                 if (index != -1)
                 {
+                    // TODO: If we remove this limit, we can just detect direct LR too, maybe useful to clean up that one
                     // Found a cycle, only store it, if it's an indirect one (<=> the stack has more than 1 element)
                     if (ruleStack.Count == 1) return;
                     result.Add(ruleStack.GetRange(index, ruleStack.Count - index));
