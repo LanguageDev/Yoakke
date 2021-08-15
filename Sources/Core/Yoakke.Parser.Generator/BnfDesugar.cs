@@ -101,7 +101,7 @@ namespace Yoakke.Parser.Generator
             var touched = new HashSet<Rule>();
 
             IEnumerable<Rule> GetFirstCalls(BnfAst ast) => ast
-                .FirstCalls()
+                .GetFirstCalls()
                 .SelectMany(call => rules.TryGetValue(call.Name, out var rule) ? new[] { rule } : Enumerable.Empty<Rule>());
 
             void Cycle(List<Rule> ruleStack, Rule current)
@@ -130,9 +130,33 @@ namespace Yoakke.Parser.Generator
 
         /* Indirect left-recursion */
 
-        private static void EliminateIndirectLeftRecursionCycle(IDictionary<string, Rule> rules, List<Rule> cycle)
+        private static List<Rule> EliminateIndirectLeftRecursionCycle(IDictionary<string, Rule> rules, List<Rule> cycle)
         {
-            throw new NotImplementedException();
+            Debugger.Launch();
+
+            var result = new List<Rule>();
+            for (var i = 0; i < cycle.Count; ++i)
+            {
+                // Transform the ith rule in the cycle into a direct left-recursive one
+                var rule = cycle[i];
+                var transformedRule = new Rule(rule.Name, rule.Ast, rule.PublicApi) { VisualName = rule.VisualName };
+                // All the subsequent rules will be substituted one by one
+                for (var j = 1; j < cycle.Count; ++j)
+                {
+                    // Get the rule we are substituting
+                    var index = (i + j) % cycle.Count;
+                    var ruleToSubstitute = cycle[index];
+                    var callsToRule = rule.Ast
+                        .GetFirstCalls()
+                        .Where(n => n.Name == ruleToSubstitute.Name);
+                    foreach (var callToRule in callsToRule)
+                    {
+                        transformedRule.Ast = rule.Ast.SubstituteByReference(callToRule, ruleToSubstitute.Ast);
+                    }
+                }
+                result.Add(transformedRule);
+            }
+            return result;
         }
 
         /* Direct left-recursion */

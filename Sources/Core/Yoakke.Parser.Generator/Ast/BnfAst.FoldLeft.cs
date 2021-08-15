@@ -45,7 +45,7 @@ namespace Yoakke.Parser.Generator.Ast
                 this.Seconds.Select(s => (s.Node.SubstituteByReference(find, replaceWith), s.Method)).ToList());
 
             /// <inheritdoc/>
-            public override IEnumerable<Call> FirstCalls() => this.First.FirstCalls();
+            public override IEnumerable<Call> GetFirstCalls() => this.First.GetFirstCalls();
 
             /// <inheritdoc/>
             public override BnfAst Desugar() => new FoldLeft(

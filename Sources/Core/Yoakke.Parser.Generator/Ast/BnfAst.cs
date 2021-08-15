@@ -38,7 +38,7 @@ namespace Yoakke.Parser.Generator.Ast
         /// </summary>
         /// <returns>The sequence of <see cref="Call"/>s that the node can make when matching without doing anything else
         /// previously.</returns>
-        public abstract IEnumerable<Call> FirstCalls();
+        public abstract IEnumerable<Call> GetFirstCalls();
 
         /// <summary>
         /// Desugars the AST into simpler elements.

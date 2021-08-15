@@ -31,7 +31,7 @@ namespace Yoakke.Parser.Generator.Ast
             protected override BnfAst SubstituteByReferenceImpl(BnfAst find, BnfAst replaceWith) => this;
 
             /// <inheritdoc/>
-            public override IEnumerable<Call> FirstCalls() => new[] { this };
+            public override IEnumerable<Call> GetFirstCalls() => new[] { this };
 
             /// <inheritdoc/>
             public override BnfAst Desugar() => this;

@@ -32,7 +32,7 @@ namespace Yoakke.Parser.Generator.Ast
             protected override BnfAst SubstituteByReferenceImpl(BnfAst find, BnfAst replaceWith) => this;
 
             /// <inheritdoc/>
-            public override IEnumerable<Call> FirstCalls() => Enumerable.Empty<Call>();
+            public override IEnumerable<Call> GetFirstCalls() => Enumerable.Empty<Call>();
 
             /// <inheritdoc/>
             public override BnfAst Desugar() => this;

@@ -45,8 +45,8 @@ namespace Yoakke.Parser.Generator.Ast
                 new Alt(this.Elements.Select(e => e.SubstituteByReference(find, replaceWith)));
 
             /// <inheritdoc/>
-            public override IEnumerable<Call> FirstCalls() =>
-                this.Elements.SelectMany(e => e.FirstCalls());
+            public override IEnumerable<Call> GetFirstCalls() =>
+                this.Elements.SelectMany(e => e.GetFirstCalls());
 
             /// <inheritdoc/>
             public override BnfAst Desugar()

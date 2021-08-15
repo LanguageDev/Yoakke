@@ -45,8 +45,8 @@ namespace Yoakke.Parser.Generator.Ast
                 new Seq(this.Elements.Select(e => e.SubstituteByReference(find, replaceWith)));
 
             /// <inheritdoc/>
-            public override IEnumerable<Call> FirstCalls() => this.Elements.Count > 0
-                ? this.Elements[0].FirstCalls()
+            public override IEnumerable<Call> GetFirstCalls() => this.Elements.Count > 0
+                ? this.Elements[0].GetFirstCalls()
                 : Enumerable.Empty<Call>();
 
             /// <inheritdoc/>

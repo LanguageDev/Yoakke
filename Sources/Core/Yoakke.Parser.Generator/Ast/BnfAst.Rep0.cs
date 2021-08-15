@@ -32,7 +32,7 @@ namespace Yoakke.Parser.Generator.Ast
                 new Rep0(this.Subexpr.SubstituteByReference(find, replaceWith));
 
             /// <inheritdoc/>
-            public override IEnumerable<Call> FirstCalls() => this.Subexpr.FirstCalls();
+            public override IEnumerable<Call> GetFirstCalls() => this.Subexpr.GetFirstCalls();
 
             /// <inheritdoc/>
             public override BnfAst Desugar() => new Rep0(this.Subexpr.Desugar());
