@@ -337,6 +337,7 @@ namespace Yoakke.SyntaxTree.Generator
         {
             var ignoreAttr = this.LoadSymbol(TypeNames.SyntaxTreeIgnoreAttribute);
 
+            if (allNodes.ContainsKey(symbol)) return true;
             if (symbol.HasAttribute(ignoreAttr)) return false;
             if (symbol.BaseType is null) return false;
             if (allNodes.TryGetValue(symbol.BaseType, out var parent))
