@@ -15,6 +15,11 @@ namespace Yoakke.SyntaxTree.Generator
     internal class MetaNode
     {
         /// <summary>
+        /// The parent of this node.
+        /// </summary>
+        public MetaNode? Parent { get; set; }
+
+        /// <summary>
         /// The node symbol.
         /// </summary>
         public INamedTypeSymbol NodeClass { get; }
@@ -32,10 +37,25 @@ namespace Yoakke.SyntaxTree.Generator
         /// <summary>
         /// Initializes a new instance of the <see cref="MetaNode"/> class.
         /// </summary>
-        /// <param name="node">The node symbol.</param>
-        public MetaNode(INamedTypeSymbol node)
+        /// <param name="nodeClass">The node class symbol.</param>
+        public MetaNode(INamedTypeSymbol nodeClass)
         {
-            this.NodeClass = node;
+            this.NodeClass = nodeClass;
+        }
+
+        /// <summary>
+        /// Adds a child node to this one.
+        /// </summary>
+        /// <param name="child">The child node to add.</param>
+        public void AddChild(MetaNode child)
+        {
+            if (child.Parent is not null && child.Parent != this)
+            {
+                throw new InvalidOperationException("Re-setting parent to something invalid.");
+            }
+
+            this.Children.Add(child);
+            child.Parent = this;
         }
     }
 }

@@ -107,19 +107,18 @@ namespace Yoakke.SyntaxTree.Generator
                 visitors.Add(visitor);
             }
 
-            // We recollect all nodes the visitors reference, as those can be in different assemblies
-            var visitableNodes = this.CollectVisitorReferencedNodes(visitors);
-
-            // For the visitors we build a node hierarchy
-            var rootNodes = BuildNodeHierarchy(visitableNodes);
-            var allNodes = CollectAllMetaNodes(rootNodes);
-            // We fill up the hierarchy with visitor information
+            // We process each visitor separately
             foreach (var visitor in visitors)
             {
+                // Collect all nodes relevant to this visitor
+                var allNodes = this.CollectAllNodes(visitor);
+                // Collect out root nodes
+                var rootNodes = allNodes.Values.Where(n => n.Parent is null).ToList();
+                // We fill up the hierarchy with visitor information
                 foreach (var rootNode in rootNodes) this.PopulateNodeWithVisitorOverrides(visitor, null, rootNode);
+                // Now we generate the source for the visitor
+                this.GenerateVisitorSource(visitor, rootNodes, allNodes);
             }
-            // Now we generate the source for each visitor
-            foreach (var visitor in visitors) this.GenerateVisitorSource(visitor, rootNodes, allNodes);
         }
 
         private void GenerateVisitorSource(
@@ -155,7 +154,7 @@ namespace Yoakke.SyntaxTree.Generator
             void GenerateMembersVisitor(MetaNode currentNode)
             {
                 var enumerableInterface = this.LoadSymbol(TypeNames.IEnumerable);
-                var members = this.GetAllSyntaxTreeNodeProperties(currentNode.NodeClass);
+                var members = this.GetAllNodeProperties(currentNode.NodeClass);
                 foreach (var member in members)
                 {
                     var type = member switch
@@ -166,17 +165,15 @@ namespace Yoakke.SyntaxTree.Generator
                     };
                     if (type.ImplementsGenericInterface(enumerableInterface, out var args)
                         && args![0] is INamedTypeSymbol sym
-                        && this.IsSyntaxTreeNode(sym))
+                        && allNodes.TryGetValue(sym, out var child))
                     {
                         // It's a list of visitable things, visit them
-                        var child = allNodes[sym];
                         var methodName = child.VisitorOverrides[visitor].MethodName ?? "Visit";
                         definitions!.AppendLine($"foreach (var item in node.{member.Name}) this.{methodName}(item);");
                     }
-                    else if (type is INamedTypeSymbol sym2 && this.IsSyntaxTreeNode(sym2))
+                    else if (type is INamedTypeSymbol sym2 && allNodes.TryGetValue(sym2, out child))
                     {
                         // It's a subnode, we have to visit it (with a null check)
-                        var child = allNodes[sym2];
                         var methodName = child.VisitorOverrides[visitor].MethodName ?? "Visit";
                         definitions!.AppendLine($"if (node.{member.Name} is not null) this.{methodName}(node.{member.Name});");
                     }
@@ -297,88 +294,68 @@ namespace Yoakke.SyntaxTree.Generator
             foreach (var child in currentNode.Children) this.PopulateNodeWithVisitorOverrides(visitor, currentOverride, child);
         }
 
-        private HashSet<INamedTypeSymbol> CollectVisitorReferencedNodes(List<Visitor> visitors)
+        private Dictionary<INamedTypeSymbol, MetaNode> CollectAllNodes(Visitor visitor)
         {
             // NOTE: False positive
 #pragma warning disable RS1024 // Compare symbols correctly
-            var visitableNodes = new HashSet<INamedTypeSymbol>(SymbolEqualityComparer.Default);
+            var visitableNodes = new Dictionary<INamedTypeSymbol, MetaNode>(SymbolEqualityComparer.Default);
             var visitedAssemblys = new HashSet<IAssemblySymbol>(SymbolEqualityComparer.Default);
 #pragma warning restore RS1024 // Compare symbols correctly
-            foreach (var visitor in visitors)
-            {
-                foreach (var nodeClass in visitor.Overrides.Values.Select(o => o.NodeClass))
-                {
-                    // If the assembly of the node is already visited, skip the recursive check
-                    if (!visitedAssemblys.Add(nodeClass.ContainingAssembly)) continue;
 
-                    // New, unvisited assembly, filter out relevant nodes
-                    var typesInAssembly = nodeClass.ContainingAssembly.GetAllDeclaredTypes();
-                    foreach (var symbol in typesInAssembly)
-                    {
-                        if (!this.IsSyntaxTreeNode(symbol)) continue;
-                        // NOTE: Here we don't require it to be declarable inside, since the visitor is completely external
-                        visitableNodes.Add(symbol);
-                    }
+            // Before we can do anything, we have to register the initial overrides
+            foreach (var @override in visitor.Overrides.Values)
+            {
+                var node = new MetaNode(@override.NodeClass);
+                if (node.NodeClass.BaseType is not null
+                 && visitableNodes.TryGetValue(node.NodeClass.BaseType, out var parent))
+                {
+                    // We found the parent here, connect them
+                    parent.AddChild(node);
+                }
+            }
+
+            // Collect all subtypes
+            foreach (var nodeClass in visitor.Overrides.Values.Select(o => o.NodeClass))
+            {
+                // If the assembly of the node is already visited, skip the recursive check
+                if (!visitedAssemblys.Add(nodeClass.ContainingAssembly)) continue;
+
+                // New, unvisited assembly, filter out relevant nodes
+                var typesInAssembly = nodeClass.ContainingAssembly.GetAllDeclaredTypes();
+                foreach (var symbol in typesInAssembly)
+                {
+                    if (!this.IsVisitableNode(visitableNodes, symbol)) continue;
+                    // NOTE: Here we don't require it to be declarable inside, since the visitor is completely external
                 }
             }
             return visitableNodes;
         }
 
-        private static Dictionary<INamedTypeSymbol, MetaNode> CollectAllMetaNodes(List<MetaNode> rootNodes)
+        private bool IsVisitableNode(Dictionary<INamedTypeSymbol, MetaNode> allNodes, INamedTypeSymbol symbol)
         {
-            // NOTE: False-positive
-#pragma warning disable RS1024 // Compare symbols correctly
-            var result = new Dictionary<INamedTypeSymbol, MetaNode>(SymbolEqualityComparer.Default);
-#pragma warning restore RS1024 // Compare symbols correctly
+            var ignoreAttr = this.LoadSymbol(TypeNames.SyntaxTreeIgnoreAttribute);
 
-            void CollectAllMetaNodesRec(MetaNode current)
+            if (symbol.HasAttribute(ignoreAttr)) return false;
+            if (symbol.BaseType is null) return false;
+            if (allNodes.TryGetValue(symbol.BaseType, out var parent))
             {
-                result.Add(current.NodeClass, current);
-                foreach (var node in current.Children) CollectAllMetaNodesRec(node);
+                var child = new MetaNode(symbol);
+                parent.AddChild(child);
+                allNodes[symbol] = child;
+                return true;
             }
-
-            foreach (var node in rootNodes) CollectAllMetaNodesRec(node);
-
-            return result;
+            if (this.IsVisitableNode(allNodes, symbol.BaseType))
+            {
+                parent = allNodes[symbol.BaseType];
+                var child = new MetaNode(symbol);
+                parent.AddChild(child);
+                allNodes[symbol] = child;
+                return true;
+            }
+            return false;
         }
 
-        private static List<MetaNode> BuildNodeHierarchy(HashSet<INamedTypeSymbol> symbols)
-        {
-            // First we extract root elements
-            var rootSymbols = symbols
-                .Where(sym => sym.BaseType is null || !symbols.Contains(sym.BaseType))
-                .ToHashSet(SymbolEqualityComparer.Default);
-            var rootNodes = rootSymbols
-                .Cast<INamedTypeSymbol>()
-                .Select(sym => new MetaNode(sym))
-                .ToList();
-
-            // Now we loopty-loop and keep growing the tree until we have attached all our nodes into the tree
-            var foundNodes = rootNodes.ToDictionary(m => m.NodeClass, SymbolEqualityComparer.Default);
-            var remainingNodes = symbols.Except(rootSymbols).ToHashSet(SymbolEqualityComparer.Default);
-            while (remainingNodes.Count > 0)
-            {
-                var toRemove = new List<INamedTypeSymbol>();
-                foreach (var symbol in remainingNodes.Cast<INamedTypeSymbol>())
-                {
-                    if (!foundNodes.TryGetValue(symbol.BaseType, out var parentNode)) continue;
-                    // We found this node's parent in our existing nodes
-                    var node = new MetaNode(symbol);
-                    parentNode.Children.Add(node);
-                    foundNodes.Add(symbol, node);
-                    toRemove.Add(symbol);
-                }
-
-                foreach (var symbol in toRemove) remainingNodes.Remove(symbol);
-
-                // TODO: Maybe error out, we couldn't collect any more nodes
-                if (toRemove.Count == 0) break;
-            }
-
-            return rootNodes!;
-        }
-
-        private List<ISymbol> GetAllSyntaxTreeNodeProperties(ITypeSymbol symbol)
+        private List<ISymbol> GetAllNodeProperties(ITypeSymbol symbol)
         {
             var ignoreAttr = this.LoadSymbol(TypeNames.SyntaxTreeIgnoreAttribute);
             return symbol
