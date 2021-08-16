@@ -156,7 +156,7 @@ namespace Yoakke.Parser.Generator
             var usedRules = new List<Rule>();
             var remainingCycles = cycles.ToList();
             var mostOccurredByDesc = mostOccurrences
-                .OrderBy(kv => kv.Value)
+                .OrderByDescending(kv => kv.Value)
                 .Select(kv => kv.Key)
                 .ToList();
             foreach (var rule in mostOccurredByDesc)
