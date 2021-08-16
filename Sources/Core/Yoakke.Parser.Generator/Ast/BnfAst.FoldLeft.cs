@@ -63,6 +63,9 @@ namespace Yoakke.Parser.Generator.Ast
                 }
                 return firstType;
             }
+
+            /// <inheritdoc/>
+            public override string ToString() => $"FoldLeft({this.First}, {this.Seconds})";
         }
     }
 }

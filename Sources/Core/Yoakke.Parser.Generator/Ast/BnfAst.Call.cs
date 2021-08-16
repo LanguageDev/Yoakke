@@ -42,6 +42,9 @@ namespace Yoakke.Parser.Generator.Ast
                 var called = ruleSet.GetRule(this.Name);
                 return called.Ast.GetParsedType(ruleSet, tokens);
             }
+
+            /// <inheritdoc/>
+            public override string ToString() => this.Name;
         }
     }
 }

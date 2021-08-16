@@ -42,6 +42,9 @@ namespace Yoakke.Parser.Generator.Ast
             /// <inheritdoc/>
             public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens) =>
                 this.Subexpr.GetParsedType(ruleSet, tokens);
+
+            /// <inheritdoc/>
+            public override string ToString() => $"[{this.Subexpr}]";
         }
     }
 }

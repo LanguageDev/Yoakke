@@ -69,6 +69,9 @@ namespace Yoakke.Parser.Generator.Ast
             /// <inheritdoc/>
             public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens) =>
                 this.Elements[0].GetParsedType(ruleSet, tokens);
+
+            /// <inheritdoc/>
+            public override string ToString() => $"Alt({string.Join(", ", this.Elements)})";
         }
     }
 }

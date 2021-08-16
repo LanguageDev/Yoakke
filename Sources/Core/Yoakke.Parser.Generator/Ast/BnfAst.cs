@@ -55,5 +55,8 @@ namespace Yoakke.Parser.Generator.Ast
         /// <param name="tokens">The set of available token-types.</param>
         /// <returns>The string that describes the parsed type.</returns>
         public abstract string GetParsedType(RuleSet ruleSet, TokenKindSet tokens);
+
+        /// <inheritdoc/>
+        public abstract override string ToString();
     }
 }

@@ -35,8 +35,19 @@ namespace Yoakke.Parser.Generator
             var indirectCycles = FindLeftRecursionCycles(rules)
                 .Where(cycle => cycle.Count > 1)
                 .ToList();
+
+            // Figure out the least amount of rules we need to transform to remove all cycles
+            var rulesToEliminate = LeastAmountOfRulesToEliminateCycles(indirectCycles);
+
             // Eliminate the indirect cycles
-            foreach (var cycle in indirectCycles) EliminateIndirectLeftRecursionCycle(rules, cycle);
+            foreach (var ruleToEliminate in rulesToEliminate)
+            {
+                // We find all cycles that need to be eliminated
+                foreach (var cycle in indirectCycles.Where(cycle => cycle.Contains(ruleToEliminate)))
+                {
+                    EliminateIndirectLeftRecursionCycle(ruleToEliminate, cycle);
+                }
+            }
 
             // Desugar again for simplicity
             DesugarRuleSet();
@@ -128,35 +139,73 @@ namespace Yoakke.Parser.Generator
             return result;
         }
 
+        private static List<Rule> LeastAmountOfRulesToEliminateCycles(List<List<Rule>> cycles)
+        {
+            // We just count which rule occurs in the most cycles
+            var mostOccurrences = new Dictionary<Rule, int>();
+            foreach (var cycle in cycles)
+            {
+                foreach (var rule in cycle)
+                {
+                    if (!mostOccurrences.TryGetValue(rule, out var count)) count = 0;
+                    mostOccurrences[rule] = count + 1;
+                }
+            }
+
+            // Start eliminating cycles
+            var usedRules = new List<Rule>();
+            var remainingCycles = cycles.ToList();
+            var mostOccurredByDesc = mostOccurrences
+                .OrderBy(kv => kv.Value)
+                .Select(kv => kv.Key)
+                .ToList();
+            foreach (var rule in mostOccurredByDesc)
+            {
+                if (remainingCycles.Count == 0) break;
+
+                var used = false;
+                for (var i = 0; i < remainingCycles.Count; )
+                {
+                    if (remainingCycles[i].Contains(rule))
+                    {
+                        remainingCycles.RemoveAt(i);
+                        used = true;
+                    }
+                    else
+                    {
+                        ++i;
+                    }
+                }
+
+                if (used) usedRules.Add(rule);
+            }
+
+            return usedRules;
+        }
+
         /* Indirect left-recursion */
 
-        private static List<Rule> EliminateIndirectLeftRecursionCycle(IDictionary<string, Rule> rules, List<Rule> cycle)
+        private static void EliminateIndirectLeftRecursionCycle(Rule start, List<Rule> cycle)
         {
             Debugger.Launch();
 
-            var result = new List<Rule>();
-            for (var i = 0; i < cycle.Count; ++i)
+            var offset = cycle.IndexOf(start);
+            var rule = cycle[offset];
+            // Transform the ith rule in the cycle into a direct left-recursive one
+            // All the subsequent rules will be substituted one by one
+            for (var j = 1; j < cycle.Count; ++j)
             {
-                // Transform the ith rule in the cycle into a direct left-recursive one
-                var rule = cycle[i];
-                var transformedRule = new Rule(rule.Name, rule.Ast, rule.PublicApi) { VisualName = rule.VisualName };
-                // All the subsequent rules will be substituted one by one
-                for (var j = 1; j < cycle.Count; ++j)
+                // Get the rule we are substituting
+                var index = (offset + j) % cycle.Count;
+                var ruleToSubstitute = cycle[index];
+                var callsToRule = rule.Ast
+                    .GetFirstCalls()
+                    .Where(n => n.Name == ruleToSubstitute.Name);
+                foreach (var callToRule in callsToRule)
                 {
-                    // Get the rule we are substituting
-                    var index = (i + j) % cycle.Count;
-                    var ruleToSubstitute = cycle[index];
-                    var callsToRule = rule.Ast
-                        .GetFirstCalls()
-                        .Where(n => n.Name == ruleToSubstitute.Name);
-                    foreach (var callToRule in callsToRule)
-                    {
-                        transformedRule.Ast = rule.Ast.SubstituteByReference(callToRule, ruleToSubstitute.Ast);
-                    }
+                    rule.Ast = rule.Ast.SubstituteByReference(callToRule, ruleToSubstitute.Ast);
                 }
-                result.Add(transformedRule);
             }
-            return result;
         }
 
         /* Direct left-recursion */

@@ -40,6 +40,9 @@ namespace Yoakke.Parser.Generator.Ast
             /// <inheritdoc/>
             public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens) =>
                 $"{TypeNames.IReadOnlyList}<{this.Subexpr.GetParsedType(ruleSet, tokens)}>";
+
+            /// <inheritdoc/>
+            public override string ToString() => $"Rep0({this.Subexpr})";
         }
     }
 }

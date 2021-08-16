@@ -4,6 +4,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.CodeAnalysis;
 
 namespace Yoakke.Parser.Generator.Ast
 {
@@ -43,6 +44,11 @@ namespace Yoakke.Parser.Generator.Ast
                 if (tokens.EnumType == null) return TypeNames.IToken;
                 else return $"{TypeNames.IToken}<{tokens.EnumType.ToDisplayString()}>";
             }
+
+            /// <inheritdoc/>
+            public override string ToString() => this.Value is IFieldSymbol field
+                ? field.Name
+                : $"\"{this.Value}\"";
         }
     }
 }

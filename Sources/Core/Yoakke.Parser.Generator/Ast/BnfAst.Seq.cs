@@ -90,6 +90,9 @@ namespace Yoakke.Parser.Generator.Ast
                 if (this.Elements.Count == 1) return this.Elements[0].GetParsedType(ruleSet, tokens);
                 return $"({string.Join(", ", this.Elements.Select(e => e.GetParsedType(ruleSet, tokens)))})";
             }
+
+            /// <inheritdoc/>
+            public override string ToString() => $"Seq({string.Join(", ", this.Elements)})";
         }
     }
 }
