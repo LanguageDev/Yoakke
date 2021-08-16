@@ -191,14 +191,14 @@ partial {symbol.GetTypeKindName()} {className}{genericTypes} : {TypeNames.Parser
         {
             BnfAst.Alt alt => alt.Elements.All(this.CheckBnfAst),
             BnfAst.Seq seq => seq.Elements.All(this.CheckBnfAst),
-            BnfAst.FoldLeft foldl => this.CheckBnfAst(foldl.First) && foldl.Seconds.Select(s => s.Node).All(this.CheckBnfAst),
+            BnfAst.FoldLeft foldl => this.CheckBnfAst(foldl.First) && this.CheckBnfAst(foldl.Second),
             BnfAst.Opt opt => this.CheckBnfAst(opt.Subexpr),
             BnfAst.Group grp => this.CheckBnfAst(grp.Subexpr),
             BnfAst.Rep0 rep0 => this.CheckBnfAst(rep0.Subexpr),
             BnfAst.Rep1 rep1 => this.CheckBnfAst(rep1.Subexpr),
             BnfAst.Transform tr => this.CheckBnfAst(tr.Subexpr),
             BnfAst.Call call => this.CheckReferenceValidity(call.Name),
-            BnfAst.Literal => true,
+            BnfAst.Literal or BnfAst.Placeholder => true,
             _ => throw new InvalidOperationException(),
         };
 
@@ -252,6 +252,8 @@ partial {symbol.GetTypeKindName()} {className}{genericTypes} : {TypeNames.Parser
 
             case BnfAst.FoldLeft fold:
             {
+                throw new NotImplementedException();
+#if false
                 var firstVar = this.GenerateBnf(code, rule, fold.First, lastIndex);
                 var nextResultVar = this.AllocateVarName();
                 var anySuccessVar = this.AllocateVarName();
@@ -285,6 +287,7 @@ partial {symbol.GetTypeKindName()} {className}{genericTypes} : {TypeNames.Parser
                 code.AppendLine("} else {");
                 code.AppendLine($"    {resultVar} = {firstVar}.Error;");
                 code.AppendLine("}");
+#endif
                 break;
             }
 

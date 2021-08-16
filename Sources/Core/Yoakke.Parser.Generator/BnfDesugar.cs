@@ -227,37 +227,32 @@ namespace Yoakke.Parser.Generator
             // Check if this is even an alternation case
             // If not, we just skip it, it's probably not recursive or we can't eliminate it
             if (rule.Ast is not BnfAst.Alt alt) return;
-            var alphas = new List<(BnfAst Node, IMethodSymbol Method)>();
+            var alphas = new List<BnfAst>();
             var betas = new List<BnfAst>();
             foreach (var alternative in alt.Elements)
             {
-                if (alternative is not BnfAst.Transform transform)
+                var calls = alternative.GetFirstCalls()
+                    .Where(call => call.Name == rule.Name)
+                    .ToList();
+                if (calls.Count == 0)
                 {
-                    // Assume it's beta
+                    // Non-left-recursive
                     betas.Add(alternative);
-                    continue;
-                }
-
-                var transformed = transform.Subexpr;
-                if (transformed is BnfAst.Seq seq
-                 && seq.Elements.Count > 0
-                 && seq.Elements[0] is BnfAst.Call call
-                 && call.Name == rule.Name)
-                {
-                    // We found a left-recursive alternative
-                    var alpha = new BnfAst.Seq(seq.Elements.Skip(1));
-                    alphas.Add((alpha, transform.Method));
                 }
                 else
                 {
-                    betas.Add(alternative);
+                    // Is left-recursive
+                    var alpha = alternative;
+                    var placeholder = new BnfAst.Placeholder();
+                    foreach (var call in calls) alpha = alpha.SubstituteByReference(call, placeholder);
+                    alphas.Add(alpha);
                 }
             }
 
             // Sanity check
             if (alphas.Count == 0 || betas.Count == 0) throw new InvalidOperationException($"Cannot eliminate direct left-recursion! ({rule.Name})");
             // Construct the fold
-            rule.Ast = new BnfAst.FoldLeft(new BnfAst.Alt(betas), alphas);
+            rule.Ast = new BnfAst.FoldLeft(new BnfAst.Alt(betas), new BnfAst.Alt(alphas));
         }
     }
 }
