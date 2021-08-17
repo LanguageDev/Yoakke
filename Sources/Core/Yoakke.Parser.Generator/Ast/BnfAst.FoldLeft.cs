@@ -26,45 +26,37 @@ namespace Yoakke.Parser.Generator.Ast
             /// <summary>
             /// The alternative elements to apply repeatedly after.
             /// </summary>
-            public IReadOnlyList<(BnfAst Node, IMethodSymbol Method)> Seconds { get; }
+            public BnfAst Second { get; }
 
             /// <summary>
             /// Initializes a new instance of the <see cref="FoldLeft"/> class.
             /// </summary>
             /// <param name="first">The first element of the fold.</param>
-            /// <param name="seconds">The second elements and transformations of the fold, that will be repeated.</param>
-            public FoldLeft(BnfAst first, IReadOnlyList<(BnfAst Node, IMethodSymbol Method)> seconds)
+            /// <param name="second">The second elements of the fold, that will be repeated.</param>
+            public FoldLeft(BnfAst first, BnfAst second)
             {
                 this.First = first;
-                this.Seconds = seconds;
+                this.Second = second;
             }
 
-            // TODO: Probably not corret
             /// <inheritdoc/>
-            public override bool Equals(BnfAst other) => other is FoldLeft fl
-                && this.First.Equals(fl.First)
-                && this.Seconds.SequenceEqual(fl.Seconds);
-
-            // TODO: Probably not corret
-            /// <inheritdoc/>
-            public override int GetHashCode() => this.First.GetHashCode();
+            protected override BnfAst SubstituteByReferenceImpl(BnfAst find, BnfAst replaceWith) => new FoldLeft(
+                this.First.SubstituteByReference(find, replaceWith),
+                this.Second.SubstituteByReference(find, replaceWith));
 
             /// <inheritdoc/>
-            public override BnfAst Desugar() => new FoldLeft(
-                this.First.Desugar(),
-                this.Seconds.Select(s => (s.Node.Desugar(), s.Method)).ToList());
+            public override IEnumerable<Call> GetFirstCalls() => this.First.GetFirstCalls();
 
             /// <inheritdoc/>
-            public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens)
-            {
-                var firstType = this.First.GetParsedType(ruleSet, tokens);
-                foreach (var (_, method) in this.Seconds)
-                {
-                    var mappedType = method.ReturnType.ToDisplayString();
-                    if (firstType != mappedType) throw new InvalidOperationException("Incompatible folded types");
-                }
-                return firstType;
-            }
+            public override BnfAst Desugar() =>
+                new FoldLeft(this.First.Desugar(), this.Second.Desugar());
+
+            /// <inheritdoc/>
+            public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens) =>
+                this.First.GetParsedType(ruleSet, tokens);
+
+            /// <inheritdoc/>
+            public override string ToString() => $"FoldLeft({this.First}, {this.Second})";
         }
     }
 }

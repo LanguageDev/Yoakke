@@ -2,6 +2,10 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.CodeAnalysis;
+
 namespace Yoakke.Parser.Generator.Ast
 {
     internal partial class BnfAst
@@ -26,11 +30,10 @@ namespace Yoakke.Parser.Generator.Ast
             }
 
             /// <inheritdoc/>
-            public override bool Equals(BnfAst other) => other is Literal lit
-                && this.Value.Equals(lit.Value);
+            protected override BnfAst SubstituteByReferenceImpl(BnfAst find, BnfAst replaceWith) => this;
 
             /// <inheritdoc/>
-            public override int GetHashCode() => this.Value.GetHashCode();
+            public override IEnumerable<Call> GetFirstCalls() => Enumerable.Empty<Call>();
 
             /// <inheritdoc/>
             public override BnfAst Desugar() => this;
@@ -41,6 +44,11 @@ namespace Yoakke.Parser.Generator.Ast
                 if (tokens.EnumType == null) return TypeNames.IToken;
                 else return $"{TypeNames.IToken}<{tokens.EnumType.ToDisplayString()}>";
             }
+
+            /// <inheritdoc/>
+            public override string ToString() => this.Value is IFieldSymbol field
+                ? field.Name
+                : $"\"{this.Value}\"";
         }
     }
 }

@@ -2,6 +2,8 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
+using System.Collections.Generic;
+
 namespace Yoakke.Parser.Generator.Ast
 {
     internal partial class BnfAst
@@ -26,11 +28,11 @@ namespace Yoakke.Parser.Generator.Ast
             }
 
             /// <inheritdoc/>
-            public override bool Equals(BnfAst other) => other is Rep0 rep
-                && this.Subexpr.Equals(rep.Subexpr);
+            protected override BnfAst SubstituteByReferenceImpl(BnfAst find, BnfAst replaceWith) =>
+                new Rep0(this.Subexpr.SubstituteByReference(find, replaceWith));
 
             /// <inheritdoc/>
-            public override int GetHashCode() => this.Subexpr.GetHashCode();
+            public override IEnumerable<Call> GetFirstCalls() => this.Subexpr.GetFirstCalls();
 
             /// <inheritdoc/>
             public override BnfAst Desugar() => new Rep0(this.Subexpr.Desugar());
@@ -38,6 +40,9 @@ namespace Yoakke.Parser.Generator.Ast
             /// <inheritdoc/>
             public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens) =>
                 $"{TypeNames.IReadOnlyList}<{this.Subexpr.GetParsedType(ruleSet, tokens)}>";
+
+            /// <inheritdoc/>
+            public override string ToString() => $"Rep0({this.Subexpr})";
         }
     }
 }

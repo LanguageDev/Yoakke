@@ -10,7 +10,6 @@ using Yoakke.SyntaxTree.Attributes;
 
 namespace Yoakke.Sample
 {
-    
     [Visitor(typeof(AstNode))]
     [Visitor(typeof(Expression), ReturnType = typeof(object))]
     public partial class TreeEvaluator

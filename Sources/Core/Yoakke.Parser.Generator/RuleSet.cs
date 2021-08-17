@@ -84,12 +84,9 @@ namespace Yoakke.Parser.Generator
                 var newRules = BnfDesugar.GeneratePrecedenceParser(rule, kv.Value.Reverse().ToList());
                 foreach (var r in newRules) this.Add(r);
             }
-            // Desugar AST nodes
-            foreach (var r in this.Rules.Values) r.Ast = r.Ast.Desugar();
-            // Eliminate left-recursion
-            this.Rules = this.Rules.Values
-                .Select(BnfDesugar.EliminateLeftRecursion)
-                .ToDictionary(r => r.Name);
+
+            // Desugar left-recursion, includes native desugaring steps
+            BnfDesugar.EliminateLeftRecursion(this.Rules);
         }
     }
 }

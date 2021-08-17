@@ -2,6 +2,8 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
+using System.Collections.Generic;
+
 namespace Yoakke.Parser.Generator.Ast
 {
     internal partial class BnfAst
@@ -26,11 +28,10 @@ namespace Yoakke.Parser.Generator.Ast
             }
 
             /// <inheritdoc/>
-            public override bool Equals(BnfAst other) => other is Call call
-                && this.Name.Equals(call.Name);
+            protected override BnfAst SubstituteByReferenceImpl(BnfAst find, BnfAst replaceWith) => this;
 
             /// <inheritdoc/>
-            public override int GetHashCode() => this.Name.GetHashCode();
+            public override IEnumerable<Call> GetFirstCalls() => new[] { this };
 
             /// <inheritdoc/>
             public override BnfAst Desugar() => this;
@@ -41,6 +42,9 @@ namespace Yoakke.Parser.Generator.Ast
                 var called = ruleSet.GetRule(this.Name);
                 return called.Ast.GetParsedType(ruleSet, tokens);
             }
+
+            /// <inheritdoc/>
+            public override string ToString() => this.Name;
         }
     }
 }

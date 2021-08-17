@@ -44,5 +44,8 @@ namespace Yoakke.Parser.Generator
             this.PublicApi = publicApi;
             this.VisualName = name;
         }
+
+        /// <inheritdoc/>
+        public override string ToString() => $"{this.Name} : {this.Ast}";
     }
 }

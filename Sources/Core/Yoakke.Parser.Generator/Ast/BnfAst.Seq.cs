@@ -41,16 +41,13 @@ namespace Yoakke.Parser.Generator.Ast
             }
 
             /// <inheritdoc/>
-            public override bool Equals(BnfAst other) => other is Seq seq
-                && this.Elements.SequenceEqual(seq.Elements);
+            protected override BnfAst SubstituteByReferenceImpl(BnfAst find, BnfAst replaceWith) =>
+                new Seq(this.Elements.Select(e => e.SubstituteByReference(find, replaceWith)));
 
             /// <inheritdoc/>
-            public override int GetHashCode()
-            {
-                var hash = default(HashCode);
-                foreach (var e in this.Elements) hash.Add(e);
-                return hash.ToHashCode();
-            }
+            public override IEnumerable<Call> GetFirstCalls() => this.Elements.Count > 0
+                ? this.Elements[0].GetFirstCalls()
+                : Enumerable.Empty<Call>();
 
             /// <inheritdoc/>
             public override BnfAst Desugar()
@@ -93,6 +90,9 @@ namespace Yoakke.Parser.Generator.Ast
                 if (this.Elements.Count == 1) return this.Elements[0].GetParsedType(ruleSet, tokens);
                 return $"({string.Join(", ", this.Elements.Select(e => e.GetParsedType(ruleSet, tokens)))})";
             }
+
+            /// <inheritdoc/>
+            public override string ToString() => $"Seq({string.Join(", ", this.Elements)})";
         }
     }
 }

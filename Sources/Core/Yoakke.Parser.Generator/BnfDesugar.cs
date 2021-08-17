@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.CodeAnalysis;
@@ -17,18 +18,49 @@ namespace Yoakke.Parser.Generator
     internal static class BnfDesugar
     {
         /// <summary>
-        /// Eliminates direct left-recursion in a <see cref="Rule"/>.
+        /// Eliminates left-recursion in a set of <see cref="Rule"/>s.
         /// </summary>
-        /// <param name="rule">The <see cref="Rule"/> to eliminate direct left-recursion in.</param>
-        /// <returns>The left-recursion eliminated <see cref="Rule"/>.</returns>
-        public static Rule EliminateLeftRecursion(Rule rule)
+        /// <param name="rules">The left-recursion eliminated <see cref="Rule"/>.</param>
+        public static void EliminateLeftRecursion(IDictionary<string, Rule> rules)
         {
-            if (rule.Ast is BnfAst.Alt alt)
+            void DesugarRuleSet()
             {
-                var newAlt = EliminateLeftRecursionInAlternation(rule, alt);
-                return new Rule(rule.Name, newAlt, rule.PublicApi) { VisualName = rule.VisualName };
+                foreach (var rule in rules.Values) rule.Ast = rule.Ast.Desugar();
             }
-            return rule;
+
+            // Desugar the rules
+            DesugarRuleSet();
+
+            // First we need to find the indirect cycles
+            var indirectCycles = FindLeftRecursionCycles(rules)
+                .Where(cycle => cycle.Count > 1)
+                .ToList();
+
+            // Figure out the least amount of rules we need to transform to remove all cycles
+            var rulesToEliminate = LeastAmountOfRulesToEliminateCycles(indirectCycles);
+
+            // Eliminate the indirect cycles
+            foreach (var ruleToEliminate in rulesToEliminate)
+            {
+                // We find all cycles that need to be eliminated
+                foreach (var cycle in indirectCycles.Where(cycle => cycle.Contains(ruleToEliminate)))
+                {
+                    EliminateIndirectLeftRecursionCycle(ruleToEliminate, cycle);
+                }
+            }
+
+            // Desugar again for simplicity
+            DesugarRuleSet();
+
+            // All remaining cycles have to be direct left-recursion
+            var directCycles = FindLeftRecursionCycles(rules);
+            if (!directCycles.All(cycle => cycle.Count == 1)) throw new InvalidOperationException("Indirect cycle elimination failed: indirect cycles remained.");
+            // Eliminate direct left-recursion
+            var directLrRules = directCycles.Select(c => c[0]);
+            foreach (var rule in directLrRules) EliminateDirectLeftRecursion(rule);
+
+            // Final desugaring step
+            DesugarRuleSet();
         }
 
         /// <summary>
@@ -64,7 +96,7 @@ namespace Yoakke.Parser.Generator
                     else toAdd = new BnfAst.Alt(toAdd, alt);
                 }
                 // Default is always stepping a level down
-                if (toAdd == null) toAdd = nextCall;
+                if (toAdd is null) toAdd = nextCall;
                 else toAdd = new BnfAst.Alt(toAdd, nextCall);
 
                 result.Add(new Rule(currentCall.Name, toAdd, i == 0) { VisualName = rule.VisualName });
@@ -72,63 +104,153 @@ namespace Yoakke.Parser.Generator
             return result;
         }
 
-        // Left-recursion //////////////////////////////////////////////////////
+        /* Left-recursion */
+
+        private static List<List<Rule>> FindLeftRecursionCycles(IDictionary<string, Rule> rules)
+        {
+            var result = new List<List<Rule>>();
+            var touched = new HashSet<Rule>();
+
+            IEnumerable<Rule> GetFirstCalls(BnfAst ast) => ast
+                .GetFirstCalls()
+                .SelectMany(call => rules.TryGetValue(call.Name, out var rule) ? new[] { rule } : Enumerable.Empty<Rule>());
+
+            void Cycle(List<Rule> ruleStack, Rule current)
+            {
+                var index = ruleStack.IndexOf(current);
+                if (index != -1)
+                {
+                    // Found a cycle, only store it, if it's an indirect one (<=> the stack has more than 1 element)
+                    result.Add(ruleStack.GetRange(index, ruleStack.Count - index));
+                    return;
+                }
+                // If we already touched the rule, skip it from further processing
+                if (!touched.Add(current)) return;
+                // Otherwise we push on, go to each called subrule
+                ruleStack.Add(current);
+                // Get all the leftmost rules this one gets expanded into
+                var nextRules = GetFirstCalls(current.Ast);
+                // Try for cycles
+                foreach (var next in nextRules) Cycle(ruleStack, next);
+                ruleStack.RemoveAt(ruleStack.Count - 1);
+            }
+
+            foreach (var rule in rules.Values) Cycle(new(), rule);
+            return result;
+        }
+
+        private static List<Rule> LeastAmountOfRulesToEliminateCycles(List<List<Rule>> cycles)
+        {
+            // We just count which rule occurs in the most cycles
+            var mostOccurrences = new Dictionary<Rule, int>();
+            foreach (var cycle in cycles)
+            {
+                foreach (var rule in cycle)
+                {
+                    if (!mostOccurrences.TryGetValue(rule, out var count)) count = 0;
+                    mostOccurrences[rule] = count + 1;
+                }
+            }
+
+            // Start eliminating cycles
+            var usedRules = new List<Rule>();
+            var remainingCycles = cycles.ToList();
+            var mostOccurredByDesc = mostOccurrences
+                .OrderByDescending(kv => kv.Value)
+                .Select(kv => kv.Key)
+                .ToList();
+            foreach (var rule in mostOccurredByDesc)
+            {
+                if (remainingCycles.Count == 0) break;
+
+                var used = false;
+                for (var i = 0; i < remainingCycles.Count; )
+                {
+                    if (remainingCycles[i].Contains(rule))
+                    {
+                        remainingCycles.RemoveAt(i);
+                        used = true;
+                    }
+                    else
+                    {
+                        ++i;
+                    }
+                }
+
+                if (used) usedRules.Add(rule);
+            }
+
+            return usedRules;
+        }
+
+        /* Indirect left-recursion */
+
+        private static void EliminateIndirectLeftRecursionCycle(Rule start, List<Rule> cycle)
+        {
+            var offset = cycle.IndexOf(start);
+            var rule = cycle[offset];
+            // Transform the ith rule in the cycle into a direct left-recursive one
+            // All the subsequent rules will be substituted one by one
+            for (var j = 1; j < cycle.Count; ++j)
+            {
+                // Get the rule we are substituting
+                var index = (offset + j) % cycle.Count;
+                var ruleToSubstitute = cycle[index];
+                var callsToRule = rule.Ast
+                    .GetFirstCalls()
+                    .Where(n => n.Name == ruleToSubstitute.Name);
+                foreach (var callToRule in callsToRule)
+                {
+                    rule.Ast = rule.Ast.SubstituteByReference(callToRule, ruleToSubstitute.Ast);
+                }
+            }
+        }
+
+        /* Direct left-recursion */
 
         /*
-         We need to find alternatives that are left recursive
-         The problem is that they might be inside transformations
+         We need to find alternatives that are left-recursive.
          For example:
          A -> A + X => { ... }
             | A - Y => { ... }
             | C
             | D
-         In this case we need to collect the first 2 alternatives (assuming same transformation)
-         And we need to make it into:
+         In this case we need to collect the first 2 alternatives.
+         Then we need to make it into:
          A -> FoldLeft((C | D)(X | Y)*)
          */
 
-        private static BnfAst EliminateLeftRecursionInAlternation(Rule rule, BnfAst.Alt alt)
+        private static void EliminateDirectLeftRecursion(Rule rule)
         {
-            var alphas = new List<(BnfAst Node, IMethodSymbol Method)>();
+            // Check if this is even an alternation case
+            // If not, we just skip it, it's probably not recursive or we can't eliminate it
+            if (rule.Ast is not BnfAst.Alt alt) return;
+            var alphas = new List<BnfAst>();
             var betas = new List<BnfAst>();
-            foreach (var child in alt.Elements)
+            foreach (var alternative in alt.Elements)
             {
-                // If the inside has no transformation, we don't care
-                if (child is not BnfAst.Transform transform)
+                var calls = alternative.GetFirstCalls()
+                    .Where(call => call.Name == rule.Name)
+                    .ToList();
+                if (calls.Count == 0)
                 {
-                    betas.Add(child);
-                    continue;
-                }
-                // We found a left-recursive sequence inside an alternative, add it as alpha
-                if (transform.Subexpr is BnfAst.Seq seq && TrySplitLeftRecursion(rule, seq, out var alpha))
-                {
-                    alphas.Add((alpha!, transform.Method));
+                    // Non-left-recursive
+                    betas.Add(alternative);
                 }
                 else
                 {
-                    betas.Add(child);
+                    // Is left-recursive
+                    var alpha = alternative;
+                    var placeholder = new BnfAst.Placeholder(alpha);
+                    foreach (var call in calls) alpha = alpha.SubstituteByReference(call, placeholder);
+                    alphas.Add(alpha);
                 }
             }
-            if (alphas.Count == 0 || betas.Count == 0) return alt;
-            // We have left-recursion
-            var betaNode = betas.Count == 1 ? betas[0] : new BnfAst.Alt(betas);
-            return new BnfAst.FoldLeft(betaNode, alphas);
-        }
 
-        private static bool TrySplitLeftRecursion(Rule rule, BnfAst.Seq seq, [MaybeNullWhen(false)] out BnfAst? alpha)
-        {
-            if (seq.Elements[0] is BnfAst.Call call && call.Name == rule.Name)
-            {
-                // Is left recursive, split out the left-recursive part, make the rest be in alpha
-                if (seq.Elements.Count == 2) alpha = seq.Elements[1];
-                else alpha = new BnfAst.Seq(seq.Elements.Skip(1));
-                return true;
-            }
-            else
-            {
-                alpha = null;
-                return false;
-            }
+            // Sanity check
+            if (alphas.Count == 0 || betas.Count == 0) throw new InvalidOperationException($"Cannot eliminate direct left-recursion! ({rule.Name})");
+            // Construct the fold
+            rule.Ast = new BnfAst.FoldLeft(new BnfAst.Alt(betas), new BnfAst.Alt(alphas));
         }
     }
 }

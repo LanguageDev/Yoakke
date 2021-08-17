@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Yoakke.Utilities.Compatibility;
@@ -37,12 +38,11 @@ namespace Yoakke.Parser.Generator.Ast
             }
 
             /// <inheritdoc/>
-            public override bool Equals(BnfAst other) => other is Transform tr
-                && this.Subexpr.Equals(tr.Subexpr)
-                && SymbolEqualityComparer.Default.Equals(this.Method, tr.Method);
+            protected override BnfAst SubstituteByReferenceImpl(BnfAst find, BnfAst replaceWith) =>
+                new Transform(this.Subexpr.SubstituteByReference(find, replaceWith), this.Method);
 
             /// <inheritdoc/>
-            public override int GetHashCode() => HashCode.Combine(this.Subexpr, this.Method);
+            public override IEnumerable<Call> GetFirstCalls() => this.Subexpr.GetFirstCalls();
 
             /// <inheritdoc/>
             public override BnfAst Desugar()
@@ -56,6 +56,9 @@ namespace Yoakke.Parser.Generator.Ast
             /// <inheritdoc/>
             public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens) =>
                 this.Method.ReturnType.ToDisplayString();
+
+            /// <inheritdoc/>
+            public override string ToString() => $"Transform({this.Subexpr}, {this.Method.Name})";
         }
     }
 }

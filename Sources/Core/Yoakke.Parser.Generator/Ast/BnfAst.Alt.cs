@@ -41,16 +41,12 @@ namespace Yoakke.Parser.Generator.Ast
             }
 
             /// <inheritdoc/>
-            public override bool Equals(BnfAst other) => other is Alt alt
-                && this.Elements.SequenceEqual(alt.Elements);
+            protected override BnfAst SubstituteByReferenceImpl(BnfAst find, BnfAst replaceWith) =>
+                new Alt(this.Elements.Select(e => e.SubstituteByReference(find, replaceWith)));
 
             /// <inheritdoc/>
-            public override int GetHashCode()
-            {
-                var hash = default(HashCode);
-                foreach (var e in this.Elements) hash.Add(e);
-                return hash.ToHashCode();
-            }
+            public override IEnumerable<Call> GetFirstCalls() =>
+                this.Elements.SelectMany(e => e.GetFirstCalls());
 
             /// <inheritdoc/>
             public override BnfAst Desugar()
@@ -73,6 +69,9 @@ namespace Yoakke.Parser.Generator.Ast
             /// <inheritdoc/>
             public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens) =>
                 this.Elements[0].GetParsedType(ruleSet, tokens);
+
+            /// <inheritdoc/>
+            public override string ToString() => $"Alt({string.Join(", ", this.Elements)})";
         }
     }
 }
