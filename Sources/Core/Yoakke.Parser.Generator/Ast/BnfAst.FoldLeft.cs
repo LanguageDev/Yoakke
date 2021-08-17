@@ -48,8 +48,8 @@ namespace Yoakke.Parser.Generator.Ast
             public override IEnumerable<Call> GetFirstCalls() => this.First.GetFirstCalls();
 
             /// <inheritdoc/>
-            // NOTE: For safety we don't desugar the second element
-            public override BnfAst Desugar() => new FoldLeft(this.First.Desugar(), this.Second);
+            public override BnfAst Desugar() =>
+                new FoldLeft(this.First.Desugar(), this.Second.Desugar());
 
             /// <inheritdoc/>
             public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens) =>

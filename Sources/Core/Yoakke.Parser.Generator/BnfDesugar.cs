@@ -187,8 +187,6 @@ namespace Yoakke.Parser.Generator
 
         private static void EliminateIndirectLeftRecursionCycle(Rule start, List<Rule> cycle)
         {
-            Debugger.Launch();
-
             var offset = cycle.IndexOf(start);
             var rule = cycle[offset];
             // Transform the ith rule in the cycle into a direct left-recursive one
@@ -243,7 +241,7 @@ namespace Yoakke.Parser.Generator
                 {
                     // Is left-recursive
                     var alpha = alternative;
-                    var placeholder = new BnfAst.Placeholder();
+                    var placeholder = new BnfAst.Placeholder(alpha);
                     foreach (var call in calls) alpha = alpha.SubstituteByReference(call, placeholder);
                     alphas.Add(alpha);
                 }

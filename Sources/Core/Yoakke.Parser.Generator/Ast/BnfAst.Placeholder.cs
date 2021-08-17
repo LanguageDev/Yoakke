@@ -16,6 +16,20 @@ namespace Yoakke.Parser.Generator.Ast
         /// </summary>
         public class Placeholder : BnfAst
         {
+            /// <summary>
+            /// The referenced AST. Mainly to be able to deduce type.
+            /// </summary>
+            public BnfAst Reference { get; set; }
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Placeholder"/> class.
+            /// </summary>
+            /// <param name="reference">The referenced AST.</param>
+            public Placeholder(BnfAst reference)
+            {
+                this.Reference = reference;
+            }
+
             /// <inheritdoc/>
             public override BnfAst Desugar() => this;
 
@@ -23,7 +37,8 @@ namespace Yoakke.Parser.Generator.Ast
             public override IEnumerable<Call> GetFirstCalls() => Enumerable.Empty<Call>();
 
             /// <inheritdoc/>
-            public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens) => throw new NotSupportedException();
+            public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens) =>
+                this.Reference.GetParsedType(ruleSet, tokens);
 
             /// <inheritdoc/>
             public override string ToString() => "<PLACEHOLDER>";

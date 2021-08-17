@@ -31,36 +31,16 @@ namespace Yoakke.Parser.Tests
         [Parser(typeof(TokenType))]
         internal partial class Parser
         {
-#if false
-            [Rule("grouping : group_element Identifier")]
-            private static string Group(string group, IToken next) => $"({group}, {next.Text})";
-
-            [Rule("group_element : grouping")]
+            [Rule("grouping : group_element")]
             private static string Ident(string s) => s;
+
+            [Rule("group_element : grouping Identifier")]
+            private static string Group(string group, IToken next) => $"({group}, {next.Text})";
 
             [Rule("group_element : Identifier")]
             private static string Ident(IToken t) => t.Text;
-#endif
-
-            [Rule("A : B C")]
-            private static string DoA(string b, string c) => string.Empty;
-
-            [Rule("B : D E")]
-            [Rule("B : A X")]
-            private static string DoB(string b, string c) => string.Empty;
-
-            [Rule("D : A F")]
-            private static string DoD(string b, string c) => string.Empty;
-
-            [Rule("B : Identifier")]
-            [Rule("C : Identifier")]
-            [Rule("E : Identifier")]
-            [Rule("F : Identifier")]
-            [Rule("X : Identifier")]
-            private static string DoC(IToken _) => string.Empty;
         }
 
-#if false
         private static string Parse(string source) =>
             new Parser(new Lexer(source)).ParseGrouping().Ok.Value;
 
@@ -75,6 +55,5 @@ namespace Yoakke.Parser.Tests
 
         [TestMethod]
         public void TestFour() => Assert.AreEqual("(((a, b), c), d)", Parse("a b c d"));
-#endif
     }
 }

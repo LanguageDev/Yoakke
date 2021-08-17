@@ -226,6 +226,7 @@ partial {symbol.GetTypeKindName()} {className}{genericTypes} : {TypeNames.Parser
             return code.ToString();
         }
 
+        // TODO: Do we even use the rule argument?
         private string GenerateBnf(StringBuilder code, Rule rule, BnfAst node, string lastIndex)
         {
             var parsedType = node.GetParsedType(this.ruleSet!, this.tokenKinds!);
@@ -235,6 +236,12 @@ partial {symbol.GetTypeKindName()} {className}{genericTypes} : {TypeNames.Parser
 
             switch (node)
             {
+            case BnfAst.Placeholder:
+            {
+                code.AppendLine($"{resultVar} = placeholder;");
+                break;
+            }
+
             case BnfAst.Transform transform:
             {
                 var subVar = this.GenerateBnf(code, rule, transform.Subexpr, lastIndex);
@@ -252,42 +259,24 @@ partial {symbol.GetTypeKindName()} {className}{genericTypes} : {TypeNames.Parser
 
             case BnfAst.FoldLeft fold:
             {
-                throw new NotImplementedException();
-#if false
                 var firstVar = this.GenerateBnf(code, rule, fold.First, lastIndex);
-                var nextResultVar = this.AllocateVarName();
-                var anySuccessVar = this.AllocateVarName();
                 code.AppendLine($"if ({firstVar}.IsOk) {{");
-                code.AppendLine($"    {resultVar} = {firstVar};");
+                code.AppendLine($"    var placeholder = {firstVar};");
+                code.AppendLine($"    {resultVar} = {firstVar}.Ok;");
                 code.AppendLine("    while (true) {");
-                code.AppendLine($"        var {anySuccessVar} = false;");
-                code.AppendLine($"        var {nextResultVar} = {resultVar};");
 
-                foreach (var (second, method) in fold.Seconds)
-                {
-                    var binder = this.GetTopLevelPattern(second);
-                    var flattenedValues = FlattenBind(binder);
-                    var call = $"{method.Name}({resultVar}.Ok.Value, {flattenedValues})";
-                    var secondVar = this.GenerateBnf(code, rule, second, $"{resultVar}.Ok.Offset");
-                    var errMerge = $"{TypeNames.ParseError}.Unify({nextResultVar}.FurthestError, {secondVar}.FurthestError)";
-                    var makeOk = $"{TypeNames.ParserBase}.Ok({call}, {secondVar}.Ok.Offset, {errMerge})";
+                var secondVar = this.GenerateBnf(code, rule, fold.Second, lastIndex);
+                code.AppendLine($"if ({secondVar}.IsOk) {{");
+                code.AppendLine($"    placeholder = {secondVar};");
+                code.AppendLine($"    {resultVar} = {secondVar}.Ok;");
+                code.AppendLine("} else {");
+                code.AppendLine("    break;");
+                code.AppendLine("}");
 
-                    code.AppendLine($"if ({secondVar}.IsError) {{");
-                    code.AppendLine($"    {nextResultVar} = {TypeNames.ParserBase}.MergeError({nextResultVar}.Ok, {secondVar}.Error);");
-                    code.AppendLine("} else {");
-                    code.AppendLine($"    var {binder} = {secondVar}.Ok.Value;");
-                    code.AppendLine($"    {nextResultVar} = {TypeNames.ParserBase}.MergeAlternatives({makeOk}, {nextResultVar});");
-                    code.AppendLine($"    {anySuccessVar} = true;");
-                    code.AppendLine("}");
-                }
-
-                code.AppendLine($"        {resultVar} = {nextResultVar};");
-                code.AppendLine($"        if (!{anySuccessVar}) break;");
                 code.AppendLine("    }");
                 code.AppendLine("} else {");
                 code.AppendLine($"    {resultVar} = {firstVar}.Error;");
                 code.AppendLine("}");
-#endif
                 break;
             }
 
@@ -517,7 +506,8 @@ partial {symbol.GetTypeKindName()} {className}{genericTypes} : {TypeNames.Parser
             or BnfAst.Group
             or BnfAst.Rep0
             or BnfAst.Rep1
-            or BnfAst.Literal => this.AllocateVarName(),
+            or BnfAst.Literal
+            or BnfAst.Placeholder => this.AllocateVarName(),
             _ => throw new InvalidOperationException(),
         };
 
