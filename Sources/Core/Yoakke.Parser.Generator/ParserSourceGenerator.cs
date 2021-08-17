@@ -226,7 +226,6 @@ partial {symbol.GetTypeKindName()} {className}{genericTypes} : {TypeNames.Parser
             return code.ToString();
         }
 
-        // TODO: Do we even use the rule argument?
         private string GenerateBnf(StringBuilder code, Rule rule, BnfAst node, string lastIndex)
         {
             var parsedType = node.GetParsedType(this.ruleSet!, this.tokenKinds!);
