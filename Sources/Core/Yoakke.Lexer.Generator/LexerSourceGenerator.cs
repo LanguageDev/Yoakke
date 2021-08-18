@@ -93,8 +93,6 @@ namespace Yoakke.Lexer.Generator
         {
             if (!this.RequireDeclarableInside(lexerClass)) return null;
 
-            var lexerAttribute = this.LoadSymbol(TypeNames.LexerAttribute);
-
             var enumName = tokenKind.ToDisplayString();
             var tokenName = $"{TypeNames.Token}<{enumName}>";
             var className = lexerClass.Name;
