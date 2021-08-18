@@ -15,9 +15,8 @@ No matter which version you choose, there are some basic structures defined in `
 5.  `ILexer<TToken>`: An interface for a lexer that can produce `TToken`s. It inherits from `ILexer`.
 
 ### Using the lexer generator
-The lexer generator can be used by annotating a token-kind enumeration with a few attributes. Let's see an example:
+The lexer generator can be used by annotating a class, to generate a lexer for a token-kind enumeration with a few attributes. Let's see an example:
 ```csharp
-[Lexer("MyLexer")]
 public enum TokenType
 {
     [Error] Error,
@@ -34,8 +33,13 @@ public enum TokenType
 
     [Regex(@"[0-9]+")] IntLiteral,
 }
+
+[Lexer(typeof(TokenType))]
+public partial class MyLexer {}
 ```
-The attribute `Lexer("MyLexer")` tells the source generator to generate the lexer class with the name `MyLexer`. It will be defined in the same namespace as the annotated enumeration. The generated class implements `ILexer<Token<TokenType>>` and inherits from `LexerBase<Token<TokenType>>`. You can find more documentation about `LexerBase<TToken>` later in the chapter [rolling your own lexer](#rolling-your-own-lexer).
+The attribute `[Lexer(typeof(TokenType))]` tells the source generator to generate the lexer for the `TokenType` enumeration inside the annotated class `MyLexer`.  **Note, that it is important to qualify the lexer class as `partial`.** The generator has to generate code for the class, that can be only achieved through partial classes because of source generator limitations.
+
+The generated class implements `ILexer<Token<TokenType>>` and inherits from `LexerBase<Token<TokenType>>`. You can find more documentation about `LexerBase<TToken>` later in the chapter [rolling your own lexer](#rolling-your-own-lexer).
 
 There are two special token types you need to define: `Error` and `End`. An `Error` kind token will be returned when there is no appropriate rule to apply, hence it denotes a lexical error. The `End` token type will signal the end of the source text.
 
@@ -61,7 +65,6 @@ There are some regexes that are very common among language lexemes, so the `Rege
 
 Rewriting the above sample to use these built-ins:
 ```csharp
-[Lexer("MyLexer")]
 public enum TokenType
 {
     [Error] Error,
@@ -78,6 +81,9 @@ public enum TokenType
 
     [Regex(Regexes.IntLiteral)] IntLiteral,
 }
+
+[Lexer(typeof(TokenType))]
+public partial class MyLexer {}
 ```
 
 #### Multiple rules for the same token
