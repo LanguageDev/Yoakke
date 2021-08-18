@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -7,7 +7,6 @@ using Yoakke.Lexer.Attributes;
 
 namespace Yoakke.Sample
 {
-    [Lexer("Lexer")]
     public enum TokenType
     {
         [Error] Error,
@@ -49,5 +48,10 @@ namespace Yoakke.Sample
         [Regex(Regexes.Identifier)] Ident,
         [Regex(Regexes.IntLiteral)] IntLit,
         [Regex(Regexes.StringLiteral)] StrLit,
+    }
+
+    [Lexer(typeof(TokenType))]
+    public partial class Lexer
+    {
     }
 }

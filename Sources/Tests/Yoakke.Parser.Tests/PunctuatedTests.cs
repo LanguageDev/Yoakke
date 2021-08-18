@@ -17,7 +17,6 @@ namespace Yoakke.Parser.Tests
     [TestClass]
     public partial class PunctuatedTests
     {
-        [Lexer("Lexer")]
         internal enum TokenType
         {
             [End] End,
@@ -28,6 +27,11 @@ namespace Yoakke.Parser.Tests
             [Token(")")] Rparen,
             [Token(",")] Comma,
             [Regex(Regexes.Identifier)] Identifier,
+        }
+
+        [Lexer(typeof(TokenType))]
+        internal partial class Lexer
+        {
         }
 
         [Parser(typeof(TokenType))]

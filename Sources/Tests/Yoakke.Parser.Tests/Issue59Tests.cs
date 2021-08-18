@@ -20,7 +20,6 @@ namespace Yoakke.Parser.Tests
     [TestClass]
     public partial class Issue59Tests
     {
-        [Lexer("Lexer")]
         internal enum TokenType
         {
             [End] End,
@@ -32,6 +31,11 @@ namespace Yoakke.Parser.Tests
             [Token(".")] Dot,
             [Token("(")] OpenParen,
             [Token(")")] CloseParen,
+        }
+
+        [Lexer(typeof(TokenType))]
+        internal partial class Lexer
+        {
         }
 
         [Parser(typeof(TokenType))]

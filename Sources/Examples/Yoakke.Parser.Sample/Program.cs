@@ -9,7 +9,6 @@ using Yoakke.Parser.Attributes;
 
 namespace Yoakke.Parser.Sample
 {
-    [Lexer("Lexer")]
     public enum TokenType
     {
         [Error] Error,
@@ -29,6 +28,11 @@ namespace Yoakke.Parser.Sample
         [Token(";")] Semicol,
 
         [Regex(Regexes.IntLiteral)] IntLit,
+    }
+
+    [Lexer(typeof(TokenType))]
+    public partial class Lexer
+    {
     }
 
     [Parser(typeof(TokenType))]

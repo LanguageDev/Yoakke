@@ -14,7 +14,6 @@ namespace Yoakke.Parser.Tests
     [TestClass]
     public partial class ExpressionParserTests
     {
-        [Lexer("Lexer")]
         internal enum TokenType
         {
             [End] End,
@@ -29,6 +28,11 @@ namespace Yoakke.Parser.Tests
             [Regex(Regexes.IntLiteral)] Number,
             [Token("(")] Lparen,
             [Token(")")] Rparen,
+        }
+
+        [Lexer(typeof(TokenType))]
+        internal partial class Lexer
+        {
         }
 
         [Parser(typeof(TokenType))]
