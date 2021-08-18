@@ -7,7 +7,6 @@ using Yoakke.Lexer.Attributes;
 
 namespace Yoakke.Lsp.Model.Generator
 {
-    [Lexer("TsLexer")]
     internal enum TokenType
     {
         [Error] Error,
@@ -42,5 +41,10 @@ namespace Yoakke.Lsp.Model.Generator
         [Regex(Regexes.Identifier)] Ident,
         [Regex(@"'[^']*'")] StringLit,
         [Regex(Regexes.IntLiteral)] NumLit,
+    }
+
+    [Lexer(typeof(TokenType))]
+    internal partial class TsLexer
+    {
     }
 }

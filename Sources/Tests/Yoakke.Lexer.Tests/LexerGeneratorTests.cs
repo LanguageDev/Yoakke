@@ -11,7 +11,6 @@ namespace Yoakke.Lexer.Tests
     [TestClass]
     public partial class LexerGeneratorTests : TestBase<LexerGeneratorTests.TokenType>
     {
-        [Lexer("Lexer")]
         public enum TokenType
         {
             [Ignore] [Regex(Regexes.Whitespace)] Whitespace,
@@ -25,6 +24,11 @@ namespace Yoakke.Lexer.Tests
             [Token("+")] Plus,
             [Token("-")] Minus,
             [Regex(Regexes.IntLiteral)] Number,
+        }
+
+        [Lexer(typeof(TokenType))]
+        internal partial class Lexer
+        {
         }
 
         [TestMethod]

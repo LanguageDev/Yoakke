@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -7,23 +7,24 @@ using System;
 namespace Yoakke.Lexer.Attributes
 {
     /// <summary>
-    /// An attribute to mark an enum to generate a lexer for it's token types.
+    /// An attribute to mark a class to generate a lexer for token types.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Enum)]
+    [AttributeUsage(AttributeTargets.Class)]
     public class LexerAttribute : Attribute
     {
         /// <summary>
-        /// The lexer classes name to generate.
+        /// The enumeration type that is annotated with token attributes.
+        /// The lexer will be generated based on the annotations on the enum fields.
         /// </summary>
-        public string ClassName { get; set; }
+        public Type TokenType { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LexerAttribute"/> class.
         /// </summary>
-        /// <param name="className">The lexer classes name to generate.</param>
-        public LexerAttribute(string className)
+        /// <param name="tokenType">The token type to generate the lexer for.</param>
+        public LexerAttribute(Type tokenType)
         {
-            this.ClassName = className;
+            this.TokenType = tokenType;
         }
     }
 }

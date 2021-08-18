@@ -26,20 +26,20 @@ namespace Yoakke.Lexer.Generator
     {
         private class SyntaxReceiver : ISyntaxReceiver
         {
-            public IList<EnumDeclarationSyntax> CandidateEnums { get; } = new List<EnumDeclarationSyntax>();
+            public IList<TypeDeclarationSyntax> CandidateTypes { get; } = new List<TypeDeclarationSyntax>();
 
             public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
             {
-                if (syntaxNode is EnumDeclarationSyntax enumDeclSyntax && enumDeclSyntax.AttributeLists.Count > 0)
+                if (syntaxNode is TypeDeclarationSyntax typeDeclSyntax && typeDeclSyntax.AttributeLists.Count > 0)
                 {
-                    this.CandidateEnums.Add(enumDeclSyntax);
+                    this.CandidateTypes.Add(typeDeclSyntax);
                 }
             }
         }
 
         private class LexerAttribute
         {
-            public string ClassName { get; set; } = string.Empty;
+            public INamedTypeSymbol? TokenType { get; set; }
         }
 
         private class RegexAttribute
@@ -75,34 +75,32 @@ namespace Yoakke.Lexer.Generator
 
             var lexerAttribute = this.LoadSymbol(TypeNames.LexerAttribute);
 
-            foreach (var syntax in receiver.CandidateEnums)
+            foreach (var syntax in receiver.CandidateTypes)
             {
                 var model = this.Context.Compilation.GetSemanticModel(syntax.SyntaxTree);
                 var symbol = model.GetDeclaredSymbol(syntax) as INamedTypeSymbol;
                 if (symbol is null) continue;
-                // Filter enums without the lexer attributes
-                if (!symbol.HasAttribute(lexerAttribute)) continue;
+                // Filter classes without the lexer attributes
+                if (!symbol.TryGetAttribute(lexerAttribute, out LexerAttribute? attr)) continue;
                 // Generate code for it
-                var generated = this.GenerateImplementation(symbol!);
+                var generated = this.GenerateImplementation(symbol!, attr!.TokenType!);
                 if (generated is null) continue;
                 this.AddSource($"{symbol!.ToDisplayString()}.Generated.cs", generated);
             }
         }
 
-        private string? GenerateImplementation(INamedTypeSymbol symbol)
+        private string? GenerateImplementation(INamedTypeSymbol lexerClass, INamedTypeSymbol tokenKind)
         {
-            if (!this.RequireDeclarableInside(symbol.ContainingSymbol)) return null;
+            if (!this.RequireDeclarableInside(lexerClass)) return null;
 
             var lexerAttribute = this.LoadSymbol(TypeNames.LexerAttribute);
-            var lexerAttributeParams = symbol.GetAttribute<LexerAttribute>(lexerAttribute);
 
-            var accessibility = symbol.DeclaredAccessibility.ToString().ToLowerInvariant();
-            var lexerClassName = lexerAttributeParams.ClassName;
-            var enumName = symbol.ToDisplayString();
+            var enumName = tokenKind.ToDisplayString();
             var tokenName = $"{TypeNames.Token}<{enumName}>";
+            var className = lexerClass.Name;
 
             // Extract the lexer from the attributes
-            var description = this.ExtractLexerDescription(symbol);
+            var description = this.ExtractLexerDescription(tokenKind);
             if (description is null) return null;
 
             // Build the DFA and state -> token associations from the description
@@ -177,18 +175,19 @@ namespace Yoakke.Lexer.Generator
             // TODO: Consuming a single token on error might not be the best strategy
             // Also we might want to report if there was a token type that was being matched, while the error occurred
 
-            var (prefix, suffix) = symbol.ContainingSymbol.DeclareInsideExternally();
+            var (prefix, suffix) = lexerClass.ContainingSymbol.DeclareInsideExternally();
+            var (genericTypes, genericConstraints) = lexerClass.GetGenericCrud();
             return $@"
 #pragma warning disable CS0162
 {prefix}
-{accessibility} class {lexerClassName} : {TypeNames.LexerBase}<{tokenName}>
+partial {lexerClass.GetTypeKindName()} {className}{genericTypes} : {TypeNames.LexerBase}<{tokenName}> {genericConstraints}
 {{
-    public {lexerClassName}({TypeNames.TextReader} reader)
+    public {className}({TypeNames.TextReader} reader)
         : base(reader)
     {{
     }}
 
-    public {lexerClassName}(string text)
+    public {className}(string text)
         : base(text)
     {{
     }}
@@ -285,7 +284,7 @@ end_loop:
             return (dfa, dfaStateToToken);
         }
 
-        private LexerDescription? ExtractLexerDescription(INamedTypeSymbol symbol)
+        private LexerDescription? ExtractLexerDescription(INamedTypeSymbol tokenKind)
         {
             var regexAttr = this.LoadSymbol(TypeNames.RegexAttribute);
             var tokenAttr = this.LoadSymbol(TypeNames.TokenAttribute);
@@ -294,7 +293,7 @@ end_loop:
             var ignoreAttr = this.LoadSymbol(TypeNames.IgnoreAttribute);
 
             var result = new LexerDescription();
-            foreach (var member in symbol.GetMembers().OfType<IFieldSymbol>())
+            foreach (var member in tokenKind.GetMembers().OfType<IFieldSymbol>())
             {
                 // End token
                 if (member.HasAttribute(endAttr))
@@ -343,7 +342,7 @@ end_loop:
             {
                 this.Report(
                     Diagnostics.FundamentalTokenTypeNotDefined,
-                    symbol.Locations.First(),
+                    tokenKind.Locations.First(),
                     result.EndSymbol is null ? "end" : "error",
                     result.EndSymbol is null ? "EndAttribute" : "ErrorAttribute");
                 return null;
