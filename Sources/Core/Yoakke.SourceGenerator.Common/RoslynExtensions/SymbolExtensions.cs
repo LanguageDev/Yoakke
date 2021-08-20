@@ -326,5 +326,14 @@ namespace Yoakke.SourceGenerator.Common.RoslynExtensions
                 foreach (var subSubType in subType.GetAllDeclaredTypes()) yield return subSubType;
             }
         }
+
+        /// <summary>
+        /// Checks, if a type has no user-defined constructors.
+        /// </summary>
+        /// <param name="type">The <see cref="INamedTypeSymbol"/> to check.</param>
+        /// <returns>True, if <paramref name="type"/> has no user-defined constructors.</returns>
+        public static bool HasNoUserDefinedCtors(this INamedTypeSymbol type) =>
+               type.InstanceConstructors.Length == 0
+            || type.InstanceConstructors.All(c => c.IsImplicitlyDeclared);
     }
 }
