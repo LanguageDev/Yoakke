@@ -88,18 +88,18 @@ namespace Yoakke.Parser.Generator
             }
         }
 
-        private string? GenerateImplementation(INamedTypeSymbol symbol)
+        private string? GenerateImplementation(INamedTypeSymbol parserClass)
         {
-            if (!this.RequireDeclarableInside(symbol)) return null;
+            if (!this.RequireDeclarableInside(parserClass)) return null;
 
-            var parserAttr = symbol.GetAttribute<ParserAttribute>(this.LoadSymbol(TypeNames.ParserAttribute));
+            var parserAttr = parserClass.GetAttribute<ParserAttribute>(this.LoadSymbol(TypeNames.ParserAttribute));
             this.tokenKinds = new TokenKindSet(parserAttr.TokenType);
             // Extract rules from the method annotations
-            this.ruleSet = this.ExtractRuleSet(symbol);
-            this.parserType = symbol;
+            this.ruleSet = this.ExtractRuleSet(parserClass);
+            this.parserType = parserClass;
             if (!this.CheckRuleSet()) return null;
 
-            var className = symbol.Name;
+            var className = parserClass.Name;
 
             var parserMethods = new StringBuilder();
             foreach (var rule in this.ruleSet.Rules)
@@ -148,21 +148,23 @@ namespace Yoakke.Parser.Generator
                 parserMethods.AppendLine("}");
             }
 
-            var (prefix, suffix) = symbol.ContainingSymbol.DeclareInsideExternally();
-            var (genericTypes, genericConstraints) = symbol.GetGenericCrud();
+            // Deduce what ctors to generate
+            var ctors = string.Empty;
+            if (parserClass.HasNoUserDefinedCtors())
+            {
+                ctors = $@"
+public {className}({TypeNames.ILexer} lexer) : base(lexer) {{ }}
+public {className}({TypeNames.IEnumerable}<{TypeNames.IToken}> tokens) : base(tokens) {{ }}
+";
+            }
+
+            var (prefix, suffix) = parserClass.ContainingSymbol.DeclareInsideExternally();
+            var (genericTypes, genericConstraints) = parserClass.GetGenericCrud();
             return $@"
 {prefix} 
-partial {symbol.GetTypeKindName()} {className}{genericTypes} : {TypeNames.ParserBase} {genericConstraints}
+partial {parserClass.GetTypeKindName()} {className}{genericTypes} : {TypeNames.ParserBase} {genericConstraints}
 {{
-    public {className}({TypeNames.ILexer} lexer)
-        : base(lexer)
-    {{
-    }}
-
-    public {className}({TypeNames.IEnumerable}<{TypeNames.IToken}> tokens)
-        : base(tokens)
-    {{
-    }}
+    {ctors}
 
 #nullable enable
 #pragma warning disable CS8600

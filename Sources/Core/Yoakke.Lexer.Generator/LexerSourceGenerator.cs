@@ -173,6 +173,16 @@ namespace Yoakke.Lexer.Generator
             // TODO: Consuming a single token on error might not be the best strategy
             // Also we might want to report if there was a token type that was being matched, while the error occurred
 
+            // Deduce what ctors to generate
+            var ctors = string.Empty;
+            if (lexerClass.HasNoUserDefinedCtors())
+            {
+                ctors = $@"
+public {className}({TypeNames.TextReader} reader) : base(reader) {{ }}
+public {className}(string text) : base(text) {{ }}
+";
+            }
+
             var (prefix, suffix) = lexerClass.ContainingSymbol.DeclareInsideExternally();
             var (genericTypes, genericConstraints) = lexerClass.GetGenericCrud();
             return $@"
@@ -180,15 +190,7 @@ namespace Yoakke.Lexer.Generator
 {prefix}
 partial {lexerClass.GetTypeKindName()} {className}{genericTypes} : {TypeNames.LexerBase}<{tokenName}> {genericConstraints}
 {{
-    public {className}({TypeNames.TextReader} reader)
-        : base(reader)
-    {{
-    }}
-
-    public {className}(string text)
-        : base(text)
-    {{
-    }}
+    {ctors}
 
     public override {tokenName} Next()
     {{
