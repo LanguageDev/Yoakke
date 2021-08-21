@@ -48,7 +48,7 @@ namespace Yoakke.Collections
         public bool ContainsKey(TKey key) => this.underlying.ContainsKey(key);
 
         /// <inheritdoc/>
-        public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TReadValue value)
+        public bool TryGetValue(TKey key, out TReadValue value)
         {
             if (this.underlying.TryGetValue(key, out var wvalue))
             {
@@ -57,7 +57,7 @@ namespace Yoakke.Collections
             }
             else
             {
-                value = default;
+                value = default!;
                 return false;
             }
         }

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Yoakke.Polyfill
+namespace System.Collections.Generic
 {
     /// <summary>
     /// Extensions for <see cref="KeyValuePair{TKey, TValue}"/>.
