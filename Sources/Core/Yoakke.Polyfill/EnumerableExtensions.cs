@@ -26,5 +26,32 @@ namespace System.Collections.Generic
             foreach (var item in source) result.Add(item);
             return result;
         }
+
+        /// <summary>
+        /// Returns a new enumerable collection that contains the elements from <paramref name="source"/> with the last
+        /// <paramref name="count"/> elements of the source collection omitted.
+        /// </summary>
+        /// <typeparam name="TSource">The type of the elements in the enumerable collection.</typeparam>
+        /// <param name="source">An enumerable collection instance.</param>
+        /// <param name="count">The number of elements to omit from the end of the collection.</param>
+        /// <returns>A new enumerable collection that contains the elements from <paramref name="source"/> minus
+        /// <paramref name="count"/> elements from the end of the collection.</returns>
+        public static IEnumerable<TSource> SkipLast<TSource>(this IEnumerable<TSource> source, int count) => count <= 0
+            ? source
+            : SkipLastImpl(source, count);
+
+        private static IEnumerable<TSource> SkipLastImpl<TSource>(IEnumerable<TSource> source, int count)
+        {
+            var backBuffer = new TSource[count];
+            var index = 0;
+            foreach (var item in source)
+            {
+                var swapIndex = (index + count) % count;
+                var oldItem = backBuffer[swapIndex];
+                backBuffer[swapIndex] = item;
+                if (index >= count) yield return oldItem;
+                ++index;
+            }
+        }
     }
 }

@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)\Core\Yoakke.Polyfill\Yoakke.Polyfill.csproj" PrivateAssets="All" />
+    <ProjectReference Include="$(SolutionDir)\Core\Yoakke.Polyfill\Yoakke.Polyfill.csproj" />
   </ItemGroup>
 
 </Project>
