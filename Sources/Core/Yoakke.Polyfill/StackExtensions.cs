@@ -24,7 +24,7 @@ namespace System.Collections.Generic
         /// value of <typeparamref name="T"/>.</param>
         /// <returns>True if there is an object at the top of the <see cref="Stack{T}"/>; false if the
         /// <see cref="Stack{T}"/> is empty.</returns>
-        public static bool TryPop<T>(Stack<T> stack, [MaybeNullWhen(false)] out T result)
+        public static bool TryPop<T>(this Stack<T> stack, [MaybeNullWhen(false)] out T result)
         {
             if (stack.Count > 0)
             {
