@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using Yoakke.Utilities.Compatibility;
 
 namespace Yoakke.Utilities.Intervals
 {

@@ -3,7 +3,6 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System;
-using Yoakke.Utilities.Compatibility;
 using Yoakke.Utilities.FiniteAutomata;
 
 namespace Yoakke.Utilities.RegEx

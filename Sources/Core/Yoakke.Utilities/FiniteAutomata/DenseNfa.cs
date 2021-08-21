@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Yoakke.Utilities.Compatibility;
 using Yoakke.Utilities.Intervals;
 
 namespace Yoakke.Utilities.FiniteAutomata

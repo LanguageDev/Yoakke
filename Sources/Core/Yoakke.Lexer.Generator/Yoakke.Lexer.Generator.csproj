@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="$(MSBuildThisFileDirectory)/../SourceGenerator.props"/>
+  <Import Project="$(MSBuildThisFileDirectory)/../SourceGenerator.props" />
   
   <ItemGroup>
-    <Compile Include="$(SolutionDir)/Core/Yoakke.Utilities/**/*.cs" Link="Yoakke.Utilities"/>
-    <Compile Remove="$(SolutionDir)/Core/Yoakke.Utilities/obj/**/*.cs"/>
+    <Compile Include="$(SolutionDir)/Core/Yoakke.Utilities/**/*.cs" Link="Yoakke.Utilities" />
+    <Compile Remove="$(SolutionDir)/Core/Yoakke.Utilities/obj/**/*.cs" />
 
-    <Compile Include="$(SolutionDir)/Core/Yoakke.SourceGenerator.Common/**/*.cs" Link="Yoakke.SourceGenerator.Common"/>
-    <Compile Remove="$(SolutionDir)/Core/Yoakke.SourceGenerator.Common/obj/**/*.cs"/>
+    <Compile Include="$(SolutionDir)/Core/Yoakke.SourceGenerator.Common/**/*.cs" Link="Yoakke.SourceGenerator.Common" />
+    <Compile Remove="$(SolutionDir)/Core/Yoakke.SourceGenerator.Common/obj/**/*.cs" />
   </ItemGroup>
   
 </Project>

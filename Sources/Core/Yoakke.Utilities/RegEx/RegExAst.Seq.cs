@@ -2,7 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
-using Yoakke.Utilities.Compatibility;
+using System;
 using Yoakke.Utilities.FiniteAutomata;
 
 namespace Yoakke.Utilities.RegEx

@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Yoakke.Utilities.Compatibility;
 using Yoakke.Utilities.FiniteAutomata;
 using Yoakke.Utilities.Intervals;
 
