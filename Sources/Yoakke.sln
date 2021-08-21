@@ -102,7 +102,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Platforms", "Platforms", "{
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.NugetMaintainer", "Tools\Yoakke.NugetMaintainer\Yoakke.NugetMaintainer.csproj", "{7BD28C2F-18D6-4C3A-9899-469775B001D8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yoakke.SyntaxTree.Tests.Tree", "Tests\Yoakke.SyntaxTree.Tests.Tree\Yoakke.SyntaxTree.Tests.Tree.csproj", "{2E1E2A07-9EC8-462D-B001-8AB44F973286}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.SyntaxTree.Tests.Tree", "Tests\Yoakke.SyntaxTree.Tests.Tree\Yoakke.SyntaxTree.Tests.Tree.csproj", "{2E1E2A07-9EC8-462D-B001-8AB44F973286}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yoakke.Polyfill", "Core\Yoakke.Polyfill\Yoakke.Polyfill.csproj", "{94CBD997-6394-4BA3-9AF2-0C2C139E1967}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -258,6 +260,10 @@ Global
 		{2E1E2A07-9EC8-462D-B001-8AB44F973286}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E1E2A07-9EC8-462D-B001-8AB44F973286}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E1E2A07-9EC8-462D-B001-8AB44F973286}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94CBD997-6394-4BA3-9AF2-0C2C139E1967}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94CBD997-6394-4BA3-9AF2-0C2C139E1967}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94CBD997-6394-4BA3-9AF2-0C2C139E1967}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94CBD997-6394-4BA3-9AF2-0C2C139E1967}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
