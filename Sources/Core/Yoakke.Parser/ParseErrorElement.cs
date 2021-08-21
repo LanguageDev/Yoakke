@@ -14,7 +14,7 @@ namespace Yoakke.Parser
         /// <summary>
         /// The expected possible inputs.
         /// </summary>
-        public IReadOnlySet<object> Expected { get; }
+        public ISet<object> Expected { get; }
 
         /// <summary>
         /// The context in which the error occurred.
@@ -36,7 +36,7 @@ namespace Yoakke.Parser
         /// </summary>
         /// <param name="expected">The expected possible inputs.</param>
         /// <param name="context">The context in which the error occurred.</param>
-        public ParseErrorElement(IReadOnlySet<object> expected, string context)
+        public ParseErrorElement(ISet<object> expected, string context)
         {
             this.Expected = expected;
             this.Context = context;
