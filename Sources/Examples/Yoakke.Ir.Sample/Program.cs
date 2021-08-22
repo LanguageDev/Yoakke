@@ -12,6 +12,7 @@ namespace Yoakke.Ir.Sample
     {
         static void Main(string[] args)
         {
+#if false
             var i32 = new Type.Int(true, 32);
 
             Value MakeInt(int v) => new Value.Int(true, new BigInt(32, BitConverter.GetBytes(v)));
@@ -53,6 +54,7 @@ namespace Yoakke.Ir.Sample
             var vm = new ModelVirtualMachine(builder.Assembly);
             var result = vm.Execute(new Value.Proc(main), new Value[] { });
             Console.WriteLine($"\n\nProcess returned {((Value.Int)result).Value.ToString(true)}");
+#endif
         }
     }
 }

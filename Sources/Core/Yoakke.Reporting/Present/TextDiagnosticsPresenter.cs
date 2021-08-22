@@ -46,7 +46,7 @@ namespace Yoakke.Reporting.Present
         public DiagnosticsStyle Style { get; set; } = DiagnosticsStyle.Default;
 
         /// <inheritdoc/>
-        public ISyntaxHighlighter SyntaxHighlighter { get; set; } = ISyntaxHighlighter.Null;
+        public ISyntaxHighlighter SyntaxHighlighter { get; set; } = NullSyntaxHighlighter.Instance;
 
         /// <summary>
         /// The <see cref="TextWriter"/> this presenter writes to.

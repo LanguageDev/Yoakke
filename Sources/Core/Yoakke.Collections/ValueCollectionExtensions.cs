@@ -29,18 +29,6 @@ namespace Yoakke.Collections
                 : new ReadOnlyValueList<T>(list);
 
         /// <summary>
-        /// Wraps an <see cref="IReadOnlySet{T}"/> to have value-based equality.
-        /// </summary>
-        /// <typeparam name="T">The element type.</typeparam>
-        /// <param name="set">The <see cref="IReadOnlySet{T}"/> to wrap.</param>
-        /// <returns>The <paramref name="set"/> wrapped as <see cref="IReadOnlyValueSet{T}"/>.</returns>
-        public static IReadOnlyValueSet<T> AsValue<T>(this IReadOnlySet<T> set)
-            where T : IEquatable<T> =>
-            set is IReadOnlyValueSet<T> readOnly
-                ? readOnly
-                : new ReadOnlyValueSet<T>(set);
-
-        /// <summary>
         /// Wraps an <see cref="IReadOnlyValueDictionary{TKey, TValue}"/> to have value-based equality.
         /// </summary>
         /// <typeparam name="TKey">The key type.</typeparam>

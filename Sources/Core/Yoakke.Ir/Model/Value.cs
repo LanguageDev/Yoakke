@@ -90,6 +90,7 @@ namespace Yoakke.Ir.Model
             public override int GetHashCode() => RuntimeHelpers.GetHashCode(this.Instruction);
         }
 
+#if false
         /// <summary>
         /// A signed or unsigned integer constant.
         /// </summary>
@@ -120,5 +121,6 @@ namespace Yoakke.Ir.Model
             /// <param name="value">The <see cref="Value"/> gets written here.</param>
             public void Deconstruct(out BigInt value) => value = this.Value;
         }
+#endif
     }
 }

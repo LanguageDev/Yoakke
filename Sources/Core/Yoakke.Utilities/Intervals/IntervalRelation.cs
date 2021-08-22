@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using Yoakke.Utilities.Compatibility;
 
 namespace Yoakke.Utilities.Intervals
 {
@@ -79,7 +78,7 @@ namespace Yoakke.Utilities.Intervals
                 other is Disjunct d && this.First.Equals(d.First, comparer) && this.Second.Equals(d.Second, comparer);
 
             /// <inheritdoc/>
-            public override int GetHashCode() => HashCode.Combine(this.First, this.Second);
+            public override int GetHashCode() => (this.First, this.Second).GetHashCode();
         }
 
         /// <summary>
@@ -113,7 +112,7 @@ namespace Yoakke.Utilities.Intervals
                 other is Touching t && this.First.Equals(t.First, comparer) && this.Second.Equals(t.Second, comparer);
 
             /// <inheritdoc/>
-            public override int GetHashCode() => HashCode.Combine(this.First, this.Second);
+            public override int GetHashCode() => (this.First, this.Second).GetHashCode();
         }
 
         /// <summary>
@@ -157,7 +156,7 @@ namespace Yoakke.Utilities.Intervals
                 && this.SecondDisjunct.Equals(o.SecondDisjunct, comparer);
 
             /// <inheritdoc/>
-            public override int GetHashCode() => HashCode.Combine(this.FirstDisjunct, this.Overlap, this.SecondDisjunct);
+            public override int GetHashCode() => (this.FirstDisjunct, this.Overlap, this.SecondDisjunct).GetHashCode();
         }
 
         /// <summary>
@@ -201,7 +200,7 @@ namespace Yoakke.Utilities.Intervals
                 && this.SecondDisjunct.Equals(c.SecondDisjunct, comparer);
 
             /// <inheritdoc/>
-            public override int GetHashCode() => HashCode.Combine(this.FirstDisjunct, this.Contained, this.SecondDisjunct);
+            public override int GetHashCode() => (this.FirstDisjunct, this.Contained, this.SecondDisjunct).GetHashCode();
         }
 
         /// <summary>
@@ -235,7 +234,7 @@ namespace Yoakke.Utilities.Intervals
                 other is Starting s && this.Overlap.Equals(s.Overlap, comparer) && this.Disjunct.Equals(s.Disjunct, comparer);
 
             /// <inheritdoc/>
-            public override int GetHashCode() => HashCode.Combine(this.Overlap, this.Disjunct);
+            public override int GetHashCode() => (this.Overlap, this.Disjunct).GetHashCode();
         }
 
         /// <summary>
@@ -269,7 +268,7 @@ namespace Yoakke.Utilities.Intervals
                 other is Finishing f && this.Overlap.Equals(f.Overlap, comparer) && this.Disjunct.Equals(f.Disjunct, comparer);
 
             /// <inheritdoc/>
-            public override int GetHashCode() => HashCode.Combine(this.Disjunct, this.Overlap);
+            public override int GetHashCode() => (this.Disjunct, this.Overlap).GetHashCode();
         }
 
         /// <summary>

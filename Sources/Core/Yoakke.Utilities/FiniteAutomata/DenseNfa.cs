@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Yoakke.Utilities.Compatibility;
 using Yoakke.Utilities.Intervals;
 
 namespace Yoakke.Utilities.FiniteAutomata
@@ -25,9 +24,9 @@ namespace Yoakke.Utilities.FiniteAutomata
 
             public int GetHashCode(SortedSet<State> obj)
             {
-                var hash = default(HashCode);
-                foreach (var s in obj) hash.Add(s);
-                return hash.ToHashCode();
+                var hash = 0;
+                foreach (var s in obj) hash = (hash, s).GetHashCode();
+                return hash;
             }
         }
 

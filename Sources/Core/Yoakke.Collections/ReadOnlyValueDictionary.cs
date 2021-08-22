@@ -83,7 +83,7 @@ namespace Yoakke.Collections
         public bool ContainsKey(TKey key) => this.Underlying.ContainsKey(key);
 
         /// <inheritdoc/>
-        public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value) => this.Underlying.TryGetValue(key, out value);
+        public bool TryGetValue(TKey key, out TValue value) => this.Underlying.TryGetValue(key, out value);
 
         /// <inheritdoc/>
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator() => this.Underlying.GetEnumerator();

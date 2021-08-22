@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -11,8 +11,14 @@
     <ProjectReference Include="$(SolutionDir)\Core\Yoakke.Lsp.Server\Yoakke.Lsp.Server.csproj" />
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(GITHUB_ACTIONS)' != 'true'">
-    <Exec Command="XCOPY &quot;$(TargetDir)&quot; &quot;$(ProjectDir)../Yoakke.Lsp.Server.Sample.VsCodeClient/out&quot; /s /y" />
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <ItemGroup>
+      <LanguageServerBinaries Include="$(TargetDir)**\*.*"/>
+    </ItemGroup>
+
+    <Copy SourceFiles="@(LanguageServerBinaries)"
+          DestinationFolder="$(ProjectDir)../Yoakke.Lsp.Server.Sample.VsCodeClient/out"
+          SkipUnchangedFiles="true" />
   </Target>
 
 </Project>

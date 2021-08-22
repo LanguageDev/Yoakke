@@ -107,36 +107,22 @@ namespace Yoakke.Text
         }
 
         /// <inheritdoc/>
-        public override int Read(Span<char> buffer)
+        public override int Read(char[] buffer, int index, int count)
         {
-            this.EnsureLength(this.index + buffer.Length);
-            var readUntil = Math.Min(this.index + buffer.Length, this.sourceText.Length);
-            var count = readUntil - this.index;
-            this.sourceText.CopyTo(this.index, buffer, count);
-            this.index += count;
-            return count;
+            this.EnsureLength(this.index + count);
+            var readUntil = Math.Min(this.index + count, this.sourceText.Length);
+            var ableToRead = readUntil - this.index;
+            this.sourceText.CopyTo(this.index, buffer, index, ableToRead);
+            this.index += ableToRead;
+            return ableToRead;
         }
-
-        /// <inheritdoc/>
-        public override int Read(char[] buffer, int index, int count) => this.Read(buffer.AsSpan(index, count));
-
-        /// <inheritdoc/>
-        public override ValueTask<int> ReadAsync(Memory<char> buffer, CancellationToken cancellationToken = default) =>
-            ValueTask.FromResult(this.Read(buffer.Span));
 
         /// <inheritdoc/>
         public override Task<int> ReadAsync(char[] buffer, int index, int count) =>
             Task.FromResult(this.Read(buffer, index, count));
 
         /// <inheritdoc/>
-        public override int ReadBlock(Span<char> buffer) => this.Read(buffer);
-
-        /// <inheritdoc/>
         public override int ReadBlock(char[] buffer, int index, int count) => this.Read(buffer, index, count);
-
-        /// <inheritdoc/>
-        public override ValueTask<int> ReadBlockAsync(Memory<char> buffer, CancellationToken cancellationToken = default) =>
-            ValueTask.FromResult(this.Read(buffer.Span));
 
         /// <inheritdoc/>
         public override Task<int> ReadBlockAsync(char[] buffer, int index, int count) =>

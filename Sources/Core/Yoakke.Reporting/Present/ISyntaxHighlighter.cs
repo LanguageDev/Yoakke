@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -12,11 +12,6 @@ namespace Yoakke.Reporting.Present
     /// </summary>
     public interface ISyntaxHighlighter
     {
-        /// <summary>
-        /// A default syntax highlighter that does nothing.
-        /// </summary>
-        public static readonly ISyntaxHighlighter Null = NullSyntaxHighlighter.Default;
-
         /// <summary>
         /// The style to use.
         /// </summary>

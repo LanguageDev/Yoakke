@@ -266,7 +266,9 @@ namespace Yoakke.Ir.Writers
             Value.Argument a => this.Write("arg(").Write(this.procedureContext.Parameters[a.Parameter]).Write(')'),
             Value.Local l => this.Write("local(").Write(this.procedureContext.Locals[l.Definition]).Write(')'),
             Value.Temp t => this.Write("temp(").Write(this.procedureContext.Temporaries[t.Instruction]).Write(')'),
+#if false
             Value.Int i => this.Write(i.Type).Write('(').Write(i.Value.ToString(((Type.Int)i.Type).Signed)).Write(')'),
+#endif
 
             _ => throw new NotSupportedException(),
         };

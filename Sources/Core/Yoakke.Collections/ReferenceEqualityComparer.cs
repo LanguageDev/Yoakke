@@ -26,6 +26,6 @@ namespace Yoakke.Collections
         public bool Equals(T? x, T? y) => ReferenceEqualityComparer.Instance.Equals(x, y);
 
         /// <inheritdoc/>
-        public int GetHashCode([DisallowNull] T obj) => ReferenceEqualityComparer.Instance.GetHashCode(obj);
+        public int GetHashCode(T obj) => ReferenceEqualityComparer.Instance.GetHashCode(obj);
     }
 }

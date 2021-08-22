@@ -3028,8 +3028,8 @@ namespace Yoakke.Platform.X86.Readers
             return width switch
             {
                 DataWidth.Byte => bytes[0],
-                DataWidth.Word => BitConverter.ToInt16(bytes),
-                DataWidth.Dword => BitConverter.ToInt32(bytes),
+                DataWidth.Word => BitConverter.ToInt16(bytes, 0),
+                DataWidth.Dword => BitConverter.ToInt32(bytes, 0),
                 _ => throw new NotImplementedException(),
             };
         }

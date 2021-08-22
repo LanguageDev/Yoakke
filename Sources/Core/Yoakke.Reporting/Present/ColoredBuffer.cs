@@ -207,9 +207,10 @@ namespace Yoakke.Reporting.Present
                     var start = i;
                     for (; i < line.Text.Length && line.Color[i] == lastColor; ++i)
                     {
+                        // Pass
                     }
                     // Print portion
-                    writer.Write(lineStr.AsSpan(start, i - start));
+                    writer.Write(lineStr[start..i]);
                     // If the line has not ended, we must have changed color
                     if (i < line.Text.Length)
                     {

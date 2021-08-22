@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using Yoakke.Utilities.Compatibility;
 
 namespace Yoakke.Utilities.Intervals
 {
@@ -65,7 +64,7 @@ namespace Yoakke.Utilities.Intervals
             && this.Upper.CompareTo(other.Upper, comparer) == 0;
 
         /// <inheritdoc/>
-        public override int GetHashCode() => HashCode.Combine(this.Lower, this.Upper);
+        public override int GetHashCode() => (this.Lower, this.Upper).GetHashCode();
 
         /// <summary>
         /// Checks if a value is inside this interval.

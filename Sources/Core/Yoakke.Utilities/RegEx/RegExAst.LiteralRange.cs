@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Yoakke.Utilities.Compatibility;
 using Yoakke.Utilities.FiniteAutomata;
 using Yoakke.Utilities.Intervals;
 
@@ -47,10 +46,9 @@ namespace Yoakke.Utilities.RegEx
             /// <inheritdoc/>
             public override int GetHashCode()
             {
-                var hash = default(HashCode);
-                hash.Add(this.Negate);
-                foreach (var r in this.Ranges) hash.Add(r);
-                return hash.ToHashCode();
+                var hash = this.Negate.GetHashCode();
+                foreach (var r in this.Ranges) hash = (hash, r).GetHashCode();
+                return hash;
             }
 
             /// <inheritdoc/>
