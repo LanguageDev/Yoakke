@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <Import Project="$(MSBuildThisFileDirectory)/../SourceGenerator.props" />
   
@@ -6,11 +6,11 @@
     <Compile Include="$(SolutionDir)/Core/Yoakke.SourceGenerator.Common/**/*.cs" Link="Yoakke.SourceGenerator.Common" />
     <Compile Remove="$(SolutionDir)/Core/Yoakke.SourceGenerator.Common/obj/**/*.cs" />
 
-    <Compile Include="$(SolutionDir)/Core/Yoakke.Polyfill/**/*.cs" Link="Yoakke.Polyfill"/>
-    <Compile Remove="$(SolutionDir)/Core/Yoakke.Polyfill/obj/**/*.cs"/>
+    <Compile Include="$(SolutionDir)/Core/Yoakke.Polyfill/**/*.cs" Link="Yoakke.Polyfill" />
+    <Compile Remove="$(SolutionDir)/Core/Yoakke.Polyfill/obj/**/*.cs" />
 
-    <Compile Include="$(SolutionDir)/Core/Yoakke.Utilities/**/*.cs" Link="Yoakke.Utilities"/>
-    <Compile Remove="$(SolutionDir)/Core/Yoakke.Utilities/obj/**/*.cs"/>
+    <Compile Include="$(SolutionDir)/Core/Yoakke.LexerUtils/**/*.cs" Link="Yoakke.LexerUtils" />
+    <Compile Remove="$(SolutionDir)/Core/Yoakke.LexerUtils/obj/**/*.cs" />
   </ItemGroup>
   
 </Project>

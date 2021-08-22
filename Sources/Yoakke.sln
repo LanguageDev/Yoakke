@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Utilities", "Core\Yoakke.Utilities\Yoakke.Utilities.csproj", "{4896B9FB-A0F2-4886-850C-4943BC374EAF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.LexerUtils", "Core\Yoakke.LexerUtils\Yoakke.LexerUtils.csproj", "{4896B9FB-A0F2-4886-850C-4943BC374EAF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Utilities.Tests", "Tests\Yoakke.Utilities.Tests\Yoakke.Utilities.Tests.csproj", "{8251D600-353B-4CDA-853E-51ABCAF94735}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.LexerUtils.Tests", "Tests\Yoakke.LexerUtils.Tests\Yoakke.LexerUtils.Tests.csproj", "{8251D600-353B-4CDA-853E-51ABCAF94735}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lexer", "Core\Yoakke.Lexer\Yoakke.Lexer.csproj", "{36D85E41-4CB1-4198-8248-05A30082F0F2}"
 EndProject
@@ -104,7 +104,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.NugetMaintainer", "T
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.SyntaxTree.Tests.Tree", "Tests\Yoakke.SyntaxTree.Tests.Tree\Yoakke.SyntaxTree.Tests.Tree.csproj", "{2E1E2A07-9EC8-462D-B001-8AB44F973286}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yoakke.Polyfill", "Core\Yoakke.Polyfill\Yoakke.Polyfill.csproj", "{94CBD997-6394-4BA3-9AF2-0C2C139E1967}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Polyfill", "Core\Yoakke.Polyfill\Yoakke.Polyfill.csproj", "{94CBD997-6394-4BA3-9AF2-0C2C139E1967}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Text", "Text", "{F2CCC405-5C6C-471E-A4ED-EBB6433D990B}"
 EndProject
@@ -273,6 +273,8 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{4896B9FB-A0F2-4886-850C-4943BC374EAF} = {A6B22275-5966-47BB-87EE-22E0DDE44A0E}
+		{8251D600-353B-4CDA-853E-51ABCAF94735} = {A6B22275-5966-47BB-87EE-22E0DDE44A0E}
 		{36D85E41-4CB1-4198-8248-05A30082F0F2} = {A6B22275-5966-47BB-87EE-22E0DDE44A0E}
 		{CB252735-C1B6-4F6E-8299-A552069FDBE6} = {A6B22275-5966-47BB-87EE-22E0DDE44A0E}
 		{A76E877C-B326-4B66-A9CF-53515538773A} = {A6B22275-5966-47BB-87EE-22E0DDE44A0E}
