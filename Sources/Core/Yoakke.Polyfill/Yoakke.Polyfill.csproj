@@ -13,4 +13,9 @@
     </PackageReference>
   </ItemGroup>
 
+  <!-- Remove .net5 things -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
+    <Compile Remove="IsExternalInit.cs" />
+  </ItemGroup>
+
 </Project>
