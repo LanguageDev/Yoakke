@@ -110,7 +110,7 @@ namespace Yoakke.Utilities.Intervals
         public bool Equals(LowerBound<T> other) => this.CompareTo(other) == 0;
 
         /// <inheritdoc/>
-        public override int GetHashCode() => HashCode.Combine(this.Type, this.Value);
+        public override int GetHashCode() => (this.Type, this.Value).GetHashCode();
 
         /// <summary>
         /// Compares this bound to another one using the default comparer.

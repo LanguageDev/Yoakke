@@ -41,7 +41,7 @@ namespace Yoakke.Utilities.RegEx
                 && this.Second.Equals(seq.Second);
 
             /// <inheritdoc/>
-            public override int GetHashCode() => HashCode.Combine(this.First, this.Second);
+            public override int GetHashCode() => (this.First, this.Second).GetHashCode();
 
             /// <inheritdoc/>
             public override RegExAst Desugar() => new Seq(this.First.Desugar(), this.Second.Desugar());

@@ -124,10 +124,12 @@ namespace Yoakke.Ir.Runtime
 
             case Instruction.JumpIf jumpIf:
             {
+#if false
                 var condition = (Value.Int)this.Unwrap(jumpIf.Condition);
                 var then = (Value.BasicBlock)this.Unwrap(jumpIf.Then);
                 var @else = (Value.BasicBlock)this.Unwrap(jumpIf.Else);
                 this.InstructionPointer = this.valuesToAddress[condition.Value.IsZero ? @else : then];
+#endif
             }
             break;
 
@@ -186,8 +188,10 @@ namespace Yoakke.Ir.Runtime
         {
             Type.Int => bin switch
             {
+#if false
                 Instruction.Add => EvaluateBinaryInt(resultType, left, right, (a, b) => a + b),
                 Instruction.Sub => EvaluateBinaryInt(resultType, left, right, (a, b) => a - b),
+#endif
                 Instruction.Cmp cmp => EvaluateIntComparison(cmp.Comparison, left, right),
 
                 _ => throw new NotImplementedException(),
@@ -196,17 +200,24 @@ namespace Yoakke.Ir.Runtime
             _ => throw new NotImplementedException(),
         };
 
+#if false
         private static Value EvaluateBinaryInt(Type resultType, Value left, Value right, Func<BigInt, BigInt, BigInt> eval) =>
             new Value.Int(((Type.Int)resultType).Signed, eval(((Value.Int)left).Value, ((Value.Int)right).Value));
+            throw new NotImplementedException();
+#endif
 
         private static Value EvaluateIntComparison(Comparison comparison, Value left, Value right)
         {
+#if false
             var leftType = (Type.Int)left.Type;
             var leftValue = ((Value.Int)left).Value;
             var rightValue = ((Value.Int)right).Value;
             var result = leftType.Signed
                 ? leftValue.SignedCompareTo(rightValue)
                 : leftValue.UnsignedCompareTo(rightValue);
+#else
+            var result = 0;
+#endif
             return MakeBool(comparison switch
             {
                 Comparison.Less => result < 0,
@@ -220,6 +231,10 @@ namespace Yoakke.Ir.Runtime
         }
 
         private static Value MakeBool(bool value) =>
+#if false
             new Value.Int(false, new BigInt(1, new[] { (byte)(value ? 1 : 0) }));
+#else
+            throw new NotImplementedException();
+#endif
     }
 }

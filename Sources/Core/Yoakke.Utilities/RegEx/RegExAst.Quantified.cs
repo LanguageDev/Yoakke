@@ -53,7 +53,7 @@ namespace Yoakke.Utilities.RegEx
                 && this.AtMost == q.AtMost;
 
             /// <inheritdoc/>
-            public override int GetHashCode() => HashCode.Combine(this.Subexpr, this.AtLeast, this.AtMost);
+            public override int GetHashCode() => (this.Subexpr, this.AtLeast, this.AtMost).GetHashCode();
 
             /// <inheritdoc/>
             public override RegExAst Desugar()

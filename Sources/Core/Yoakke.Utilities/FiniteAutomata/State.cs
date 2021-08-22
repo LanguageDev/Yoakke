@@ -48,9 +48,9 @@ namespace Yoakke.Utilities.FiniteAutomata
         /// <inheritdoc/>
         public override int GetHashCode()
         {
-            var hash = default(HashCode);
-            foreach (var e in this.indices) hash.Add(e);
-            return hash.ToHashCode();
+            var hash = 0;
+            foreach (var e in this.indices) hash = (hash, e).GetHashCode();
+            return hash;
         }
 
         /// <inheritdoc/>
