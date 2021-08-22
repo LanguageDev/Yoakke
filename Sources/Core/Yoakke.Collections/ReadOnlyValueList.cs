@@ -70,6 +70,9 @@ namespace Yoakke.Collections
         }
 
         /// <inheritdoc/>
+        public bool Equals(IReadOnlyValueList<T>? other) => this.Equals(other as IReadOnlyList<T>);
+
+        /// <inheritdoc/>
         public override int GetHashCode()
         {
             var hash = default(HashCode);

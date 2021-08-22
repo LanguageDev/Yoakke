@@ -15,7 +15,10 @@ namespace Yoakke.Collections
     /// </summary>
     /// <typeparam name="TKey">The key type.</typeparam>
     /// <typeparam name="TValue">The value type.</typeparam>
-    public interface IReadOnlyValueDictionary<TKey, TValue> : IReadOnlyDictionary<TKey, TValue>, IEquatable<IReadOnlyDictionary<TKey, TValue>>
+    public interface IReadOnlyValueDictionary<TKey, TValue>
+        : IReadOnlyDictionary<TKey, TValue>,
+          IEquatable<IReadOnlyDictionary<TKey, TValue>>,
+          IEquatable<IReadOnlyValueDictionary<TKey, TValue>>
         where TKey : IEquatable<TKey>
         where TValue : IEquatable<TValue>
     {

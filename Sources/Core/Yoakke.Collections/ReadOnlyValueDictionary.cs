@@ -65,6 +65,9 @@ namespace Yoakke.Collections
         }
 
         /// <inheritdoc/>
+        public bool Equals(IReadOnlyValueDictionary<TKey, TValue>? other) => this.Equals(other as IReadOnlyDictionary<TKey, TValue>);
+
+        /// <inheritdoc/>
         public override int GetHashCode()
         {
             // NOTE: We simply use XOR as that is order-independent
