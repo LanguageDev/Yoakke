@@ -6,7 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)\Core\Yoakke.Polyfill\Yoakke.Polyfill.csproj" />
     <ProjectReference Include="$(SolutionDir)\Core\Yoakke.Parser\Yoakke.Parser.csproj" />
     <ProjectReference Include="$(SolutionDir)\Core\Yoakke.SyntaxTree\Yoakke.SyntaxTree.csproj" />
     <ProjectReference Include="$(SolutionDir)\Core\Yoakke.Collections\Yoakke.Collections.csproj" />
