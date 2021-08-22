@@ -42,7 +42,7 @@ namespace Yoakke.Lexer
         /// Note that this CANNOT represent all IEEE-754 floating point values, as special values such as infinity or NaN are not supported.
         /// </remarks>
         /// <seealso cref="IeeeFloatLiteral"/>
-        public const string RealNumberLiteral = "(([0-9]*.)|([0-9]+[0-9_]*.))?[0-9]+[0-9_]*((e|E)(+|-)?[0-9]+)?";
+        public const string RealNumberLiteral = "(([0-9]*.)|([0-9]+[0-9_]*.))?[0-9]+[0-9_]*((e|E)(\\+|-)?[0-9]+)?";
 
         /// <summary>
         /// IEEE-754 floating point real number with an optional fractionary part, scientific notation and digit separator.
@@ -55,7 +55,7 @@ namespace Yoakke.Lexer
         /// Scientific notation is supported by appending <c>e</c> or <c>E</c> and then using an integer exponent, which may be optionally negative.
         /// Special cases <c>infinity</c> and <c>NaN</c> are supported, where positive and negative infinity are disambiguated using a leading sign.
         /// </remarks>
-        public const string IeeeFloatLiteral = "((([0-9]*.)|((+|-)?[0-9]+[0-9_]*.))?[0-9]+[0-9_]*((e|E)(+|-)?[0-9]+)?)|((+|-)?infinity)|(NaN)";
+        public const string IeeeFloatLiteral = "((([0-9]*.)|((\\+|-)?[0-9]+[0-9_]*.))?[0-9]+[0-9_]*((e|E)(\\+|-)?[0-9]+)?)|((\\+|-)?infinity)|(NaN)";
 
         /// <summary>
         /// A single-line string.
