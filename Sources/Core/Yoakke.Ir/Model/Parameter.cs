@@ -10,14 +10,14 @@ namespace Yoakke.Ir.Model
     public class Parameter
     {
         /// <summary>
-        /// The <see cref="Type"/> of the <see cref="Parameter"/>.
+        /// The <see cref="Model.Type"/> of the <see cref="Parameter"/>.
         /// </summary>
         public Type Type { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Parameter"/> class.
         /// </summary>
-        /// <param name="type">The <see cref="Ir.Type"/> of the parameter.</param>
+        /// <param name="type">The <see cref="Model.Type"/> of the parameter.</param>
         public Parameter(Type type)
         {
             this.Type = type;

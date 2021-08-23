@@ -27,7 +27,7 @@ namespace Yoakke.Ir.Model
         public IReadOnlyList<Parameter> Parameters { get; }
 
         /// <summary>
-        /// The <see cref="Ir.Type"/> this <see cref="IReadOnlyProcedure"/> returns.
+        /// The <see cref="Model.Type"/> this <see cref="IReadOnlyProcedure"/> returns.
         /// </summary>
         public Type Return { get; }
 
