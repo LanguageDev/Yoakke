@@ -3,10 +3,6 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Yoakke.Collections;
 
 namespace Yoakke.Ir.Model
@@ -24,7 +20,7 @@ namespace Yoakke.Ir.Model
             /// <summary>
             /// A default <see cref="Void"/> instance.
             /// </summary>
-            public static readonly Type Instance = new Void();
+            public static readonly Void Instance = new();
         }
 
         /// <summary>

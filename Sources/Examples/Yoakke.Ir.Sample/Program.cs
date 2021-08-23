@@ -1,11 +1,3 @@
-using System;
-using Yoakke.Collections;
-using Yoakke.Ir.Model;
-using Yoakke.Ir.Passes;
-using Yoakke.Ir.Runtime;
-using Yoakke.Ir.Writers;
-using Type = Yoakke.Ir.Model.Type;
-
 namespace Yoakke.Ir.Sample
 {
     class Program

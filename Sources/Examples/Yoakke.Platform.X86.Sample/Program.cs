@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using Yoakke.Platform.X86.Operands;
 using Yoakke.Platform.X86.Readers;
 using Yoakke.Platform.X86.Writers;
 

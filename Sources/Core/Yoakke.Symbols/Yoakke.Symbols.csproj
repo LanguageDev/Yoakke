@@ -3,9 +3,5 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)\Core\Yoakke.Text\Yoakke.Text.csproj" />
-  </ItemGroup>
-
+  
 </Project>
