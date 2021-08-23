@@ -3,7 +3,6 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System;
-using Yoakke.SyntaxTree;
 using Yoakke.Text;
 
 namespace Yoakke.Sample

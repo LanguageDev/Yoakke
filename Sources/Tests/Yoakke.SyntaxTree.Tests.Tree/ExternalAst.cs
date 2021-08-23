@@ -1,4 +1,3 @@
-using System;
 using Yoakke.SyntaxTree.Attributes;
 
 namespace Yoakke.SyntaxTree.Tests.Tree
