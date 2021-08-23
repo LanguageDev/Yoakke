@@ -18,24 +18,24 @@ namespace Yoakke.Text.Metrics
         public static readonly OptimalStringAlignmentDistance Instance = new();
 
         /// <inheritdoc/>
-        public int Distance(ReadOnlySpan<char> a, ReadOnlySpan<char> b)
+        public int Distance(ReadOnlySpan<char> str1, ReadOnlySpan<char> str2)
         {
-            var d = new int[a.Length + 1, b.Length + 1];
+            var d = new int[str1.Length + 1, str2.Length + 1];
 
-            for (var i = 0; i <= a.Length; ++i) d[i, 0] = i;
-            for (var j = 0; j <= b.Length; ++j) d[0, j] = j;
+            for (var i = 0; i <= str1.Length; ++i) d[i, 0] = i;
+            for (var j = 0; j <= str2.Length; ++j) d[0, j] = j;
 
-            for (var i = 1; i <= a.Length; ++i)
+            for (var i = 1; i <= str1.Length; ++i)
             {
-                for (var j = 1; j <= b.Length; ++j)
+                for (var j = 1; j <= str2.Length; ++j)
                 {
                     var deletionCost = d[i - 1, j] + 1;
                     var insertionCost = d[i, j - 1] + 1;
-                    var substitutionCost = d[i - 1, j - 1] + (a[i - 1] == b[j - 1] ? 0 : 1);
+                    var substitutionCost = d[i - 1, j - 1] + (str1[i - 1] == str2[j - 1] ? 0 : 1);
 
                     d[i, j] = Math.Min(deletionCost, Math.Min(insertionCost, substitutionCost));
 
-                    if (i > 1 && j > 1 && a[i - 1] == b[j - 2] && a[i - 2] == b[j - 1])
+                    if (i > 1 && j > 1 && str1[i - 1] == str2[j - 2] && str1[i - 2] == str2[j - 1])
                     {
                         var transpositionCost = d[i - 2, j - 2] + 1;
                         d[i, j] = Math.Min(d[i, j], transpositionCost);
@@ -43,7 +43,7 @@ namespace Yoakke.Text.Metrics
                 }
             }
 
-            return d[a.Length, b.Length];
+            return d[str1.Length, str2.Length];
         }
     }
 }
