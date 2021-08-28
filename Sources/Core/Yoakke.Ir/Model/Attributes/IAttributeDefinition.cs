@@ -2,10 +2,9 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
-using System;
 using System.Collections.Generic;
-using System.Text;
 using Yoakke.Ir.Model.Types;
+using Yoakke.Ir.Model.Values;
 
 namespace Yoakke.Ir.Model.Attributes
 {
@@ -44,5 +43,13 @@ namespace Yoakke.Ir.Model.Attributes
         /// The value set that can be assigned.
         /// </summary>
         public IReadOnlyCollection<string> AssignableValues { get; }
+
+        /// <summary>
+        /// Instantiates an <see cref="IAttribute"/> from this <see cref="IAttributeDefinition"/>.
+        /// </summary>
+        /// <param name="arguments">The arguments to pass.</param>
+        /// <param name="assignedValue">The assigned value to pass.</param>
+        /// <returns>The instantiated <see cref="IAttribute"/>.</returns>
+        public IAttribute Instantiate(IReadOnlyList<IConstant> arguments, string? assignedValue);
     }
 }
