@@ -8,6 +8,10 @@ using Yoakke.Ir.Model.Values;
 
 namespace Yoakke.Ir.Model.Attributes
 {
+    // TODO: Make the assigned value not just a string, make it a constant
+    // We should solve enumerated attributes with some other way
+    // But assigned constants can also come handy
+
     /// <summary>
     /// Represents an attribute definition that can be put onto different assembly elements.
     ///
