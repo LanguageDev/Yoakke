@@ -14,6 +14,9 @@ namespace Yoakke.Ir.Model.Types
     public record Ptr(IType Element) : IType
     {
         /// <inheritdoc/>
+        public IType Type => Types.Type.Instance;
+
+        /// <inheritdoc/>
         public override string ToString() => $"*{this.Element}";
     }
 }

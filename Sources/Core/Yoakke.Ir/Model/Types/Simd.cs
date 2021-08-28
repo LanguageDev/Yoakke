@@ -15,6 +15,9 @@ namespace Yoakke.Ir.Model.Types
     public record Simd(IType Element, IConstant Size) : IType
     {
         /// <inheritdoc/>
+        public IType Type => Types.Type.Instance;
+
+        /// <inheritdoc/>
         public override string ToString() => $"simd[{this.Size}]{this.Element}";
     }
 }

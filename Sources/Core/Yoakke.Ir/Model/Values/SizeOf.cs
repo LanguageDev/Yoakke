@@ -10,10 +10,14 @@ using Yoakke.Ir.Model.Types;
 namespace Yoakke.Ir.Model.Values
 {
     /// <summary>
-    /// Represents a constant that depends on the size of its type argument in bits.
+    /// Represents a constant that depends on the size of its argument in bits.
     /// </summary>
-    public record SizeOf(IType Type) : IConstant
+    public record SizeOf(IConstant Value) : IConstant
     {
+        /// <inheritdoc/>
+        // TODO: Hardcoded
+        public IType Type => new Types.Int(new Int(32));
+
         /// <inheritdoc/>
         public override string ToString() => $"size_of({this.Type})";
     }

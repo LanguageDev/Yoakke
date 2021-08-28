@@ -16,6 +16,9 @@ namespace Yoakke.Ir.Model.Types
     public record Bool(IConstant Bits) : IType
     {
         /// <inheritdoc/>
+        public IType Type => Types.Type.Instance;
+
+        /// <inheritdoc/>
         public override string ToString() => $"b{{{this.Bits}}}";
     }
 }

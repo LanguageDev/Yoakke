@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Yoakke.Ir.Model.Types;
 
 namespace Yoakke.Ir.Model.Values
 {
@@ -13,5 +14,9 @@ namespace Yoakke.Ir.Model.Values
     /// </summary>
     public interface IConstant
     {
+        /// <summary>
+        /// The type of this constant.
+        /// </summary>
+        public IType Type { get; }
     }
 }

@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Yoakke.Ir.Model.Types;
 
 namespace Yoakke.Ir.Model.Values
 {
@@ -13,6 +14,10 @@ namespace Yoakke.Ir.Model.Values
     /// </summary>
     public record Int(int Value) : IConstant
     {
+        /// <inheritdoc/>
+        // TODO: Hardcoded
+        public IType Type => new Types.Int(new Int(32));
+
         /// <inheritdoc/>
         public override string ToString() => this.Value.ToString();
     }

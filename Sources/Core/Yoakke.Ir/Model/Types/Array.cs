@@ -15,6 +15,9 @@ namespace Yoakke.Ir.Model.Types
     public record Array(IType Element, IConstant Size) : IType
     {
         /// <inheritdoc/>
+        public IType Type => Types.Type.Instance;
+
+        /// <inheritdoc/>
         public override string ToString() => $"[{this.Size}]{this.Element}";
     }
 }

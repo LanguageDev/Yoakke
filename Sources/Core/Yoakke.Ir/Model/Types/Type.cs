@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Yoakke.Ir.Model.Values;
 
 namespace Yoakke.Ir.Model.Types
 {
@@ -13,6 +14,9 @@ namespace Yoakke.Ir.Model.Types
     /// </summary>
     public record Type : IType
     {
+        /// <inheritdoc/>
+        IType IConstant.Type => Instance;
+
         /// <summary>
         /// A singleton instance to use.
         /// </summary>

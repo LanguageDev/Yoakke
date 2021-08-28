@@ -15,6 +15,9 @@ namespace Yoakke.Ir.Model.Types
     public record Uint(IConstant Bits) : IType
     {
         /// <inheritdoc/>
+        public IType Type => Types.Type.Instance;
+
+        /// <inheritdoc/>
         public override string ToString() => $"u{{{this.Bits}}}";
     }
 }

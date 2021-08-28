@@ -15,6 +15,9 @@ namespace Yoakke.Ir.Model.Types
     public record Offset(IConstant Bits) : IType
     {
         /// <inheritdoc/>
+        public IType Type => Types.Type.Instance;
+
+        /// <inheritdoc/>
         public override string ToString() => $"offset{{{this.Bits}}}";
     }
 }

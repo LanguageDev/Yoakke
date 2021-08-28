@@ -13,6 +13,9 @@ namespace Yoakke.Ir.Model.Types
     /// </summary>
     public record Void : IType
     {
+        /// <inheritdoc/>
+        public IType Type => Types.Type.Instance;
+
         /// <summary>
         /// A singleton instance to use.
         /// </summary>
