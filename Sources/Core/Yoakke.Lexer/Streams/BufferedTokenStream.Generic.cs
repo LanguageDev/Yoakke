@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using Yoakke.Collections;
 
-namespace Yoakke.Lexer
+namespace Yoakke.Lexer.Streams
 {
     /// <summary>
     /// An <see cref="ITokenStream{TToken}"/> implementation with a backing buffer.

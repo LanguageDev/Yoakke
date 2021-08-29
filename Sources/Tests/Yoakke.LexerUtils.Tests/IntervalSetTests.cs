@@ -1,13 +1,13 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Yoakke.Utilities.Intervals;
+using Yoakke.LexerUtils.Intervals;
 
-namespace Yoakke.Utilities.Tests
+namespace Yoakke.LexerUtils.Tests
 {
     [TestClass]
     public class IntervalSetTests : IntervalTestBase

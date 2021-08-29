@@ -4,7 +4,7 @@
 
 using System.Collections.Generic;
 
-namespace Yoakke.Utilities.FiniteAutomata
+namespace Yoakke.LexerUtils.FiniteAutomata
 {
     /// <summary>
     /// An interface for all finite automata.

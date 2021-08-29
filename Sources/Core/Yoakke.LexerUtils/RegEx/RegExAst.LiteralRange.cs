@@ -5,10 +5,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Yoakke.Utilities.FiniteAutomata;
-using Yoakke.Utilities.Intervals;
+using Yoakke.LexerUtils.FiniteAutomata;
+using Yoakke.LexerUtils.Intervals;
 
-namespace Yoakke.Utilities.RegEx
+namespace Yoakke.LexerUtils.RegEx
 {
     public partial class RegExAst
     {

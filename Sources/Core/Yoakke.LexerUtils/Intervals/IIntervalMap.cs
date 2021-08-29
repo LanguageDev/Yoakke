@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Yoakke.Utilities.Intervals
+namespace Yoakke.LexerUtils.Intervals
 {
     /// <summary>
     /// Represents a generic collection of disjunct intervals and associated values.

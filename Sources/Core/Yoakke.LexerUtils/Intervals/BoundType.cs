@@ -2,7 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
-namespace Yoakke.Utilities.Intervals
+namespace Yoakke.LexerUtils.Intervals
 {
     /// <summary>
     /// The different bound types an interval bound can have.

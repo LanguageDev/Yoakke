@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Yoakke.Utilities.Intervals
+namespace Yoakke.LexerUtils.Intervals
 {
     /// <summary>
     /// Base class for describing the relation of two intervals.

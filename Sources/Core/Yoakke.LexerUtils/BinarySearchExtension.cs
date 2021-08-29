@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Yoakke.Utilities
+namespace Yoakke.LexerUtils
 {
     /// <summary>
     /// Utilities for binary searching with incompatible key types.

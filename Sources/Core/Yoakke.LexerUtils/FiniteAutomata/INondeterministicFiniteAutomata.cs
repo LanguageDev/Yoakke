@@ -4,7 +4,7 @@
 
 using System.Collections.Generic;
 
-namespace Yoakke.Utilities.FiniteAutomata
+namespace Yoakke.LexerUtils.FiniteAutomata
 {
     /// <summary>
     /// Represents a nondeterministic finite automata that has multiple ways to step on a symbol as

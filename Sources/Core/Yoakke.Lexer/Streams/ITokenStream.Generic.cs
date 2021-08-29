@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Yoakke.Lexer
+namespace Yoakke.Lexer.Streams
 {
     /// <summary>
     /// Represents a stream of <see cref="IToken"/>s that can be read and (optionally) written sequentially.

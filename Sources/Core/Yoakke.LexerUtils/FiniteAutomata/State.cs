@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Yoakke.Utilities.FiniteAutomata
+namespace Yoakke.LexerUtils.FiniteAutomata
 {
     /// <summary>
     /// Represents a single state of a finite automata.
