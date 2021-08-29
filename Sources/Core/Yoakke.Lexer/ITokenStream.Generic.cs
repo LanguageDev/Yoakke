@@ -9,7 +9,7 @@ using System.Text;
 namespace Yoakke.Lexer
 {
     /// <summary>
-    /// Represents a stream of <see cref="IToken"/>s that can be read and written sequentially.
+    /// Represents a stream of <see cref="IToken"/>s that can be read and (optionally) written sequentially.
     /// </summary>
     /// <typeparam name="TToken">The exact type of <see cref="IToken"/>s produced.</typeparam>
     public interface ITokenStream<TToken>
