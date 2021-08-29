@@ -8,18 +8,13 @@ using Yoakke.Ir.Model.Values;
 
 namespace Yoakke.Ir.Model.Attributes
 {
-    // TODO: Make the assigned value not just a string, make it a constant
-    // We should solve enumerated attributes with some other way
-    // But assigned constants can also come handy
-
     /// <summary>
     /// Represents an attribute definition that can be put onto different assembly elements.
     ///
     /// An attribute in general has arguments and an assigned value, to have a nicer syntax.
     /// In general: [attribute_name(arg1, arg2, ...) = assigned_value].
     ///
-    /// The arguments must be constants, while the assigned value has to come from a pre-defined set of values
-    /// defined by the attribute itself.
+    /// The above form is equivalent to [attribute_name(arg1, arg2, ..., assigned_value)].
     /// </summary>
     public interface IAttributeDefinition
     {
@@ -44,16 +39,10 @@ namespace Yoakke.Ir.Model.Attributes
         public IReadOnlyList<IType> ParameterTypes { get; }
 
         /// <summary>
-        /// The value set that can be assigned.
-        /// </summary>
-        public IReadOnlyCollection<string> AssignableValues { get; }
-
-        /// <summary>
         /// Instantiates an <see cref="IAttribute"/> from this <see cref="IAttributeDefinition"/>.
         /// </summary>
-        /// <param name="arguments">The arguments to pass.</param>
-        /// <param name="assignedValue">The assigned value to pass.</param>
+        /// <param name="arguments">The arguments passed in for the attribute.</param>
         /// <returns>The instantiated <see cref="IAttribute"/>.</returns>
-        public IAttribute Instantiate(IReadOnlyList<IConstant> arguments, string? assignedValue);
+        public IAttribute Instantiate(IReadOnlyList<IConstant> arguments);
     }
 }

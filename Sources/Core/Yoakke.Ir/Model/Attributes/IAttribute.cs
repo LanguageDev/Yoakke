@@ -18,13 +18,8 @@ namespace Yoakke.Ir.Model.Attributes
         public IAttributeDefinition Definition { get; }
 
         /// <summary>
-        /// The arguments passed.
+        /// The arguments passed in for this attribute instance.
         /// </summary>
         public IReadOnlyList<IConstant> Arguments { get; }
-
-        /// <summary>
-        /// The assigned value.
-        /// </summary>
-        public string? AssignedValue { get; }
     }
 }
