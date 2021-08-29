@@ -27,7 +27,7 @@ namespace Yoakke.Lexer.Tests
         [Lexer(typeof(TokenType))]
         internal partial class ExplicitCtorLexer
         {
-            [Source]
+            [CharSource]
             private readonly ICharStream source;
 
             public ExplicitCtorLexer(string text)

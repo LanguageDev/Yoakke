@@ -293,7 +293,7 @@ end_loop:
 
         private LexerDescription? ExtractLexerDescription(INamedTypeSymbol lexerClass, INamedTypeSymbol tokenKind)
         {
-            var sourceAttr = this.LoadSymbol(TypeNames.SourceAttribute);
+            var sourceAttr = this.LoadSymbol(TypeNames.CharSourceAttribute);
             var regexAttr = this.LoadSymbol(TypeNames.RegexAttribute);
             var tokenAttr = this.LoadSymbol(TypeNames.TokenAttribute);
             var endAttr = this.LoadSymbol(TypeNames.EndAttribute);

@@ -34,7 +34,7 @@ namespace Yoakke.Lexer.Generator
         /// <summary>
         /// Annotates the field that should serve as the source character stream.
         /// </summary>
-        public static readonly string SourceAttribute = $"{LexerNamespace}.Attributes.SourceAttribute";
+        public static readonly string CharSourceAttribute = $"{LexerNamespace}.Attributes.CharSourceAttribute";
 
         /// <summary>
         /// Annotates that a token type should be used as the end token.

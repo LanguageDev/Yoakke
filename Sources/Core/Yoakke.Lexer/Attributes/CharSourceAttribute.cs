@@ -12,7 +12,7 @@ namespace Yoakke.Lexer.Attributes
     /// An attribute to annotate the source character stream for the generated lexer.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
-    public class SourceAttribute : Attribute
+    public class CharSourceAttribute : Attribute
     {
     }
 }
