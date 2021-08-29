@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace Yoakke.Lexer.Streams
@@ -21,30 +22,34 @@ namespace Yoakke.Lexer.Streams
         public bool IsEnd { get; }
 
         /// <summary>
-        /// Returns the upcoming token without consuming it.
+        /// Retrieves the upcoming token without consuming it.
         /// </summary>
-        /// <returns>The next token in the stream.</returns>
-        public TToken Peek();
+        /// <param name="token">The peeked token gets written here, if there was any.</param>
+        /// <returns>True, if there was a token to peek.</returns>
+        public bool TryPeek([MaybeNullWhen(false)] out TToken token);
 
         /// <summary>
         /// Peeks ahead a given amount of tokens without consuming them. With <paramref name="offset"/> set to 0
-        /// this is equivalent to <see cref="Peek"/>.
+        /// this is equivalent to <see cref="TryPeek"/>.
         /// </summary>
         /// <param name="offset">The offset to look ahead.</param>
-        /// <returns>The token <paramref name="offset"/> amount over.</returns>
-        public TToken LookAhead(int offset);
+        /// <param name="token">The peeked token gets written here, if there was any.</param>
+        /// <returns>True, if there was a token to peek.</returns>
+        public bool TryLookAhead(int offset, [MaybeNullWhen(false)] out TToken token);
 
         /// <summary>
         /// Consumes the upcoming token in the stream.
         /// </summary>
-        /// <returns>The consumed token.</returns>
-        public TToken Advance();
+        /// <param name="token">The consumed token gets written here, if there was any.</param>
+        /// <returns>True, if there was a token to advance.</returns>
+        public bool TryAdvance([MaybeNullWhen(false)] out TToken token);
 
         /// <summary>
         /// Consumes a given amount of tokens in the stream.
         /// </summary>
         /// <param name="amount">The number of tokens to advance.</param>
-        public void Advance(int amount);
+        /// <returns>The number of tokens actually consumed.</returns>
+        public int Advance(int amount);
 
         /// <summary>
         /// Pushes a token to the front of the stream.

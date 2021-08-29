@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Yoakke.Collections;
 
@@ -38,32 +39,45 @@ namespace Yoakke.Lexer.Streams
         }
 
         /// <inheritdoc/>
-        public TToken Peek() => this.LookAhead(0);
+        public bool TryPeek([MaybeNullWhen(false)] out TToken token) => this.TryLookAhead(0, out token);
 
         /// <inheritdoc/>
-        public TToken LookAhead(int offset)
+        public bool TryLookAhead(int offset, [MaybeNullWhen(false)] out TToken token)
         {
-            for (; this.peek.Count <= offset; this.peek.AddBack(this.Underlying.Advance()))
+            while (this.peek.Count <= offset)
             {
-                // Pass
+                if (this.Underlying.TryAdvance(out var t)) this.peek.AddBack(t);
+                else break;
             }
-            return this.peek[offset];
+            if (this.peek.Count > offset)
+            {
+                token = this.peek[offset];
+                return true;
+            }
+            else
+            {
+                token = default;
+                return false;
+            }
         }
 
         /// <inheritdoc/>
-        public TToken Advance()
+        public bool TryAdvance([MaybeNullWhen(false)] out TToken token)
         {
-            var t = this.Peek();
+            if (!this.TryPeek(out token)) return false;
             this.peek.RemoveFront();
-            return t;
+            return true;
         }
 
         /// <inheritdoc/>
-        public void Advance(int amount)
+        public int Advance(int amount)
         {
-            if (amount == 0) return;
-            this.LookAhead(amount - 1);
-            for (var i = 0; i < amount; ++i) this.peek.RemoveFront();
+            if (amount == 0) return 0;
+
+            this.TryLookAhead(amount - 1, out var _);
+            var result = Math.Min(this.peek.Count, amount);
+            for (var i = 0; i < result; ++i) this.peek.RemoveFront();
+            return result;
         }
 
         /// <inheritdoc/>
