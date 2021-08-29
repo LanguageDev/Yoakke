@@ -8,11 +8,11 @@ using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Yoakke.LexerUtils.FiniteAutomata;
+using Yoakke.LexerUtils.Intervals;
+using Yoakke.LexerUtils.RegEx;
 using Yoakke.SourceGenerator.Common;
 using Yoakke.SourceGenerator.Common.RoslynExtensions;
-using Yoakke.Utilities.FiniteAutomata;
-using Yoakke.Utilities.Intervals;
-using Yoakke.Utilities.RegEx;
 
 namespace Yoakke.Lexer.Generator
 {
