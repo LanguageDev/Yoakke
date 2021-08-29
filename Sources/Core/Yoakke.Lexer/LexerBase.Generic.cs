@@ -14,7 +14,7 @@ namespace Yoakke.Lexer
     /// Base-class to provide common functionality for lexers, if a custom solution is needed.
     /// </summary>
     /// <typeparam name="TToken">The exact type of token this <see cref="LexerBase{TToken}"/> produces.</typeparam>
-    public abstract class LexerBase<TToken> : ILexer<TToken>
+    public abstract class LexerBase<TToken> : ITokenStream<TToken>
         where TToken : IToken
     {
         /// <summary>
@@ -182,9 +182,21 @@ namespace Yoakke.Lexer
         }
 
         /// <inheritdoc/>
-        public abstract TToken Next();
+        public abstract TToken Advance();
 
         /// <inheritdoc/>
-        IToken ILexer.Next() => this.Next();
+        public void Advance(int amount)
+        {
+            for (var i = 0; i < amount; ++i) this.Advance();
+        }
+
+        /// <inheritdoc/>
+        public TToken Peek() => throw new NotSupportedException();
+
+        /// <inheritdoc/>
+        public TToken LookAhead(int offset) => throw new NotSupportedException();
+
+        /// <inheritdoc/>
+        public void Defer(TToken token) => throw new NotSupportedException();
     }
 }
