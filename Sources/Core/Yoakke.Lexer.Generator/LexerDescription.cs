@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -12,6 +12,11 @@ namespace Yoakke.Lexer.Generator
     /// </summary>
     internal class LexerDescription
     {
+        /// <summary>
+        /// The symbol containing the source character stream.
+        /// </summary>
+        public ISymbol? SourceSymbol { get; set; }
+
         /// <summary>
         /// The symbol used to define an error/unknown token type.
         /// </summary>

@@ -22,9 +22,19 @@ namespace Yoakke.Lexer.Generator
         public const string TextReader = "System.IO.TextReader";
 
         /// <summary>
+        /// System.IO.StringReader.
+        /// </summary>
+        public const string StringReader = "System.IO.StringReader";
+
+        /// <summary>
         /// The attribute that turns an enumeration into a generated lexer.
         /// </summary>
         public static readonly string LexerAttribute = $"{LexerNamespace}.Attributes.LexerAttribute";
+
+        /// <summary>
+        /// Annotates the field that should serve as the source character stream.
+        /// </summary>
+        public static readonly string SourceAttribute = $"{LexerNamespace}.Attributes.SourceAttribute";
 
         /// <summary>
         /// Annotates that a token type should be used as the end token.
@@ -52,13 +62,33 @@ namespace Yoakke.Lexer.Generator
         public static readonly string TokenAttribute = $"{LexerNamespace}.Attributes.TokenAttribute";
 
         /// <summary>
-        /// The LexerBase class that defines common lexer operations.
+        /// The character-stream interface.
         /// </summary>
-        public static readonly string LexerBase = $"{LexerNamespace}.LexerBase";
+        public static readonly string ICharStream = $"{LexerNamespace}.Streams.ICharStream";
+
+        /// <summary>
+        /// A text-reader char stream implementation.
+        /// </summary>
+        public static readonly string TextReaderCharStream = $"{LexerNamespace}.Streams.TextReaderCharStream";
+
+        /// <summary>
+        /// The lexer interface.
+        /// </summary>
+        public static readonly string ILexer = $"{LexerNamespace}.ILexer";
+
+        /// <summary>
+        /// The token-stream interface.
+        /// </summary>
+        public static readonly string ITokenStream = $"{LexerNamespace}.Streams.ITokenStream";
 
         /// <summary>
         /// The pre-defined token class.
         /// </summary>
         public static readonly string Token = $"{LexerNamespace}.Token";
+
+        /// <summary>
+        /// Text position type.
+        /// </summary>
+        public static readonly string Position = "Yoakke.Text.Position";
     }
 }

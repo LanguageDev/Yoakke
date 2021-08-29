@@ -5,6 +5,7 @@
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Yoakke.Lexer.Attributes;
+using Yoakke.Lexer.Streams;
 
 namespace Yoakke.Lexer.Tests
 {
@@ -26,9 +27,12 @@ namespace Yoakke.Lexer.Tests
         [Lexer(typeof(TokenType))]
         internal partial class ExplicitCtorLexer
         {
+            [Source]
+            private readonly ICharStream source;
+
             public ExplicitCtorLexer(string text)
-                : base(text)
             {
+                this.source = new TextReaderCharStream(new StringReader(text));
             }
         }
 

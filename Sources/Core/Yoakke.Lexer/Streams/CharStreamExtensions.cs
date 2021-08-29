@@ -14,13 +14,22 @@ namespace Yoakke.Lexer.Streams
     public static class CharStreamExtensions
     {
         /// <summary>
+        /// Peeks ahead a character into the input.
+        /// </summary>
+        /// <param name="stream">The stream to peek.</param>
+        /// <param name="default">The default character to return if the end has been reached.</param>
+        /// <returns>The peeked character, or default if the end has been reached.</returns>
+        public static char Peek(this ICharStream stream, char @default = '\0') =>
+            stream.TryPeek(out var ch) ? ch : @default;
+
+        /// <summary>
         /// Peeks ahead some characters into the input.
         /// </summary>
         /// <param name="stream">The stream to peek.</param>
         /// <param name="offset">The amount to peek forward. 0 means next character.</param>
         /// <param name="default">The default character to return if the end has been reached.</param>
         /// <returns>The peeked character, or default if the end has been reached.</returns>
-        public static char LookAhead(this ICharStream stream, int offset = 0, char @default = '\0') =>
+        public static char LookAhead(this ICharStream stream, int offset, char @default = '\0') =>
             stream.TryLookAhead(offset, out var ch) ? ch : @default;
 
         /// <summary>
@@ -53,6 +62,15 @@ namespace Yoakke.Lexer.Streams
         /// <returns>True, if they match.</returns>
         public static bool Matches(this ICharStream stream, char ch, int offset = 0) =>
             stream.TryLookAhead(offset, out var inInput) && ch == inInput;
+
+        /// <summary>
+        /// Consumes a single character from the stream.
+        /// </summary>
+        /// <param name="stream">The character stream to consume from.</param>
+        /// <returns>The consumed character.</returns>
+        public static char Advance(this ICharStream stream) => stream.TryAdvance(out var ch)
+            ? ch
+            : throw new InvalidOperationException("No characters left in the character stream");
 
         /// <summary>
         /// Consumes characters in the input and builds a string from the consumed characters.
