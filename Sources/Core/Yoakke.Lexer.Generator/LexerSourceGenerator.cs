@@ -176,14 +176,15 @@ namespace Yoakke.Lexer.Generator
             if (lexerClass.HasNoUserDefinedCtors() && description.SourceSymbol is null)
             {
                 ctors = $@"
-private readonly {TypeNames.ICharStream} source;
+public {TypeNames.ICharStream} CharStream {{ get; }}
 
-public {className}({TypeNames.TextReader} reader) {{ this.source = new {TypeNames.TextReaderCharStream}(reader); }}
+public {className}({TypeNames.ICharStream} source) {{ this.CharStream = source; }}
+public {className}({TypeNames.TextReader} reader) : this(new {TypeNames.TextReaderCharStream}(reader)) {{ }}
 public {className}(string text) : this(new {TypeNames.StringReader}(text)) {{ }}
 ";
             }
 
-            var sourceField = description.SourceSymbol?.Name ?? "source";
+            var sourceField = description.SourceSymbol?.Name ?? "CharStream";
             var (prefix, suffix) = lexerClass.ContainingSymbol.DeclareInsideExternally();
             var (genericTypes, genericConstraints) = lexerClass.GetGenericCrud();
             return $@"

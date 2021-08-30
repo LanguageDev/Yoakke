@@ -46,16 +46,16 @@ namespace Yoakke.Parser
         /// <param name="first">The first error to unify.</param>
         /// <param name="second">The second error to unify.</param>
         /// <returns>The error that represents both of them properly.</returns>
-        public static ParseError? Unify(ParseError? first, ParseError? second)
+        public static ParseError? operator |(ParseError? first, ParseError? second)
         {
             if (first is null && second is null) return null;
             if (first is null) return second!;
             if (second is null) return first;
-            if (first.Got == null || second.Got == null)
+            if (first.Got is null || second.Got is null)
             {
                 // At least one of them is out of the input
-                if (first.Got == null && second.Got != null) return first;
-                if (first.Got != null && second.Got == null) return second;
+                if (first.Got is null && second.Got is not null) return first;
+                if (first.Got is not null && second.Got is null) return second;
             }
             else
             {
@@ -76,7 +76,7 @@ namespace Yoakke.Parser
                     elements.Add(element.Context, part);
                 }
             }
-            return new ParseError(
+            return new(
                 elements.ToDictionary(kv => kv.Key, kv => new ParseErrorElement(kv.Value, kv.Key)),
                 first.Got);
         }

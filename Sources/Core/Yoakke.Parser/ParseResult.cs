@@ -66,5 +66,56 @@ namespace Yoakke.Parser
         /// </summary>
         /// <param name="error">The <see cref="ParseError"/> to convert.</param>
         public static implicit operator ParseResult<T>(ParseError error) => new(error);
+
+        /// <summary>
+        /// Merges alternative <see cref="ParseResult{T}"/>s that happened from the same starting position.
+        /// </summary>
+        /// <param name="first">The first alternative result.</param>
+        /// <param name="second">The second alternative result.</param>
+        /// <returns>The <see cref="ParseResult{T}"/> constructed from the alternatives.</returns>
+        public static ParseResult<T> operator |(ParseResult<T> first, ParseResult<T> second)
+        {
+            if (first.IsOk && second.IsOk) return first.Ok | second.Ok;
+            if (first.IsOk) return first.Ok | second.Error;
+            if (second.IsOk) return second.Ok | first.Error;
+            // Both are errors
+            return (first.Error | second.Error)!;
+        }
+
+        /// <summary>
+        /// Merges an alternative <see cref="ParseResult{T}"/> and <see cref="ParseOk{T}"/>.
+        /// </summary>
+        /// <param name="first">The first alternative result.</param>
+        /// <param name="second">The second alternative ok.</param>
+        /// <returns>The <see cref="ParseResult{T}"/> constructed from the alternatives.</returns>
+        public static ParseResult<T> operator |(ParseResult<T> first, ParseOk<T> second) => first.IsOk
+            ? first.Ok | second
+            : first.Error | second;
+
+        /// <summary>
+        /// Merges an alternative <see cref="ParseResult{T}"/> and <see cref="ParseOk{T}"/>.
+        /// </summary>
+        /// <param name="first">The first alternative ok.</param>
+        /// <param name="second">The second alternative result.</param>
+        /// <returns>The <see cref="ParseResult{T}"/> constructed from the alternatives.</returns>
+        public static ParseResult<T> operator |(ParseOk<T> first, ParseResult<T> second) => second | first;
+
+        /// <summary>
+        /// Merges an alternative <see cref="ParseResult{T}"/> and <see cref="ParseError"/>.
+        /// </summary>
+        /// <param name="first">The first alternative result.</param>
+        /// <param name="second">The second alternative error.</param>
+        /// <returns>The <see cref="ParseResult{T}"/> constructed from the alternatives.</returns>
+        public static ParseResult<T> operator |(ParseResult<T> first, ParseError? second) => first.IsOk
+            ? first.Ok | second
+            : (first.Error | second)!;
+
+        /// <summary>
+        /// Merges an alternative <see cref="ParseResult{T}"/> and <see cref="ParseError"/>.
+        /// </summary>
+        /// <param name="first">The first alternative error.</param>
+        /// <param name="second">The second alternative result.</param>
+        /// <returns>The <see cref="ParseResult{T}"/> constructed from the alternatives.</returns>
+        public static ParseResult<T> operator |(ParseError? first, ParseResult<T> second) => second | first;
     }
 }

@@ -39,9 +39,10 @@ namespace Yoakke.Lexer.Tests
         [TestMethod]
         public void ImplicitCtors()
         {
-            Assert.AreEqual(2, typeof(ImplicitCtorLexer).GetConstructors().Length);
+            Assert.AreEqual(3, typeof(ImplicitCtorLexer).GetConstructors().Length);
             Assert.IsNotNull(typeof(ImplicitCtorLexer).GetConstructor(new[] { typeof(string) }));
             Assert.IsNotNull(typeof(ImplicitCtorLexer).GetConstructor(new[] { typeof(TextReader) }));
+            Assert.IsNotNull(typeof(ImplicitCtorLexer).GetConstructor(new[] { typeof(ICharStream) }));
         }
 
         [TestMethod]

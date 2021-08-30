@@ -39,6 +39,16 @@ namespace Yoakke.Lexer.Streams
         /// <param name="text">The string to compare with the upcoming text.</param>
         /// <param name="offset">The offset to start the match at in the input.</param>
         /// <returns>True, if there is a full match.</returns>
+        public static bool Matches(this ICharStream stream, string text, int offset = 0) =>
+            stream.Matches(text.AsSpan(), offset);
+
+        /// <summary>
+        /// Checks, if some upcoming text matches a given string.
+        /// </summary>
+        /// <param name="stream">The stream to check the match for.</param>
+        /// <param name="text">The string to compare with the upcoming text.</param>
+        /// <param name="offset">The offset to start the match at in the input.</param>
+        /// <returns>True, if there is a full match.</returns>
         public static bool Matches(this ICharStream stream, ReadOnlySpan<char> text, int offset = 0)
         {
             // To avoid peeking -1, we pre-check empty string

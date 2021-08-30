@@ -14,7 +14,7 @@ namespace Yoakke.Lexer
     /// It's a stateful iterator-like object that reads in <see cref="IToken"/>s from a text source.
     /// </summary>
     /// <typeparam name="TToken">The exact type of token the <see cref="ILexer{TToken}"/> produces.</typeparam>
-    public interface ILexer<TToken>
+    public interface ILexer<out TToken>
         where TToken : IToken
     {
         /// <summary>
