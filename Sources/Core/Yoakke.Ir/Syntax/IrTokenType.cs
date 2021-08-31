@@ -79,6 +79,11 @@ namespace Yoakke.Ir.Syntax
         Assign,
 
         /// <summary>
+        /// '*'.
+        /// </summary>
+        Star,
+
+        /// <summary>
         /// Any C integer literal, regardless of radix.
         /// </summary>
         IntLiteral,
