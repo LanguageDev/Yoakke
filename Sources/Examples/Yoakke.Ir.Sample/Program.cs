@@ -1,4 +1,6 @@
+using System;
 using Yoakke.Ir.Model;
+using Yoakke.Ir.Syntax;
 
 namespace Yoakke.Ir.Sample
 {
@@ -6,10 +8,12 @@ namespace Yoakke.Ir.Sample
     {
         static void Main(string[] args)
         {
-            var voidPtr = new Model.Types.Ptr(Model.Types.Void.Instance);
-            var voidPtrSize = new Model.Values.SizeOf(voidPtr);
-            var intPtr = new Model.Types.Int(voidPtrSize);
-            System.Console.WriteLine(intPtr);
+            var lexer = new IrLexer(Console.In);
+            while (true)
+            {
+                var t = lexer.Next();
+                Console.WriteLine($"{t.Text} - {t.Kind}");
+            }
         }
     }
 }

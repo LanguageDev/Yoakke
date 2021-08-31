@@ -88,14 +88,25 @@ namespace Yoakke.Lexer.Streams
         /// <param name="stream">The stream to consume characters in.</param>
         /// <param name="length">The amount of characters to skip.</param>
         /// <returns>The concatenated characters as a string.</returns>
-        public static string ConsumeText(this ICharStream stream, int length)
+        public static string ConsumeText(this ICharStream stream, int length) => stream.ConsumeText(length, out _);
+
+        /// <summary>
+        /// Consumes characters in the input and builds a string from the consumed characters.
+        /// </summary>
+        /// <param name="stream">The stream to consume characters in.</param>
+        /// <param name="length">The amount of characters to skip.</param>
+        /// <param name="range">The range of the text.</param>
+        /// <returns>The concatenated characters as a string.</returns>
+        public static string ConsumeText(this ICharStream stream, int length, out Text.Range range)
         {
             var result = new StringBuilder();
+            var start = stream.Position;
             for (var i = 0; i < length; ++i)
             {
                 if (!stream.TryAdvance(out var ch)) break;
                 result.Append(ch);
             }
+            range = new Text.Range(start, stream.Position);
             return result.ToString();
         }
 

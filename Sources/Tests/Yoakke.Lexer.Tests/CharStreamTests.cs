@@ -52,6 +52,7 @@ namespace Yoakke.Lexer.Tests
                     var i = 0;
                     for (; this.charStream.LookAhead(i, '\n') != '\n'; ++i)
                     {
+                        // Pass
                     }
                     this.charStream.Advance(i);
                     goto begin;
@@ -63,6 +64,7 @@ namespace Yoakke.Lexer.Tests
                     var length = 1;
                     for (; char.IsDigit(this.charStream.LookAhead(length)); ++length)
                     {
+                        // Pass
                     }
                     return this.charStream.ConsumeToken(TokenType.Number, length);
                 }
@@ -71,6 +73,7 @@ namespace Yoakke.Lexer.Tests
                     var length = 1;
                     for (; char.IsLetterOrDigit(this.charStream.LookAhead(length)); ++length)
                     {
+                        // Pass
                     }
                     var result = this.charStream.ConsumeToken(TokenType.Identifier, length);
                     return result.Text switch
