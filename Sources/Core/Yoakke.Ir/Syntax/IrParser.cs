@@ -85,5 +85,23 @@ namespace Yoakke.Ir.Syntax
 
             throw new NotImplementedException("unknown");
         }
+
+        private void Expect(IrTokenType tokenType)
+        {
+            if (!this.Matches(tokenType)) throw new InvalidOperationException("TODO: Syntax error");
+        }
+
+        private bool Matches(IrTokenType tokenType)
+        {
+            if (this.source.TryPeek(out var token) && token.Kind == tokenType)
+            {
+                this.source.Advance();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

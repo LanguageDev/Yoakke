@@ -31,11 +31,29 @@ namespace Yoakke.Ir.Model.Attributes
         public IEnumerable<IAttribute> GetAttributes(string name);
 
         /// <summary>
+        /// Retrieves all <see cref="IAttribute"/>s from this target with a given type.
+        /// </summary>
+        /// <typeparam name="TAttrib">The exact <see cref="IAttribute"/> type.</typeparam>
+        /// <returns>All <see cref="IAttribute"/>s attached to this target that are of type
+        /// <typeparamref name="TAttrib"/>.</returns>
+        public IEnumerable<TAttrib> GetAttributes<TAttrib>()
+            where TAttrib : IAttribute;
+
+        /// <summary>
         /// Attempts to get an <see cref="IAttribute"/> with a specified name.
         /// </summary>
         /// <param name="name">The name of the attributes to search for.</param>
         /// <param name="attribute">The <see cref="IAttribute"/> gets written here, if found.</param>
-        /// <returns>True, if the <see cref="IAttribute"/> with the name <paramref name="name"/> was found..</returns>
+        /// <returns>True, if the <see cref="IAttribute"/> with the name <paramref name="name"/> was found.</returns>
         public bool TryGetAttribute(string name, [MaybeNullWhen(false)] out IAttribute attribute);
+
+        /// <summary>
+        /// Attempts to get an <see cref="IAttribute"/> with a specified type.
+        /// </summary>
+        /// <typeparam name="TAttrib">The exact <see cref="IAttribute"/> type.</typeparam>
+        /// <param name="attribute">The <see cref="IAttribute"/> gets written here, if found.</param>
+        /// <returns>True, if the <see cref="IAttribute"/> with the name <typeparamref name="TAttrib"/> was found.</returns>
+        public bool TryGetAttribute<TAttrib>([MaybeNullWhen(false)] out TAttrib attribute)
+            where TAttrib : IAttribute;
     }
 }
