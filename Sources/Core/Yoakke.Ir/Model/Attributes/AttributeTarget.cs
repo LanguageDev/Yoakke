@@ -83,6 +83,11 @@ namespace Yoakke.Ir.Model.Attributes
         /// <inheritdoc/>
         public void AddAttribute(IAttribute attribute)
         {
+            if (!attribute.Definition.Targets.HasFlag(this.Flag))
+            {
+                throw new InvalidOperationException("The attribute is invalid for this target");
+            }
+
             var name = attribute.Definition.Name;
             var type = attribute.GetType();
             if (!this.attributesByName.TryGetValue(name, out var byNameList))
@@ -95,6 +100,12 @@ namespace Yoakke.Ir.Model.Attributes
                 byTypeList = new();
                 this.attributesByType.Add(type, byTypeList);
             }
+
+            if (!attribute.Definition.AllowMultiple && byNameList.Count > 0)
+            {
+                throw new InvalidOperationException("The attribute does not allow for multiple additions to the same target");
+            }
+
             byNameList.Add(attribute);
             byTypeList.Add(attribute);
         }
