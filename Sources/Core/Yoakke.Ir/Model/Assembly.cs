@@ -15,6 +15,11 @@ namespace Yoakke.Ir.Model
     /// </summary>
     public class Assembly : IAttributeTarget
     {
+        /// <summary>
+        /// The procedures defined inside the assembly.
+        /// </summary>
+        public IDictionary<string, Procedure> Procedures { get; init; } = new Dictionary<string, Procedure>();
+
         #region AttributeTarget
 
         /// <inheritdoc/>

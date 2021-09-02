@@ -15,6 +15,21 @@ namespace Yoakke.Ir.Model
     /// </summary>
     public class Procedure : IAttributeTarget
     {
+        /// <summary>
+        /// The name of the procedure.
+        /// </summary>
+        public string Name { get; init; } = string.Empty;
+
+        /// <summary>
+        /// The basic block that first starts executing.
+        /// </summary>
+        public BasicBlock Entry { get; init; } = new();
+
+        /// <summary>
+        /// The basic blocks the procedure consists of.
+        /// </summary>
+        public IList<BasicBlock> BasicBlocks { get; init; } = new List<BasicBlock>();
+
         #region AttributeTarget
 
         /// <inheritdoc/>

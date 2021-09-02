@@ -17,6 +17,16 @@ namespace Yoakke.Ir.Model
     /// </summary>
     public class BasicBlock : IAttributeTarget
     {
+        /// <summary>
+        /// The suggested name of the basic block.
+        /// </summary>
+        public string? Name { get; init; }
+
+        /// <summary>
+        /// The instructions in the basic block.
+        /// </summary>
+        public IList<Instruction> Instructions { get; init; } = new List<Instruction>();
+
         #region AttributeTarget
 
         /// <inheritdoc/>
