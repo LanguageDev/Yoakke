@@ -11,16 +11,16 @@ using Yoakke.Ir.Model.Attributes;
 namespace Yoakke.Ir.Model
 {
     /// <summary>
-    /// Base of all IR value types.
+    /// A procedure in an assembly, consisting of basic blocks.
     /// </summary>
-    public abstract record Type : Constant, IAttributeTarget
+    public class Procedure : IAttributeTarget
     {
         #region AttributeTarget
 
         /// <inheritdoc/>
         public Attributes.AttributeTargets Flag => this.attributeTarget.Flag;
 
-        private readonly AttributeTarget attributeTarget = new(Attributes.AttributeTargets.TypeDefinition);
+        private readonly AttributeTarget attributeTarget = new(Attributes.AttributeTargets.Procedure);
 
         /// <inheritdoc/>
         public IEnumerable<IAttribute> GetAttributes() => this.attributeTarget.GetAttributes();
@@ -44,7 +44,5 @@ namespace Yoakke.Ir.Model
         public void AddAttribute(IAttribute attribute) => this.attributeTarget.AddAttribute(attribute);
 
         #endregion AttributeTarget
-
-        /* Variants */
     }
 }

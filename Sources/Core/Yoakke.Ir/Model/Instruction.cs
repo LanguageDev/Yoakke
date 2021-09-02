@@ -11,16 +11,16 @@ using Yoakke.Ir.Model.Attributes;
 namespace Yoakke.Ir.Model
 {
     /// <summary>
-    /// Base of all IR value types.
+    /// The core IR instructions.
     /// </summary>
-    public abstract record Type : Constant, IAttributeTarget
+    public abstract record Instruction : IAttributeTarget
     {
         #region AttributeTarget
 
         /// <inheritdoc/>
         public Attributes.AttributeTargets Flag => this.attributeTarget.Flag;
 
-        private readonly AttributeTarget attributeTarget = new(Attributes.AttributeTargets.TypeDefinition);
+        private readonly AttributeTarget attributeTarget = new(Attributes.AttributeTargets.Instruction);
 
         /// <inheritdoc/>
         public IEnumerable<IAttribute> GetAttributes() => this.attributeTarget.GetAttributes();

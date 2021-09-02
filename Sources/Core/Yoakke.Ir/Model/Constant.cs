@@ -19,5 +19,7 @@ namespace Yoakke.Ir.Model
         /// The <see cref="Model.Type"/> of this constant.
         /// </summary>
         public abstract Type Type { get; }
+
+        /* Variants */
     }
 }

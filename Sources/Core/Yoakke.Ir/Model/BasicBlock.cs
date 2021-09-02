@@ -11,16 +11,18 @@ using Yoakke.Ir.Model.Attributes;
 namespace Yoakke.Ir.Model
 {
     /// <summary>
-    /// Base of all IR value types.
+    /// Represents a continuous sequence of instructions that can only contain branching as their last instruction
+    /// and can only be targeted at the first instruction as jump targets. This means that it's always guaranteed
+    /// that the contained instructions all run in a sequence, as if this was an atomic operation.
     /// </summary>
-    public abstract record Type : Constant, IAttributeTarget
+    public class BasicBlock : IAttributeTarget
     {
         #region AttributeTarget
 
         /// <inheritdoc/>
         public Attributes.AttributeTargets Flag => this.attributeTarget.Flag;
 
-        private readonly AttributeTarget attributeTarget = new(Attributes.AttributeTargets.TypeDefinition);
+        private readonly AttributeTarget attributeTarget = new(Attributes.AttributeTargets.BasicBlock);
 
         /// <inheritdoc/>
         public IEnumerable<IAttribute> GetAttributes() => this.attributeTarget.GetAttributes();
@@ -44,7 +46,5 @@ namespace Yoakke.Ir.Model
         public void AddAttribute(IAttribute attribute) => this.attributeTarget.AddAttribute(attribute);
 
         #endregion AttributeTarget
-
-        /* Variants */
     }
 }
