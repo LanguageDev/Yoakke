@@ -11,7 +11,16 @@ namespace Yoakke.Ir.Model.Builders
     /// <summary>
     /// A builder for <see cref="BasicBlock"/>s.
     /// </summary>
-    public class BasicBlockBuilder
+    public class BasicBlockBuilder : BasicBlock
     {
+        /// <summary>
+        /// Builds a copy <see cref="BasicBlock"/> of this builder.
+        /// </summary>
+        /// <returns>The built <see cref="BasicBlock"/>.</returns>
+        public BasicBlock Build() => new()
+        {
+            Name = this.Name,
+            Instructions = this.Instructions,
+        };
     }
 }
