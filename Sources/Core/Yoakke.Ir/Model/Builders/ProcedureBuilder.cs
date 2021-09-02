@@ -15,14 +15,27 @@ namespace Yoakke.Ir.Model.Builders
     public class ProcedureBuilder : Procedure
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="ProcedureBuilder"/> class.
+        /// </summary>
+        /// <param name="name">The name of the procedure.</param>
+        public ProcedureBuilder(string name)
+            : base(name)
+        {
+        }
+
+        /// <summary>
         /// Builds a copy <see cref="Procedure"/> of this builder.
         /// </summary>
         /// <returns>The built <see cref="Procedure"/>.</returns>
-        public Procedure Build() => new()
+        public Procedure Build()
         {
-            Name = this.Name,
-            Entry = this.Entry,
-            BasicBlocks = this.BasicBlocks.ToList(),
-        };
+            if (ReferenceEquals(this.Entry, BasicBlock.Invalid)) throw new InvalidOperationException("Entry not set for procedure");
+
+            return new(this.Name)
+            {
+                Entry = this.Entry,
+                BasicBlocks = this.BasicBlocks.ToList(),
+            };
+        }
     }
 }

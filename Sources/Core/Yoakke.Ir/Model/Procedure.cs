@@ -18,17 +18,26 @@ namespace Yoakke.Ir.Model
         /// <summary>
         /// The name of the procedure.
         /// </summary>
-        public string Name { get; init; } = string.Empty;
+        public string Name { get; } = string.Empty;
 
         /// <summary>
         /// The basic block that first starts executing.
         /// </summary>
-        public BasicBlock Entry { get; init; } = new();
+        public BasicBlock Entry { get; init; } = BasicBlock.Invalid;
 
         /// <summary>
         /// The basic blocks the procedure consists of.
         /// </summary>
         public IList<BasicBlock> BasicBlocks { get; init; } = new List<BasicBlock>();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Procedure"/> class.
+        /// </summary>
+        /// <param name="name">The name of the procedure.</param>
+        public Procedure(string name)
+        {
+            this.Name = name;
+        }
 
         #region AttributeTarget
 

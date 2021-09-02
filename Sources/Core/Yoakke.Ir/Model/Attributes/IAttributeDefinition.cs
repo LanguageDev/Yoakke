@@ -3,8 +3,6 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System.Collections.Generic;
-using Yoakke.Ir.Model.Types;
-using Yoakke.Ir.Model.Values;
 
 namespace Yoakke.Ir.Model.Attributes
 {
@@ -36,13 +34,13 @@ namespace Yoakke.Ir.Model.Attributes
         /// <summary>
         /// The parameter types that the attribute accepts.
         /// </summary>
-        public IReadOnlyList<IType> ParameterTypes { get; }
+        public IReadOnlyList<Type> ParameterTypes { get; }
 
         /// <summary>
         /// Instantiates an <see cref="IAttribute"/> from this <see cref="IAttributeDefinition"/>.
         /// </summary>
         /// <param name="arguments">The arguments passed in for the attribute.</param>
         /// <returns>The instantiated <see cref="IAttribute"/>.</returns>
-        public IAttribute Instantiate(IReadOnlyList<IConstant> arguments);
+        public IAttribute Instantiate(IReadOnlyList<Constant> arguments);
     }
 }

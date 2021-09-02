@@ -18,6 +18,11 @@ namespace Yoakke.Ir.Model
     public class BasicBlock : IAttributeTarget
     {
         /// <summary>
+        /// A default <see cref="BasicBlock"/> to signal an unset/invalid property.
+        /// </summary>
+        internal static readonly BasicBlock Invalid = new();
+
+        /// <summary>
         /// The suggested name of the basic block.
         /// </summary>
         public string? Name { get; init; }
@@ -26,6 +31,15 @@ namespace Yoakke.Ir.Model
         /// The instructions in the basic block.
         /// </summary>
         public IList<Instruction> Instructions { get; init; } = new List<Instruction>();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BasicBlock"/> class.
+        /// </summary>
+        /// <param name="name">The suggested name of the basic block.</param>
+        public BasicBlock(string? name = null)
+        {
+            this.Name = name;
+        }
 
         #region AttributeTarget
 

@@ -5,11 +5,11 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Yoakke.Ir.Model;
 using Yoakke.Ir.Model.Attributes;
-using Yoakke.Ir.Model.Types;
-using Yoakke.Ir.Model.Values;
 using Yoakke.Lexer;
 using Yoakke.Lexer.Streams;
+using Type = Yoakke.Ir.Model.Type;
 
 namespace Yoakke.Ir.Syntax
 {
@@ -39,20 +39,20 @@ namespace Yoakke.Ir.Syntax
         }
 
         /// <summary>
-        /// Parses an <see cref="IConstant"/> value of a given <see cref="IType"/>.
+        /// Parses an <see cref="Constant"/> value of a given <see cref="Type"/>.
         /// </summary>
         /// <param name="type">The type of the constant value to parse.</param>
-        /// <returns>The parsed <see cref="IConstant"/> of type <paramref name="type"/>.</returns>
-        public IConstant ParseConstant(IType type) => type switch
+        /// <returns>The parsed <see cref="Constant"/> of type <paramref name="type"/>.</returns>
+        public Constant ParseConstant(Type type) => type switch
         {
             _ => throw new ArgumentOutOfRangeException(nameof(type)),
         };
 
         /// <summary>
-        /// Parses an <see cref="IType"/>.
+        /// Parses an <see cref="Type"/>.
         /// </summary>
-        /// <returns>The parsed <see cref="IType"/>.</returns>
-        public IType ParseType()
+        /// <returns>The parsed <see cref="Type"/>.</returns>
+        public Type ParseType()
         {
             var peek = this.source.Peek();
 
@@ -61,7 +61,7 @@ namespace Yoakke.Ir.Syntax
             {
                 this.source.Advance();
                 var elementType = this.ParseType();
-                return new Ptr(elementType);
+                throw new NotImplementedException("ptr");
             }
 
             // Procedure type

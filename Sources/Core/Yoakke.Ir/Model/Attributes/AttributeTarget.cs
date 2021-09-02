@@ -20,7 +20,7 @@ namespace Yoakke.Ir.Model.Attributes
         public AttributeTargets Flag { get; }
 
         private readonly Dictionary<string, List<IAttribute>> attributesByName = new();
-        private readonly Dictionary<Type, List<IAttribute>> attributesByType = new();
+        private readonly Dictionary<System.Type, List<IAttribute>> attributesByType = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AttributeTarget"/> class.

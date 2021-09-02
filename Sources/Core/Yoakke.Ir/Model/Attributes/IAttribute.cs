@@ -3,7 +3,6 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System.Collections.Generic;
-using Yoakke.Ir.Model.Values;
 
 namespace Yoakke.Ir.Model.Attributes
 {
@@ -20,6 +19,6 @@ namespace Yoakke.Ir.Model.Attributes
         /// <summary>
         /// The arguments passed in for this attribute instance.
         /// </summary>
-        public IReadOnlyList<IConstant> Arguments { get; }
+        public IReadOnlyList<Constant> Arguments { get; }
     }
 }
