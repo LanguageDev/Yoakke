@@ -39,6 +39,18 @@ namespace Yoakke.Ir.Model.Builders
         }
 
         /// <summary>
+        /// Adds a <see cref="BasicBlock"/> as an entry point to this builder.
+        /// </summary>
+        /// <param name="basicBlock">The <see cref="BasicBlock"/> to add.</param>
+        /// <returns>This instance, to be able to chain calls.</returns>
+        public ProcedureBuilder WithEntryAt(BasicBlock basicBlock)
+        {
+            this.Entry = basicBlock;
+            if (!this.BasicBlocks.Contains(basicBlock)) this.BasicBlocks.Add(basicBlock);
+            return this;
+        }
+
+        /// <summary>
         /// Adds a <see cref="BasicBlock"/> to this builder.
         /// </summary>
         /// <param name="basicBlock">The <see cref="BasicBlock"/> to add.</param>

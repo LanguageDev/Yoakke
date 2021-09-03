@@ -16,7 +16,10 @@ namespace Yoakke.Ir.Sample
                 .Ret();
 
             asm.WithProcedure(proc);
-            proc.WithBasicBlock(bb);
+            proc.WithEntryAt(bb);
+
+            var writer = new IrWriter(Console.Out);
+            writer.Write(asm);
         }
     }
 }

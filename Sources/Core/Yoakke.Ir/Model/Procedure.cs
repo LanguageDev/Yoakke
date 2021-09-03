@@ -23,7 +23,7 @@ namespace Yoakke.Ir.Model
         /// <summary>
         /// The basic block that first starts executing.
         /// </summary>
-        public BasicBlock Entry { get; init; } = BasicBlock.Invalid;
+        public BasicBlock Entry { get; set; } = BasicBlock.Invalid;
 
         /// <summary>
         /// The basic blocks the procedure consists of.
