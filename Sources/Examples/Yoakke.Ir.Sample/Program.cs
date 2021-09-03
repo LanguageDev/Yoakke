@@ -1,5 +1,6 @@
 using System;
 using Yoakke.Ir.Model;
+using Yoakke.Ir.Model.Builders;
 using Yoakke.Ir.Syntax;
 
 namespace Yoakke.Ir.Sample
@@ -8,12 +9,12 @@ namespace Yoakke.Ir.Sample
     {
         static void Main(string[] args)
         {
-            var lexer = new IrLexer(Console.In);
-            while (true)
-            {
-                var t = lexer.Next();
-                Console.WriteLine($"{t.Text} - {t.Kind}");
-            }
+            var asm = new AssemblyBuilder();
+            var proc = new ProcedureBuilder("main");
+            var bb = new BasicBlockBuilder("entry");
+
+            asm.WithProcedure(proc);
+            proc.WithBasicBlock(bb);
         }
     }
 }

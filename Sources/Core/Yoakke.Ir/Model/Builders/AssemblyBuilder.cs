@@ -22,5 +22,16 @@ namespace Yoakke.Ir.Model.Builders
         {
             Procedures = this.Procedures.Values.ToDictionary(p => p.Name),
         };
+
+        /// <summary>
+        /// Adds a <see cref="Procedure"/> to this builder.
+        /// </summary>
+        /// <param name="procedure">The <see cref="Procedure"/> to add.</param>
+        /// <returns>This instance, to be able to chain calls.</returns>
+        public AssemblyBuilder WithProcedure(Procedure procedure)
+        {
+            this.Procedures.Add(procedure.Name, procedure);
+            return this;
+        }
     }
 }

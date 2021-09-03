@@ -18,7 +18,7 @@ namespace Yoakke.Ir.Model.Builders
         /// Initializes a new instance of the <see cref="BasicBlockBuilder"/> class.
         /// </summary>
         /// <param name="name">The suggested name of the basic block.</param>
-        public BasicBlockBuilder(string? name)
+        public BasicBlockBuilder(string? name = null)
             : base(name)
         {
         }
