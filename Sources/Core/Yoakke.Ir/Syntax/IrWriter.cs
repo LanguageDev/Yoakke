@@ -77,18 +77,13 @@ namespace Yoakke.Ir.Syntax
         /// <returns>This instance, to be able to chain calls.</returns>
         public IrWriter Write(Instruction instruction)
         {
-            switch (instruction)
+            var text = instruction switch
             {
-            case Instruction.Nop:
-                this.Underlying.WriteLine("nop");
-                break;
-
-            case Instruction.Ret:
-                this.Underlying.WriteLine("ret");
-                break;
-
-            default: throw new ArgumentOutOfRangeException();
-            }
+                Instruction.Nop => "nop",
+                Instruction.Ret => "ret",
+                _ => throw new ArgumentOutOfRangeException(nameof(instruction)),
+            };
+            this.Underlying.WriteLine(text);
             return this;
         }
     }
