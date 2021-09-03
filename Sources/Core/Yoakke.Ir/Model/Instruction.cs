@@ -46,5 +46,16 @@ namespace Yoakke.Ir.Model
         #endregion AttributeTarget
 
         /* Variants */
+
+        /// <summary>
+        /// A no-operation instruction.
+        /// </summary>
+        public record Nop : Instruction;
+
+        /// <summary>
+        /// A return instruction.
+        /// </summary>
+        // TODO: Include optional return value
+        public record Ret : Instruction;
     }
 }

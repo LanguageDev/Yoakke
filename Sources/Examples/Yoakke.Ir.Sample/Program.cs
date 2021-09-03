@@ -11,7 +11,9 @@ namespace Yoakke.Ir.Sample
         {
             var asm = new AssemblyBuilder();
             var proc = new ProcedureBuilder("main");
-            var bb = new BasicBlockBuilder("entry");
+            var bb = new BasicBlockBuilder("entry")
+                .Nop()
+                .Ret();
 
             asm.WithProcedure(proc);
             proc.WithBasicBlock(bb);

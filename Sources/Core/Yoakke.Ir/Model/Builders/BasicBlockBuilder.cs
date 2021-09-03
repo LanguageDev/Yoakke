@@ -32,5 +32,23 @@ namespace Yoakke.Ir.Model.Builders
             Name = this.Name,
             Instructions = this.Instructions.ToList(),
         };
+
+        /// <summary>
+        /// Writes a NOP instruction.
+        /// </summary>
+        /// <returns>This instance, to be able to chain calls.</returns>
+        public BasicBlockBuilder Nop() => this.WithInstruction(new Instruction.Nop());
+
+        /// <summary>
+        /// Writes a RET instruction.
+        /// </summary>
+        /// <returns>This instance, to be able to chain calls.</returns>
+        public BasicBlockBuilder Ret() => this.WithInstruction(new Instruction.Ret());
+
+        private BasicBlockBuilder WithInstruction(Instruction instruction)
+        {
+            this.Instructions.Add(instruction);
+            return this;
+        }
     }
 }
