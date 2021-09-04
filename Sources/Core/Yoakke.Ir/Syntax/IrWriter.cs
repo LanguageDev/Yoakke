@@ -38,6 +38,8 @@ namespace Yoakke.Ir.Syntax
         /// <returns>This instance, to be able to chain calls.</returns>
         public IrWriter WriteAssembly(Assembly assembly)
         {
+            this.WriteAttributeList(assembly, "!");
+            this.Underlying.WriteLine();
             foreach (var procedure in assembly.Procedures.Values) this.WriteProcedure(procedure);
             return this;
         }
@@ -49,7 +51,9 @@ namespace Yoakke.Ir.Syntax
         /// <returns>This instance, to be able to chain calls.</returns>
         public IrWriter WriteProcedure(Procedure procedure)
         {
-            this.Underlying.WriteLine($"proc {procedure.Name}():");
+            this.Underlying.Write($"proc {procedure.Name}()");
+            this.WriteAttributeList(procedure, " ");
+            this.Underlying.WriteLine(':');
             this.WriteBasicBlock(procedure.Entry);
             foreach (var basicBlock in procedure.BasicBlocks.Except(new[] { procedure.Entry })) this.WriteBasicBlock(basicBlock);
             return this;
@@ -62,7 +66,9 @@ namespace Yoakke.Ir.Syntax
         /// <returns>This instance, to be able to chain calls.</returns>
         public IrWriter WriteBasicBlock(BasicBlock basicBlock)
         {
-            this.Underlying.WriteLine($"block {basicBlock.Name}:");
+            this.Underlying.Write($"block {basicBlock.Name}");
+            this.WriteAttributeList(basicBlock, " ");
+            this.Underlying.WriteLine(':');
             foreach (var instruction in basicBlock.Instructions)
             {
                 this.Underlying.Write("  ");
@@ -86,25 +92,17 @@ namespace Yoakke.Ir.Syntax
                 _ => throw new ArgumentOutOfRangeException(nameof(instruction)),
             };
             this.Underlying.Write(text);
-
-            // Attributes
-            if (instruction.GetAttributes().Any())
-            {
-                this.Underlying.Write(' ');
-                this.WriteAttributes(instruction);
-            }
-
-            // Newline
+            this.WriteAttributeList(instruction, " ");
             this.Underlying.WriteLine();
             return this;
         }
 
         /// <summary>
-        /// Writes the attribute list for an <see cref="IAttributeTarget"/> to the <see cref="Underlying"/> writer.
+        /// Writes the attribute list for an <see cref="IReadOnlyAttributeTarget"/> to the <see cref="Underlying"/> writer.
         /// </summary>
-        /// <param name="attributeTarget">The <see cref="IAttributeTarget"/> to write the attributes for.</param>
+        /// <param name="attributeTarget">The <see cref="IReadOnlyAttributeTarget"/> to write the attributes for.</param>
         /// <returns>This instance, to be able to chain calls.</returns>
-        public IrWriter WriteAttributes(IAttributeTarget attributeTarget)
+        public IrWriter WriteAttributes(IReadOnlyAttributeTarget attributeTarget)
         {
             this.Underlying.Write('[');
             var first = true;
@@ -130,6 +128,15 @@ namespace Yoakke.Ir.Syntax
 
             this.Underlying.Write(attribute.Definition.Name);
             return this;
+        }
+
+        private void WriteAttributeList(IReadOnlyAttributeTarget target, string prefix)
+        {
+            if (target.GetAttributes().Any())
+            {
+                this.Underlying.Write(prefix);
+                this.WriteAttributes(target);
+            }
         }
     }
 }

@@ -15,7 +15,8 @@ namespace Yoakke.Ir.Sample
 
         public bool AllowMultiple => false;
 
-        public AttributeTargets Targets => AttributeTargets.Instruction;
+        public AttributeTargets Targets => AttributeTargets.Instruction | AttributeTargets.Assembly | AttributeTargets.BasicBlock
+            | AttributeTargets.Procedure;
 
         public IReadOnlyList<Type> ParameterTypes => Array.Empty<Type>();
 
@@ -47,6 +48,9 @@ namespace Yoakke.Ir.Sample
             var fooAttr = new FooDefinition();
             var foo = fooAttr.Instantiate(Array.Empty<Constant>());
             bb.Instructions[0].AddAttribute(foo);
+            bb.AddAttribute(foo);
+            proc.AddAttribute(foo);
+            asm.AddAttribute(foo);
 
             var writer = new IrWriter(Console.Out);
             writer.WriteAssembly(asm);
