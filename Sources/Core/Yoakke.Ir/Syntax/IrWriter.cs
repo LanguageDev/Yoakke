@@ -22,12 +22,16 @@ namespace Yoakke.Ir.Syntax
         /// </summary>
         public TextWriter Underlying { get; }
 
+        private readonly Context context;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="IrWriter"/> class.
         /// </summary>
+        /// <param name="context">The <see cref="Context"/> for the IR.</param>
         /// <param name="underlying">The underlying <see cref="TextWriter"/> to write to.</param>
-        public IrWriter(TextWriter underlying)
+        public IrWriter(Context context, TextWriter underlying)
         {
+            this.context = context;
             this.Underlying = underlying;
         }
 
@@ -85,13 +89,8 @@ namespace Yoakke.Ir.Syntax
         public IrWriter WriteInstruction(Instruction instruction)
         {
             // Instruction text
-            var text = instruction switch
-            {
-                Instruction.Nop => "nop",
-                Instruction.Ret => "ret",
-                _ => throw new ArgumentOutOfRangeException(nameof(instruction)),
-            };
-            this.Underlying.Write(text);
+            var syntax = this.context.GetInstructionSyntax(instruction.GetType());
+            syntax.Print(instruction, this.Underlying);
             this.WriteAttributeList(instruction, " ");
             this.Underlying.WriteLine();
             return this;
@@ -130,6 +129,8 @@ namespace Yoakke.Ir.Syntax
             return this;
         }
 
+        // TODO: We should probably make this a bit more... elaborate?
+        // Like handling targets and such probably
         private void WriteAttributeList(IReadOnlyAttributeTarget target, string prefix)
         {
             if (target.GetAttributes().Any())

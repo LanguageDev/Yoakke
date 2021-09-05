@@ -56,7 +56,7 @@ namespace Yoakke.Ir.Syntax
         {
             // Get the syntax
             var ident = this.ParseIdentifier();
-            if (!this.context.InstructionSyntaxes.TryGetValue(ident, out var syntax)) throw new KeyNotFoundException();
+            var syntax = this.context.GetInstructionSyntax(ident);
             // Parse it
             var instr = syntax.Parse(this);
             // Parse the attribute groups that might follow
@@ -150,7 +150,7 @@ namespace Yoakke.Ir.Syntax
         {
             // Get the definition
             var ident = this.ParseIdentifier();
-            if (!this.context.AttributeDefititions.TryGetValue(ident, out var attribDef)) throw new KeyNotFoundException();
+            var attribDef = this.context.GetAttributeDefinition(ident);
 
             var args = new List<Constant>();
             var argIndex = 0;

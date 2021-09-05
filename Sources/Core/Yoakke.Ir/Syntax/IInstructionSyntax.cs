@@ -9,6 +9,7 @@ using System.Text;
 using Yoakke.Ir.Model;
 using Yoakke.Lexer;
 using Yoakke.Lexer.Streams;
+using Type = System.Type;
 
 namespace Yoakke.Ir.Syntax
 {
@@ -21,6 +22,11 @@ namespace Yoakke.Ir.Syntax
         /// The instruction name that triggers this parser.
         /// </summary>
         public string Name { get; }
+
+        /// <summary>
+        /// The implementation <see cref="System.Type"/> of the handled <see cref="Instruction"/>.
+        /// </summary>
+        public Type Type { get; }
 
         /// <summary>
         /// Parses an <see cref="Instruction"/>. The identifier is already consumed. The attributes should not be consumed.

@@ -36,6 +36,8 @@ namespace Yoakke.Ir.Sample
     {
         static void Main(string[] args)
         {
+            var ctx = new Context();
+
             var asm = new AssemblyBuilder();
             var proc = new ProcedureBuilder("main");
             var bb = new BasicBlockBuilder("entry")
@@ -52,7 +54,7 @@ namespace Yoakke.Ir.Sample
             proc.AddAttribute(foo);
             asm.AddAttribute(foo);
 
-            var writer = new IrWriter(Console.Out);
+            var writer = new IrWriter(ctx, Console.Out);
             writer.WriteAssembly(asm);
         }
     }

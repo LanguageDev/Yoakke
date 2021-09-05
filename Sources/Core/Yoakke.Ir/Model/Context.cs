@@ -16,18 +16,9 @@ namespace Yoakke.Ir.Model
     /// </summary>
     public class Context
     {
-        /// <summary>
-        /// The <see cref="IAttributeDefinition"/>s in this <see cref="Context"/>.
-        /// </summary>
-        public IReadOnlyDictionary<string, IAttributeDefinition> AttributeDefititions => this.attributeDefinitions;
-
-        /// <summary>
-        /// The <see cref="IInstructionSyntax"/>es in this <see cref="Context"/>.
-        /// </summary>
-        public IReadOnlyDictionary<string, IInstructionSyntax> InstructionSyntaxes => this.instructionSyntaxes;
-
         private readonly Dictionary<string, IAttributeDefinition> attributeDefinitions = new();
-        private readonly Dictionary<string, IInstructionSyntax> instructionSyntaxes = new();
+        private readonly Dictionary<string, IInstructionSyntax> instructionSyntaxesByName = new();
+        private readonly Dictionary<System.Type, IInstructionSyntax> instructionSyntaxesByType = new();
 
         /// <summary>
         /// Registers an <see cref="IAttributeDefinition"/> in this <see cref="Context"/>.
@@ -47,8 +38,30 @@ namespace Yoakke.Ir.Model
         /// <returns>This instance, to be able to chain calls.</returns>
         public Context WithInstructionSyntax(IInstructionSyntax syntax)
         {
-            this.instructionSyntaxes.Add(syntax.Name, syntax);
+            this.instructionSyntaxesByName.Add(syntax.Name, syntax);
+            this.instructionSyntaxesByType.Add(syntax.Type, syntax);
             return this;
         }
+
+        /// <summary>
+        /// Retrieves an <see cref="IAttributeDefinition"/> for a given name.
+        /// </summary>
+        /// <param name="name">The name of the <see cref="IAttributeDefinition"/>.</param>
+        /// <returns>The found <see cref="IAttributeDefinition"/>.</returns>
+        public IAttributeDefinition GetAttributeDefinition(string name) => this.attributeDefinitions[name];
+
+        /// <summary>
+        /// Retrieves an <see cref="IInstructionSyntax"/> for a given instruction name.
+        /// </summary>
+        /// <param name="name">The name of the instruction to retrieve syntax for.</param>
+        /// <returns>The found <see cref="IInstructionSyntax"/>.</returns>
+        public IInstructionSyntax GetInstructionSyntax(string name) => this.instructionSyntaxesByName[name];
+
+        /// <summary>
+        /// Retrieves an <see cref="IInstructionSyntax"/> for a given instruction implementation type.
+        /// </summary>
+        /// <param name="type">The type of the instruction to retrieve syntax for.</param>
+        /// <returns>The found <see cref="IInstructionSyntax"/>.</returns>
+        public IInstructionSyntax GetInstructionSyntax(System.Type type) => this.instructionSyntaxesByType[type];
     }
 }
