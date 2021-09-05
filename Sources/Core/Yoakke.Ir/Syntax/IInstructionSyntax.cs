@@ -1,0 +1,40 @@
+// Copyright (c) 2021 Yoakke.
+// Licensed under the Apache License, Version 2.0.
+// Source repository: https://github.com/LanguageDev/Yoakke
+
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using Yoakke.Ir.Model;
+using Yoakke.Lexer;
+using Yoakke.Lexer.Streams;
+
+namespace Yoakke.Ir.Syntax
+{
+    /// <summary>
+    /// An object to parse and unparse (print) an instruction.
+    /// </summary>
+    public interface IInstructionSyntax
+    {
+        /// <summary>
+        /// The instruction name that triggers this parser.
+        /// </summary>
+        public string Name { get; }
+
+        /// <summary>
+        /// Parses an <see cref="Instruction"/>. The identifier is already consumed. The attributes should not be consumed.
+        /// </summary>
+        /// <param name="parser">The parser to parse from.</param>
+        /// <returns>The parsed <see cref="Instruction"/>.</returns>
+        public Instruction Parse(IrParser parser);
+
+        /// <summary>
+        /// Prints the <see cref="Instruction"/> as text form. The attributes should not be printed.
+        /// </summary>
+        /// <param name="instruction">The <see cref="Instruction"/> to print, that is guaranteed to be handled by this syntax
+        /// handler.</param>
+        /// <param name="writer">The <see cref="TextWriter"/> to write to.</param>
+        public void Print(Instruction instruction, TextWriter writer);
+    }
+}

@@ -20,8 +20,12 @@ namespace Yoakke.Ir.Syntax
     /// </summary>
     public class IrParser
     {
+        /// <summary>
+        /// The source stream.
+        /// </summary>
+        public ITokenStream<IToken<IrTokenType>> Source { get; }
+
         private readonly Context context;
-        private readonly ITokenStream<IToken<IrTokenType>> source;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IrParser"/> class.
@@ -31,7 +35,7 @@ namespace Yoakke.Ir.Syntax
         public IrParser(Context context, ITokenStream<IToken<IrTokenType>> source)
         {
             this.context = context;
-            this.source = source;
+            this.Source = source;
         }
 
         /// <summary>
@@ -45,13 +49,40 @@ namespace Yoakke.Ir.Syntax
         }
 
         /// <summary>
+        /// Parses an <see cref="Instruction"/>.
+        /// </summary>
+        /// <returns>The parsed <see cref="Instruction"/>.</returns>
+        public Instruction ParseInstruction()
+        {
+            // Get the syntax
+            var ident = this.ParseIdentifier();
+            if (!this.context.InstructionSyntaxes.TryGetValue(ident, out var syntax)) throw new KeyNotFoundException();
+            // Parse it
+            var instr = syntax.Parse(this);
+            // Parse the attribute groups that might follow
+            var attrs = this.ParseAttributeGroups();
+            // Attach them
+            foreach (var (target, attrList) in attrs)
+            {
+                if ((target ?? AttributeTargets.Instruction) != AttributeTargets.Instruction)
+                {
+                    throw new InvalidOperationException($"Invalid attribute target {target} on instruction");
+                }
+                // Attachable
+                foreach (var attr in attrList) instr.AddAttribute(attr);
+            }
+            // Done
+            return instr;
+        }
+
+        /// <summary>
         /// Parses a sequence of attribute groups, which is 0 of more occurrences of a singular attribute group.
         /// </summary>
         /// <returns>The parsed groups, all attributes categorized per target.</returns>
         public IReadOnlyDictionary<AttributeTargets?, IList<IAttribute>> ParseAttributeGroups()
         {
             var result = new Dictionary<AttributeTargets?, IList<IAttribute>>();
-            while (this.source.Peek().Kind == IrTokenType.OpenBracket)
+            while (this.Source.Peek().Kind == IrTokenType.OpenBracket)
             {
                 // Parse a single group
                 var partialResul = this.ParseAttributeGroup();
@@ -174,7 +205,7 @@ namespace Yoakke.Ir.Syntax
 
         private AttributeTargets? TryParseAttributeTargetSpecifier()
         {
-            AttributeTargets? target = this.source.Peek().Kind switch
+            AttributeTargets? target = this.Source.Peek().Kind switch
             {
                 IrTokenType.KeywordAssembly => AttributeTargets.Assembly,
                 IrTokenType.KeywordBlock => AttributeTargets.BasicBlock,
@@ -188,7 +219,7 @@ namespace Yoakke.Ir.Syntax
             };
             if (target is not null)
             {
-                this.source.Advance();
+                this.Source.Advance();
                 this.Expect(IrTokenType.Colon);
             }
             return target;
@@ -208,7 +239,10 @@ namespace Yoakke.Ir.Syntax
 
         private IToken<IrTokenType> Expect(IrTokenType tokenType)
         {
-            if (!this.Matches(tokenType, out var token)) throw new InvalidOperationException("TODO: Syntax error");
+            if (!this.Matches(tokenType, out var token))
+            {
+                throw new InvalidOperationException($"Syntax error, expected {tokenType}");
+            }
             return token;
         }
 
@@ -216,9 +250,9 @@ namespace Yoakke.Ir.Syntax
 
         private bool Matches(IrTokenType tokenType, [MaybeNullWhen(false)] out IToken<IrTokenType> token)
         {
-            if (this.source.TryPeek(out token) && token.Kind == tokenType)
+            if (this.Source.TryPeek(out token) && token.Kind == tokenType)
             {
-                this.source.Advance();
+                this.Source.Advance();
                 return true;
             }
             else
