@@ -129,7 +129,7 @@ namespace Yoakke.Ir.Syntax
         KeywordParameter,
 
         /// <summary>
-        /// 'proc' keyword.
+        /// 'procedure' keyword.
         /// </summary>
         KeywordProcedure,
 
