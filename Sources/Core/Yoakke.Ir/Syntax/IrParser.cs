@@ -65,7 +65,7 @@ namespace Yoakke.Ir.Syntax
             }
 
             // Procedure type
-            if (peek.Kind == IrTokenType.KeywordProc)
+            if (peek.Kind == IrTokenType.KeywordProcedure)
             {
                 this.source.Advance();
                 throw new NotImplementedException("proc");

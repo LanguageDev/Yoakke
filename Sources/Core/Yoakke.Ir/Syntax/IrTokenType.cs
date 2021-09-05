@@ -104,13 +104,43 @@ namespace Yoakke.Ir.Syntax
         Identifier,
 
         /// <summary>
+        /// 'assembly' keyword.
+        /// </summary>
+        KeywordAssembly,
+
+        /// <summary>
         /// 'block' keyword.
         /// </summary>
         KeywordBlock,
 
         /// <summary>
+        /// 'field' keyword.
+        /// </summary>
+        KeywordField,
+
+        /// <summary>
+        /// 'instruction' keyword.
+        /// </summary>
+        KeywordInstruction,
+
+        /// <summary>
+        /// 'parameter' keyword.
+        /// </summary>
+        KeywordParameter,
+
+        /// <summary>
         /// 'proc' keyword.
         /// </summary>
-        KeywordProc,
+        KeywordProcedure,
+
+        /// <summary>
+        /// 'return' keyword.
+        /// </summary>
+        KeywordReturn,
+
+        /// <summary>
+        /// 'type' keyword.
+        /// </summary>
+        KeywordType,
     }
 }

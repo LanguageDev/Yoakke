@@ -51,7 +51,7 @@ namespace Yoakke.Ir.Syntax
         /// <returns>This instance, to be able to chain calls.</returns>
         public IrWriter WriteProcedure(Procedure procedure)
         {
-            this.Underlying.Write($"proc {procedure.Name}()");
+            this.Underlying.Write($"procedure {procedure.Name}()");
             this.WriteAttributeList(procedure, " ");
             this.Underlying.WriteLine(':');
             this.WriteBasicBlock(procedure.Entry);

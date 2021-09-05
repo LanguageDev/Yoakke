@@ -115,8 +115,14 @@ namespace Yoakke.Ir.Syntax
                 var text = this.source.ConsumeText(length, out var range);
                 var tokenType = text switch
                 {
+                    "assembly" => IrTokenType.KeywordAssembly,
                     "block" => IrTokenType.KeywordBlock,
-                    "proc" => IrTokenType.KeywordProc,
+                    "field" => IrTokenType.KeywordField,
+                    "instruction" => IrTokenType.KeywordInstruction,
+                    "parameter" => IrTokenType.KeywordParameter,
+                    "procedure" => IrTokenType.KeywordProcedure,
+                    "return" => IrTokenType.KeywordReturn,
+                    "type" => IrTokenType.KeywordType,
                     _ => IrTokenType.Identifier,
                 };
                 return new Token<IrTokenType>(range, text, tokenType);
