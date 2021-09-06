@@ -60,8 +60,16 @@ namespace Yoakke.Ir.Syntax
             var attribs = this.ParseAttributeGroups(AttributeTargets.BasicBlock);
             this.Expect(IrTokenType.Colon);
             var builder = new BasicBlockBuilder(name);
-            // TODO
-            throw new NotImplementedException();
+            // Attach all attributes
+            AttachAttributes(builder, attribs);
+            // Parse instructions
+            while (this.Source.TryPeek(out var t) && t.Kind == IrTokenType.Identifier)
+            {
+                // Assume instruction as long as it's an identifier
+                var instr = this.ParseInstruction();
+                builder.Instructions.Add(instr);
+            }
+            return builder;
         }
 
         /// <summary>
@@ -78,15 +86,7 @@ namespace Yoakke.Ir.Syntax
             // Parse the attribute groups that might follow
             var attrs = this.ParseAttributeGroups(AttributeTargets.Instruction);
             // Attach them
-            foreach (var (target, attrList) in attrs)
-            {
-                if (target != AttributeTargets.Instruction)
-                {
-                    throw new InvalidOperationException($"Invalid attribute target {target} on instruction");
-                }
-                // Attachable
-                foreach (var attr in attrList) instr.AddAttribute(attr);
-            }
+            AttachAttributes(instr, attrs);
             // Done
             return instr;
         }
@@ -277,6 +277,21 @@ namespace Yoakke.Ir.Syntax
             else
             {
                 return false;
+            }
+        }
+
+        private static void AttachAttributes(
+            IAttributeTarget attributeTarget,
+            IReadOnlyDictionary<AttributeTargets, IList<IAttribute>> attributes)
+        {
+            foreach (var (target, attrList) in attributes)
+            {
+                if (target != attributeTarget.Flag)
+                {
+                    throw new InvalidOperationException($"Invalid attribute target {target} for element");
+                }
+                // Attachable
+                foreach (var attr in attrList) attributeTarget.AddAttribute(attr);
             }
         }
     }

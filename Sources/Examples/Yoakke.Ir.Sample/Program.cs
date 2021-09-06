@@ -41,13 +41,16 @@ namespace Yoakke.Ir.Sample
                .WithInstructionSyntax("ret", _ => new Instruction.Ret(), (_, _) => { });
             ctx.WithAttributeDefinition(new FooDefinition());
 
-            var src = "nop [foo, foo, foo]";
+            var src = @"
+block owo [block: foo]:
+  nop [foo, foo, foo]
+  ret";
             var lexer = new IrLexer(src);
             var parser = new IrParser(ctx, lexer);
-            var ins = parser.ParseInstruction();
+            var bb = parser.ParseBasicBlock();
 
             var writer = new IrWriter(ctx, Console.Out);
-            writer.WriteInstruction(ins);
+            writer.WriteBasicBlock(bb);
         }
     }
 }
