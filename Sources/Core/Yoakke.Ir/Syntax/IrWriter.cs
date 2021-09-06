@@ -61,9 +61,16 @@ namespace Yoakke.Ir.Syntax
         {
             this.Underlying.Write($"procedure {procedure.Name}()");
             if (procedure.GetAttributes().Any()) this.WriteAttributes(procedure, printTargetSpec: true);
-            this.Underlying.WriteLine(':');
-            this.WriteBasicBlock(procedure.Entry);
-            foreach (var basicBlock in procedure.BasicBlocks.Except(new[] { procedure.Entry })) this.WriteBasicBlock(basicBlock);
+            if (procedure.BasicBlocks.Count > 0)
+            {
+                this.Underlying.WriteLine(':');
+                this.WriteBasicBlock(procedure.Entry);
+                foreach (var basicBlock in procedure.BasicBlocks.Except(new[] { procedure.Entry })) this.WriteBasicBlock(basicBlock);
+            }
+            else
+            {
+                this.Underlying.WriteLine();
+            }
             return this;
         }
 

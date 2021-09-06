@@ -49,6 +49,8 @@ procedure hello() [foo]:
 block owo [block: foo]:
   nop [foo, foo, foo]
   ret
+
+procedure aaa() [foo]
 ";
             var lexer = new IrLexer(src);
             var parser = new IrParser(ctx, lexer);
