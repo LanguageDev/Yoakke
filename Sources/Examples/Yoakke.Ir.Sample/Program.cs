@@ -42,15 +42,17 @@ namespace Yoakke.Ir.Sample
             ctx.WithAttributeDefinition(new FooDefinition());
 
             var src = @"
+procedure hello():
 block owo [block: foo]:
   nop [foo, foo, foo]
-  ret";
+  ret
+";
             var lexer = new IrLexer(src);
             var parser = new IrParser(ctx, lexer);
-            var bb = parser.ParseBasicBlock();
+            var proc = parser.ParseProcedure();
 
             var writer = new IrWriter(ctx, Console.Out);
-            writer.WriteBasicBlock(bb);
+            writer.WriteProcedure(proc);
         }
     }
 }

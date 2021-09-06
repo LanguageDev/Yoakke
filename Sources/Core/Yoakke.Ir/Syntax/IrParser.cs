@@ -50,6 +50,33 @@ namespace Yoakke.Ir.Syntax
         }
 
         /// <summary>
+        /// Parses a <see cref="Procedure"/>.
+        /// </summary>
+        /// <returns>The parsed <see cref="Procedure"/>.</returns>
+        public Procedure ParseProcedure()
+        {
+            this.Expect(IrTokenType.KeywordProcedure);
+            var name = this.ParseIdentifier();
+            // Parse parameters
+            this.Expect(IrTokenType.OpenParen);
+            this.Expect(IrTokenType.CloseParen);
+            // TODO: Parse return type
+            var builder = new ProcedureBuilder(name);
+            if (this.Matches(IrTokenType.Colon))
+            {
+                // It has a body
+                while (this.Source.TryPeek(out var t) && t.Kind == IrTokenType.KeywordBlock)
+                {
+                    var bb = this.ParseBasicBlock();
+                    builder.WithBasicBlock(bb);
+                }
+            }
+            // Assign first block as entry
+            if (builder.BasicBlocks.Count > 0) builder.WithEntryAt(builder.BasicBlocks[0]);
+            return builder;
+        }
+
+        /// <summary>
         /// Parses a <see cref="BasicBlock"/>.
         /// </summary>
         /// <returns>The parsed <see cref="BasicBlock"/>.</returns>
