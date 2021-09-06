@@ -89,11 +89,16 @@ namespace Yoakke.Ir.Syntax
         {
             this.Expect(IrTokenType.KeywordProcedure);
             var name = this.ParseIdentifier();
+            var builder = new ProcedureBuilder(name);
             // Parse parameters
             this.Expect(IrTokenType.OpenParen);
             this.Expect(IrTokenType.CloseParen);
             // TODO: Parse return type
-            var builder = new ProcedureBuilder(name);
+            // Parse attached attributes
+            var attribs = this.ParseAttributeGroups(AttributeTargets.Procedure);
+            // TODO: We need to be smarter here, return value is also a valid target, a simple attach won't do
+            AttachAttributes(builder, attribs);
+            // Check, if it has a body
             if (this.Matches(IrTokenType.Colon))
             {
                 // It has a body

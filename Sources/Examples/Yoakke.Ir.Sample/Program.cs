@@ -45,7 +45,7 @@ namespace Yoakke.Ir.Sample
 [assembly: foo]
 [assembly: foo]
 
-procedure hello():
+procedure hello() [foo]:
 block owo [block: foo]:
   nop [foo, foo, foo]
   ret
