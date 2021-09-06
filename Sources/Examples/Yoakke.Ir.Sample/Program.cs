@@ -37,6 +37,8 @@ namespace Yoakke.Ir.Sample
         static void Main(string[] args)
         {
             var ctx = new Context();
+            ctx.WithInstructionSyntax("nop", _ => new Instruction.Nop(), (_, _) => { })
+               .WithInstructionSyntax("ret", _ => new Instruction.Ret(), (_, _) => { });
 
             var asm = new AssemblyBuilder();
             var proc = new ProcedureBuilder("main");

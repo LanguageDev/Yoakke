@@ -88,8 +88,8 @@ namespace Yoakke.Ir.Syntax
         /// <returns>This instance, to be able to chain calls.</returns>
         public IrWriter WriteInstruction(Instruction instruction)
         {
-            // Instruction text
             var syntax = this.context.GetInstructionSyntax(instruction.GetType());
+            this.Underlying.Write(syntax.Name);
             syntax.Print(instruction, this.Underlying);
             this.WriteAttributeList(instruction, " ");
             this.Underlying.WriteLine();

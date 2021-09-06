@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using Yoakke.Ir.Model.Attributes;
 using Yoakke.Ir.Syntax;
@@ -42,6 +43,36 @@ namespace Yoakke.Ir.Model
             this.instructionSyntaxesByType.Add(syntax.Type, syntax);
             return this;
         }
+
+        /// <summary>
+        /// Registers an <see cref="IInstructionSyntax"/> in this <see cref="Context"/>.
+        /// </summary>
+        /// <typeparam name="TInstruction">The handled instruction type.</typeparam>
+        /// <param name="name">The handled instruction name.</param>
+        /// <param name="parse">The parser function.</param>
+        /// <param name="print">The print function.</param>
+        /// <returns>This instance, to be able to chain calls.</returns>
+        public Context WithInstructionSyntax<TInstruction>(
+            string name,
+            Func<IrParser, Instruction> parse,
+            Action<Instruction, TextWriter> print)
+            where TInstruction : Instruction =>
+            this.WithInstructionSyntax(new InstructionSyntax<TInstruction>(name, parse, print));
+
+        /// <summary>
+        /// Registers an <see cref="IInstructionSyntax"/> in this <see cref="Context"/>.
+        /// </summary>
+        /// <typeparam name="TInstruction">The handled instruction type.</typeparam>
+        /// <param name="name">The handled instruction name.</param>
+        /// <param name="parse">The parser function.</param>
+        /// <param name="print">The print function.</param>
+        /// <returns>This instance, to be able to chain calls.</returns>
+        public Context WithInstructionSyntax<TInstruction>(
+            string name,
+            Func<IrParser, TInstruction> parse,
+            Action<Instruction, TextWriter> print)
+            where TInstruction : Instruction =>
+            this.WithInstructionSyntax(new InstructionSyntax<TInstruction>(name, parse, print));
 
         /// <summary>
         /// Retrieves an <see cref="IAttributeDefinition"/> for a given name.
