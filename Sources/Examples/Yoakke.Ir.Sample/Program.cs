@@ -42,6 +42,9 @@ namespace Yoakke.Ir.Sample
             ctx.WithAttributeDefinition(new FooDefinition());
 
             var src = @"
+[assembly: foo]
+[assembly: foo]
+
 procedure hello():
 block owo [block: foo]:
   nop [foo, foo, foo]
@@ -49,10 +52,10 @@ block owo [block: foo]:
 ";
             var lexer = new IrLexer(src);
             var parser = new IrParser(ctx, lexer);
-            var proc = parser.ParseProcedure();
+            var asm = parser.ParseAssembly();
 
             var writer = new IrWriter(ctx, Console.Out);
-            writer.WriteProcedure(proc);
+            writer.WriteAssembly(asm);
         }
     }
 }

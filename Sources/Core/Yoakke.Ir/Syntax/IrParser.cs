@@ -50,6 +50,38 @@ namespace Yoakke.Ir.Syntax
         }
 
         /// <summary>
+        /// Parses an <see cref="Assembly"/>.
+        /// </summary>
+        /// <returns>The parsed <see cref="Assembly"/>.</returns>
+        public Assembly ParseAssembly()
+        {
+            var builder = new AssemblyBuilder();
+            while (true)
+            {
+                if (!this.Source.TryPeek(out var t) || t.Kind == IrTokenType.End) break;
+
+                if (t.Kind == IrTokenType.KeywordProcedure)
+                {
+                    // A procedure in the assembly
+                    var proc = this.ParseProcedure();
+                    builder.WithProcedure(proc);
+                }
+                else if (t.Kind == IrTokenType.OpenBracket)
+                {
+                    // A global attribute
+                    var attrs = this.ParseAttributeGroups(AttributeTargets.Assembly);
+                    AttachAttributes(builder, attrs);
+                }
+                else
+                {
+                    // Unknown
+                    throw new NotImplementedException($"Unexpected token {t.Kind}");
+                }
+            }
+            return builder;
+        }
+
+        /// <summary>
         /// Parses a <see cref="Procedure"/>.
         /// </summary>
         /// <returns>The parsed <see cref="Procedure"/>.</returns>

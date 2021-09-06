@@ -43,8 +43,11 @@ namespace Yoakke.Ir.Syntax
         /// <returns>This instance, to be able to chain calls.</returns>
         public IrWriter WriteAssembly(Assembly assembly)
         {
-            this.WriteAttributes(assembly, prefix: string.Empty, printTargetSpec: true);
-            this.Underlying.WriteLine();
+            if (assembly.GetAttributes().Any())
+            {
+                this.WriteAttributes(assembly, prefix: string.Empty, printTargetSpec: true);
+                this.Underlying.WriteLine();
+            }
             foreach (var procedure in assembly.Procedures.Values) this.WriteProcedure(procedure);
             return this;
         }
