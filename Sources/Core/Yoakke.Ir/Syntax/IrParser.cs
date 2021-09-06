@@ -82,7 +82,7 @@ namespace Yoakke.Ir.Syntax
         public IReadOnlyDictionary<AttributeTargets?, IList<IAttribute>> ParseAttributeGroups()
         {
             var result = new Dictionary<AttributeTargets?, IList<IAttribute>>();
-            while (this.Source.Peek().Kind == IrTokenType.OpenBracket)
+            while (this.Source.TryPeek(out var t) && t.Kind == IrTokenType.OpenBracket)
             {
                 // Parse a single group
                 var partialResul = this.ParseAttributeGroup();
@@ -205,7 +205,8 @@ namespace Yoakke.Ir.Syntax
 
         private AttributeTargets? TryParseAttributeTargetSpecifier()
         {
-            AttributeTargets? target = this.Source.Peek().Kind switch
+            if (!this.Source.TryPeek(out var t)) return null;
+            AttributeTargets? target = t.Kind switch
             {
                 IrTokenType.KeywordAssembly => AttributeTargets.Assembly,
                 IrTokenType.KeywordBlock => AttributeTargets.BasicBlock,

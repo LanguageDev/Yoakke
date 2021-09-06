@@ -13,7 +13,7 @@ namespace Yoakke.Ir.Sample
     {
         public string Name => "foo";
 
-        public bool AllowMultiple => false;
+        public bool AllowMultiple => true;
 
         public AttributeTargets Targets => AttributeTargets.Instruction | AttributeTargets.Assembly | AttributeTargets.BasicBlock
             | AttributeTargets.Procedure;
@@ -39,25 +39,15 @@ namespace Yoakke.Ir.Sample
             var ctx = new Context();
             ctx.WithInstructionSyntax("nop", _ => new Instruction.Nop(), (_, _) => { })
                .WithInstructionSyntax("ret", _ => new Instruction.Ret(), (_, _) => { });
+            ctx.WithAttributeDefinition(new FooDefinition());
 
-            var asm = new AssemblyBuilder();
-            var proc = new ProcedureBuilder("main");
-            var bb = new BasicBlockBuilder("entry")
-                .Nop()
-                .Ret();
-
-            asm.WithProcedure(proc);
-            proc.WithEntryAt(bb);
-
-            var fooAttr = new FooDefinition();
-            var foo = fooAttr.Instantiate(Array.Empty<Constant>());
-            bb.Instructions[0].AddAttribute(foo);
-            bb.AddAttribute(foo);
-            proc.AddAttribute(foo);
-            asm.AddAttribute(foo);
+            var src = "nop [instruction: foo, foo, foo]";
+            var lexer = new IrLexer(src);
+            var parser = new IrParser(ctx, lexer);
+            var ins = parser.ParseInstruction();
 
             var writer = new IrWriter(ctx, Console.Out);
-            writer.WriteAssembly(asm);
+            writer.WriteInstruction(ins);
         }
     }
 }
