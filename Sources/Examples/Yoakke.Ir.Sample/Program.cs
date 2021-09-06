@@ -41,7 +41,7 @@ namespace Yoakke.Ir.Sample
                .WithInstructionSyntax("ret", _ => new Instruction.Ret(), (_, _) => { });
             ctx.WithAttributeDefinition(new FooDefinition());
 
-            var src = "nop [instruction: foo, foo, foo]";
+            var src = "nop [foo, foo, foo]";
             var lexer = new IrLexer(src);
             var parser = new IrParser(ctx, lexer);
             var ins = parser.ParseInstruction();

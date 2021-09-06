@@ -60,11 +60,11 @@ namespace Yoakke.Ir.Syntax
             // Parse it
             var instr = syntax.Parse(this);
             // Parse the attribute groups that might follow
-            var attrs = this.ParseAttributeGroups();
+            var attrs = this.ParseAttributeGroups(AttributeTargets.Instruction);
             // Attach them
             foreach (var (target, attrList) in attrs)
             {
-                if ((target ?? AttributeTargets.Instruction) != AttributeTargets.Instruction)
+                if (target != AttributeTargets.Instruction)
                 {
                     throw new InvalidOperationException($"Invalid attribute target {target} on instruction");
                 }
@@ -78,14 +78,15 @@ namespace Yoakke.Ir.Syntax
         /// <summary>
         /// Parses a sequence of attribute groups, which is 0 of more occurrences of a singular attribute group.
         /// </summary>
+        /// <param name="defaultTarget">The default target to assume.</param>
         /// <returns>The parsed groups, all attributes categorized per target.</returns>
-        public IReadOnlyDictionary<AttributeTargets?, IList<IAttribute>> ParseAttributeGroups()
+        public IReadOnlyDictionary<AttributeTargets, IList<IAttribute>> ParseAttributeGroups(AttributeTargets defaultTarget)
         {
-            var result = new Dictionary<AttributeTargets?, IList<IAttribute>>();
+            var result = new Dictionary<AttributeTargets, IList<IAttribute>>();
             while (this.Source.TryPeek(out var t) && t.Kind == IrTokenType.OpenBracket)
             {
                 // Parse a single group
-                var partialResul = this.ParseAttributeGroup();
+                var partialResul = this.ParseAttributeGroup(defaultTarget);
                 // Merge in
                 foreach (var (k, v) in partialResul)
                 {
@@ -106,16 +107,17 @@ namespace Yoakke.Ir.Syntax
         /// Parses a single attribute group, which is a list of attribute instantiations between brackets,
         /// optionally with target specifiers.
         /// </summary>
+        /// <param name="defaultTarget">The default target to assume.</param>
         /// <returns>The parsed groups, all attributes categorized per target.</returns>
-        public IReadOnlyDictionary<AttributeTargets?, IList<IAttribute>> ParseAttributeGroup()
+        public IReadOnlyDictionary<AttributeTargets, IList<IAttribute>> ParseAttributeGroup(AttributeTargets defaultTarget)
         {
-            AttributeTargets? currentTarget = null;
-            var result = new Dictionary<AttributeTargets?, IList<IAttribute>>();
+            AttributeTargets currentTarget = defaultTarget;
+            var result = new Dictionary<AttributeTargets, IList<IAttribute>>();
 
             void ParseAttributeGroupElement()
             {
                 var specifier = this.TryParseAttributeTargetSpecifier();
-                if (specifier is not null) currentTarget = specifier;
+                if (specifier is not null) currentTarget = specifier.Value;
                 var attr = this.ParseAttribute();
                 if (!result!.TryGetValue(currentTarget, out var attrList))
                 {
