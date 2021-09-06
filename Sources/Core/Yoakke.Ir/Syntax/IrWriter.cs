@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using Yoakke.Ir.Model;
 using Yoakke.Ir.Model.Attributes;
+using AttributeTargets = Yoakke.Ir.Model.Attributes.AttributeTargets;
 
 namespace Yoakke.Ir.Syntax
 {
@@ -114,7 +115,7 @@ namespace Yoakke.Ir.Syntax
             if (printBrackets) this.Underlying.Write('[');
             if (printTargetSpec)
             {
-                this.Underlying.Write(attributeTarget.Flag.ToString().ToLower());
+                this.Underlying.Write(GetAttributeTargetName(attributeTarget.Flag));
                 this.Underlying.Write(": ");
             }
             var first = true;
@@ -141,5 +142,18 @@ namespace Yoakke.Ir.Syntax
             this.Underlying.Write(attribute.Definition.Name);
             return this;
         }
+
+        private static string GetAttributeTargetName(Model.Attributes.AttributeTargets target) => target switch
+        {
+            AttributeTargets.Assembly => "assembly",
+            AttributeTargets.BasicBlock => "block",
+            AttributeTargets.Instruction => "instruction",
+            AttributeTargets.Parameter => "parameter",
+            AttributeTargets.Procedure => "procedure",
+            AttributeTargets.ReturnValue => "return",
+            AttributeTargets.TypeDefinition => "type",
+            AttributeTargets.TypeField => "field",
+            _ => throw new ArgumentOutOfRangeException(nameof(target)),
+        };
     }
 }

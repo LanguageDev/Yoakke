@@ -8,6 +8,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Yoakke.Ir.Model;
 using Yoakke.Ir.Model.Attributes;
+using Yoakke.Ir.Model.Builders;
 using Yoakke.Lexer;
 using Yoakke.Lexer.Streams;
 using AttributeTargets = Yoakke.Ir.Model.Attributes.AttributeTargets;
@@ -46,6 +47,21 @@ namespace Yoakke.Ir.Syntax
         public IrParser(Context context, ILexer<IToken<IrTokenType>> source)
             : this(context, source.AsTokenStream())
         {
+        }
+
+        /// <summary>
+        /// Parses a <see cref="BasicBlock"/>.
+        /// </summary>
+        /// <returns>The parsed <see cref="BasicBlock"/>.</returns>
+        public BasicBlock ParseBasicBlock()
+        {
+            this.Expect(IrTokenType.KeywordBlock);
+            var name = this.ParseIdentifier();
+            var attribs = this.ParseAttributeGroups(AttributeTargets.BasicBlock);
+            this.Expect(IrTokenType.Colon);
+            var builder = new BasicBlockBuilder(name);
+            // TODO
+            throw new NotImplementedException();
         }
 
         /// <summary>
