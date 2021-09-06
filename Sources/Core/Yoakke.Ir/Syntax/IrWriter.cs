@@ -42,7 +42,7 @@ namespace Yoakke.Ir.Syntax
         /// <returns>This instance, to be able to chain calls.</returns>
         public IrWriter WriteAssembly(Assembly assembly)
         {
-            this.WriteAttributeList(assembly, "!");
+            this.WriteAttributes(assembly, prefix: string.Empty, printTargetSpec: true);
             this.Underlying.WriteLine();
             foreach (var procedure in assembly.Procedures.Values) this.WriteProcedure(procedure);
             return this;
@@ -56,7 +56,7 @@ namespace Yoakke.Ir.Syntax
         public IrWriter WriteProcedure(Procedure procedure)
         {
             this.Underlying.Write($"procedure {procedure.Name}()");
-            this.WriteAttributeList(procedure, " ");
+            this.WriteAttributes(procedure, printTargetSpec: true);
             this.Underlying.WriteLine(':');
             this.WriteBasicBlock(procedure.Entry);
             foreach (var basicBlock in procedure.BasicBlocks.Except(new[] { procedure.Entry })) this.WriteBasicBlock(basicBlock);
@@ -71,7 +71,7 @@ namespace Yoakke.Ir.Syntax
         public IrWriter WriteBasicBlock(BasicBlock basicBlock)
         {
             this.Underlying.Write($"block {basicBlock.Name}");
-            this.WriteAttributeList(basicBlock, " ");
+            this.WriteAttributes(basicBlock);
             this.Underlying.WriteLine(':');
             foreach (var instruction in basicBlock.Instructions)
             {
@@ -91,7 +91,7 @@ namespace Yoakke.Ir.Syntax
             var syntax = this.context.GetInstructionSyntax(instruction.GetType());
             this.Underlying.Write(syntax.Name);
             syntax.Print(instruction, this.Underlying);
-            this.WriteAttributeList(instruction, " ");
+            if (instruction.GetAttributes().Any()) this.WriteAttributes(instruction);
             this.Underlying.WriteLine();
             return this;
         }
@@ -100,10 +100,23 @@ namespace Yoakke.Ir.Syntax
         /// Writes the attribute list for an <see cref="IReadOnlyAttributeTarget"/> to the <see cref="Underlying"/> writer.
         /// </summary>
         /// <param name="attributeTarget">The <see cref="IReadOnlyAttributeTarget"/> to write the attributes for.</param>
+        /// <param name="prefix">The prefix to print before the attribute list (and before the braces).</param>
+        /// <param name="printBrackets">True, if the brackets should be printed.</param>
+        /// <param name="printTargetSpec">True, if the target specifier should be printed.</param>
         /// <returns>This instance, to be able to chain calls.</returns>
-        public IrWriter WriteAttributes(IReadOnlyAttributeTarget attributeTarget)
+        public IrWriter WriteAttributes(
+            IReadOnlyAttributeTarget attributeTarget,
+            string prefix = " ",
+            bool printBrackets = true,
+            bool printTargetSpec = false)
         {
-            this.Underlying.Write('[');
+            this.Underlying.Write(prefix);
+            if (printBrackets) this.Underlying.Write('[');
+            if (printTargetSpec)
+            {
+                this.Underlying.Write(attributeTarget.Flag.ToString().ToLower());
+                this.Underlying.Write(": ");
+            }
             var first = true;
             foreach (var attr in attributeTarget.GetAttributes())
             {
@@ -111,7 +124,7 @@ namespace Yoakke.Ir.Syntax
                 first = false;
                 this.WriteAttribute(attr);
             }
-            this.Underlying.Write(']');
+            if (printBrackets) this.Underlying.Write(']');
             return this;
         }
 
@@ -127,17 +140,6 @@ namespace Yoakke.Ir.Syntax
 
             this.Underlying.Write(attribute.Definition.Name);
             return this;
-        }
-
-        // TODO: We should probably make this a bit more... elaborate?
-        // Like handling targets and such probably
-        private void WriteAttributeList(IReadOnlyAttributeTarget target, string prefix)
-        {
-            if (target.GetAttributes().Any())
-            {
-                this.Underlying.Write(prefix);
-                this.WriteAttributes(target);
-            }
         }
     }
 }
