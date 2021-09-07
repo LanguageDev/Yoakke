@@ -30,7 +30,7 @@ namespace Yoakke.Ir.Model
         /// <summary>
         /// The result value of some instruction.
         /// </summary>
-        public record Result(Instruction Instruction) : Value
+        public record Result(Instruction Instruction, string? Name = null) : Value
         {
             /// <inheritdoc/>
             public override Type Type => this.Instruction.ResultType

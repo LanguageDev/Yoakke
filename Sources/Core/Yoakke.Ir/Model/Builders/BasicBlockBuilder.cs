@@ -34,6 +34,17 @@ namespace Yoakke.Ir.Model.Builders
         };
 
         /// <summary>
+        /// Adds an instruction to this block.
+        /// </summary>
+        /// <param name="instruction">The instruction to add.</param>
+        /// <returns>This instance, to be able to chain calls.</returns>
+        public BasicBlockBuilder WithInstruction(Instruction instruction)
+        {
+            this.Instructions.Add(instruction);
+            return this;
+        }
+
+        /// <summary>
         /// Writes a NOP instruction.
         /// </summary>
         /// <returns>This instance, to be able to chain calls.</returns>
@@ -45,10 +56,12 @@ namespace Yoakke.Ir.Model.Builders
         /// <returns>This instance, to be able to chain calls.</returns>
         public BasicBlockBuilder Ret() => this.WithInstruction(new Instruction.Ret());
 
-        private BasicBlockBuilder WithInstruction(Instruction instruction)
-        {
-            this.Instructions.Add(instruction);
-            return this;
-        }
+        /// <summary>
+        /// Writes an ADD instruction.
+        /// </summary>
+        /// <param name="left">The first value to add.</param>
+        /// <param name="right">The second value to add.</param>
+        /// <returns>This instance, to be able to chain calls.</returns>
+        public BasicBlockBuilder Add(Value left, Value right) => this.WithInstruction(new Instruction.Add(left, right));
     }
 }
