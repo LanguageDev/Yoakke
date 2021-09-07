@@ -46,5 +46,42 @@ namespace Yoakke.Ir.Model
         #endregion AttributeTarget
 
         /* Variants */
+
+        /// <summary>
+        /// A type of any type.
+        /// </summary>
+        public record Type_ : Type
+        {
+            /// <summary>
+            /// A default instance to use.
+            /// </summary>
+            public static readonly Type_ Instance = new();
+
+            /// <inheritdoc/>
+            public override Type Type => this;
+        }
+
+        /// <summary>
+        /// A void-type, representing the empty/nothing type.
+        /// </summary>
+        public record Void : Type
+        {
+            /// <summary>
+            /// A default instance to use.
+            /// </summary>
+            public static readonly Void Instance = new();
+
+            /// <inheritdoc/>
+            public override Type Type => Type_.Instance;
+        }
+
+        /// <summary>
+        /// A signed integer type with a given bit-width.
+        /// </summary>
+        public record Int(int Bits) : Type
+        {
+            /// <inheritdoc/>
+            public override Type Type => Type_.Instance;
+        }
     }
 }

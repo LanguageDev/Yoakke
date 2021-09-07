@@ -45,6 +45,12 @@ namespace Yoakke.Ir.Model
 
         #endregion AttributeTarget
 
+        /// <summary>
+        /// The result type of the produced value.
+        /// Null, if the instruction produces no values.
+        /// </summary>
+        public virtual Type? ResultType => null;
+
         /* Variants */
 
         /// <summary>
@@ -55,7 +61,16 @@ namespace Yoakke.Ir.Model
         /// <summary>
         /// A return instruction.
         /// </summary>
-        // TODO: Include optional return value
-        public record Ret : Instruction;
+        public record Ret(Value? Value = null) : Instruction;
+
+        /// <summary>
+        /// An addition instruction.
+        /// </summary>
+        public record Add(Value Left, Value Right) : Instruction
+        {
+            /// <inheritdoc/>
+            // NOTE: Not necessarily a correct assumption
+            public override Type? ResultType => this.Left.Type;
+        }
     }
 }
