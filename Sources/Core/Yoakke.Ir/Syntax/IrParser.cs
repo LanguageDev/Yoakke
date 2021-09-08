@@ -27,6 +27,8 @@ namespace Yoakke.Ir.Syntax
         public ITokenStream<IToken<IrTokenType>> Source { get; }
 
         private readonly Context context;
+        private readonly Dictionary<string, ProcedureBuilder> procedureBuilders = new();
+        private readonly Dictionary<string, BasicBlockBuilder> basicBlockBuilders = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IrParser"/> class.
@@ -56,6 +58,7 @@ namespace Yoakke.Ir.Syntax
         public Assembly ParseAssembly()
         {
             var builder = new AssemblyBuilder();
+            this.PreDefineProcedures();
             while (true)
             {
                 if (!this.Source.TryPeek(out var t) || t.Kind == IrTokenType.End) break;
@@ -89,24 +92,31 @@ namespace Yoakke.Ir.Syntax
         {
             this.Expect(IrTokenType.KeywordProcedure);
             var name = this.ParseIdentifier();
-            var builder = new ProcedureBuilder(name);
+            var builder = this.procedureBuilders[name];
+            this.PreDefineBasicBlocks();
             // Parse parameters
             this.Expect(IrTokenType.OpenParen);
             this.Expect(IrTokenType.CloseParen);
             // TODO: Parse return type
-            // Parse attached attributes
-            var attribs = this.ParseAttributeGroups(AttributeTargets.Procedure);
-            // TODO: We need to be smarter here, return value is also a valid target, a simple attach won't do
-            AttachAttributes(builder, attribs);
             // Check, if it has a body
             if (this.Matches(IrTokenType.Colon))
             {
+                // Parse attached attributes
+                // TODO: We need to be smarter here, return value is also a valid target, a simple attach won't do
+                this.ParseAttributeGroups(builder, AttributeTargets.Procedure);
+
                 // It has a body
                 while (this.Source.TryPeek(out var t) && t.Kind == IrTokenType.KeywordBlock)
                 {
                     var bb = this.ParseBasicBlock();
                     builder.WithBasicBlock(bb);
                 }
+            }
+            else
+            {
+                // Parse attached attributes
+                // TODO: We need to be smarter here, return value is also a valid target, a simple attach won't do
+                this.ParseAttributeGroups(builder, AttributeTargets.Procedure);
             }
             // Assign first block as entry
             if (builder.BasicBlocks.Count > 0) builder.WithEntryAt(builder.BasicBlocks[0]);
@@ -121,11 +131,10 @@ namespace Yoakke.Ir.Syntax
         {
             this.Expect(IrTokenType.KeywordBlock);
             var name = this.ParseIdentifier();
-            var attribs = this.ParseAttributeGroups(AttributeTargets.BasicBlock);
-            this.Expect(IrTokenType.Colon);
-            var builder = new BasicBlockBuilder(name);
+            var builder = this.basicBlockBuilders[name];
             // Attach all attributes
-            AttachAttributes(builder, attribs);
+            this.Expect(IrTokenType.Colon);
+            this.ParseAttributeGroups(builder, AttributeTargets.BasicBlock);
             // Parse instructions
             while (this.Source.TryPeek(out var t) && t.Kind == IrTokenType.Identifier)
             {
@@ -285,6 +294,47 @@ namespace Yoakke.Ir.Syntax
         /// <returns>The parsed <see cref="Constant"/>.</returns>
         public Constant ParseConstant(Type type) => throw new NotImplementedException("TODO: Parse constant of type Type");
 
+        /// <summary>
+        /// Parses a dot-separated identifier.
+        /// </summary>
+        /// <returns>The parsed identifier.</returns>
+        public string ParseIdentifier()
+        {
+            var offset = 0;
+            var ident = this.PeekIdentifier(ref offset);
+            if (ident is null) throw new InvalidOperationException("identifier expected");
+            this.Source.Advance(offset);
+            return ident;
+        }
+
+        private void PreDefineProcedures()
+        {
+            for (var i = 0; this.Source.TryLookAhead(i, out var t); )
+            {
+                ++i;
+                if (t.Kind != IrTokenType.KeywordProcedure) continue;
+
+                // A procedure keyword is coming up, get the identifier
+                var ident = this.PeekIdentifier(ref i);
+                if (ident is not null) this.procedureBuilders[ident] = new ProcedureBuilder(ident);
+            }
+        }
+
+        private void PreDefineBasicBlocks()
+        {
+            this.basicBlockBuilders.Clear();
+            for (var i = 0; this.Source.TryLookAhead(i, out var t); )
+            {
+                ++i;
+                if (t.Kind == IrTokenType.KeywordProcedure) break;
+                if (t.Kind != IrTokenType.KeywordBlock) continue;
+
+                // A block keyword is coming up, get the identifier
+                var ident = this.PeekIdentifier(ref i);
+                if (ident is not null) this.basicBlockBuilders[ident] = new BasicBlockBuilder(ident);
+            }
+        }
+
         private AttributeTargets? TryParseAttributeTargetSpecifier()
         {
             if (!this.Source.TryPeek(out var t)) return null;
@@ -308,14 +358,16 @@ namespace Yoakke.Ir.Syntax
             return target;
         }
 
-        private string ParseIdentifier()
+        private string? PeekIdentifier(ref int offset)
         {
-            var ident = this.Expect(IrTokenType.Identifier);
-            var result = new StringBuilder(ident.Text);
-            while (this.Matches(IrTokenType.Dot))
+            if (!this.Source.TryLookAhead(offset, out var t0) || t0.Kind != IrTokenType.Identifier) return null;
+            var result = new StringBuilder(t0.Text);
+            ++offset;
+            while (this.Source.TryLookAhead(offset, out var tDot) && tDot.Kind == IrTokenType.Dot
+                && this.Source.TryLookAhead(offset + 1, out var tName) && tName.Kind == IrTokenType.Identifier)
             {
-                ident = this.Expect(IrTokenType.Identifier);
-                result.Append('.').Append(ident.Text);
+                result.Append('.').Append(tName.Text);
+                offset += 2;
             }
             return result.ToString();
         }
@@ -342,6 +394,12 @@ namespace Yoakke.Ir.Syntax
             {
                 return false;
             }
+        }
+
+        private void ParseAttributeGroups(IAttributeTarget attributeTarget, AttributeTargets defaultTarget)
+        {
+            var attribs = this.ParseAttributeGroups(defaultTarget);
+            AttachAttributes(attributeTarget, attribs);
         }
 
         private static void AttachAttributes(

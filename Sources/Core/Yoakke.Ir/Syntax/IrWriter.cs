@@ -64,15 +64,17 @@ namespace Yoakke.Ir.Syntax
         public IrWriter WriteProcedure(Procedure procedure)
         {
             this.Underlying.Write($"procedure {procedure.Name}()");
-            if (procedure.GetAttributes().Any()) this.WriteAttributes(procedure, printTargetSpec: true);
             if (procedure.BasicBlocks.Count > 0)
             {
-                this.Underlying.WriteLine(':');
+                this.Underlying.Write(':');
+                if (procedure.GetAttributes().Any()) this.WriteAttributes(procedure, printTargetSpec: true);
+                this.Underlying.WriteLine();
                 this.WriteBasicBlock(procedure.Entry);
                 foreach (var basicBlock in procedure.BasicBlocks.Except(new[] { procedure.Entry })) this.WriteBasicBlock(basicBlock);
             }
             else
             {
+                if (procedure.GetAttributes().Any()) this.WriteAttributes(procedure, printTargetSpec: true);
                 this.Underlying.WriteLine();
             }
             return this;
@@ -85,9 +87,9 @@ namespace Yoakke.Ir.Syntax
         /// <returns>This instance, to be able to chain calls.</returns>
         public IrWriter WriteBasicBlock(BasicBlock basicBlock)
         {
-            this.Underlying.Write($"block {basicBlock.Name}");
+            this.Underlying.Write($"block {basicBlock.Name}:");
             if (basicBlock.GetAttributes().Any()) this.WriteAttributes(basicBlock);
-            this.Underlying.WriteLine(':');
+            this.Underlying.WriteLine();
             foreach (var instruction in basicBlock.Instructions)
             {
                 this.Underlying.Write("  ");
