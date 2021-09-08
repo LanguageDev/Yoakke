@@ -38,7 +38,9 @@ namespace Yoakke.Ir.Sample
         {
             var ctx = new Context();
             ctx.WithInstructionSyntax("nop", _ => new Instruction.Nop(), (_, _) => { })
-               .WithInstructionSyntax("ret", _ => new Instruction.Ret(), (ins, writer) =>
+               .WithInstructionSyntax("ret",
+               _ => new Instruction.Ret(),
+               (ins, writer) =>
                {
                    if (ins.Value is not null)
                    {
@@ -46,6 +48,17 @@ namespace Yoakke.Ir.Sample
                        // TODO: Write value
                        throw new NotImplementedException();
                    }
+               })
+               .WithInstructionSyntax("add",
+               parser =>
+               {
+                   var left = parser.ParseValue();
+                   parser.Expect(IrTokenType.Comma);
+                   var right = parser.ParseValue();
+                   return new Instruction.Add(left, right);
+               },
+               (ins, writer) =>
+               {
                });
             ctx.WithAttributeDefinition(new FooDefinition());
 

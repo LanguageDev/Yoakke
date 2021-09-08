@@ -305,6 +305,33 @@ namespace Yoakke.Ir.Syntax
         }
 
         /// <summary>
+        /// Parses a <see cref="Value"/>.
+        /// </summary>
+        /// <returns>The parsed <see cref="Value"/>.</returns>
+        public Value ParseValue()
+        {
+            if (!this.Source.TryPeek(out var peek)) throw new NotImplementedException("TODO: no token to peek");
+            switch (peek.Kind)
+            {
+            case IrTokenType.Identifier:
+            {
+                // It's a referenced value
+                var name = this.ParseIdentifier();
+                var ins = this.valueInstructions[name];
+                return new Value.Result(ins, name);
+            }
+
+            case IrTokenType.IntLiteral:
+            {
+                throw new NotImplementedException("TODO: Make an int constant");
+            }
+
+            default:
+                throw new NotImplementedException("TODO: Unexpected token for value");
+            }
+        }
+
+        /// <summary>
         /// Parses a <see cref="Constant"/> of a given <see cref="Type"/>.
         /// </summary>
         /// <param name="type">The <see cref="Type"/> of <see cref="Constant"/> to parse.</param>
@@ -322,6 +349,47 @@ namespace Yoakke.Ir.Syntax
             if (ident is null) throw new InvalidOperationException("identifier expected");
             this.Source.Advance(offset);
             return ident;
+        }
+
+        /// <summary>
+        /// Expects a certain kind of token to come up in the input and consumes it.
+        /// If the upcoming token is not of the specified kind, an error is raised.
+        /// </summary>
+        /// <param name="tokenType">The exact token kind to expect.</param>
+        /// <returns>The consumed token.</returns>
+        public IToken<IrTokenType> Expect(IrTokenType tokenType)
+        {
+            if (!this.Matches(tokenType, out var token))
+            {
+                throw new InvalidOperationException($"Syntax error, expected {tokenType}");
+            }
+            return token;
+        }
+
+        /// <summary>
+        /// Checks, if the upcoming token is of a certain kind. If so, consumes it.
+        /// </summary>
+        /// <param name="tokenType">The token kind to check.</param>
+        /// <returns>True, if the upcoming token had kind <paramref name="tokenType"/>.</returns>
+        public bool Matches(IrTokenType tokenType) => this.Matches(tokenType, out _);
+
+        /// <summary>
+        /// Checks, if the upcoming token is of a certain kind. If so, consumes it.
+        /// </summary>
+        /// <param name="tokenType">The token kind to check.</param>
+        /// <param name="token">The consumed token, if it matched the kind.</param>
+        /// <returns>True, if the upcoming token had kind <paramref name="tokenType"/>.</returns>
+        public bool Matches(IrTokenType tokenType, [MaybeNullWhen(false)] out IToken<IrTokenType> token)
+        {
+            if (this.Source.TryPeek(out token) && token.Kind == tokenType)
+            {
+                this.Source.Advance();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         private void PreDefineProcedures()
@@ -388,30 +456,6 @@ namespace Yoakke.Ir.Syntax
                 offset += 2;
             }
             return result.ToString();
-        }
-
-        private IToken<IrTokenType> Expect(IrTokenType tokenType)
-        {
-            if (!this.Matches(tokenType, out var token))
-            {
-                throw new InvalidOperationException($"Syntax error, expected {tokenType}");
-            }
-            return token;
-        }
-
-        private bool Matches(IrTokenType tokenType) => this.Matches(tokenType, out _);
-
-        private bool Matches(IrTokenType tokenType, [MaybeNullWhen(false)] out IToken<IrTokenType> token)
-        {
-            if (this.Source.TryPeek(out token) && token.Kind == tokenType)
-            {
-                this.Source.Advance();
-                return true;
-            }
-            else
-            {
-                return false;
-            }
         }
 
         private void ParseAttributeGroups(IAttributeTarget attributeTarget, AttributeTargets defaultTarget)
