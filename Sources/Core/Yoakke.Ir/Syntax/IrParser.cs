@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
 using System.Text;
 using Yoakke.Ir.Model;
 using Yoakke.Ir.Model.Attributes;
@@ -311,24 +312,20 @@ namespace Yoakke.Ir.Syntax
         /// <returns>The parsed <see cref="Value"/>.</returns>
         public Value ParseValue(Type type)
         {
-            if (!this.Source.TryPeek(out var peek)) throw new NotImplementedException("TODO: no token to peek");
-            switch (peek.Kind)
-            {
-            case IrTokenType.Identifier:
+            if (this.Source.TryPeek(out var peek) && peek.Kind == IrTokenType.Identifier)
             {
                 // It's a referenced value
+                // TODO: Not necessarily! An identifier could be a type or even a named constant later!
                 var name = this.ParseIdentifier();
                 var ins = this.valueInstructions[name];
+                if (!type.Equals(ins.ResultType)) throw new NotImplementedException("TODO: type mismatch for referenced value");
                 return new Value.Result(ins, name);
             }
-
-            case IrTokenType.IntLiteral:
+            else
             {
-                throw new NotImplementedException("TODO: Make an int constant");
-            }
-
-            default:
-                throw new NotImplementedException("TODO: Unexpected token for value");
+                // It must be a constant
+                var constant = this.ParseConstant(type);
+                return new Value.Constant(constant);
             }
         }
 
@@ -337,7 +334,11 @@ namespace Yoakke.Ir.Syntax
         /// </summary>
         /// <param name="type">The <see cref="Type"/> of <see cref="Constant"/> to parse.</param>
         /// <returns>The parsed <see cref="Constant"/>.</returns>
-        public Constant ParseConstant(Type type) => throw new NotImplementedException("TODO: Parse constant of type Type");
+        public Constant ParseConstant(Type type) => type switch
+        {
+            Type.Int i => this.ParseIntConstant(i),
+            _ => throw new ArgumentOutOfRangeException(nameof(type)),
+        };
 
         /// <summary>
         /// Parses a <see cref="Type"/>.
@@ -403,6 +404,15 @@ namespace Yoakke.Ir.Syntax
             {
                 return false;
             }
+        }
+
+        private Constant.Int ParseIntConstant(Type.Int type)
+        {
+            var negate = this.Matches(IrTokenType.Minus);
+            var tok = this.Expect(IrTokenType.IntLiteral);
+            var number = BigInteger.Parse(tok.Text);
+            if (negate) number = -number;
+            return new Constant.Int(type, number);
         }
 
         private void PreDefineProcedures()

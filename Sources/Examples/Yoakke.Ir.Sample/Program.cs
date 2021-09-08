@@ -62,6 +62,12 @@ namespace Yoakke.Ir.Sample
                 },
                 (ins, writer) =>
                 {
+                    writer.Underlying.Write(' ');
+                    writer.WriteType(ins.Left.Type);
+                    writer.Underlying.Write(' ');
+                    writer.WriteValue(ins.Left);
+                    writer.Underlying.Write(", ");
+                    writer.WriteValue(ins.Right);
                 });
             ctx.WithAttributeDefinition(new FooDefinition());
 

@@ -91,6 +91,7 @@ namespace Yoakke.Ir.Syntax
             case ';': return this.source.ConsumeToken(IrTokenType.Semicolon, 1);
             case '=': return this.source.ConsumeToken(IrTokenType.Assign, 1);
             case '*': return this.source.ConsumeToken(IrTokenType.Star, 1);
+            case '-': return this.source.ConsumeToken(IrTokenType.Minus, 1);
             }
 
             // Number literal

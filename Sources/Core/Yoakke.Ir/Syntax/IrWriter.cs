@@ -10,6 +10,7 @@ using System.Text;
 using Yoakke.Ir.Model;
 using Yoakke.Ir.Model.Attributes;
 using AttributeTargets = Yoakke.Ir.Model.Attributes.AttributeTargets;
+using Type = Yoakke.Ir.Model.Type;
 
 namespace Yoakke.Ir.Syntax
 {
@@ -105,11 +106,78 @@ namespace Yoakke.Ir.Syntax
         /// <returns>This instance, to be able to chain calls.</returns>
         public IrWriter WriteInstruction(Instruction instruction)
         {
+            if (instruction.ResultType is not null) this.Underlying.Write("value = ");
             var syntax = this.context.GetInstructionSyntax(instruction.GetType());
             this.Underlying.Write(syntax.Name);
             syntax.Print(instruction, this);
             if (instruction.GetAttributes().Any()) this.WriteAttributes(instruction);
             this.Underlying.WriteLine();
+            return this;
+        }
+
+        /// <summary>
+        /// Writes a <see cref="Value"/> to the <see cref="Underlying"/> writer.
+        /// </summary>
+        /// <param name="value">The <see cref="Value"/> to write.</param>
+        /// <returns>This instance, to be able to chain calls.</returns>
+        public IrWriter WriteValue(Value value)
+        {
+            switch (value)
+            {
+            case Value.Result r:
+                this.Underlying.Write(r.Name ?? "value");
+                break;
+
+            case Value.Constant c:
+                this.WriteConstant(c.Value);
+                break;
+
+            default: throw new ArgumentOutOfRangeException(nameof(value));
+            }
+            return this;
+        }
+
+        /// <summary>
+        /// Writes a <see cref="Constant"/> to the <see cref="Underlying"/> writer.
+        /// </summary>
+        /// <param name="constant">The <see cref="Constant"/> to write.</param>
+        /// <returns>This instance, to be able to chain calls.</returns>
+        public IrWriter WriteConstant(Constant constant)
+        {
+            switch (constant)
+            {
+            case Constant.Int i:
+                this.Underlying.Write(i.Value);
+                break;
+
+            default: throw new ArgumentOutOfRangeException(nameof(constant));
+            }
+            return this;
+        }
+
+        /// <summary>
+        /// Writes a <see cref="Type"/> to the <see cref="Underlying"/> writer.
+        /// </summary>
+        /// <param name="type">The <see cref="Type"/> to write.</param>
+        /// <returns>This instance, to be able to chain calls.</returns>
+        public IrWriter WriteType(Type type)
+        {
+            switch (type)
+            {
+            case Type.Void:
+                this.Underlying.Write("void");
+                break;
+
+            case Type.Type_:
+                this.Underlying.Write("type");
+                break;
+
+            case Type.Int i:
+                this.Underlying.Write($"i{i.Bits}");
+                break;
+
+            default: throw new ArgumentOutOfRangeException(nameof(type));
+            }
             return this;
         }
 

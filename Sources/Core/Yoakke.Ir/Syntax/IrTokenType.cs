@@ -84,6 +84,11 @@ namespace Yoakke.Ir.Syntax
         Star,
 
         /// <summary>
+        /// '-'.
+        /// </summary>
+        Minus,
+
+        /// <summary>
         /// Any C integer literal, regardless of radix.
         /// </summary>
         IntLiteral,
