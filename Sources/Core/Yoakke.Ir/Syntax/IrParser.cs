@@ -29,6 +29,7 @@ namespace Yoakke.Ir.Syntax
         private readonly Context context;
         private readonly Dictionary<string, ProcedureBuilder> procedureBuilders = new();
         private readonly Dictionary<string, BasicBlockBuilder> basicBlockBuilders = new();
+        private readonly Dictionary<string, Instruction> valueInstructions = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IrParser"/> class.
@@ -151,15 +152,31 @@ namespace Yoakke.Ir.Syntax
         /// <returns>The parsed <see cref="Instruction"/>.</returns>
         public Instruction ParseInstruction()
         {
+            // If this is a value-producing instruction, store the name
+            string? valueName = null;
+            var offset = 0;
+            var temp = this.PeekIdentifier(ref offset);
+            if (temp is not null && this.Source.TryLookAhead(offset, out var t) && t.Kind == IrTokenType.Assign)
+            {
+                // This is indeed a value name
+                this.Source.Advance(offset + 1);
+                valueName = temp;
+            }
             // Get the syntax
-            var ident = this.ParseIdentifier();
-            var syntax = this.context.GetInstructionSyntax(ident);
+            var name = this.ParseIdentifier();
+            var syntax = this.context.GetInstructionSyntax(name);
             // Parse it
             var instr = syntax.Parse(this);
             // Parse the attribute groups that might follow
             var attrs = this.ParseAttributeGroups(AttributeTargets.Instruction);
             // Attach them
             AttachAttributes(instr, attrs);
+            // If this instruction produced a value, store
+            if (valueName is not null)
+            {
+                if (instr.ResultType is null) throw new InvalidOperationException($"The instruction {name} does not produce a value");
+                this.valueInstructions[valueName] = instr;
+            }
             // Done
             return instr;
         }
@@ -323,6 +340,7 @@ namespace Yoakke.Ir.Syntax
         private void PreDefineBasicBlocks()
         {
             this.basicBlockBuilders.Clear();
+            this.valueInstructions.Clear();
             for (var i = 0; this.Source.TryLookAhead(i, out var t); )
             {
                 ++i;
