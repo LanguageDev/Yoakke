@@ -38,7 +38,15 @@ namespace Yoakke.Ir.Sample
         {
             var ctx = new Context();
             ctx.WithInstructionSyntax("nop", _ => new Instruction.Nop(), (_, _) => { })
-               .WithInstructionSyntax("ret", _ => new Instruction.Ret(), (_, _) => { });
+               .WithInstructionSyntax("ret", _ => new Instruction.Ret(), (ins, writer) =>
+               {
+                   if (ins.Value is not null)
+                   {
+                       writer.Underlying.Write(' ');
+                       // TODO: Write value
+                       throw new NotImplementedException();
+                   }
+               });
             ctx.WithAttributeDefinition(new FooDefinition());
 
             var src = @"

@@ -107,7 +107,7 @@ namespace Yoakke.Ir.Syntax
         {
             var syntax = this.context.GetInstructionSyntax(instruction.GetType());
             this.Underlying.Write(syntax.Name);
-            syntax.Print(instruction, this.Underlying);
+            syntax.Print(instruction, this);
             if (instruction.GetAttributes().Any()) this.WriteAttributes(instruction);
             this.Underlying.WriteLine();
             return this;

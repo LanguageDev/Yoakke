@@ -40,7 +40,7 @@ namespace Yoakke.Ir.Syntax
         /// </summary>
         /// <param name="instruction">The <see cref="Instruction"/> to print, that is guaranteed to be handled by this syntax
         /// handler.</param>
-        /// <param name="writer">The <see cref="TextWriter"/> to write to.</param>
-        public void Print(Instruction instruction, TextWriter writer);
+        /// <param name="writer">The <see cref="IrWriter"/> to write to.</param>
+        public void Print(Instruction instruction, IrWriter writer);
     }
 }
