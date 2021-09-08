@@ -59,6 +59,9 @@ namespace Yoakke.Ir.Model
 
             /// <inheritdoc/>
             public override Type Type => this;
+
+            /// <inheritdoc/>
+            public override string ToString() => "type";
         }
 
         /// <summary>
@@ -73,6 +76,9 @@ namespace Yoakke.Ir.Model
 
             /// <inheritdoc/>
             public override Type Type => Type_.Instance;
+
+            /// <inheritdoc/>
+            public override string ToString() => "void";
         }
 
         /// <summary>
@@ -82,6 +88,9 @@ namespace Yoakke.Ir.Model
         {
             /// <inheritdoc/>
             public override Type Type => Type_.Instance;
+
+            /// <inheritdoc/>
+            public override string ToString() => $"i{this.Bits}";
         }
     }
 }

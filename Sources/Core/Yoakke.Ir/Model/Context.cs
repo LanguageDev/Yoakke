@@ -20,6 +20,7 @@ namespace Yoakke.Ir.Model
         private readonly Dictionary<string, IAttributeDefinition> attributeDefinitions = new();
         private readonly Dictionary<string, IInstructionSyntax> instructionSyntaxesByName = new();
         private readonly Dictionary<System.Type, IInstructionSyntax> instructionSyntaxesByType = new();
+        private readonly Dictionary<string, Type> typeDefinitions = new();
 
         /// <summary>
         /// Registers an <see cref="IAttributeDefinition"/> in this <see cref="Context"/>.
@@ -60,6 +61,18 @@ namespace Yoakke.Ir.Model
             this.WithInstructionSyntax(new InstructionSyntax<TInstruction>(name, parse, print));
 
         /// <summary>
+        /// Registers a <see cref="Type"/> in this <see cref="Context"/>.
+        /// </summary>
+        /// <param name="name">The name of the <see cref="Type"/> to register.</param>
+        /// <param name="type">The <see cref="Type"/> to register.</param>
+        /// <returns>This instance, to be able to chain calls.</returns>
+        public Context WithTypeDefinition(string name, Type type)
+        {
+            this.typeDefinitions.Add(name, type);
+            return this;
+        }
+
+        /// <summary>
         /// Retrieves an <see cref="IAttributeDefinition"/> for a given name.
         /// </summary>
         /// <param name="name">The name of the <see cref="IAttributeDefinition"/>.</param>
@@ -79,5 +92,12 @@ namespace Yoakke.Ir.Model
         /// <param name="type">The type of the instruction to retrieve syntax for.</param>
         /// <returns>The found <see cref="IInstructionSyntax"/>.</returns>
         public IInstructionSyntax GetInstructionSyntax(System.Type type) => this.instructionSyntaxesByType[type];
+
+        /// <summary>
+        /// Retrieves a <see cref="Type"/> for a given name.
+        /// </summary>
+        /// <param name="name">The name of the type to retrieve.</param>
+        /// <returns>The found <see cref="Type"/>.</returns>
+        public Type GetTypeDefinition(string name) => this.typeDefinitions[name];
     }
 }

@@ -37,29 +37,32 @@ namespace Yoakke.Ir.Sample
         static void Main(string[] args)
         {
             var ctx = new Context();
-            ctx.WithInstructionSyntax("nop", _ => new Instruction.Nop(), (_, _) => { })
-               .WithInstructionSyntax("ret",
-               _ => new Instruction.Ret(),
-               (ins, writer) =>
-               {
-                   if (ins.Value is not null)
-                   {
-                       writer.Underlying.Write(' ');
-                       // TODO: Write value
-                       throw new NotImplementedException();
-                   }
-               })
-               .WithInstructionSyntax("add",
-               parser =>
-               {
-                   var left = parser.ParseValue();
-                   parser.Expect(IrTokenType.Comma);
-                   var right = parser.ParseValue();
-                   return new Instruction.Add(left, right);
-               },
-               (ins, writer) =>
-               {
-               });
+            ctx.WithTypeDefinition("i32", new Type.Int(32));
+            ctx
+                .WithInstructionSyntax("nop", _ => new Instruction.Nop(), (_, _) => { })
+                .WithInstructionSyntax("ret",
+                _ => new Instruction.Ret(),
+                (ins, writer) =>
+                {
+                    if (ins.Value is not null)
+                    {
+                        writer.Underlying.Write(' ');
+                        // TODO: Write value
+                        throw new NotImplementedException();
+                    }
+                })
+                .WithInstructionSyntax("add",
+                parser =>
+                {
+                    var type = parser.ParseType();
+                    var left = parser.ParseValue(type);
+                    parser.Expect(IrTokenType.Comma);
+                    var right = parser.ParseValue(type);
+                    return new Instruction.Add(left, right);
+                },
+                (ins, writer) =>
+                {
+                });
             ctx.WithAttributeDefinition(new FooDefinition());
 
             var src = @"
@@ -68,7 +71,7 @@ namespace Yoakke.Ir.Sample
 
 procedure hello(): [foo]
 block owo: [block: foo]
-  v1 = add 1, 2
+  v1 = add i32 1, 2
   nop [foo, foo, foo]
   ret
 

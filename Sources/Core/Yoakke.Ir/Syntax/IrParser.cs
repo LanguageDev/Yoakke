@@ -307,8 +307,9 @@ namespace Yoakke.Ir.Syntax
         /// <summary>
         /// Parses a <see cref="Value"/>.
         /// </summary>
+        /// <param name="type">The <see cref="Type"/> of the value to parse.</param>
         /// <returns>The parsed <see cref="Value"/>.</returns>
-        public Value ParseValue()
+        public Value ParseValue(Type type)
         {
             if (!this.Source.TryPeek(out var peek)) throw new NotImplementedException("TODO: no token to peek");
             switch (peek.Kind)
@@ -337,6 +338,18 @@ namespace Yoakke.Ir.Syntax
         /// <param name="type">The <see cref="Type"/> of <see cref="Constant"/> to parse.</param>
         /// <returns>The parsed <see cref="Constant"/>.</returns>
         public Constant ParseConstant(Type type) => throw new NotImplementedException("TODO: Parse constant of type Type");
+
+        /// <summary>
+        /// Parses a <see cref="Type"/>.
+        /// </summary>
+        /// <returns>The parsed <see cref="Type"/>.</returns>
+        public Type ParseType()
+        {
+            // TODO: Some more advanced type parsing
+            var name = this.ParseIdentifier();
+            var type = this.context.GetTypeDefinition(name);
+            return type;
+        }
 
         /// <summary>
         /// Parses a dot-separated identifier.
