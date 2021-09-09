@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
-namespace Yoakke.Utilities.Intervals
+namespace Yoakke.LexerUtils.Intervals
 {
     /// <summary>
     /// A generic interval map implementation.

@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Yoakke.Utilities.Intervals
+namespace Yoakke.LexerUtils.Intervals
 {
     /// <summary>
     /// Represents a finite or infinite interval.

@@ -43,6 +43,11 @@ namespace Yoakke.Parser.Generator
         public static readonly string ParserAttribute = $"{ParserNamespace}.Attributes.ParserAttribute";
 
         /// <summary>
+        /// The attribute to mark a member as a source of tokens.
+        /// </summary>
+        public static readonly string TokenSourceAttribute = $"{ParserNamespace}.Attributes.TokenSourceAttribute";
+
+        /// <summary>
         /// The annotation for a grammar rule over the transformer method.
         /// </summary>
         public static readonly string RuleAttribute = $"{ParserNamespace}.Attributes.RuleAttribute";
@@ -58,11 +63,6 @@ namespace Yoakke.Parser.Generator
         public static readonly string RightAttribute = $"{ParserNamespace}.Attributes.RightAttribute";
 
         /// <summary>
-        /// Base class for parsers.
-        /// </summary>
-        public static readonly string ParserBase = $"{ParserNamespace}.ParserBase";
-
-        /// <summary>
         /// Parse error type.
         /// </summary>
         public static readonly string ParseError = $"{ParserNamespace}.ParseError";
@@ -76,6 +76,11 @@ namespace Yoakke.Parser.Generator
         /// Token interface type.
         /// </summary>
         public static readonly string IToken = $"{LexerNamespace}.IToken";
+
+        /// <summary>
+        /// Token stream type.
+        /// </summary>
+        public static readonly string ITokenStream = $"{LexerNamespace}.Streams.ITokenStream";
 
         /// <summary>
         /// Lexer interface type.

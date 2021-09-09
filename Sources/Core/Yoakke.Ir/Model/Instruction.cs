@@ -4,135 +4,73 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Yoakke.Collections;
+using System.Diagnostics.CodeAnalysis;
+using System.Text;
+using Yoakke.Ir.Model.Attributes;
 
 namespace Yoakke.Ir.Model
 {
     /// <summary>
-    /// BBase for all instructions.
+    /// The core IR instructions.
     /// </summary>
-    public abstract partial record Instruction
+    public abstract record Instruction : IAttributeTarget
     {
-        /// <summary>
-        /// The operands of this <see cref="Instruction"/>.
-        /// </summary>
-        public IReadOnlyList<IInstructionArg> Operands { get; }
+        #region AttributeTarget
+
+        /// <inheritdoc/>
+        public Attributes.AttributeTargets Flag => this.attributeTarget.Flag;
+
+        private readonly AttributeTarget attributeTarget = new(Attributes.AttributeTargets.Instruction);
+
+        /// <inheritdoc/>
+        public IEnumerable<IAttribute> GetAttributes() => this.attributeTarget.GetAttributes();
+
+        /// <inheritdoc/>
+        public IEnumerable<IAttribute> GetAttributes(string name) => this.attributeTarget.GetAttributes(name);
+
+        /// <inheritdoc/>
+        public IEnumerable<TAttrib> GetAttributes<TAttrib>()
+            where TAttrib : IAttribute => this.attributeTarget.GetAttributes<TAttrib>();
+
+        /// <inheritdoc/>
+        public bool TryGetAttribute(string name, [MaybeNullWhen(false)] out IAttribute attribute) =>
+            this.attributeTarget.TryGetAttribute(name, out attribute);
+
+        /// <inheritdoc/>
+        public bool TryGetAttribute<TAttrib>([MaybeNullWhen(false)] out TAttrib attribute)
+            where TAttrib : IAttribute => this.attributeTarget.TryGetAttribute(out attribute);
+
+        /// <inheritdoc/>
+        public void AddAttribute(IAttribute attribute) => this.attributeTarget.AddAttribute(attribute);
+
+        #endregion AttributeTarget
 
         /// <summary>
-        /// True, if this is some kind of branching instruction.
+        /// The result type of the produced value.
+        /// Null, if the instruction produces no values.
         /// </summary>
-        public virtual bool IsBranch => false;
+        public virtual Type? ResultType => null;
+
+        /* Variants */
 
         /// <summary>
-        /// True, if this is a side-effect-free instruction.
+        /// A no-operation instruction.
         /// </summary>
-        public virtual bool IsPure => false;
+        public record Nop : Instruction;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Instruction"/> class.
+        /// A return instruction.
         /// </summary>
-        /// <param name="operands">The operannds of this <see cref="Instruction"/>.</param>
-        public Instruction(params IInstructionArg[] operands)
-        {
-            this.Operands = operands;
-        }
+        public record Ret(Value? Value = null) : Instruction;
 
         /// <summary>
-        /// Any <see cref="Instruction"/> that produces a <see cref="Value"/>.
+        /// An addition instruction.
         /// </summary>
-        public abstract record ValueProducer : Instruction
-        {
-            /// <summary>
-            /// The result <see cref="Type"/> of this instruction.
-            /// </summary>
-            public abstract Type ResultType { get; }
-
-            /// <inheritdoc/>
-            public override bool IsPure => true;
-
-            /// <summary>
-            /// Initializes a new instance of the <see cref="ValueProducer"/> class.
-            /// </summary>
-            /// <param name="operands">The operands of this <see cref="Instruction"/>.</param>
-            public ValueProducer(params IInstructionArg[] operands)
-                : base(operands)
-            {
-            }
-        }
-
-        /// <summary>
-        /// A binary operation.
-        /// </summary>
-        public abstract record Binary(Value Left, Value Right) : ValueProducer(Left, Right)
-        {
-            /// <inheritdoc/>
-            public override Type ResultType => this.Left.Type;
-        }
-
-        /// <summary>
-        /// Calls a procedure.
-        /// </summary>
-        public record Call(Value Procedure, IReadOnlyValueList<Value> Arguments)
-            : ValueProducer(Arguments.Prepend(Procedure).ToArray())
+        public record Add(Value Left, Value Right) : Instruction
         {
             /// <inheritdoc/>
-            public override bool IsPure => false;
-
-            /// <inheritdoc/>
-            public override Type ResultType => ((Type.Proc)this.Procedure.Type).Return;
-        }
-
-        /// <summary>
-        /// Returns from the current procedure.
-        /// </summary>
-        public record Ret(Value? Value)
-            : Instruction(Value is null ? Array.Empty<Value>() : new[] { Value })
-        {
-            /// <inheritdoc/>
-            public override bool IsBranch => true;
-        }
-
-        /// <summary>
-        /// An unconditional jump.
-        /// </summary>
-        public record Jump(Value Target) : Instruction(Target)
-        {
-            /// <inheritdoc/>
-            public override bool IsBranch => true;
-
-            /// <inheritdoc/>
-            public override bool IsPure => false;
-        }
-
-        /// <summary>
-        /// A conditional jump.
-        /// </summary>
-        public record JumpIf(Value Condition, Value Then, Value Else)
-            : Instruction(Condition, Then, Else)
-        {
-            /// <inheritdoc/>
-            public override bool IsBranch => true;
-        }
-
-        /// <summary>
-        /// Addition.
-        /// </summary>
-        public record Add(Value Left, Value Right) : Binary(Left, Right);
-
-        /// <summary>
-        /// Subtraction.
-        /// </summary>
-        public record Sub(Value Left, Value Right) : Binary(Left, Right);
-
-        /// <summary>
-        /// Comparison (less, equal, greater).
-        /// </summary>
-        public record Cmp(Comparison Comparison, Value Left, Value Right)
-            : Binary(Left, Right)
-        {
-            /// <inheritdoc/>
-            public override Type ResultType => new Type.Int(false, 1);
+            // NOTE: Not necessarily a correct assumption
+            public override Type? ResultType => this.Left.Type;
         }
     }
 }

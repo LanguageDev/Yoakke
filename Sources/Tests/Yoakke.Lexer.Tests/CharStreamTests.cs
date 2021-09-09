@@ -2,12 +2,15 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Yoakke.Lexer.Streams;
+using Yoakke.Text;
 
 namespace Yoakke.Lexer.Tests
 {
     [TestClass]
-    public class LexerBaseTests : TestBase<LexerBaseTests.TokenType>
+    public class CharStreamTests : TestBase<CharStreamTests.TokenType>
     {
         public enum TokenType
         {
@@ -21,49 +24,58 @@ namespace Yoakke.Lexer.Tests
             End,
         }
 
-        public class Lexer : LexerBase<Token<TokenType>>
+        public class Lexer : ILexer<Token<TokenType>>
         {
+            public Position Position => this.charStream.Position;
+
+            public bool IsEnd => this.charStream.IsEnd;
+
+            private readonly ICharStream charStream;
+
             public Lexer(string source)
-                : base(source)
             {
+                this.charStream = new TextReaderCharStream(new StringReader(source));
             }
 
             /// <inheritdoc/>
-            public override Token<TokenType> Next()
+            public Token<TokenType> Next()
             {
                 begin:
-                if (this.IsEnd) return this.TakeToken(TokenType.End, 0);
-                if (char.IsWhiteSpace(this.Peek()))
+                if (this.IsEnd) return this.charStream.ConsumeToken(TokenType.End, 0);
+                if (char.IsWhiteSpace(this.charStream.Peek()))
                 {
-                    this.Skip();
+                    this.charStream.Advance();
                     goto begin;
                 }
-                if (this.Matches("//"))
+                if (this.charStream.Matches("//"))
                 {
                     var i = 0;
-                    for (; this.Peek(i, '\n') != '\n'; ++i)
+                    for (; this.charStream.LookAhead(i, '\n') != '\n'; ++i)
                     {
+                        // Pass
                     }
-                    this.Skip(i);
+                    this.charStream.Advance(i);
                     goto begin;
                 }
-                if (this.Peek() == '+') return this.TakeToken(TokenType.Plus, 1);
-                if (this.Peek() == '-') return this.TakeToken(TokenType.Minus, 1);
-                if (char.IsDigit(this.Peek()))
+                if (this.charStream.Peek() == '+') return this.charStream.ConsumeToken(TokenType.Plus, 1);
+                if (this.charStream.Peek() == '-') return this.charStream.ConsumeToken(TokenType.Minus, 1);
+                if (char.IsDigit(this.charStream.Peek()))
                 {
                     var length = 1;
-                    for (; char.IsDigit(this.Peek(length)); ++length)
+                    for (; char.IsDigit(this.charStream.LookAhead(length)); ++length)
                     {
+                        // Pass
                     }
-                    return this.TakeToken(TokenType.Number, length);
+                    return this.charStream.ConsumeToken(TokenType.Number, length);
                 }
-                if (char.IsLetter(this.Peek()))
+                if (char.IsLetter(this.charStream.Peek()))
                 {
                     var length = 1;
-                    for (; char.IsLetterOrDigit(this.Peek(length)); ++length)
+                    for (; char.IsLetterOrDigit(this.charStream.LookAhead(length)); ++length)
                     {
+                        // Pass
                     }
-                    var result = this.TakeToken(TokenType.Identifier, length);
+                    var result = this.charStream.ConsumeToken(TokenType.Identifier, length);
                     return result.Text switch
                     {
                         "if" => new Token<TokenType>(result.Range, result.Text, TokenType.KwIf),
@@ -71,7 +83,7 @@ namespace Yoakke.Lexer.Tests
                         _ => result,
                     };
                 }
-                return this.TakeToken(TokenType.Error, 1);
+                return this.charStream.ConsumeToken(TokenType.Error, 1);
             }
         }
 

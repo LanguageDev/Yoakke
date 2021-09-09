@@ -3,9 +3,9 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System;
-using Yoakke.Utilities.FiniteAutomata;
+using Yoakke.LexerUtils.FiniteAutomata;
 
-namespace Yoakke.Utilities.RegEx
+namespace Yoakke.LexerUtils.RegEx
 {
     public partial class RegExAst
     {

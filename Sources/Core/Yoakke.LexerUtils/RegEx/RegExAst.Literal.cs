@@ -2,9 +2,9 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
-using Yoakke.Utilities.FiniteAutomata;
+using Yoakke.LexerUtils.FiniteAutomata;
 
-namespace Yoakke.Utilities.RegEx
+namespace Yoakke.LexerUtils.RegEx
 {
     public partial class RegExAst
     {

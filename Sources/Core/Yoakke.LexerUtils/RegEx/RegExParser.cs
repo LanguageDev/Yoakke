@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Yoakke.Utilities.RegEx
+namespace Yoakke.LexerUtils.RegEx
 {
     /// <summary>
     /// A parser that can parse regular expressions into <see cref="RegExAst"/>s.

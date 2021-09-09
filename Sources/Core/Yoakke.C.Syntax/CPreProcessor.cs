@@ -31,8 +31,6 @@ namespace Yoakke.C.Syntax
 
             public bool IsEnd => true;
 
-            IToken ILexer.Next() => this.Next();
-
             public CToken Next() => new(default, string.Empty, default, string.Empty, CTokenType.End);
         }
 

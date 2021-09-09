@@ -2,6 +2,9 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
+using System;
+using System.Collections.Generic;
+using System.Text;
 using Yoakke.Text;
 
 namespace Yoakke.Lexer
@@ -10,10 +13,12 @@ namespace Yoakke.Lexer
     /// Represents a general lexer.
     /// It's a stateful iterator-like object that reads in <see cref="IToken"/>s from a text source.
     /// </summary>
-    public interface ILexer
+    /// <typeparam name="TToken">The exact type of token the <see cref="ILexer{TToken}"/> produces.</typeparam>
+    public interface ILexer<out TToken>
+        where TToken : IToken
     {
         /// <summary>
-        /// The current <see cref="Text.Position"/> the <see cref="ILexer"/> is at in the source.
+        /// The current <see cref="Text.Position"/> the <see cref="ILexer{TToken}"/> is at in the source.
         /// </summary>
         public Position Position { get; }
 
@@ -23,10 +28,10 @@ namespace Yoakke.Lexer
         public bool IsEnd { get; }
 
         /// <summary>
-        /// Lexes the next <see cref="IToken"/>. If the source text has been depleted, it should produce some default
-        /// end-signaling <see cref="IToken"/>.
+        /// Lexes the next <typeparamref name="TToken"/>. If the source text has been depleted, it should produce some default
+        /// end-signaling <typeparamref name="TToken"/>.
         /// </summary>
-        /// <returns>The lexed <see cref="IToken"/>.</returns>
-        public IToken Next();
+        /// <returns>The lexed <typeparamref name="TToken"/>.</returns>
+        public TToken Next();
     }
 }

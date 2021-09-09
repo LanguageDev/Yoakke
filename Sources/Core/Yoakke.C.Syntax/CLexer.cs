@@ -6,6 +6,7 @@ using System;
 using System.IO;
 using System.Text;
 using Yoakke.Lexer;
+using Yoakke.Lexer.Streams;
 using Yoakke.Text;
 
 namespace Yoakke.C.Syntax
@@ -13,7 +14,7 @@ namespace Yoakke.C.Syntax
     /// <summary>
     /// A lexer that lexes C source tokens, including preprocessor directives.
     /// </summary>
-    public class CLexer : LexerBase<CToken>
+    public class CLexer : ILexer<CToken>
     {
         /// <summary>
         /// The logical <see cref="Position"/> in the source.
@@ -36,12 +37,29 @@ namespace Yoakke.C.Syntax
         /// </summary>
         public bool AllowTrigraphs { get; set; } = true;
 
+        /// <inheritdoc/>
+        public Position Position => this.source.Position;
+
+        /// <inheritdoc/>
+        public bool IsEnd => this.source.IsEnd;
+
+        private readonly ICharStream source;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CLexer"/> class.
+        /// </summary>
+        /// <param name="source">The <see cref="ICharStream"/> to read the source from.</param>
+        public CLexer(ICharStream source)
+        {
+            this.source = source;
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="CLexer"/> class.
         /// </summary>
         /// <param name="reader">The <see cref="TextReader"/> to read the source from.</param>
         public CLexer(TextReader reader)
-            : base(reader)
+            : this(new TextReaderCharStream(reader))
         {
         }
 
@@ -50,12 +68,12 @@ namespace Yoakke.C.Syntax
         /// </summary>
         /// <param name="source">The text to read.</param>
         public CLexer(string source)
-            : base(source)
+            : this(new StringReader(source))
         {
         }
 
         /// <inheritdoc/>
-        public override CToken Next()
+        public CToken Next()
         {
             var offset = 0;
 
@@ -63,7 +81,7 @@ namespace Yoakke.C.Syntax
 
         begin:
             // Since we can jump back here, we need to reset
-            this.Skip(offset);
+            this.source.Advance(offset);
             offset = 0;
 
             // EOF
@@ -492,7 +510,7 @@ namespace Yoakke.C.Syntax
         {
         begin:
             // If there is no character, just return immediately
-            if (!this.TryPeek(out var ch, offset))
+            if (!this.source.TryLookAhead(offset, out var ch))
             {
                 result = default;
                 nextOffset = offset;
@@ -504,21 +522,21 @@ namespace Yoakke.C.Syntax
                 // Line-continuations are enabled, if there is a '\', means a potential line-continuation
                 var backslashLength = 0;
                 if (ch == '\\') backslashLength = 1;
-                else if (this.AllowTrigraphs && this.Matches("??/", offset)) backslashLength = 3;
+                else if (this.AllowTrigraphs && this.source.Matches("??/", offset)) backslashLength = 3;
 
                 // A length > 0 means that there was a '\' or equivalent trigraph
                 if (backslashLength > 0)
                 {
                     var length = backslashLength;
                     // Consume whitespace, we allow trailing spaces before the newline
-                    for (; IsSpace(this.Peek(offset + length)); ++length)
+                    for (; IsSpace(this.source.LookAhead(offset + length)); ++length)
                     {
                         // Pass
                     }
                     // Now we expect a newline
                     var newline = 0;
-                    if (this.Matches("\r\n", offset + length)) newline = 2;
-                    else if (this.Matches('\r', offset + length) || this.Matches('\n', offset + length)) newline = 1;
+                    if (this.source.Matches("\r\n", offset + length)) newline = 2;
+                    else if (this.source.Matches('\r', offset + length) || this.source.Matches('\n', offset + length)) newline = 1;
                     // If we got a newline, it's a line-continuation
                     if (newline > 0)
                     {
@@ -534,9 +552,9 @@ namespace Yoakke.C.Syntax
             }
 
             // It could be a trigraph
-            if (this.AllowTrigraphs && this.Matches("??", offset))
+            if (this.AllowTrigraphs && this.source.Matches("??", offset))
             {
-                char? trigraph = this.TryPeek(out var ch2, offset + 2) ? ch2 switch
+                char? trigraph = this.source.TryLookAhead(offset + 2, out var ch2) ? ch2 switch
                 {
                     '=' => '#',
                     '/' => '\\',
@@ -578,7 +596,7 @@ namespace Yoakke.C.Syntax
             this.LogicalPosition = this.LogicalPosition.Advance(logicalText.Length);
             var logicalRange = new Text.Range(startPosition, this.LogicalPosition);
             // Construct the token
-            return this.TakeToken(length, (range, text) => new(range, text, logicalRange, logicalText, type));
+            return this.source.ConsumeToken<CToken>(length, (range, text) => new(range, text, logicalRange, logicalText, type));
         }
 
         private static bool IsSpace(char ch) => ch == ' ' || ch == '\0';

@@ -2,7 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
-namespace Yoakke.Utilities.FiniteAutomata
+namespace Yoakke.LexerUtils.FiniteAutomata
 {
     /// <summary>
     /// Represents a deterministic finite automata that has only one way to step on a symbol.

@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
@@ -48,6 +49,7 @@ namespace Yoakke.Parser.Generator
         private int varIndex;
         private TokenKindSet? tokenKinds;
         private INamedTypeSymbol? parserType;
+        private string sourceField = string.Empty;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ParserSourceGenerator"/> class.
@@ -90,7 +92,14 @@ namespace Yoakke.Parser.Generator
         {
             if (!this.RequireDeclarableInside(parserClass)) return null;
 
+            var tokenSourceAttr = this.LoadSymbol(TypeNames.TokenSourceAttribute);
             var parserAttr = parserClass.GetAttribute<ParserAttribute>(this.LoadSymbol(TypeNames.ParserAttribute));
+
+            var source = parserClass.GetMembers()
+                .Where(m => m.HasAttribute(tokenSourceAttr))
+                .FirstOrDefault();
+            this.sourceField = source?.Name ?? "TokenStream";
+
             this.tokenKinds = new TokenKindSet(parserAttr.TokenType);
             // Extract rules from the method annotations
             this.ruleSet = this.ExtractRuleSet(parserClass);
@@ -122,7 +131,7 @@ namespace Yoakke.Parser.Generator
                     parserMethods.AppendLine("    }");
                     // Success case
                     parserMethods.AppendLine("    value = result.Ok.Value;");
-                    parserMethods.AppendLine("    this.TryConsume(result.Ok.Offset);");
+                    parserMethods.AppendLine($"    this.{this.sourceField}.Advance(result.Ok.Offset);");
                     parserMethods.AppendLine("    return true;");
                     parserMethods.AppendLine("}");
 
@@ -130,11 +139,11 @@ namespace Yoakke.Parser.Generator
                     parserMethods.AppendLine($"public {returnType} Parse{key}() {{");
                     parserMethods.AppendLine($"    var result = parse{key}(0);");
                     parserMethods.AppendLine("    if (result.IsOk) {");
-                    parserMethods.AppendLine("        this.TryConsume(result.Ok.Offset);");
+                    parserMethods.AppendLine($"        this.{this.sourceField}.Advance(result.Ok.Offset);");
                     parserMethods.AppendLine("    } else {");
                     // Try to consume one so the parser won't get stuck
                     // TODO: Maybe let the user do this or be smarter about it?
-                    parserMethods.AppendLine("        this.TryConsume(1);");
+                    parserMethods.AppendLine($"        this.{this.sourceField}.Advance(1);");
                     parserMethods.AppendLine("    }");
                     parserMethods.AppendLine("    return result;");
                     parserMethods.AppendLine("}");
@@ -148,19 +157,25 @@ namespace Yoakke.Parser.Generator
 
             // Deduce what ctors to generate
             var ctors = string.Empty;
-            if (parserClass.HasNoUserDefinedCtors())
+            if (parserClass.HasNoUserDefinedCtors() && source is null)
             {
+                var tokenType = TypeNames.IToken;
+                if (parserAttr.TokenType is not null) tokenType = $"{TypeNames.IToken}<{parserAttr.TokenType.ToDisplayString()}>";
                 ctors = $@"
-public {className}({TypeNames.ILexer} lexer) : base(lexer) {{ }}
-public {className}({TypeNames.IEnumerable}<{TypeNames.IToken}> tokens) : base(tokens) {{ }}
+public {TypeNames.ITokenStream}<{tokenType}> TokenStream {{ get; }}
+
+public {className}({TypeNames.ITokenStream}<{tokenType}> source) {{ this.TokenStream = source; }}
+public {className}({TypeNames.ILexer}<{tokenType}> lexer) : this(lexer.AsTokenStream()) {{ }}
+public {className}({TypeNames.IEnumerable}<{tokenType}> tokens) : this(tokens.AsTokenStream()) {{ }}
 ";
             }
 
             var (prefix, suffix) = parserClass.ContainingSymbol.DeclareInsideExternally();
             var (genericTypes, genericConstraints) = parserClass.GetGenericCrud();
             return $@"
+using Yoakke.Lexer;
 {prefix} 
-partial {parserClass.GetTypeKindName()} {className}{genericTypes} : {TypeNames.ParserBase} {genericConstraints}
+partial {parserClass.GetTypeKindName()} {className}{genericTypes} {genericConstraints}
 {{
     {ctors}
 
@@ -249,7 +264,7 @@ partial {parserClass.GetTypeKindName()} {className}{genericTypes} : {TypeNames.P
                 var call = $"{transform.Method.Name}({flattenedValues})";
                 code.AppendLine($"if ({subVar}.IsOk) {{");
                 code.AppendLine($"    var {binder} = {subVar}.Ok.Value;");
-                code.AppendLine($"    {resultVar} = {TypeNames.ParserBase}.Ok({call}, {subVar}.Ok.Offset, {subVar}.Ok.FurthestError);");
+                code.AppendLine($"    {resultVar} = {TypeNames.ParseResult}.Ok({call}, {subVar}.Ok.Offset, {subVar}.Ok.FurthestError);");
                 code.AppendLine("} else {");
                 code.AppendLine($"    {resultVar} = {subVar}.Error;");
                 code.AppendLine("}");
@@ -294,7 +309,7 @@ partial {parserClass.GetTypeKindName()} {className}{genericTypes} : {TypeNames.P
                     else
                     {
                         // Pick the one that got the furthest
-                        code.AppendLine($"{resultVar} = {TypeNames.ParserBase}.MergeAlternatives({resultVar}, {altVar});");
+                        code.AppendLine($"{resultVar} = {resultVar} | {altVar};");
                     }
                 }
                 break;
@@ -311,14 +326,14 @@ partial {parserClass.GetTypeKindName()} {className}{genericTypes} : {TypeNames.P
                     code.AppendLine($"if ({prevVar}.IsOk) {{");
                     var nextVar = this.GenerateBnf(code, rule, seq.Elements[i], $"{prevVar}.Ok.Offset");
                     // Update it with the error
-                    code.AppendLine($"{nextVar} = MergeError({nextVar}, {prevVar}.Ok.FurthestError);");
+                    code.AppendLine($"{nextVar} = {nextVar} | {prevVar}.Ok.FurthestError;");
                     prevVar = nextVar;
                     varStack.Push(prevVar);
                     resultSeq.Append($", {prevVar}.Ok.Value");
                 }
                 // Unify last
                 code.AppendLine($"if ({prevVar}.IsOk) {{");
-                code.AppendLine($"    {resultVar} = {TypeNames.ParserBase}.Ok(({resultSeq}), {prevVar}.Ok.Offset, {prevVar}.Ok.FurthestError);");
+                code.AppendLine($"    {resultVar} = {TypeNames.ParseResult}.Ok(({resultSeq}), {prevVar}.Ok.Offset, {prevVar}.Ok.FurthestError);");
                 code.AppendLine("} else {");
                 varStack.Pop();
                 code.AppendLine($"    {resultVar} = {prevVar}.Error;");
@@ -336,8 +351,8 @@ partial {parserClass.GetTypeKindName()} {className}{genericTypes} : {TypeNames.P
             case BnfAst.Opt opt:
             {
                 var subVar = this.GenerateBnf(code, rule, opt.Subexpr, lastIndex);
-                code.AppendLine($"if ({subVar}.IsOk) {resultVar} = {TypeNames.ParserBase}.Ok<{parsedType}>({subVar}.Ok.Value, {subVar}.Ok.Offset, {subVar}.Ok.FurthestError);");
-                code.AppendLine($"else {resultVar} = {TypeNames.ParserBase}.Ok(default({parsedType}), {lastIndex}, {subVar}.Error);");
+                code.AppendLine($"if ({subVar}.IsOk) {resultVar} = {TypeNames.ParseResult}.Ok<{parsedType}>({subVar}.Ok.Value, {subVar}.Ok.Offset, {subVar}.Ok.FurthestError);");
+                code.AppendLine($"else {resultVar} = {TypeNames.ParseResult}.Ok(default({parsedType}), {lastIndex}, {subVar}.Error);");
                 break;
             }
 
@@ -360,14 +375,14 @@ partial {parserClass.GetTypeKindName()} {className}{genericTypes} : {TypeNames.P
                 code.AppendLine("while (true) {");
                 var subVar = this.GenerateBnf(code, rule, r0.Subexpr, indexVar);
                 code.AppendLine($"    if ({subVar}.IsError) {{");
-                code.AppendLine($"        {errVar} = {TypeNames.ParseError}.Unify({errVar}, {subVar}.Error);");
+                code.AppendLine($"        {errVar} = {errVar} | {subVar}.Error;");
                 code.AppendLine("        break;");
                 code.AppendLine("    }");
                 code.AppendLine($"    {indexVar} = {subVar}.Ok.Offset;");
                 code.AppendLine($"    {listVar}.Add({subVar}.Ok.Value);");
-                code.AppendLine($"    {errVar} = {TypeNames.ParseError}.Unify({errVar}, {subVar}.Ok.FurthestError);");
+                code.AppendLine($"    {errVar} = {errVar} | {subVar}.Ok.FurthestError;");
                 code.AppendLine("}");
-                code.AppendLine($"{resultVar} = {TypeNames.ParserBase}.Ok(({parsedType}){listVar}, {indexVar}, {errVar});");
+                code.AppendLine($"{resultVar} = {TypeNames.ParseResult}.Ok(({parsedType}){listVar}, {indexVar}, {errVar});");
                 break;
             }
 
@@ -386,14 +401,14 @@ partial {parserClass.GetTypeKindName()} {className}{genericTypes} : {TypeNames.P
                 code.AppendLine("    while (true) {");
                 var subVar = this.GenerateBnf(code, rule, r1.Subexpr, indexVar);
                 code.AppendLine($"        if ({subVar}.IsError) {{");
-                code.AppendLine($"            {errVar} = {TypeNames.ParseError}.Unify({errVar}, {subVar}.Error);");
+                code.AppendLine($"            {errVar} = {errVar} | {subVar}.Error;");
                 code.AppendLine("            break;");
                 code.AppendLine("        }");
                 code.AppendLine($"        {indexVar} = {subVar}.Ok.Offset;");
                 code.AppendLine($"        {listVar}.Add({subVar}.Ok.Value);");
-                code.AppendLine($"        {errVar} = {TypeNames.ParseError}.Unify({errVar}, {subVar}.Ok.FurthestError);");
+                code.AppendLine($"        {errVar} = {errVar} | {subVar}.Ok.FurthestError;");
                 code.AppendLine("    }");
-                code.AppendLine($"    {resultVar} = {TypeNames.ParserBase}.Ok(({parsedType}){listVar}, {indexVar}, {errVar});");
+                code.AppendLine($"    {resultVar} = {TypeNames.ParseResult}.Ok(({parsedType}){listVar}, {indexVar}, {errVar});");
                 code.AppendLine("} else {");
                 code.AppendLine($"    {resultVar} = {firstVar}.Error;");
                 code.AppendLine("}");
@@ -408,8 +423,8 @@ partial {parserClass.GetTypeKindName()} {className}{genericTypes} : {TypeNames.P
                 var key = ToPascalCase(call.Name);
                 code.AppendLine($"{resultVar} = parse{key}({lastIndex});");
                 // HEURISTIC: If the parse didn't advance anything, replace error
-                code.AppendLine($"if ({resultVar}.IsError && (!TryPeek({lastIndex}, out var {peekVar}) || ReferenceEquals({peekVar}, {resultVar}.Error.Got))) {{");
-                code.AppendLine($"    {resultVar} = {TypeNames.ParserBase}.Error(\"{calledRule.VisualName}\", {resultVar}.Error.Got, \"{rule.VisualName}\");");
+                code.AppendLine($"if ({resultVar}.IsError && (!this.{this.sourceField}.TryLookAhead({lastIndex}, out var {peekVar}) || ReferenceEquals({peekVar}, {resultVar}.Error.Got))) {{");
+                code.AppendLine($"    {resultVar} = {TypeNames.ParseResult}.Error(\"{calledRule.VisualName}\", {resultVar}.Error.Got, \"{rule.VisualName}\");");
                 code.AppendLine("}");
                 break;
             }
@@ -420,11 +435,11 @@ partial {parserClass.GetTypeKindName()} {className}{genericTypes} : {TypeNames.P
                 if (lit.Value is string)
                 {
                     // Match text
-                    code.AppendLine($"if (this.TryMatchText({lastIndex}, \"{lit.Value}\", out var {resultTok})) {{");
-                    code.AppendLine($"    {resultVar} = {TypeNames.ParserBase}.Ok(({parsedType}){resultTok}, {lastIndex} + 1);");
+                    code.AppendLine($"if (this.{this.sourceField}.TryLookAhead({lastIndex}, out var {resultTok}) && {resultTok}.Text == \"{lit.Value}\") {{");
+                    code.AppendLine($"    {resultVar} = {TypeNames.ParseResult}.Ok(({parsedType}){resultTok}, {lastIndex} + 1);");
                     code.AppendLine("} else {");
-                    code.AppendLine($"    this.TryPeek({lastIndex}, out var got);");
-                    code.AppendLine($"    {resultVar} = {TypeNames.ParserBase}.Error(\"{lit.Value}\", got, \"{rule.VisualName}\");");
+                    code.AppendLine($"    this.{this.sourceField}.TryLookAhead({lastIndex}, out var got);");
+                    code.AppendLine($"    {resultVar} = {TypeNames.ParseResult}.Error(\"{lit.Value}\", got, \"{rule.VisualName}\");");
                     code.AppendLine("}");
                 }
                 else
@@ -432,11 +447,11 @@ partial {parserClass.GetTypeKindName()} {className}{genericTypes} : {TypeNames.P
                     // Match token type
                     var tokenType = this.tokenKinds!.EnumType!.ToDisplayString();
                     var tokVariant = $"{tokenType}.{((IFieldSymbol)lit.Value).Name}";
-                    code.AppendLine($"if (this.TryMatchKind({lastIndex}, {tokVariant}, out var {resultTok})) {{");
-                    code.AppendLine($"    {resultVar} = {TypeNames.ParserBase}.Ok({resultTok}, {lastIndex} + 1);");
+                    code.AppendLine($"if (this.{this.sourceField}.TryLookAhead({lastIndex}, out var {resultTok}) && {resultTok}.Kind.Equals({tokVariant})) {{");
+                    code.AppendLine($"    {resultVar} = {TypeNames.ParseResult}.Ok({resultTok}, {lastIndex} + 1);");
                     code.AppendLine("} else {");
-                    code.AppendLine($"    this.TryPeek({lastIndex}, out var got);");
-                    code.AppendLine($"    {resultVar} = {TypeNames.ParserBase}.Error({tokVariant}, got, \"{rule.VisualName}\");");
+                    code.AppendLine($"    this.{this.sourceField}.TryLookAhead({lastIndex}, out var got);");
+                    code.AppendLine($"    {resultVar} = {TypeNames.ParseResult}.Error({tokVariant}, got, \"{rule.VisualName}\");");
                     code.AppendLine("}");
                 }
                 break;

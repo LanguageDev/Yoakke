@@ -43,5 +43,37 @@ namespace Yoakke.Parser
         /// </summary>
         /// <param name="ok">The <see cref="ParseOk{T}"/> to cast.</param>
         public static implicit operator T(ParseOk<T> ok) => ok.Value;
+
+        /// <summary>
+        /// Unifies two alternative <see cref="ParseOk{T}"/>s.
+        /// </summary>
+        /// <param name="first">The first ok to unify.</param>
+        /// <param name="second">The second ok to unify.</param>
+        /// <returns>The ok that got further.</returns>
+        public static ParseOk<T> operator |(ParseOk<T> first, ParseOk<T> second)
+        {
+            var error = first.FurthestError | second.FurthestError;
+            if (second.Offset > first.Offset) return new(second.Value, second.Offset, error);
+            // NOTE: Even if they are equal, we return the first
+            // It would be neat to return both
+            return new(first.Value, first.Offset, error);
+        }
+
+        /// <summary>
+        /// Unifies a <see cref="ParseOk{T}"/> with a <see cref="ParseError"/>.
+        /// </summary>
+        /// <param name="first">The ok to unify.</param>
+        /// <param name="second">The error to unify.</param>
+        /// <returns>The ok with extended error info.</returns>
+        public static ParseOk<T> operator |(ParseOk<T> first, ParseError? second) =>
+            new(first.Value, first.Offset, first.FurthestError | second);
+
+        /// <summary>
+        /// Unifies a <see cref="ParseOk{T}"/> with a <see cref="ParseError"/>.
+        /// </summary>
+        /// <param name="first">The error to unify.</param>
+        /// <param name="second">The ok to unify.</param>
+        /// <returns>The ok with extended error info.</returns>
+        public static ParseOk<T> operator |(ParseError? first, ParseOk<T> second) => second | first;
     }
 }

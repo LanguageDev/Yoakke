@@ -2,59 +2,71 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using Yoakke.Collections;
+using System.Diagnostics.CodeAnalysis;
+using System.Text;
+using Yoakke.Ir.Model.Attributes;
 
 namespace Yoakke.Ir.Model
 {
     /// <summary>
-    /// A default implementation for <see cref="IProcedure"/>.
+    /// A procedure in an assembly, consisting of basic blocks.
     /// </summary>
-    public class Procedure : IProcedure
+    public class Procedure : IAttributeTarget
     {
-        private readonly List<Parameter> parameters = new();
-        private readonly List<IBasicBlock> basicBlocks = new();
-        private readonly List<Local> locals = new();
+        /// <summary>
+        /// The name of the procedure.
+        /// </summary>
+        public string Name { get; } = string.Empty;
 
-        /// <inheritdoc/>
-        public Type Type =>
-            new Type.Proc(this.Return, this.parameters.Select(p => p.Type).ToList().AsValue());
+        /// <summary>
+        /// The basic block that first starts executing.
+        /// </summary>
+        public BasicBlock Entry { get; set; } = BasicBlock.Invalid;
 
-        /// <inheritdoc/>
-        public string Name { get; }
-
-        /// <inheritdoc/>
-        public IList<Parameter> Parameters => this.parameters;
-
-        /// <inheritdoc/>
-        IReadOnlyList<Parameter> IReadOnlyProcedure.Parameters => this.parameters;
-
-        /// <inheritdoc/>
-        public Type Return { get; set; } = Type.Void.Instance;
-
-        /// <inheritdoc/>
-        Type IReadOnlyProcedure.Return => this.Return;
-
-        /// <inheritdoc/>
-        public IList<Local> Locals => this.locals;
-
-        /// <inheritdoc/>
-        IReadOnlyList<Local> IReadOnlyProcedure.Locals => this.locals;
-
-        /// <inheritdoc/>
-        public IList<IBasicBlock> BasicBlocks => this.basicBlocks;
-
-        /// <inheritdoc/>
-        IReadOnlyList<IReadOnlyBasicBlock> IReadOnlyProcedure.BasicBlocks => this.basicBlocks;
+        /// <summary>
+        /// The basic blocks the procedure consists of.
+        /// </summary>
+        public IList<BasicBlock> BasicBlocks { get; init; } = new List<BasicBlock>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Procedure"/> class.
         /// </summary>
-        /// <param name="name">The logical name of this <see cref="Procedure"/>.</param>
+        /// <param name="name">The name of the procedure.</param>
         public Procedure(string name)
         {
             this.Name = name;
         }
+
+        #region AttributeTarget
+
+        /// <inheritdoc/>
+        public Attributes.AttributeTargets Flag => this.attributeTarget.Flag;
+
+        private readonly AttributeTarget attributeTarget = new(Attributes.AttributeTargets.Procedure);
+
+        /// <inheritdoc/>
+        public IEnumerable<IAttribute> GetAttributes() => this.attributeTarget.GetAttributes();
+
+        /// <inheritdoc/>
+        public IEnumerable<IAttribute> GetAttributes(string name) => this.attributeTarget.GetAttributes(name);
+
+        /// <inheritdoc/>
+        public IEnumerable<TAttrib> GetAttributes<TAttrib>()
+            where TAttrib : IAttribute => this.attributeTarget.GetAttributes<TAttrib>();
+
+        /// <inheritdoc/>
+        public bool TryGetAttribute(string name, [MaybeNullWhen(false)] out IAttribute attribute) =>
+            this.attributeTarget.TryGetAttribute(name, out attribute);
+
+        /// <inheritdoc/>
+        public bool TryGetAttribute<TAttrib>([MaybeNullWhen(false)] out TAttrib attribute)
+            where TAttrib : IAttribute => this.attributeTarget.TryGetAttribute(out attribute);
+
+        /// <inheritdoc/>
+        public void AddAttribute(IAttribute attribute) => this.attributeTarget.AddAttribute(attribute);
+
+        #endregion AttributeTarget
     }
 }

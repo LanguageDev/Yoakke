@@ -6,9 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Yoakke.Utilities.Intervals;
+using Yoakke.LexerUtils.Intervals;
 
-namespace Yoakke.Utilities.FiniteAutomata
+namespace Yoakke.LexerUtils.FiniteAutomata
 {
     /// <summary>
     /// A deterministic finite automaton with a dense representation, meaning it stores transitions with intervals.

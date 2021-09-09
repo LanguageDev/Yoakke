@@ -110,6 +110,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Text", "Text", "{F2CCC405-5
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Semantics", "Semantics", "{E9427BFD-E4E1-44B5-B87A-7FE264422129}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yoakke.Ir.Tests", "Tests\Yoakke.Ir.Tests\Yoakke.Ir.Tests.csproj", "{D559CE92-DB2F-47A2-A419-999C78387250}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -268,6 +270,10 @@ Global
 		{94CBD997-6394-4BA3-9AF2-0C2C139E1967}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{94CBD997-6394-4BA3-9AF2-0C2C139E1967}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{94CBD997-6394-4BA3-9AF2-0C2C139E1967}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D559CE92-DB2F-47A2-A419-999C78387250}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D559CE92-DB2F-47A2-A419-999C78387250}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D559CE92-DB2F-47A2-A419-999C78387250}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D559CE92-DB2F-47A2-A419-999C78387250}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -306,6 +312,7 @@ Global
 		{D9A26C9B-EB6D-4EDB-923B-ED529E4C5A8D} = {B042CA2F-FAD5-4148-89C8-3310AF17BC14}
 		{B5C7DD29-4D2C-46B7-B940-FA5C2680C382} = {B042CA2F-FAD5-4148-89C8-3310AF17BC14}
 		{2E1E2A07-9EC8-462D-B001-8AB44F973286} = {58417641-179E-4F53-9528-234B4E87944E}
+		{D559CE92-DB2F-47A2-A419-999C78387250} = {B042CA2F-FAD5-4148-89C8-3310AF17BC14}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1EDE8F07-AE3A-4556-AEF0-3AC518F18F92}

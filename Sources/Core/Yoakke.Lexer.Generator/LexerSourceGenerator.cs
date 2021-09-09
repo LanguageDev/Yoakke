@@ -8,11 +8,11 @@ using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Yoakke.LexerUtils.FiniteAutomata;
+using Yoakke.LexerUtils.Intervals;
+using Yoakke.LexerUtils.RegEx;
 using Yoakke.SourceGenerator.Common;
 using Yoakke.SourceGenerator.Common.RoslynExtensions;
-using Yoakke.Utilities.FiniteAutomata;
-using Yoakke.Utilities.Intervals;
-using Yoakke.Utilities.RegEx;
 
 namespace Yoakke.Lexer.Generator
 {
@@ -97,7 +97,7 @@ namespace Yoakke.Lexer.Generator
             var className = lexerClass.Name;
 
             // Extract the lexer from the attributes
-            var description = this.ExtractLexerDescription(tokenKind);
+            var description = this.ExtractLexerDescription(lexerClass, tokenKind);
             if (description is null) return null;
 
             // Build the DFA and state -> token associations from the description
@@ -172,31 +172,40 @@ namespace Yoakke.Lexer.Generator
             // TODO: Consuming a single token on error might not be the best strategy
             // Also we might want to report if there was a token type that was being matched, while the error occurred
 
-            // Deduce what ctors to generate
             var ctors = string.Empty;
-            if (lexerClass.HasNoUserDefinedCtors())
+            if (lexerClass.HasNoUserDefinedCtors() && description.SourceSymbol is null)
             {
                 ctors = $@"
-public {className}({TypeNames.TextReader} reader) : base(reader) {{ }}
-public {className}(string text) : base(text) {{ }}
+public {TypeNames.ICharStream} CharStream {{ get; }}
+
+public {className}({TypeNames.ICharStream} source) {{ this.CharStream = source; }}
+public {className}({TypeNames.TextReader} reader) : this(new {TypeNames.TextReaderCharStream}(reader)) {{ }}
+public {className}(string text) : this(new {TypeNames.StringReader}(text)) {{ }}
 ";
             }
 
+            var sourceField = description.SourceSymbol?.Name ?? "CharStream";
             var (prefix, suffix) = lexerClass.ContainingSymbol.DeclareInsideExternally();
             var (genericTypes, genericConstraints) = lexerClass.GetGenericCrud();
             return $@"
+using Yoakke.Lexer.Streams;
 #pragma warning disable CS0162
 {prefix}
-partial {lexerClass.GetTypeKindName()} {className}{genericTypes} : {TypeNames.LexerBase}<{tokenName}> {genericConstraints}
+partial {lexerClass.GetTypeKindName()} {className}{genericTypes} : {TypeNames.ILexer}<{tokenName}> {genericConstraints}
 {{
+    public {TypeNames.Position} Position => this.{sourceField}.Position;
+
+    public bool IsEnd {{ get; private set; }}
+
     {ctors}
 
-    public override {tokenName} Next()
+    public {tokenName} Next()
     {{
 begin:
-        if (this.IsEnd) 
+        if (this.{sourceField}.IsEnd) 
         {{
-            return this.TakeToken({enumName}.{description.EndSymbol!.Name}, 0);
+            this.IsEnd = true;
+            return this.{sourceField}.ConsumeToken({enumName}.{description.EndSymbol!.Name}, 0);
         }}
 
         var currentState = {dfaStateIdents[dfa.InitalState]};
@@ -207,7 +216,7 @@ begin:
 
         while (true)
         {{
-            if (!this.TryPeek(out var currentChar, currentOffset)) break;
+            if (!this.{sourceField}.TryLookAhead(currentOffset, out var currentChar)) break;
             ++currentOffset;
             {transitionTable}
         }}
@@ -216,14 +225,14 @@ end_loop:
         {{
             if (lastTokenType == null) 
             {{
-                this.Skip(lastOffset);
+                this.{sourceField}.Advance(lastOffset);
                 goto begin;
             }}
-            return this.TakeToken(lastTokenType.Value, lastOffset);
+            return this.{sourceField}.ConsumeToken(lastTokenType.Value, lastOffset);
         }}
         else
         {{
-            return this.TakeToken({enumName}.{description.ErrorSymbol!.Name}, 1);
+            return this.{sourceField}.ConsumeToken({enumName}.{description.ErrorSymbol!.Name}, 1);
         }}
     }}
 }}
@@ -283,8 +292,9 @@ end_loop:
             return (dfa, dfaStateToToken);
         }
 
-        private LexerDescription? ExtractLexerDescription(INamedTypeSymbol tokenKind)
+        private LexerDescription? ExtractLexerDescription(INamedTypeSymbol lexerClass, INamedTypeSymbol tokenKind)
         {
+            var sourceAttr = this.LoadSymbol(TypeNames.CharSourceAttribute);
             var regexAttr = this.LoadSymbol(TypeNames.RegexAttribute);
             var tokenAttr = this.LoadSymbol(TypeNames.TokenAttribute);
             var endAttr = this.LoadSymbol(TypeNames.EndAttribute);
@@ -292,6 +302,14 @@ end_loop:
             var ignoreAttr = this.LoadSymbol(TypeNames.IgnoreAttribute);
 
             var result = new LexerDescription();
+
+            // Search for the source field in the lexer class
+            var sourceField = lexerClass.GetMembers()
+                .Where(field => field.HasAttribute(sourceAttr))
+                .FirstOrDefault();
+            result.SourceSymbol = sourceField;
+
+            // Deal with the enum members
             foreach (var member in tokenKind.GetMembers().OfType<IFieldSymbol>())
             {
                 // End token
@@ -346,6 +364,7 @@ end_loop:
                     result.EndSymbol is null ? "EndAttribute" : "ErrorAttribute");
                 return null;
             }
+
             return result;
         }
 

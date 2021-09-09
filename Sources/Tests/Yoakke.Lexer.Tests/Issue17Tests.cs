@@ -5,6 +5,7 @@
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Yoakke.Lexer.Attributes;
+using Yoakke.Lexer.Streams;
 
 namespace Yoakke.Lexer.Tests
 {
@@ -26,18 +27,22 @@ namespace Yoakke.Lexer.Tests
         [Lexer(typeof(TokenType))]
         internal partial class ExplicitCtorLexer
         {
+            [CharSource]
+            private readonly ICharStream source;
+
             public ExplicitCtorLexer(string text)
-                : base(text)
             {
+                this.source = new TextReaderCharStream(new StringReader(text));
             }
         }
 
         [TestMethod]
         public void ImplicitCtors()
         {
-            Assert.AreEqual(2, typeof(ImplicitCtorLexer).GetConstructors().Length);
+            Assert.AreEqual(3, typeof(ImplicitCtorLexer).GetConstructors().Length);
             Assert.IsNotNull(typeof(ImplicitCtorLexer).GetConstructor(new[] { typeof(string) }));
             Assert.IsNotNull(typeof(ImplicitCtorLexer).GetConstructor(new[] { typeof(TextReader) }));
+            Assert.IsNotNull(typeof(ImplicitCtorLexer).GetConstructor(new[] { typeof(ICharStream) }));
         }
 
         [TestMethod]

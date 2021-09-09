@@ -3,39 +3,94 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System;
-using Yoakke.Collections;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Text;
+using Yoakke.Ir.Model.Attributes;
 
 namespace Yoakke.Ir.Model
 {
     /// <summary>
-    /// The base for all IR types.
+    /// Base of all IR value types.
     /// </summary>
-    public abstract record Type : IInstructionArg
+    public abstract record Type : Constant, IAttributeTarget
     {
+        #region AttributeTarget
+
+        /// <inheritdoc/>
+        public Attributes.AttributeTargets Flag => this.attributeTarget.Flag;
+
+        private readonly AttributeTarget attributeTarget = new(Attributes.AttributeTargets.TypeDefinition);
+
+        /// <inheritdoc/>
+        public IEnumerable<IAttribute> GetAttributes() => this.attributeTarget.GetAttributes();
+
+        /// <inheritdoc/>
+        public IEnumerable<IAttribute> GetAttributes(string name) => this.attributeTarget.GetAttributes(name);
+
+        /// <inheritdoc/>
+        public IEnumerable<TAttrib> GetAttributes<TAttrib>()
+            where TAttrib : IAttribute => this.attributeTarget.GetAttributes<TAttrib>();
+
+        /// <inheritdoc/>
+        public bool TryGetAttribute(string name, [MaybeNullWhen(false)] out IAttribute attribute) =>
+            this.attributeTarget.TryGetAttribute(name, out attribute);
+
+        /// <inheritdoc/>
+        public bool TryGetAttribute<TAttrib>([MaybeNullWhen(false)] out TAttrib attribute)
+            where TAttrib : IAttribute => this.attributeTarget.TryGetAttribute(out attribute);
+
+        /// <inheritdoc/>
+        public void AddAttribute(IAttribute attribute) => this.attributeTarget.AddAttribute(attribute);
+
+        #endregion AttributeTarget
+
+        /* Variants */
+
         /// <summary>
-        /// The nothing <see cref="Type"/>.
+        /// A type of any type.
+        /// </summary>
+        public record Type_ : Type
+        {
+            /// <summary>
+            /// A default instance to use.
+            /// </summary>
+            public static readonly Type_ Instance = new();
+
+            /// <inheritdoc/>
+            public override Type Type => this;
+
+            /// <inheritdoc/>
+            public override string ToString() => "type";
+        }
+
+        /// <summary>
+        /// A void-type, representing the empty/nothing type.
         /// </summary>
         public record Void : Type
         {
             /// <summary>
-            /// A default <see cref="Void"/> instance.
+            /// A default instance to use.
             /// </summary>
             public static readonly Void Instance = new();
+
+            /// <inheritdoc/>
+            public override Type Type => Type_.Instance;
+
+            /// <inheritdoc/>
+            public override string ToString() => "void";
         }
 
         /// <summary>
-        /// An integer <see cref="Type"/>.
+        /// A signed integer type with a given bit-width.
         /// </summary>
-        public record Int(bool Signed, int Bits) : Type;
+        public record Int(int Bits) : Type
+        {
+            /// <inheritdoc/>
+            public override Type Type => Type_.Instance;
 
-        /// <summary>
-        /// A procedure <see cref="Type"/>.
-        /// </summary>
-        public record Proc(Type Return, IReadOnlyValueList<Type> Parameters) : Type;
-
-        /// <summary>
-        /// A pointer <see cref="Type"/>.
-        /// </summary>
-        public record Ptr(Type Element) : Type;
+            /// <inheritdoc/>
+            public override string ToString() => $"i{this.Bits}";
+        }
     }
 }

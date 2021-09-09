@@ -4,7 +4,7 @@
 
 using System.Collections.Generic;
 
-namespace Yoakke.Utilities.Intervals
+namespace Yoakke.LexerUtils.Intervals
 {
     /// <summary>
     /// Represents a generic collection of disjunct intervals.
