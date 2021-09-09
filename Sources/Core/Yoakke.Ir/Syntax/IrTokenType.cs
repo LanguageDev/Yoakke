@@ -24,6 +24,11 @@ namespace Yoakke.Ir.Syntax
         Unknown,
 
         /// <summary>
+        /// A newline.
+        /// </summary>
+        Newline,
+
+        /// <summary>
         /// '('.
         /// </summary>
         OpenParen,

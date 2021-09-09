@@ -64,6 +64,7 @@ namespace Yoakke.Ir.Syntax
             while (true)
             {
                 if (!this.Source.TryPeek(out var t) || t.Kind == IrTokenType.End) break;
+                if (this.EatNewline()) continue;
 
                 if (t.Kind == IrTokenType.KeywordProcedure)
                 {
@@ -106,6 +107,7 @@ namespace Yoakke.Ir.Syntax
                 // Parse attached attributes
                 // TODO: We need to be smarter here, return value is also a valid target, a simple attach won't do
                 this.ParseAttributeGroups(builder, AttributeTargets.Procedure);
+                this.Expect(IrTokenType.Newline);
 
                 // It has a body
                 while (this.Source.TryPeek(out var t) && t.Kind == IrTokenType.KeywordBlock)
@@ -137,6 +139,7 @@ namespace Yoakke.Ir.Syntax
             // Attach all attributes
             this.Expect(IrTokenType.Colon);
             this.ParseAttributeGroups(builder, AttributeTargets.BasicBlock);
+            this.Expect(IrTokenType.Newline);
             // Parse instructions
             while (this.Source.TryPeek(out var t) && t.Kind == IrTokenType.Identifier)
             {
@@ -178,6 +181,8 @@ namespace Yoakke.Ir.Syntax
                 if (instr.ResultType is null) throw new InvalidOperationException($"The instruction {name} does not produce a value");
                 this.valueInstructions[valueName] = instr;
             }
+            // Eat newline
+            this.EatNewline();
             // Done
             return instr;
         }
@@ -480,6 +485,8 @@ namespace Yoakke.Ir.Syntax
             }
             return result.ToString();
         }
+
+        private bool EatNewline() => this.Matches(IrTokenType.Newline);
 
         private void ParseAttributeGroups(IAttributeTarget attributeTarget, AttributeTargets defaultTarget)
         {

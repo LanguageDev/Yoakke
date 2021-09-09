@@ -58,6 +58,9 @@ namespace Yoakke.Ir.Syntax
         begin:
             // End of file
             if (this.IsEnd) return this.source.ConsumeToken(IrTokenType.End, 0);
+            // Newline
+            if (this.source.Matches("\r\n")) return this.source.ConsumeToken(IrTokenType.Newline, 2);
+            if (this.source.Matches('\n') || this.source.Matches('\r')) return this.source.ConsumeToken(IrTokenType.Newline, 1);
             // Whitespace
             if (char.IsWhiteSpace(this.source.Peek()))
             {
