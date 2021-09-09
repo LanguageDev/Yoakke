@@ -20,7 +20,7 @@ namespace Yoakke.Streams
         /// Consumes the upcoming element in the stream.
         /// </summary>
         /// <param name="item">The consumed element gets written here, if there was any.</param>
-        /// <returns>True, if there was a token to advance.</returns>
+        /// <returns>True, if there was an item to advance.</returns>
         public bool TryConsume([MaybeNullWhen(false)] out T item);
 
         /// <summary>
