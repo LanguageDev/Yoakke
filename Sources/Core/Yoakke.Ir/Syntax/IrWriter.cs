@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Yoakke.Collections;
 using Yoakke.Ir.Model;
 using Yoakke.Ir.Model.Attributes;
 using AttributeTargets = Yoakke.Ir.Model.Attributes.AttributeTargets;
@@ -25,6 +26,7 @@ namespace Yoakke.Ir.Syntax
         public TextWriter Underlying { get; }
 
         private readonly Context context;
+        private readonly Dictionary<Instruction, int> localValues = new(ReferenceEqualityComparer<Instruction>.Instance);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IrWriter"/> class.
@@ -64,6 +66,7 @@ namespace Yoakke.Ir.Syntax
         /// <returns>This instance, to be able to chain calls.</returns>
         public IrWriter WriteProcedure(Procedure procedure)
         {
+            this.localValues.Clear();
             this.Underlying.Write($"procedure {procedure.Name}()");
             if (procedure.BasicBlocks.Count > 0)
             {
@@ -106,7 +109,11 @@ namespace Yoakke.Ir.Syntax
         /// <returns>This instance, to be able to chain calls.</returns>
         public IrWriter WriteInstruction(Instruction instruction)
         {
-            if (instruction.ResultType is not null) this.Underlying.Write("value = ");
+            if (instruction.ResultType is not null)
+            {
+                this.Underlying.Write($"v{this.localValues.Count} = ");
+                this.localValues.Add(instruction, this.localValues.Count);
+            }
             var syntax = this.context.GetInstructionSyntax(instruction.GetType());
             this.Underlying.Write(syntax.Name);
             syntax.Print(instruction, this);
@@ -125,7 +132,7 @@ namespace Yoakke.Ir.Syntax
             switch (value)
             {
             case Value.Result r:
-                this.Underlying.Write(r.Name ?? "value");
+                this.Underlying.Write($"v{this.localValues[r.Instruction]}");
                 break;
 
             case Value.Constant c:

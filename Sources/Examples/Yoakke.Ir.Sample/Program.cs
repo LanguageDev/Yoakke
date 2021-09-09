@@ -78,6 +78,7 @@ namespace Yoakke.Ir.Sample
 procedure hello(): [foo]
 block owo: [block: foo]
   v1 = add i32 1, 2
+  v2 = add i32 v2, 3
   nop [foo, foo, foo]
   ret
 
