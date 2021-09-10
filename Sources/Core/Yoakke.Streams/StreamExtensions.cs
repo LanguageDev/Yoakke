@@ -13,15 +13,26 @@ namespace Yoakke.Streams
     /// </summary>
     public static class StreamExtensions
     {
+        #region Adapters
+
         /// <summary>
-        /// Converts a stream to a <see cref="IPeekableStream{TItem}"/>.
+        /// Converts a stream to an <see cref="IEnumerable{TItem}"/>.
         /// </summary>
         /// <typeparam name="TItem">The item type of the stream.</typeparam>
         /// <param name="stream">The stream to convert.</param>
-        /// <returns><paramref name="stream"/> as an <see cref="IPeekableStream{T}"/>.</returns>
-        public static IPeekableStream<TItem> AsPeekable<TItem>(this IStream<TItem> stream) => stream is IPeekableStream<TItem> peekable
-            ? peekable
-            : new BufferedStream<TItem>(stream);
+        /// <returns><paramref name="stream"/> as an <see cref="IEnumerable{TItem}"/>.</returns>
+        public static IEnumerable<TItem> ToEnumerable<TItem>(this IStream<TItem> stream)
+        {
+            while (stream.TryConsume(out var item)) yield return item;
+        }
+
+        /// <summary>
+        /// Converts a stream to a <see cref="IPeekableStream{TItem}"/> by making it buffered.
+        /// </summary>
+        /// <typeparam name="TItem">The item type of the stream.</typeparam>
+        /// <param name="stream">The stream to convert.</param>
+        /// <returns><paramref name="stream"/> as an <see cref="IPeekableStream{TItem}"/>.</returns>
+        public static IPeekableStream<TItem> ToBuffered<TItem>(this IStream<TItem> stream) => new BufferedStream<TItem>(stream);
 
         /// <summary>
         /// Filters a stream using a predicate.
@@ -33,6 +44,10 @@ namespace Yoakke.Streams
         /// for.</returns>
         public static IStream<TItem> Filter<TItem>(this IStream<TItem> stream, Predicate<TItem> predicate) =>
             new FilteredStream<TItem>(stream, predicate);
+
+        #endregion
+
+        #region Operations
 
         /// <summary>
         /// Consumes the upcoming item in the stream.
@@ -81,5 +96,7 @@ namespace Yoakke.Streams
             }
             return i;
         }
+
+        #endregion
     }
 }
