@@ -11,7 +11,7 @@ using Yoakke.Ir.Model;
 using Yoakke.Ir.Model.Attributes;
 using Yoakke.Ir.Model.Builders;
 using Yoakke.Lexer;
-using Yoakke.Lexer.Streams;
+using Yoakke.Streams;
 using AttributeTargets = Yoakke.Ir.Model.Attributes.AttributeTargets;
 using Type = Yoakke.Ir.Model.Type;
 
@@ -25,7 +25,7 @@ namespace Yoakke.Ir.Syntax
         /// <summary>
         /// The source stream.
         /// </summary>
-        public ITokenStream<IToken<IrTokenType>> Source { get; }
+        public IPeekableStream<IToken<IrTokenType>> Source { get; }
 
         private readonly Context context;
         private readonly Dictionary<string, ProcedureBuilder> procedureBuilders = new();
@@ -37,10 +37,10 @@ namespace Yoakke.Ir.Syntax
         /// </summary>
         /// <param name="context">The <see cref="Context"/> for the IR.</param>
         /// <param name="source">The token source to parse from.</param>
-        public IrParser(Context context, ITokenStream<IToken<IrTokenType>> source)
+        public IrParser(Context context, IStream<IToken<IrTokenType>> source)
         {
             this.context = context;
-            this.Source = source;
+            this.Source = source.ToBuffered();
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace Yoakke.Ir.Syntax
         /// <param name="context">The <see cref="Context"/> for the IR.</param>
         /// <param name="source">The token source to parse from.</param>
         public IrParser(Context context, ILexer<IToken<IrTokenType>> source)
-            : this(context, source.AsTokenStream())
+            : this(context, source.ToStream())
         {
         }
 
@@ -163,7 +163,7 @@ namespace Yoakke.Ir.Syntax
             if (temp is not null && this.Source.TryLookAhead(offset, out var t) && t.Kind == IrTokenType.Assign)
             {
                 // This is indeed a value name
-                this.Source.Advance(offset + 1);
+                this.Source.Consume(offset + 1);
                 valueName = temp;
             }
             // Get the syntax
@@ -366,7 +366,7 @@ namespace Yoakke.Ir.Syntax
             var offset = 0;
             var ident = this.PeekIdentifier(ref offset);
             if (ident is null) throw new InvalidOperationException("identifier expected");
-            this.Source.Advance(offset);
+            this.Source.Consume(offset);
             return ident;
         }
 
@@ -402,7 +402,7 @@ namespace Yoakke.Ir.Syntax
         {
             if (this.Source.TryPeek(out token) && token.Kind == tokenType)
             {
-                this.Source.Advance();
+                this.Source.Consume();
                 return true;
             }
             else
@@ -466,7 +466,7 @@ namespace Yoakke.Ir.Syntax
             };
             if (target is not null)
             {
-                this.Source.Advance();
+                this.Source.Consume();
                 this.Expect(IrTokenType.Colon);
             }
             return target;

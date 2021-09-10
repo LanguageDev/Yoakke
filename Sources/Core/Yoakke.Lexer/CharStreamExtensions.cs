@@ -3,10 +3,10 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System;
-using System.Collections.Generic;
 using System.Text;
+using Yoakke.Streams;
 
-namespace Yoakke.Lexer.Streams
+namespace Yoakke.Lexer
 {
     /// <summary>
     /// Extensions for <see cref="ICharStream"/>.
@@ -19,7 +19,7 @@ namespace Yoakke.Lexer.Streams
         /// <param name="stream">The stream to peek.</param>
         /// <param name="default">The default character to return if the end has been reached.</param>
         /// <returns>The peeked character, or default if the end has been reached.</returns>
-        public static char Peek(this ICharStream stream, char @default = '\0') =>
+        public static char Peek(this ICharStream stream, char @default) =>
             stream.TryPeek(out var ch) ? ch : @default;
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace Yoakke.Lexer.Streams
         /// <param name="offset">The amount to peek forward. 0 means next character.</param>
         /// <param name="default">The default character to return if the end has been reached.</param>
         /// <returns>The peeked character, or default if the end has been reached.</returns>
-        public static char LookAhead(this ICharStream stream, int offset, char @default = '\0') =>
+        public static char LookAhead(this ICharStream stream, int offset, char @default) =>
             stream.TryLookAhead(offset, out var ch) ? ch : @default;
 
         /// <summary>
@@ -74,15 +74,6 @@ namespace Yoakke.Lexer.Streams
             stream.TryLookAhead(offset, out var inInput) && ch == inInput;
 
         /// <summary>
-        /// Consumes a single character from the stream.
-        /// </summary>
-        /// <param name="stream">The character stream to consume from.</param>
-        /// <returns>The consumed character.</returns>
-        public static char Advance(this ICharStream stream) => stream.TryAdvance(out var ch)
-            ? ch
-            : throw new InvalidOperationException("No characters left in the character stream");
-
-        /// <summary>
         /// Consumes characters in the input and builds a string from the consumed characters.
         /// </summary>
         /// <param name="stream">The stream to consume characters in.</param>
@@ -103,7 +94,7 @@ namespace Yoakke.Lexer.Streams
             var start = stream.Position;
             for (var i = 0; i < length; ++i)
             {
-                if (!stream.TryAdvance(out var ch)) break;
+                if (!stream.TryConsume(out var ch)) break;
                 result.Append(ch);
             }
             range = new Text.Range(start, stream.Position);

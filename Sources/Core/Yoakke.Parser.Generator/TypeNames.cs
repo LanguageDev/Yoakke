@@ -78,9 +78,19 @@ namespace Yoakke.Parser.Generator
         public static readonly string IToken = $"{LexerNamespace}.IToken";
 
         /// <summary>
-        /// Token stream type.
+        /// Stream type.
         /// </summary>
-        public static readonly string ITokenStream = $"{LexerNamespace}.Streams.ITokenStream";
+        public static readonly string IStream = "Yoakke.Streams.IStream";
+
+        /// <summary>
+        /// Peekable stream type.
+        /// </summary>
+        public static readonly string IPeekableStream = "Yoakke.Streams.IPeekableStream";
+
+        /// <summary>
+        /// Enumerable stream adapter.
+        /// </summary>
+        public static readonly string EnumerableStream = "Yoakke.Streams.EnumerableStream";
 
         /// <summary>
         /// Lexer interface type.

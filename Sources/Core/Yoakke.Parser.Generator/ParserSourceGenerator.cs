@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
@@ -131,7 +130,7 @@ namespace Yoakke.Parser.Generator
                     parserMethods.AppendLine("    }");
                     // Success case
                     parserMethods.AppendLine("    value = result.Ok.Value;");
-                    parserMethods.AppendLine($"    this.{this.sourceField}.Advance(result.Ok.Offset);");
+                    parserMethods.AppendLine($"    this.{this.sourceField}.Consume(result.Ok.Offset);");
                     parserMethods.AppendLine("    return true;");
                     parserMethods.AppendLine("}");
 
@@ -139,11 +138,11 @@ namespace Yoakke.Parser.Generator
                     parserMethods.AppendLine($"public {returnType} Parse{key}() {{");
                     parserMethods.AppendLine($"    var result = parse{key}(0);");
                     parserMethods.AppendLine("    if (result.IsOk) {");
-                    parserMethods.AppendLine($"        this.{this.sourceField}.Advance(result.Ok.Offset);");
+                    parserMethods.AppendLine($"        this.{this.sourceField}.Consume(result.Ok.Offset);");
                     parserMethods.AppendLine("    } else {");
                     // Try to consume one so the parser won't get stuck
                     // TODO: Maybe let the user do this or be smarter about it?
-                    parserMethods.AppendLine($"        this.{this.sourceField}.Advance(1);");
+                    parserMethods.AppendLine($"        this.{this.sourceField}.Consume(1);");
                     parserMethods.AppendLine("    }");
                     parserMethods.AppendLine("    return result;");
                     parserMethods.AppendLine("}");
@@ -162,11 +161,11 @@ namespace Yoakke.Parser.Generator
                 var tokenType = TypeNames.IToken;
                 if (parserAttr.TokenType is not null) tokenType = $"{TypeNames.IToken}<{parserAttr.TokenType.ToDisplayString()}>";
                 ctors = $@"
-public {TypeNames.ITokenStream}<{tokenType}> TokenStream {{ get; }}
+public {TypeNames.IPeekableStream}<{tokenType}> TokenStream {{ get; }}
 
-public {className}({TypeNames.ITokenStream}<{tokenType}> source) {{ this.TokenStream = source; }}
-public {className}({TypeNames.ILexer}<{tokenType}> lexer) : this(lexer.AsTokenStream()) {{ }}
-public {className}({TypeNames.IEnumerable}<{tokenType}> tokens) : this(tokens.AsTokenStream()) {{ }}
+public {className}({TypeNames.IPeekableStream}<{tokenType}> source) {{ this.TokenStream = source; }}
+public {className}({TypeNames.ILexer}<{tokenType}> lexer) : this(lexer.ToStream().ToBuffered()) {{ }}
+public {className}({TypeNames.IEnumerable}<{tokenType}> tokens) : this(new {TypeNames.EnumerableStream}<{tokenType}>(tokens).ToBuffered()) {{ }}
 ";
             }
 
@@ -174,6 +173,7 @@ public {className}({TypeNames.IEnumerable}<{tokenType}> tokens) : this(tokens.As
             var (genericTypes, genericConstraints) = parserClass.GetGenericCrud();
             return $@"
 using Yoakke.Lexer;
+using Yoakke.Streams;
 {prefix} 
 partial {parserClass.GetTypeKindName()} {className}{genericTypes} {genericConstraints}
 {{

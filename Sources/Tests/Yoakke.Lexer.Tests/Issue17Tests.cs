@@ -5,7 +5,6 @@
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Yoakke.Lexer.Attributes;
-using Yoakke.Lexer.Streams;
 
 namespace Yoakke.Lexer.Tests
 {

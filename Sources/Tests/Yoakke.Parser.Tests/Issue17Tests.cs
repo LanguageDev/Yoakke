@@ -5,8 +5,8 @@
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Yoakke.Lexer;
-using Yoakke.Lexer.Streams;
 using Yoakke.Parser.Attributes;
+using Yoakke.Streams;
 
 namespace Yoakke.Parser.Tests
 {
@@ -23,11 +23,11 @@ namespace Yoakke.Parser.Tests
         internal partial class ExplicitCtorParser
         {
             [TokenSource]
-            private readonly ITokenStream<IToken> tokens;
+            private readonly IStream<IToken> tokens;
 
             public ExplicitCtorParser(IEnumerable<IToken> tokens)
             {
-                this.tokens = tokens.AsTokenStream();
+                this.tokens = new EnumerableStream<IToken>(tokens);
             }
         }
 
@@ -37,7 +37,7 @@ namespace Yoakke.Parser.Tests
             Assert.AreEqual(3, typeof(ImplicitCtorParser).GetConstructors().Length);
             Assert.IsNotNull(typeof(ImplicitCtorParser).GetConstructor(new[] { typeof(IEnumerable<IToken>) }));
             Assert.IsNotNull(typeof(ImplicitCtorParser).GetConstructor(new[] { typeof(ILexer<IToken>) }));
-            Assert.IsNotNull(typeof(ImplicitCtorParser).GetConstructor(new[] { typeof(ITokenStream<IToken>) }));
+            Assert.IsNotNull(typeof(ImplicitCtorParser).GetConstructor(new[] { typeof(IPeekableStream<IToken>) }));
         }
 
         [TestMethod]

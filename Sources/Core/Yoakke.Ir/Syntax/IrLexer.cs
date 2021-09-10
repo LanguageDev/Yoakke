@@ -2,12 +2,9 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using Yoakke.Lexer;
-using Yoakke.Lexer.Streams;
+using Yoakke.Streams;
 using Yoakke.Text;
 
 namespace Yoakke.Ir.Syntax
@@ -64,7 +61,7 @@ namespace Yoakke.Ir.Syntax
             // Whitespace
             if (char.IsWhiteSpace(this.source.Peek()))
             {
-                this.source.Advance();
+                this.source.Consume();
                 goto begin;
             }
             // Line comment
@@ -75,7 +72,7 @@ namespace Yoakke.Ir.Syntax
                 {
                     // Pass
                 }
-                this.source.Advance(i);
+                this.source.Consume(i);
                 goto begin;
             }
 

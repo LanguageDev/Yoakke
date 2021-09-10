@@ -64,10 +64,10 @@ namespace Yoakke.Parser.Sample
 
         public void Synchronize()
         {
-            for (; this.TokenStream.TryPeek(out var t) && t.Text != ";"; this.TokenStream.Advance(1))
+            for (; this.TokenStream.TryPeek(out var t) && t.Text != ";"; this.TokenStream.Consume(1))
             {
             }
-            this.TokenStream.Advance(1);
+            this.TokenStream.Consume(1);
         }
     }
 

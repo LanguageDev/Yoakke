@@ -2,11 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Text;
-using Yoakke.Lexer.Streams;
+using Yoakke.Streams;
 
 namespace Yoakke.Lexer
 {
@@ -15,46 +11,34 @@ namespace Yoakke.Lexer
     /// </summary>
     public static class LexerExtensions
     {
-        private class LexerAdapter<TToken> : ITokenStream<TToken>
+        private class LexerStreamAdapter<TToken> : IStream<TToken>
             where TToken : IToken
         {
             public bool IsEnd => this.lexer.IsEnd;
 
             private readonly ILexer<TToken> lexer;
 
-            public LexerAdapter(ILexer<TToken> lexer) => this.lexer = lexer;
-
-            public bool TryAdvance([MaybeNullWhen(false)] out TToken token)
+            public LexerStreamAdapter(ILexer<TToken> lexer)
             {
-                if (this.lexer.IsEnd)
-                {
-                    token = default;
-                    return false;
-                }
-                else
-                {
-                    token = this.lexer.Next();
-                    return true;
-                }
+                this.lexer = lexer;
             }
 
-            public int Advance(int amount) => throw new NotSupportedException();
+            public bool TryConsume(out TToken item)
+            {
+                item = this.lexer.Next();
+                return true;
+            }
 
-            public void Defer(TToken token) => throw new NotSupportedException();
-
-            public bool TryLookAhead(int offset, [MaybeNullWhen(false)] out TToken token) => throw new NotSupportedException();
-
-            public bool TryPeek([MaybeNullWhen(false)] out TToken token) => throw new NotSupportedException();
+            public int Consume(int amount) => StreamExtensions.Consume(this, amount);
         }
 
         /// <summary>
-        /// Adapts an <see cref="ILexer{TToken}"/> to be an <see cref="ITokenStream{TToken}"/>.
+        /// Adapts an <see cref="ILexer{TToken}"/> to be a <see cref="IStream{TToken}"/>.
         /// </summary>
-        /// <typeparam name="TToken">The exact <see cref="IToken"/> handled by the lexer.</typeparam>
-        /// <param name="lexer">The <see cref="ILexer{TToken}"/> to adapt.</param>
-        /// <returns>An <see cref="ITokenStream{TToken}"/> that supports all operations and reads from
-        /// <paramref name="lexer"/>.</returns>
-        public static ITokenStream<TToken> AsTokenStream<TToken>(this ILexer<TToken> lexer)
-            where TToken : IToken => new BufferedTokenStream<TToken>(new LexerAdapter<TToken>(lexer));
+        /// <typeparam name="TToken">The token type produced by the lexer.</typeparam>
+        /// <param name="lexer">The lexer to adapt.</param>
+        /// <returns>An <see cref="IStream{TToken}"/> that reads from <paramref name="lexer"/>.</returns>
+        public static IStream<TToken> ToStream<TToken>(this ILexer<TToken> lexer)
+            where TToken : IToken => new LexerStreamAdapter<TToken>(lexer);
     }
 }

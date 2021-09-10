@@ -4,8 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using Yoakke.Ir.Model.Attributes;
 using Yoakke.Ir.Syntax;
 

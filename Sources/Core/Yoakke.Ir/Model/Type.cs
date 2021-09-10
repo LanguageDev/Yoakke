@@ -2,10 +2,8 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
-using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Text;
 using Yoakke.Ir.Model.Attributes;
 
 namespace Yoakke.Ir.Model
@@ -84,7 +82,7 @@ namespace Yoakke.Ir.Model
         /// <summary>
         /// A signed integer type with a given bit-width.
         /// </summary>
-        public record Int(int Bits) : Type
+        public new record Int(int Bits) : Type
         {
             /// <inheritdoc/>
             public override Type Type => Type_.Instance;

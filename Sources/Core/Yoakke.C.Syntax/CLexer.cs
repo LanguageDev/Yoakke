@@ -6,7 +6,7 @@ using System;
 using System.IO;
 using System.Text;
 using Yoakke.Lexer;
-using Yoakke.Lexer.Streams;
+using Yoakke.Streams;
 using Yoakke.Text;
 
 namespace Yoakke.C.Syntax
@@ -81,7 +81,7 @@ namespace Yoakke.C.Syntax
 
         begin:
             // Since we can jump back here, we need to reset
-            this.source.Advance(offset);
+            this.source.Consume(offset);
             offset = 0;
 
             // EOF

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Yoakke.Ir.Model;
 using Yoakke.Ir.Model.Attributes;
-using Yoakke.Ir.Model.Builders;
 using Yoakke.Ir.Syntax;
 using AttributeTargets = Yoakke.Ir.Model.Attributes.AttributeTargets;
 using Type = Yoakke.Ir.Model.Type;

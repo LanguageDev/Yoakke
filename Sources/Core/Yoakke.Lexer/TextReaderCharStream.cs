@@ -3,13 +3,12 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using Yoakke.Collections;
+using Yoakke.Streams;
 using Yoakke.Text;
 
-namespace Yoakke.Lexer.Streams
+namespace Yoakke.Lexer
 {
     /// <summary>
     /// An <see cref="ICharStream"/> that wraps a <see cref="TextReader"/>.
@@ -60,7 +59,7 @@ namespace Yoakke.Lexer.Streams
         }
 
         /// <inheritdoc/>
-        public bool TryAdvance(out char ch)
+        public bool TryConsume(out char ch)
         {
             if (!this.TryPeek(out ch)) return false;
             var current = this.peek.RemoveFront();
@@ -70,14 +69,7 @@ namespace Yoakke.Lexer.Streams
         }
 
         /// <inheritdoc/>
-        public int Advance(int amount)
-        {
-            for (var i = 0; i < amount; ++i)
-            {
-                if (!this.TryAdvance(out var _)) return i;
-            }
-            return amount;
-        }
+        public int Consume(int amount) => StreamExtensions.Consume(this, amount);
 
         private static Position NextPosition(Position pos, char lastChar, char currentChar)
         {
@@ -87,5 +79,8 @@ namespace Yoakke.Lexer.Streams
             if (char.IsControl(currentChar)) return pos;
             return pos.Advance();
         }
+
+        /// <inheritdoc/>
+        public void Defer(char item) => throw new NotSupportedException();
     }
 }

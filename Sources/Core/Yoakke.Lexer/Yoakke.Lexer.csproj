@@ -7,6 +7,7 @@
   <ItemGroup>
     <ProjectReference Include="$(SolutionDir)\Core\Yoakke.Text\Yoakke.Text.csproj" />
     <ProjectReference Include="$(SolutionDir)\Core\Yoakke.Collections\Yoakke.Collections.csproj" />
+    <ProjectReference Include="$(SolutionDir)\Core\Yoakke.Streams\Yoakke.Streams.csproj" />
     <ProjectReference Include="$(SolutionDir)\Core\Yoakke.Polyfill\Yoakke.Polyfill.csproj" />
   </ItemGroup>
 

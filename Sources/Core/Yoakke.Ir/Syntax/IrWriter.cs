@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using Yoakke.Collections;
 using Yoakke.Ir.Model;
 using Yoakke.Ir.Model.Attributes;

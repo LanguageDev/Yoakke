@@ -10,6 +10,7 @@ namespace Yoakke.Lexer.Generator
     internal static class TypeNames
     {
         private const string LexerNamespace = "Yoakke.Lexer";
+        private const string StreamsNamespace = "Yoakke.Streams";
 
         /// <summary>
         /// System.InvalidOperationException.
@@ -25,6 +26,11 @@ namespace Yoakke.Lexer.Generator
         /// System.IO.StringReader.
         /// </summary>
         public const string StringReader = "System.IO.StringReader";
+
+        /// <summary>
+        /// MaybeNullWhen attribute.
+        /// </summary>
+        public const string MaybeNullWhen = "System.Diagnostics.CodeAnalysis.MaybeNullWhen";
 
         /// <summary>
         /// The attribute that turns an enumeration into a generated lexer.
@@ -64,12 +70,12 @@ namespace Yoakke.Lexer.Generator
         /// <summary>
         /// The character-stream interface.
         /// </summary>
-        public static readonly string ICharStream = $"{LexerNamespace}.Streams.ICharStream";
+        public static readonly string ICharStream = $"{LexerNamespace}.ICharStream";
 
         /// <summary>
         /// A text-reader char stream implementation.
         /// </summary>
-        public static readonly string TextReaderCharStream = $"{LexerNamespace}.Streams.TextReaderCharStream";
+        public static readonly string TextReaderCharStream = $"{LexerNamespace}.TextReaderCharStream";
 
         /// <summary>
         /// The lexer interface.
@@ -77,9 +83,9 @@ namespace Yoakke.Lexer.Generator
         public static readonly string ILexer = $"{LexerNamespace}.ILexer";
 
         /// <summary>
-        /// The token-stream interface.
+        /// The stream interface.
         /// </summary>
-        public static readonly string ITokenStream = $"{LexerNamespace}.Streams.ITokenStream";
+        public static readonly string IStream = $"{StreamsNamespace}.IStream";
 
         /// <summary>
         /// The pre-defined token class.

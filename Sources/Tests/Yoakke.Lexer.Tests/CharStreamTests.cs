@@ -4,7 +4,7 @@
 
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Yoakke.Lexer.Streams;
+using Yoakke.Streams;
 using Yoakke.Text;
 
 namespace Yoakke.Lexer.Tests
@@ -44,7 +44,7 @@ namespace Yoakke.Lexer.Tests
                 if (this.IsEnd) return this.charStream.ConsumeToken(TokenType.End, 0);
                 if (char.IsWhiteSpace(this.charStream.Peek()))
                 {
-                    this.charStream.Advance();
+                    this.charStream.Consume();
                     goto begin;
                 }
                 if (this.charStream.Matches("//"))
@@ -54,7 +54,7 @@ namespace Yoakke.Lexer.Tests
                     {
                         // Pass
                     }
-                    this.charStream.Advance(i);
+                    this.charStream.Consume(i);
                     goto begin;
                 }
                 if (this.charStream.Peek() == '+') return this.charStream.ConsumeToken(TokenType.Plus, 1);
@@ -62,7 +62,7 @@ namespace Yoakke.Lexer.Tests
                 if (char.IsDigit(this.charStream.Peek()))
                 {
                     var length = 1;
-                    for (; char.IsDigit(this.charStream.LookAhead(length)); ++length)
+                    for (; char.IsDigit(this.charStream.LookAhead(length, '\0')); ++length)
                     {
                         // Pass
                     }
@@ -71,7 +71,7 @@ namespace Yoakke.Lexer.Tests
                 if (char.IsLetter(this.charStream.Peek()))
                 {
                     var length = 1;
-                    for (; char.IsLetterOrDigit(this.charStream.LookAhead(length)); ++length)
+                    for (; char.IsLetterOrDigit(this.charStream.LookAhead(length, '\0')); ++length)
                     {
                         // Pass
                     }

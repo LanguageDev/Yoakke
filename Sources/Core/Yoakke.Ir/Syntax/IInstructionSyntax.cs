@@ -2,13 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using Yoakke.Ir.Model;
-using Yoakke.Lexer;
-using Yoakke.Lexer.Streams;
 using Type = System.Type;
 
 namespace Yoakke.Ir.Syntax

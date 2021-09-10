@@ -3,9 +3,6 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using Yoakke.Ir.Model;
 
 namespace Yoakke.Ir.Syntax

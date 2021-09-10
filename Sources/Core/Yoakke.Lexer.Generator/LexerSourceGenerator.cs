@@ -188,7 +188,8 @@ public {className}(string text) : this(new {TypeNames.StringReader}(text)) {{ }}
             var (prefix, suffix) = lexerClass.ContainingSymbol.DeclareInsideExternally();
             var (genericTypes, genericConstraints) = lexerClass.GetGenericCrud();
             return $@"
-using Yoakke.Lexer.Streams;
+using Yoakke.Streams;
+using Yoakke.Lexer;
 #pragma warning disable CS0162
 {prefix}
 partial {lexerClass.GetTypeKindName()} {className}{genericTypes} : {TypeNames.ILexer}<{tokenName}> {genericConstraints}
@@ -223,9 +224,9 @@ begin:
 end_loop:
         if (lastOffset > 0)
         {{
-            if (lastTokenType == null) 
+            if (lastTokenType is null) 
             {{
-                this.{sourceField}.Advance(lastOffset);
+                this.{sourceField}.Consume(lastOffset);
                 goto begin;
             }}
             return this.{sourceField}.ConsumeToken(lastTokenType.Value, lastOffset);
