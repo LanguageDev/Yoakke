@@ -16,7 +16,7 @@ namespace Yoakke.Parser
         public readonly T Value;
 
         /// <summary>
-        /// The offset in the number of tokens.
+        /// The offset in the number of elements.
         /// </summary>
         public readonly int Offset;
 
@@ -29,7 +29,7 @@ namespace Yoakke.Parser
         /// Initializes a new instance of the <see cref="ParseOk{T}"/> struct.
         /// </summary>
         /// <param name="value">The parsed value.</param>
-        /// <param name="offset">The offset in the number of tokens.</param>
+        /// <param name="offset">The offset in the number of elements.</param>
         /// <param name="furthestError">The furthest <see cref="ParseError"/> found so far.</param>
         public ParseOk(T value, int offset, ParseError? furthestError = null)
         {

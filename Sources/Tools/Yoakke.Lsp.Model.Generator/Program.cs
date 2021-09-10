@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Yoakke.Lexer;
 
 namespace Yoakke.Lsp.Model.Generator
 {
@@ -37,7 +38,7 @@ namespace Yoakke.Lsp.Model.Generator
                     {
                         Console.WriteLine($"  expected {string.Join(" or ", element.Expected)} while parsing {element.Context}");
                     }
-                    Console.WriteLine($"  but got {(err.Got == null ? "end of input" : err.Got.Text)}");
+                    Console.WriteLine($"  but got {(err.Got == null ? "end of input" : ((IToken<TokenType>)err.Got).Text)}");
                     break;
                 }
                 var ast = parseResult.Ok.Value;

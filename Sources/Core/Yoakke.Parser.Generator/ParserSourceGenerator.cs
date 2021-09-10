@@ -424,7 +424,7 @@ partial {parserClass.GetTypeKindName()} {className}{genericTypes} {genericConstr
                 code.AppendLine($"{resultVar} = parse{key}({lastIndex});");
                 // HEURISTIC: If the parse didn't advance anything, replace error
                 code.AppendLine($"if ({resultVar}.IsError && (!this.{this.sourceField}.TryLookAhead({lastIndex}, out var {peekVar}) || ReferenceEquals({peekVar}, {resultVar}.Error.Got))) {{");
-                code.AppendLine($"    {resultVar} = {TypeNames.ParseResult}.Error(\"{calledRule.VisualName}\", {resultVar}.Error.Got, \"{rule.VisualName}\");");
+                code.AppendLine($"    {resultVar} = {TypeNames.ParseResult}.Error(\"{calledRule.VisualName}\", {resultVar}.Error.Got, {resultVar}.Error.Position, \"{rule.VisualName}\");");
                 code.AppendLine("}");
                 break;
             }
@@ -439,7 +439,7 @@ partial {parserClass.GetTypeKindName()} {className}{genericTypes} {genericConstr
                     code.AppendLine($"    {resultVar} = {TypeNames.ParseResult}.Ok(({parsedType}){resultTok}, {lastIndex} + 1);");
                     code.AppendLine("} else {");
                     code.AppendLine($"    this.{this.sourceField}.TryLookAhead({lastIndex}, out var got);");
-                    code.AppendLine($"    {resultVar} = {TypeNames.ParseResult}.Error(\"{lit.Value}\", got, \"{rule.VisualName}\");");
+                    code.AppendLine($"    {resultVar} = {TypeNames.ParseResult}.Error(\"{lit.Value}\", got, {resultTok}.Range.Start, \"{rule.VisualName}\");");
                     code.AppendLine("}");
                 }
                 else
@@ -451,7 +451,7 @@ partial {parserClass.GetTypeKindName()} {className}{genericTypes} {genericConstr
                     code.AppendLine($"    {resultVar} = {TypeNames.ParseResult}.Ok({resultTok}, {lastIndex} + 1);");
                     code.AppendLine("} else {");
                     code.AppendLine($"    this.{this.sourceField}.TryLookAhead({lastIndex}, out var got);");
-                    code.AppendLine($"    {resultVar} = {TypeNames.ParseResult}.Error({tokVariant}, got, \"{rule.VisualName}\");");
+                    code.AppendLine($"    {resultVar} = {TypeNames.ParseResult}.Error({tokVariant}, got, {resultTok}.Range.Start, \"{rule.VisualName}\");");
                     code.AppendLine("}");
                 }
                 break;

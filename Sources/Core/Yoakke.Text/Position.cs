@@ -9,7 +9,7 @@ namespace Yoakke.Text
     /// <summary>
     /// Represents 2D position inside some text.
     /// </summary>
-    public readonly struct Position : IEquatable<Position>, IComparable<Position>
+    public readonly struct Position : IEquatable<Position>, IComparable, IComparable<Position>
     {
         /// <summary>
         /// The 0-based line index.
@@ -40,6 +40,11 @@ namespace Yoakke.Text
 
         /// <inheritdoc/>
         public override int GetHashCode() => HashCode.Combine(this.Line, this.Column);
+
+        /// <inheritdoc/>
+        public int CompareTo(object obj) => obj is Position pos
+            ? this.CompareTo(pos)
+            : throw new ArgumentException("Argument must be a Position", nameof(obj));
 
         /// <inheritdoc/>
         public int CompareTo(Position other)

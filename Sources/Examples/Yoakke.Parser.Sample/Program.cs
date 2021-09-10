@@ -92,7 +92,7 @@ namespace Yoakke.Parser.Sample
                     {
                         Console.WriteLine($"  expected {string.Join(" or ", element.Expected)} while parsing {element.Context}");
                     }
-                    Console.WriteLine($"  but got {(err.Got == null ? "end of input" : err.Got.Text)}");
+                    Console.WriteLine($"  but got {(err.Got == null ? "end of input" : ((IToken<TokenType>)err.Got).Text)}");
                     parser.Synchronize();
                 }
             }

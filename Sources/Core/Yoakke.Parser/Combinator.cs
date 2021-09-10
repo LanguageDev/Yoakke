@@ -24,6 +24,21 @@ namespace Yoakke.Parser
         /// <returns>The result of the parse.</returns>
         public delegate ParseResult<TResult> Parser<TItem, TResult>(IPeekableStream<TItem> stream, int offset);
 
+        /// <summary>
+        /// Applies a parser to some input, consuming the parsed tokens on success.
+        /// </summary>
+        /// <typeparam name="TItem">The item type of the stream.</typeparam>
+        /// <typeparam name="TResult">The parsed value type.</typeparam>
+        /// <param name="parser">The parser to apply.</param>
+        /// <param name="stream">The stream to parse from.</param>
+        /// <returns>The result of parsing with <paramref name="parser"/> on <paramref name="stream"/>.</returns>
+        public static ParseResult<TResult> Parse<TItem, TResult>(this Parser<TItem, TResult> parser, IPeekableStream<TItem> stream)
+        {
+            var result = parser(stream, 0);
+            if (result.IsOk) stream.Consume(result.Ok.Offset);
+            return result;
+        }
+
         #region Core Combinators
 
         /// <summary>

@@ -2,9 +2,11 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Yoakke.Lexer;
+using Yoakke.Text;
 
 namespace Yoakke.Parser
 {
@@ -19,25 +21,32 @@ namespace Yoakke.Parser
         public IReadOnlyDictionary<string, ParseErrorElement> Elements { get; }
 
         /// <summary>
-        /// The input that was found, if any.
+        /// The item that was found, if any.
         /// </summary>
-        public IToken? Got { get; }
+        public object? Got { get; }
+
+        /// <summary>
+        /// The position where the error occured.
+        /// </summary>
+        public IComparable Position { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ParseError"/> class.
         /// </summary>
         /// <param name="expected">The expected input.</param>
-        /// <param name="got">The input that was found.</param>
+        /// <param name="got">The item that was found.</param>
+        /// <param name="position">The position where the error occured.</param>
         /// <param name="context">The context in which the error occurred.</param>
-        public ParseError(object expected, IToken? got, string context)
-            : this(new Dictionary<string, ParseErrorElement> { { context, new ParseErrorElement(expected, context) } }, got)
+        public ParseError(object expected, object? got, IComparable position, string context)
+            : this(new Dictionary<string, ParseErrorElement> { { context, new ParseErrorElement(expected, context) } }, got, position)
         {
         }
 
-        private ParseError(IReadOnlyDictionary<string, ParseErrorElement> elements, IToken? got)
+        private ParseError(IReadOnlyDictionary<string, ParseErrorElement> elements, object? got, IComparable position)
         {
             this.Elements = elements;
             this.Got = got;
+            this.Position = position;
         }
 
         /// <summary>
@@ -48,20 +57,14 @@ namespace Yoakke.Parser
         /// <returns>The error that represents both of them properly.</returns>
         public static ParseError? operator |(ParseError? first, ParseError? second)
         {
+            // Check nullities
             if (first is null && second is null) return null;
             if (first is null) return second!;
             if (second is null) return first;
-            if (first.Got is null || second.Got is null)
-            {
-                // At least one of them is out of the input
-                if (first.Got is null && second.Got is not null) return first;
-                if (first.Got is not null && second.Got is null) return second;
-            }
-            else
-            {
-                if (first.Got.Range.Start < second.Got.Range.Start) return second;
-                if (second.Got.Range.Start < first.Got.Range.Start) return first;
-            }
+            // Position overrides above all
+            var cmp = first.Position.CompareTo(second.Position);
+            if (cmp < 0) return second;
+            if (cmp > 0) return first;
             // Both of them got stuck at the same place, merge entries
             var elements = first.Elements.Values.ToDictionary(e => e.Context, e => e.Expected.ToHashSet());
             foreach (var element in second.Elements.Values)
@@ -76,9 +79,15 @@ namespace Yoakke.Parser
                     elements.Add(element.Context, part);
                 }
             }
+            // TODO: Think this through
+            // NOTE: Could it ever happen that first.Got and second.Got are different but neither are null?
+            // Would we want to unify these and move them to ParseErrorElement or something?
+            // Since position is here now, Got is kind of a utility we have here, we could just aswell have a 
+            // 'reason' for each element
             return new(
                 elements.ToDictionary(kv => kv.Key, kv => new ParseErrorElement(kv.Value, kv.Key)),
-                first.Got);
+                first.Got ?? second.Got,
+                first.Position);
         }
     }
 }
