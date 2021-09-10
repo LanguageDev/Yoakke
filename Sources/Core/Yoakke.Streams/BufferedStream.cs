@@ -8,40 +8,38 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Yoakke.Collections;
 
-namespace Yoakke.Streams.Internal
+namespace Yoakke.Streams
 {
     /// <summary>
-    /// An <see cref="IPeekableStream{TStream}"/> implementation that wraps an <see cref="IStream{TStream}"/>.
+    /// An <see cref="IPeekableStream{T}"/> implementation that wraps an <see cref="IStream{T}"/>.
     /// </summary>
-    /// <typeparam name="TItem">The item type.</typeparam>
-    /// <typeparam name="TStream">The underlying stream type.</typeparam>
-    internal class BufferedStream<TItem, TStream> : IPeekableStream<TItem>
-        where TStream : IStream<TItem>
+    /// <typeparam name="T">The item type.</typeparam>
+    public class BufferedStream<T> : IPeekableStream<T>
     {
         /// <summary>
         /// The underlying stream.
         /// </summary>
-        public TStream Underlying { get; }
+        public IStream<T> Underlying { get; }
 
         /// <inheritdoc/>
         public bool IsEnd => this.Underlying.IsEnd && this.peek.Count == 0;
 
-        private readonly RingBuffer<TItem> peek = new();
+        private readonly RingBuffer<T> peek = new();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BufferedStream{TItem, TStream}"/> class.
+        /// Initializes a new instance of the <see cref="BufferedStream{T}"/> class.
         /// </summary>
         /// <param name="underlying">The underlying stream.</param>
-        public BufferedStream(TStream underlying)
+        public BufferedStream(IStream<T> underlying)
         {
             this.Underlying = underlying;
         }
 
         /// <inheritdoc/>
-        public bool TryPeek([MaybeNullWhen(false)] out TItem item) => this.TryLookAhead(0, out item);
+        public bool TryPeek([MaybeNullWhen(false)] out T item) => this.TryLookAhead(0, out item);
 
         /// <inheritdoc/>
-        public bool TryLookAhead(int offset, [MaybeNullWhen(false)] out TItem item)
+        public bool TryLookAhead(int offset, [MaybeNullWhen(false)] out T item)
         {
             while (this.peek.Count <= offset)
             {
@@ -61,7 +59,7 @@ namespace Yoakke.Streams.Internal
         }
 
         /// <inheritdoc/>
-        public bool TryConsume([MaybeNullWhen(false)] out TItem item)
+        public bool TryConsume([MaybeNullWhen(false)] out T item)
         {
             if (!this.TryPeek(out item)) return false;
             this.peek.RemoveFront();
@@ -80,6 +78,6 @@ namespace Yoakke.Streams.Internal
         }
 
         /// <inheritdoc/>
-        public void Defer(TItem item) => this.peek.AddFront(item);
+        public void Defer(T item) => this.peek.AddFront(item);
     }
 }

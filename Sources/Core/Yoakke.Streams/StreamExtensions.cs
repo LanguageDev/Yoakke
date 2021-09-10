@@ -14,6 +14,27 @@ namespace Yoakke.Streams
     public static class StreamExtensions
     {
         /// <summary>
+        /// Converts a stream to a <see cref="IPeekableStream{TItem}"/>.
+        /// </summary>
+        /// <typeparam name="TItem">The item type of the stream.</typeparam>
+        /// <param name="stream">The stream to convert.</param>
+        /// <returns><paramref name="stream"/> as an <see cref="IPeekableStream{T}"/>.</returns>
+        public static IPeekableStream<TItem> AsPeekable<TItem>(this IStream<TItem> stream) => stream is IPeekableStream<TItem> peekable
+            ? peekable
+            : new BufferedStream<TItem>(stream);
+
+        /// <summary>
+        /// Filters a stream using a predicate.
+        /// </summary>
+        /// <typeparam name="TItem">The item type of the stream.</typeparam>
+        /// <param name="stream">The stream to filter.</param>
+        /// <param name="predicate">The predicate to use for filtering.</param>
+        /// <returns><paramref name="stream"/> that only yields the items that the <paramref name="predicate"/> returns true
+        /// for.</returns>
+        public static IStream<TItem> Filter<TItem>(this IStream<TItem> stream, Predicate<TItem> predicate) =>
+            new FilteredStream<TItem>(stream, predicate);
+
+        /// <summary>
         /// Consumes the upcoming item in the stream.
         /// </summary>
         /// <typeparam name="TItem">The item type of the stream.</typeparam>
@@ -42,5 +63,23 @@ namespace Yoakke.Streams
         public static TItem LookAhead<TItem>(this IPeekableStream<TItem> stream, int offset) => stream.TryLookAhead(offset, out var item)
             ? item
             : throw new InvalidOperationException("The stream had no more items.");
+
+        /// <summary>
+        /// A default implementation for <see cref="IStream{TItem}.Consume(int)"/>.
+        /// </summary>
+        /// <typeparam name="TItem">The item type of the stream.</typeparam>
+        /// <param name="stream">The stream to consume from.</param>
+        /// <param name="amount">The amount to consume.</param>
+        /// <returns>The amount that was actually consumed.</returns>
+        public static int Consume<TItem>(IStream<TItem> stream, int amount)
+        {
+            if (amount == 0) return 0;
+            var i = 0;
+            for (; i < amount && stream.TryConsume(out _); ++i)
+            {
+                // Pass
+            }
+            return i;
+        }
     }
 }
