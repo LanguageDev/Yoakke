@@ -16,7 +16,7 @@ namespace Yoakke.Streams
     public class FilteredStream<T> : IStream<T>
     {
         /// <inheritdoc/>
-        public bool IsEnd => throw new NotImplementedException();
+        public bool IsEnd => this.Underlying.IsEnd;
 
         /// <summary>
         /// The underlying stream this one reads from.
