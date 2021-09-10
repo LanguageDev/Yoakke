@@ -42,6 +42,19 @@ namespace Yoakke.Parser
         #region Core Combinators
 
         /// <summary>
+        /// Constructs a parser, that takes a single element from the input stream.
+        /// </summary>
+        /// <typeparam name="TItem">The item type of the stream.</typeparam>
+        /// <returns>A new parser, that takes a single element from the input stream, if there is any.</returns>
+        public static Parser<TItem, TItem> Item<TItem>() =>
+            (stream, offset) =>
+            {
+                if (stream.TryLookAhead(offset, out var item)) return ParseResult.Ok(item, offset + 1, null);
+                // TODO: Better error info?
+                else return ParseResult.Error("item", null, offset, string.Empty);
+            };
+
+        /// <summary>
         /// Constructs an alternative of parsers.
         /// </summary>
         /// <typeparam name="TItem">The item type of the stream.</typeparam>
@@ -80,6 +93,85 @@ namespace Yoakke.Parser
                 var value = (firstOk.Value, secondOk.Value);
                 var error = firstOk.FurthestError | secondOk.FurthestError;
                 return ParseResult.Ok(value, secondOk.Offset, error);
+            };
+
+        /// <summary>
+        /// Constructs a parser for 0 or more repetitions of an element.
+        /// </summary>
+        /// <typeparam name="TItem">The item type of the stream.</typeparam>
+        /// <typeparam name="TResult">The parsed value type.</typeparam>
+        /// <param name="element">The repeated element parser.</param>
+        /// <returns>A new parser that always succeeds, and parses <paramref name="element"/> as many times, as it
+        /// succeeds. The results are collected into a list.</returns>
+        public static Parser<TItem, IReadOnlyList<TResult>> Rep0<TItem, TResult>(Parser<TItem, TResult> element) =>
+            (stream, offset) =>
+            {
+                var result = new List<TResult>();
+                ParseError? error = null;
+                while (true)
+                {
+                    var item = element(stream, offset);
+                    error |= item.FurthestError;
+                    if (item.IsError) break;
+                    result.Add(item.Ok.Value);
+                    offset = item.Ok.Offset;
+                }
+                return ParseResult.Ok(result as IReadOnlyList<TResult>, offset, error);
+            };
+
+        /// <summary>
+        /// Constructs a parser for 1 or more repetitions of an element.
+        /// </summary>
+        /// <typeparam name="TItem">The item type of the stream.</typeparam>
+        /// <typeparam name="TResult">The parsed value type.</typeparam>
+        /// <param name="element">The repeated element parser.</param>
+        /// <returns>A new parser that succeeds as long as it matches at least one element, and continues as many times, as it
+        /// succeeds. The results are collected into a list.</returns>
+        public static Parser<TItem, IReadOnlyList<TResult>> Rep1<TItem, TResult>(Parser<TItem, TResult> element)
+        {
+            var rep0 = Rep0(element);
+            return (stream, offset) =>
+            {
+                var result = rep0(stream, offset);
+                return result.Ok.Value.Count == 0
+                    ? result.FurthestError!
+                    : result.Ok;
+            };
+        }
+
+        /// <summary>
+        /// Constructs a parser that optionally parses an element.
+        /// </summary>
+        /// <typeparam name="TItem">The item type of the stream.</typeparam>
+        /// <typeparam name="TResult">The parsed value type.</typeparam>
+        /// <param name="element">The optional element parser.</param>
+        /// <returns>A new parser that always succeeds and includes the succeeding value, of the element parser succeeded.</returns>
+        public static Parser<TItem, TResult?> Opt<TItem, TResult>(Parser<TItem, TResult> element) =>
+            (stream, offset) =>
+            {
+                var result = element(stream, offset);
+                if (result.IsOk) return result!;
+                return ParseResult.Ok(default(TResult?), offset, result.FurthestError);
+            };
+
+        /// <summary>
+        /// Constructs a parser that trasforms the result, in case the subelement parser succeeds.
+        /// </summary>
+        /// <typeparam name="TItem">The item type of the stream.</typeparam>
+        /// <typeparam name="TParsed">The parsed value type.</typeparam>
+        /// <typeparam name="TResult">The transformed value type.</typeparam>
+        /// <param name="element">The element parser.</param>
+        /// <param name="transformer">The transformer function.</param>
+        /// <returns>A new parser that invokes the <paramref name="element"/> parsed, and transforms the result, if it
+        /// succeeds, using <paramref name="transformer"/>.</returns>
+        public static Parser<TItem, TResult> Transform<TItem, TParsed, TResult>(
+            Parser<TItem, TParsed> element,
+            Func<TParsed, TResult> transformer) =>
+            (stream, offset) =>
+            {
+                var result = element(stream, offset);
+                if (result.IsError) return result.Error;
+                return ParseResult.Ok(transformer(result.Ok.Value), result.Ok.Offset, result.Ok.FurthestError);
             };
 
         #endregion
