@@ -21,12 +21,14 @@ namespace Yoakke.Streams
         /// <summary>
         /// The underlying stream this one reads from.
         /// </summary>
-        public IStream<T> Underlying { get; }
+        public IStream<T> Underlying => this.underlying;
 
         /// <summary>
         /// The predicate used for filtering.
         /// </summary>
         public Predicate<T> Predicate { get; }
+
+        private readonly PeekStream<T> underlying;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FilteredStream{T}"/> class.
@@ -35,22 +37,35 @@ namespace Yoakke.Streams
         /// <param name="predicate">The predicate used for filtering.</param>
         public FilteredStream(IStream<T> underlying, Predicate<T> predicate)
         {
-            this.Underlying = underlying;
+            this.underlying = new PeekStream<T>(underlying);
             this.Predicate = predicate;
+            this.UpdatePeek();
         }
 
         /// <inheritdoc/>
         public bool TryConsume([MaybeNullWhen(false)] out T item)
         {
-            while (true)
+            if (this.underlying.TryConsume(out item))
             {
-                if (!this.Underlying.TryConsume(out item)) return false;
-                if (!this.Predicate(item)) continue;
+                this.UpdatePeek();
                 return true;
+            }
+            else
+            {
+                return false;
             }
         }
 
         /// <inheritdoc/>
         public int Consume(int amount) => StreamExtensions.Consume(this, amount);
+
+        private void UpdatePeek()
+        {
+            while (this.underlying.TryPeek(out var item))
+            {
+                if (this.Predicate(item)) break;
+                this.underlying.Consume();
+            }
+        }
     }
 }
