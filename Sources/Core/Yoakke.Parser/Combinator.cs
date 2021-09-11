@@ -55,17 +55,31 @@ namespace Yoakke.Parser
             };
 
         /// <summary>
+        /// Constructs a parser, that takes a single element from the input stream, if it matches the given one.
+        /// </summary>
+        /// <typeparam name="TItem">The item type of the stream.</typeparam>
+        /// <param name="item">The item to match.</param>
+        /// <returns>A new parser, that takes a single element from the input stream, if it equals <paramref name="item"/>.</returns>
+        public static Parser<TItem, TItem> Item<TItem>(TItem item) =>
+            (stream, offset) =>
+            {
+                if (stream.TryLookAhead(offset, out var got) && item!.Equals(got))
+                {
+                    return ParseResult.Ok(item, offset + 1, null);
+                }
+                else
+                {
+                    // TODO: Better error info?
+                    return ParseResult.Error(item!, got, offset, string.Empty);
+                }
+            };
+
+        /// <summary>
         /// Constructs a parser, that takes a single character, if it matches a specified one.
         /// </summary>
         /// <param name="ch">The character to match.</param>
         /// <returns>A new parser, that tries to match a character with <paramref name="ch"/>.</returns>
-        public static Parser<char, char> Char(char ch) =>
-            (stream, offset) =>
-            {
-                if (stream.TryLookAhead(offset, out var c) && c == ch) return ParseResult.Ok(ch, offset + 1, null);
-                // TODO: Better error info?
-                else return ParseResult.Error(ch.ToString(), c, offset, string.Empty);
-            };
+        public static Parser<char, char> Char(char ch) => Item(ch);
 
         /// <summary>
         /// Constructs a parser, that takes a single token, if its text matches the specified one.
@@ -92,7 +106,7 @@ namespace Yoakke.Parser
         /// <typeparam name="TKind">The token kind type.</typeparam>
         /// <param name="kind">The token kind to match.</param>
         /// <returns>A new parser, that tries to match a token with kind <paramref name="kind"/>.</returns>
-        public static Parser<IToken<TKind>, IToken<TKind>> Text<TKind>(TKind kind)
+        public static Parser<IToken<TKind>, IToken<TKind>> Kind<TKind>(TKind kind)
             where TKind : notnull =>
             (stream, offset) =>
             {
