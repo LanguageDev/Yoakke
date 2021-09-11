@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Yoakke.Lexer;
 using Yoakke.Streams;
 
 namespace Yoakke.Parser
@@ -52,6 +53,58 @@ namespace Yoakke.Parser
                 if (stream.TryLookAhead(offset, out var item)) return ParseResult.Ok(item, offset + 1, null);
                 // TODO: Better error info?
                 else return ParseResult.Error("item", null, offset, string.Empty);
+            };
+
+        /// <summary>
+        /// Constructs a parser, that takes a single character, if it matches a specified one.
+        /// </summary>
+        /// <param name="ch">The character to match.</param>
+        /// <returns>A new parser, that tries to match a character with <paramref name="ch"/>.</returns>
+        public static Parser<char, char> Char(char ch) =>
+            (stream, offset) =>
+            {
+                if (stream.TryLookAhead(offset, out var c) && c == ch) return ParseResult.Ok(ch, offset + 1, null);
+                // TODO: Better error info?
+                else return ParseResult.Error(ch.ToString(), c, offset, string.Empty);
+            };
+
+        /// <summary>
+        /// Constructs a parser, that takes a single token, if its text matches the specified one.
+        /// </summary>
+        /// <param name="text">The text to match.</param>
+        /// <returns>A new parser, that tries to match a token with text <paramref name="text"/>.</returns>
+        public static Parser<IToken, IToken> Text(string text) =>
+            (stream, offset) =>
+            {
+                if (stream.TryLookAhead(offset, out var token) && token.Text == text)
+                {
+                    return ParseResult.Ok(token, offset + 1, null);
+                }
+                else
+                {
+                    // TODO: Better error info?
+                    return ParseResult.Error(text, token, offset, string.Empty);
+                }
+            };
+
+        /// <summary>
+        /// Constructs a parser, that takes a single token, if its kind matches the specified one.
+        /// </summary>
+        /// <param name="kind">The token kind to match.</param>
+        /// <returns>A new parser, that tries to match a token with kind <paramref name="kind"/>.</returns>
+        public static Parser<IToken<TKind>, IToken<TKind>> Text<TKind>(TKind kind)
+            where TKind : notnull =>
+            (stream, offset) =>
+            {
+                if (stream.TryLookAhead(offset, out var token) && token.Kind.Equals(kind))
+                {
+                    return ParseResult.Ok(token, offset + 1, null);
+                }
+                else
+                {
+                    // TODO: Better error info?
+                    return ParseResult.Error(kind, token, offset, string.Empty);
+                }
             };
 
         /// <summary>
