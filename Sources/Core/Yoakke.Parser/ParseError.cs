@@ -5,8 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Yoakke.Lexer;
-using Yoakke.Text;
 
 namespace Yoakke.Parser
 {

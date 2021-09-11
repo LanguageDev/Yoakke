@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Yoakke.Lexer;
 using Yoakke.Streams;
 
@@ -90,6 +89,7 @@ namespace Yoakke.Parser
         /// <summary>
         /// Constructs a parser, that takes a single token, if its kind matches the specified one.
         /// </summary>
+        /// <typeparam name="TKind">The token kind type.</typeparam>
         /// <param name="kind">The token kind to match.</param>
         /// <returns>A new parser, that tries to match a token with kind <paramref name="kind"/>.</returns>
         public static Parser<IToken<TKind>, IToken<TKind>> Text<TKind>(TKind kind)
@@ -226,6 +226,313 @@ namespace Yoakke.Parser
                 if (result.IsError) return result.Error;
                 return ParseResult.Ok(transformer(result.Ok.Value), result.Ok.Offset, result.Ok.FurthestError);
             };
+
+        #endregion
+
+        #region Alternatives
+
+        /// <summary>
+        /// Utility for constructing arbitrary amounts of alternatives. See
+        /// <see cref="Alt{TItem, TResult}(Parser{TItem, TResult}, Parser{TItem, TResult})"/>.
+        /// </summary>
+        /// <typeparam name="TItem">The item type of the stream.</typeparam>
+        /// <typeparam name="TResult">The result type of the parsers.</typeparam>
+        /// <param name="p1">The first alternative parser.</param>
+        /// <returns>The combined alternative parsers.</returns>
+        public static Parser<TItem, TResult> Alt<TItem, TResult>(Parser<TItem, TResult> p1) => p1;
+
+        /// <summary>
+        /// Utility for constructing arbitrary amounts of alternatives. See
+        /// <see cref="Alt{TItem, TResult}(Parser{TItem, TResult}, Parser{TItem, TResult})"/>.
+        /// </summary>
+        /// <typeparam name="TItem">The item type of the stream.</typeparam>
+        /// <typeparam name="TResult">The result type of the parsers.</typeparam>
+        /// <param name="p1">The first alternative parser.</param>
+        /// <param name="p2">The second alternative parser.</param>
+        /// <param name="p3">The third alternative parser.</param>
+        /// <returns>The combined alternative parsers.</returns>
+        public static Parser<TItem, TResult> Alt<TItem, TResult>(
+            Parser<TItem, TResult> p1,
+            Parser<TItem, TResult> p2,
+            Parser<TItem, TResult> p3) => Alt(Alt(p1, p2), p3);
+
+        /// <summary>
+        /// Utility for constructing arbitrary amounts of alternatives. See
+        /// <see cref="Alt{TItem, TResult}(Parser{TItem, TResult}, Parser{TItem, TResult})"/>.
+        /// </summary>
+        /// <typeparam name="TItem">The item type of the stream.</typeparam>
+        /// <typeparam name="TResult">The result type of the parsers.</typeparam>
+        /// <param name="p1">The first alternative parser.</param>
+        /// <param name="p2">The second alternative parser.</param>
+        /// <param name="p3">The third alternative parser.</param>
+        /// <param name="p4">The fourth alternative parser.</param>
+        /// <returns>The combined alternative parsers.</returns>
+        public static Parser<TItem, TResult> Alt<TItem, TResult>(
+            Parser<TItem, TResult> p1,
+            Parser<TItem, TResult> p2,
+            Parser<TItem, TResult> p3,
+            Parser<TItem, TResult> p4) => Alt(Alt(p1, p2, p3), p4);
+
+        /// <summary>
+        /// Utility for constructing arbitrary amounts of alternatives. See
+        /// <see cref="Alt{TItem, TResult}(Parser{TItem, TResult}, Parser{TItem, TResult})"/>.
+        /// </summary>
+        /// <typeparam name="TItem">The item type of the stream.</typeparam>
+        /// <typeparam name="TResult">The result type of the parsers.</typeparam>
+        /// <param name="p1">The first alternative parser.</param>
+        /// <param name="p2">The second alternative parser.</param>
+        /// <param name="p3">The third alternative parser.</param>
+        /// <param name="p4">The fourth alternative parser.</param>
+        /// <param name="p5">The fifth alternative parser.</param>
+        /// <returns>The combined alternative parsers.</returns>
+        public static Parser<TItem, TResult> Alt<TItem, TResult>(
+            Parser<TItem, TResult> p1,
+            Parser<TItem, TResult> p2,
+            Parser<TItem, TResult> p3,
+            Parser<TItem, TResult> p4,
+            Parser<TItem, TResult> p5) => Alt(Alt(p1, p2, p3, p4), p5);
+
+        /// <summary>
+        /// Utility for constructing arbitrary amounts of alternatives. See
+        /// <see cref="Alt{TItem, TResult}(Parser{TItem, TResult}, Parser{TItem, TResult})"/>.
+        /// </summary>
+        /// <typeparam name="TItem">The item type of the stream.</typeparam>
+        /// <typeparam name="TResult">The result type of the parsers.</typeparam>
+        /// <param name="p1">The first alternative parser.</param>
+        /// <param name="p2">The second alternative parser.</param>
+        /// <param name="p3">The third alternative parser.</param>
+        /// <param name="p4">The fourth alternative parser.</param>
+        /// <param name="p5">The fifth alternative parser.</param>
+        /// <param name="p6">The sixth alternative parser.</param>
+        /// <returns>The combined alternative parsers.</returns>
+        public static Parser<TItem, TResult> Alt<TItem, TResult>(
+            Parser<TItem, TResult> p1,
+            Parser<TItem, TResult> p2,
+            Parser<TItem, TResult> p3,
+            Parser<TItem, TResult> p4,
+            Parser<TItem, TResult> p5,
+            Parser<TItem, TResult> p6) => Alt(Alt(p1, p2, p3, p4, p5), p6);
+
+        /// <summary>
+        /// Utility for constructing arbitrary amounts of alternatives. See
+        /// <see cref="Alt{TItem, TResult}(Parser{TItem, TResult}, Parser{TItem, TResult})"/>.
+        /// </summary>
+        /// <typeparam name="TItem">The item type of the stream.</typeparam>
+        /// <typeparam name="TResult">The result type of the parsers.</typeparam>
+        /// <param name="p1">The first alternative parser.</param>
+        /// <param name="p2">The second alternative parser.</param>
+        /// <param name="p3">The third alternative parser.</param>
+        /// <param name="p4">The fourth alternative parser.</param>
+        /// <param name="p5">The fifth alternative parser.</param>
+        /// <param name="p6">The sixth alternative parser.</param>
+        /// <param name="p7">The seventh alternative parser.</param>
+        /// <returns>The combined alternative parsers.</returns>
+        public static Parser<TItem, TResult> Alt<TItem, TResult>(
+            Parser<TItem, TResult> p1,
+            Parser<TItem, TResult> p2,
+            Parser<TItem, TResult> p3,
+            Parser<TItem, TResult> p4,
+            Parser<TItem, TResult> p5,
+            Parser<TItem, TResult> p6,
+            Parser<TItem, TResult> p7) => Alt(Alt(p1, p2, p3, p4, p5, p6), p7);
+
+        /// <summary>
+        /// Utility for constructing arbitrary amounts of alternatives. See
+        /// <see cref="Alt{TItem, TResult}(Parser{TItem, TResult}, Parser{TItem, TResult})"/>.
+        /// </summary>
+        /// <typeparam name="TItem">The item type of the stream.</typeparam>
+        /// <typeparam name="TResult">The result type of the parsers.</typeparam>
+        /// <param name="p1">The first alternative parser.</param>
+        /// <param name="p2">The second alternative parser.</param>
+        /// <param name="p3">The third alternative parser.</param>
+        /// <param name="p4">The fourth alternative parser.</param>
+        /// <param name="p5">The fifth alternative parser.</param>
+        /// <param name="p6">The sixth alternative parser.</param>
+        /// <param name="p7">The seventh alternative parser.</param>
+        /// <param name="p8">The eight alternative parser.</param>
+        /// <returns>The combined alternative parsers.</returns>
+        public static Parser<TItem, TResult> Alt<TItem, TResult>(
+            Parser<TItem, TResult> p1,
+            Parser<TItem, TResult> p2,
+            Parser<TItem, TResult> p3,
+            Parser<TItem, TResult> p4,
+            Parser<TItem, TResult> p5,
+            Parser<TItem, TResult> p6,
+            Parser<TItem, TResult> p7,
+            Parser<TItem, TResult> p8) => Alt(Alt(p1, p2, p3, p4, p5, p6, p7), p8);
+
+        #endregion
+
+        #region Sequences
+
+        /// <summary>
+        /// Utility for constructing arbitrary length sequences. See
+        /// <see cref="Seq{TItem, TLeftResult, TRightResult}(Parser{TItem, TLeftResult}, Parser{TItem, TRightResult})"/>.
+        /// </summary>
+        /// <typeparam name="TItem">The item type of the stream.</typeparam>
+        /// <typeparam name="T1">The result type of the first parser.</typeparam>
+        /// <param name="p1">The first sequenced parser.</param>
+        /// <returns>The combined sequential parsers.</returns>
+        public static Parser<TItem, T1> Seq<TItem, T1>(Parser<TItem, T1> p1) => p1;
+
+        /// <summary>
+        /// Utility for constructing arbitrary length sequences. See
+        /// <see cref="Seq{TItem, TLeftResult, TRightResult}(Parser{TItem, TLeftResult}, Parser{TItem, TRightResult})"/>.
+        /// </summary>
+        /// <typeparam name="TItem">The item type of the stream.</typeparam>
+        /// <typeparam name="T1">The result type of the first parser.</typeparam>
+        /// <typeparam name="T2">The result type of the second parser.</typeparam>
+        /// <typeparam name="T3">The result type of the third parser.</typeparam>
+        /// <param name="p1">The first sequenced parser.</param>
+        /// <param name="p2">The second sequenced parser.</param>
+        /// <param name="p3">The third sequenced parser.</param>
+        /// <returns>The combined sequential parsers.</returns>
+        public static Parser<TItem, (T1, T2, T3)> Seq<TItem, T1, T2, T3>(
+            Parser<TItem, T1> p1,
+            Parser<TItem, T2> p2,
+            Parser<TItem, T3> p3) => Transform(
+                Seq(Seq(p1, p2), p3),
+                v => (v.Item1.Item1, v.Item1.Item2, v.Item2));
+
+        /// <summary>
+        /// Utility for constructing arbitrary length sequences. See
+        /// <see cref="Seq{TItem, TLeftResult, TRightResult}(Parser{TItem, TLeftResult}, Parser{TItem, TRightResult})"/>.
+        /// </summary>
+        /// <typeparam name="TItem">The item type of the stream.</typeparam>
+        /// <typeparam name="T1">The result type of the first parser.</typeparam>
+        /// <typeparam name="T2">The result type of the second parser.</typeparam>
+        /// <typeparam name="T3">The result type of the third parser.</typeparam>
+        /// <typeparam name="T4">The result type of the fourth parser.</typeparam>
+        /// <param name="p1">The first sequenced parser.</param>
+        /// <param name="p2">The second sequenced parser.</param>
+        /// <param name="p3">The third sequenced parser.</param>
+        /// <param name="p4">The fourth sequenced parser.</param>
+        /// <returns>The combined sequential parsers.</returns>
+        public static Parser<TItem, (T1, T2, T3, T4)> Seq<TItem, T1, T2, T3, T4>(
+            Parser<TItem, T1> p1,
+            Parser<TItem, T2> p2,
+            Parser<TItem, T3> p3,
+            Parser<TItem, T4> p4) => Transform(
+                Seq(Seq(p1, p2, p3), p4),
+                v => (v.Item1.Item1, v.Item1.Item2, v.Item1.Item3, v.Item2));
+
+        /// <summary>
+        /// Utility for constructing arbitrary length sequences. See
+        /// <see cref="Seq{TItem, TLeftResult, TRightResult}(Parser{TItem, TLeftResult}, Parser{TItem, TRightResult})"/>.
+        /// </summary>
+        /// <typeparam name="TItem">The item type of the stream.</typeparam>
+        /// <typeparam name="T1">The result type of the first parser.</typeparam>
+        /// <typeparam name="T2">The result type of the second parser.</typeparam>
+        /// <typeparam name="T3">The result type of the third parser.</typeparam>
+        /// <typeparam name="T4">The result type of the fourth parser.</typeparam>
+        /// <typeparam name="T5">The result type of the fifth parser.</typeparam>
+        /// <param name="p1">The first sequenced parser.</param>
+        /// <param name="p2">The second sequenced parser.</param>
+        /// <param name="p3">The third sequenced parser.</param>
+        /// <param name="p4">The fourth sequenced parser.</param>
+        /// <param name="p5">The fifth sequenced parser.</param>
+        /// <returns>The combined sequential parsers.</returns>
+        public static Parser<TItem, (T1, T2, T3, T4, T5)> Seq<TItem, T1, T2, T3, T4, T5>(
+            Parser<TItem, T1> p1,
+            Parser<TItem, T2> p2,
+            Parser<TItem, T3> p3,
+            Parser<TItem, T4> p4,
+            Parser<TItem, T5> p5) => Transform(
+                Seq(Seq(p1, p2, p3, p4), p5),
+                v => (v.Item1.Item1, v.Item1.Item2, v.Item1.Item3, v.Item1.Item4, v.Item2));
+
+        /// <summary>
+        /// Utility for constructing arbitrary length sequences. See
+        /// <see cref="Seq{TItem, TLeftResult, TRightResult}(Parser{TItem, TLeftResult}, Parser{TItem, TRightResult})"/>.
+        /// </summary>
+        /// <typeparam name="TItem">The item type of the stream.</typeparam>
+        /// <typeparam name="T1">The result type of the first parser.</typeparam>
+        /// <typeparam name="T2">The result type of the second parser.</typeparam>
+        /// <typeparam name="T3">The result type of the third parser.</typeparam>
+        /// <typeparam name="T4">The result type of the fourth parser.</typeparam>
+        /// <typeparam name="T5">The result type of the fifth parser.</typeparam>
+        /// <typeparam name="T6">The result type of the sixth parser.</typeparam>
+        /// <param name="p1">The first sequenced parser.</param>
+        /// <param name="p2">The second sequenced parser.</param>
+        /// <param name="p3">The third sequenced parser.</param>
+        /// <param name="p4">The fourth sequenced parser.</param>
+        /// <param name="p5">The fifth sequenced parser.</param>
+        /// <param name="p6">The sixth sequenced parser.</param>
+        /// <returns>The combined sequential parsers.</returns>
+        public static Parser<TItem, (T1, T2, T3, T4, T5, T6)> Seq<TItem, T1, T2, T3, T4, T5, T6>(
+            Parser<TItem, T1> p1,
+            Parser<TItem, T2> p2,
+            Parser<TItem, T3> p3,
+            Parser<TItem, T4> p4,
+            Parser<TItem, T5> p5,
+            Parser<TItem, T6> p6) => Transform(
+                Seq(Seq(p1, p2, p3, p4, p5), p6),
+                v => (v.Item1.Item1, v.Item1.Item2, v.Item1.Item3, v.Item1.Item4, v.Item1.Item5, v.Item2));
+
+        /// <summary>
+        /// Utility for constructing arbitrary length sequences. See
+        /// <see cref="Seq{TItem, TLeftResult, TRightResult}(Parser{TItem, TLeftResult}, Parser{TItem, TRightResult})"/>.
+        /// </summary>
+        /// <typeparam name="TItem">The item type of the stream.</typeparam>
+        /// <typeparam name="T1">The result type of the first parser.</typeparam>
+        /// <typeparam name="T2">The result type of the second parser.</typeparam>
+        /// <typeparam name="T3">The result type of the third parser.</typeparam>
+        /// <typeparam name="T4">The result type of the fourth parser.</typeparam>
+        /// <typeparam name="T5">The result type of the fifth parser.</typeparam>
+        /// <typeparam name="T6">The result type of the sixth parser.</typeparam>
+        /// <typeparam name="T7">The result type of the seventh parser.</typeparam>
+        /// <param name="p1">The first sequenced parser.</param>
+        /// <param name="p2">The second sequenced parser.</param>
+        /// <param name="p3">The third sequenced parser.</param>
+        /// <param name="p4">The fourth sequenced parser.</param>
+        /// <param name="p5">The fifth sequenced parser.</param>
+        /// <param name="p6">The sixth sequenced parser.</param>
+        /// <param name="p7">The seventh sequenced parser.</param>
+        /// <returns>The combined sequential parsers.</returns>
+        public static Parser<TItem, (T1, T2, T3, T4, T5, T6, T7)> Seq<TItem, T1, T2, T3, T4, T5, T6, T7>(
+            Parser<TItem, T1> p1,
+            Parser<TItem, T2> p2,
+            Parser<TItem, T3> p3,
+            Parser<TItem, T4> p4,
+            Parser<TItem, T5> p5,
+            Parser<TItem, T6> p6,
+            Parser<TItem, T7> p7) => Transform(
+                Seq(Seq(p1, p2, p3, p4, p5, p6), p7),
+                v => (v.Item1.Item1, v.Item1.Item2, v.Item1.Item3, v.Item1.Item4, v.Item1.Item5, v.Item1.Item6, v.Item2));
+
+        /// <summary>
+        /// Utility for constructing arbitrary length sequences. See
+        /// <see cref="Seq{TItem, TLeftResult, TRightResult}(Parser{TItem, TLeftResult}, Parser{TItem, TRightResult})"/>.
+        /// </summary>
+        /// <typeparam name="TItem">The item type of the stream.</typeparam>
+        /// <typeparam name="T1">The result type of the first parser.</typeparam>
+        /// <typeparam name="T2">The result type of the second parser.</typeparam>
+        /// <typeparam name="T3">The result type of the third parser.</typeparam>
+        /// <typeparam name="T4">The result type of the fourth parser.</typeparam>
+        /// <typeparam name="T5">The result type of the fifth parser.</typeparam>
+        /// <typeparam name="T6">The result type of the sixth parser.</typeparam>
+        /// <typeparam name="T7">The result type of the seventh parser.</typeparam>
+        /// <typeparam name="T8">The result type of the eight parser.</typeparam>
+        /// <param name="p1">The first sequenced parser.</param>
+        /// <param name="p2">The second sequenced parser.</param>
+        /// <param name="p3">The third sequenced parser.</param>
+        /// <param name="p4">The fourth sequenced parser.</param>
+        /// <param name="p5">The fifth sequenced parser.</param>
+        /// <param name="p6">The sixth sequenced parser.</param>
+        /// <param name="p7">The seventh sequenced parser.</param>
+        /// <param name="p8">The eight sequenced parser.</param>
+        /// <returns>The combined sequential parsers.</returns>
+        public static Parser<TItem, (T1, T2, T3, T4, T5, T6, T7, T8)> Seq<TItem, T1, T2, T3, T4, T5, T6, T7, T8>(
+            Parser<TItem, T1> p1,
+            Parser<TItem, T2> p2,
+            Parser<TItem, T3> p3,
+            Parser<TItem, T4> p4,
+            Parser<TItem, T5> p5,
+            Parser<TItem, T6> p6,
+            Parser<TItem, T7> p7,
+            Parser<TItem, T8> p8) => Transform(
+                Seq(Seq(p1, p2, p3, p4, p5, p6, p7), p8),
+                v => (v.Item1.Item1, v.Item1.Item2, v.Item1.Item3, v.Item1.Item4, v.Item1.Item5, v.Item1.Item6, v.Item1.Item7, v.Item2));
 
         #endregion
     }
