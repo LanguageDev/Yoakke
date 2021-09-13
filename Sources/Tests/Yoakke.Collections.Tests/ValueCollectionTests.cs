@@ -4,6 +4,7 @@
 
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Yoakke.Collections.Values;
 
 namespace Yoakke.Collections.Tests
 {

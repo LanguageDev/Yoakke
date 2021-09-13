@@ -6,7 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Yoakke.Collections
+namespace Yoakke.Collections.Values
 {
     /// <summary>
     /// A wrapper around <see cref="IReadOnlyList{T}"/>s to have value-based equality.

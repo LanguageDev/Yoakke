@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Yoakke.Collections;
+using Yoakke.Collections.Values;
 using Yoakke.Lexer;
 using Yoakke.Parser;
 using Yoakke.Parser.Attributes;

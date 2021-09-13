@@ -7,7 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Yoakke.Collections
+namespace Yoakke.Collections.Values
 {
     /// <summary>
     /// A wrapper around <see cref="IReadOnlyDictionary{TKey, TValue}"/>s to make them have value-based equality.

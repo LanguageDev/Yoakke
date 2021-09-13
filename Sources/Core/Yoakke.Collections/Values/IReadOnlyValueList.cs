@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Yoakke.Collections
+namespace Yoakke.Collections.Values
 {
     /// <summary>
     /// Represents a generic read-only list of elements that implements value-based equality.

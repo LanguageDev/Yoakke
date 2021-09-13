@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Yoakke.Collections
+namespace Yoakke.Collections.Values
 {
     /// <summary>
     /// Extension methods for value-based equality collection creations.
