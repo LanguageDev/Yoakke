@@ -82,7 +82,7 @@ namespace Yoakke.Collections.Intervals
                 LowerBound<T>.Inclusive i => $"{i.Value}]",
                 _ => throw new ArgumentOutOfRangeException(),
             };
-            return $"{lower}; {upper}"
+            return $"{lower}; {upper}";
         }
 
         /// <summary>
