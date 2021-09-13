@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Yoakke.Collections.Intervals
 {
@@ -21,8 +20,15 @@ namespace Yoakke.Collections.Intervals
         /// </summary>
         public static readonly BoundComparer<T> Default = new(EqualityComparer<T>.Default, Comparer<T>.Default);
 
-        private readonly IEqualityComparer<T> equalityComparer;
-        private readonly IComparer<T> comparer;
+        /// <summary>
+        /// The used <see cref="IEqualityComparer{T}"/>.
+        /// </summary>
+        public IEqualityComparer<T> EqualityComparer { get; }
+
+        /// <summary>
+        /// The used <see cref="IComparer{T}"/>.
+        /// </summary>
+        public IComparer<T> Comparer { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BoundComparer{T}"/> class.
@@ -31,16 +37,16 @@ namespace Yoakke.Collections.Intervals
         /// <param name="comparer">The <see cref="IComparer{T}"/> to use.</param>
         public BoundComparer(IEqualityComparer<T> equalityComparer, IComparer<T> comparer)
         {
-            this.equalityComparer = equalityComparer;
-            this.comparer = comparer;
+            this.EqualityComparer = equalityComparer;
+            this.Comparer = comparer;
         }
 
         /// <inheritdoc/>
         public bool Equals(LowerBound<T> x, LowerBound<T> y) => (x, y) switch
         {
             (LowerBound<T>.Unbounded, LowerBound<T>.Unbounded) => true,
-            (LowerBound<T>.Exclusive l, LowerBound<T>.Exclusive r) => this.equalityComparer.Equals(l.Value, r.Value),
-            (LowerBound<T>.Inclusive l, LowerBound<T>.Inclusive r) => this.equalityComparer.Equals(l.Value, r.Value),
+            (LowerBound<T>.Exclusive l, LowerBound<T>.Exclusive r) => this.EqualityComparer.Equals(l.Value, r.Value),
+            (LowerBound<T>.Inclusive l, LowerBound<T>.Inclusive r) => this.EqualityComparer.Equals(l.Value, r.Value),
             _ => false,
         };
 
@@ -48,8 +54,8 @@ namespace Yoakke.Collections.Intervals
         public bool Equals(UpperBound<T> x, UpperBound<T> y) => (x, y) switch
         {
             (UpperBound<T>.Unbounded, UpperBound<T>.Unbounded) => true,
-            (UpperBound<T>.Exclusive l, UpperBound<T>.Exclusive r) => this.equalityComparer.Equals(l.Value, r.Value),
-            (UpperBound<T>.Inclusive l, UpperBound<T>.Inclusive r) => this.equalityComparer.Equals(l.Value, r.Value),
+            (UpperBound<T>.Exclusive l, UpperBound<T>.Exclusive r) => this.EqualityComparer.Equals(l.Value, r.Value),
+            (UpperBound<T>.Inclusive l, UpperBound<T>.Inclusive r) => this.EqualityComparer.Equals(l.Value, r.Value),
             _ => false,
         };
 
@@ -77,14 +83,14 @@ namespace Yoakke.Collections.Intervals
             (LowerBound<T>.Unbounded, LowerBound<T>.Unbounded) => 0,
             (LowerBound<T>.Unbounded, _) => -1,
             (_, LowerBound<T>.Unbounded) => 1,
-            (LowerBound<T>.Exclusive l, LowerBound<T>.Exclusive r) => this.comparer.Compare(l.Value, r.Value),
-            (LowerBound<T>.Inclusive l, LowerBound<T>.Inclusive r) => this.comparer.Compare(l.Value, r.Value),
-            (LowerBound<T>.Exclusive l, LowerBound<T>.Inclusive r) => this.comparer.Compare(l.Value, r.Value) switch
+            (LowerBound<T>.Exclusive l, LowerBound<T>.Exclusive r) => this.Comparer.Compare(l.Value, r.Value),
+            (LowerBound<T>.Inclusive l, LowerBound<T>.Inclusive r) => this.Comparer.Compare(l.Value, r.Value),
+            (LowerBound<T>.Exclusive l, LowerBound<T>.Inclusive r) => this.Comparer.Compare(l.Value, r.Value) switch
             {
                 0 => 1,
                 var n => n,
             },
-            (LowerBound<T>.Inclusive l, LowerBound<T>.Exclusive r) => this.comparer.Compare(l.Value, r.Value) switch
+            (LowerBound<T>.Inclusive l, LowerBound<T>.Exclusive r) => this.Comparer.Compare(l.Value, r.Value) switch
             {
                 0 => -1,
                 var n => n,
@@ -98,14 +104,14 @@ namespace Yoakke.Collections.Intervals
             (UpperBound<T>.Unbounded, UpperBound<T>.Unbounded) => 0,
             (UpperBound<T>.Unbounded, _) => 1,
             (_, UpperBound<T>.Unbounded) => -1,
-            (UpperBound<T>.Exclusive l, UpperBound<T>.Exclusive r) => this.comparer.Compare(l.Value, r.Value),
-            (UpperBound<T>.Inclusive l, UpperBound<T>.Inclusive r) => this.comparer.Compare(l.Value, r.Value),
-            (UpperBound<T>.Exclusive l, UpperBound<T>.Inclusive r) => this.comparer.Compare(l.Value, r.Value) switch
+            (UpperBound<T>.Exclusive l, UpperBound<T>.Exclusive r) => this.Comparer.Compare(l.Value, r.Value),
+            (UpperBound<T>.Inclusive l, UpperBound<T>.Inclusive r) => this.Comparer.Compare(l.Value, r.Value),
+            (UpperBound<T>.Exclusive l, UpperBound<T>.Inclusive r) => this.Comparer.Compare(l.Value, r.Value) switch
             {
                 0 => -1,
                 var n => n,
             },
-            (UpperBound<T>.Inclusive l, UpperBound<T>.Exclusive r) => this.comparer.Compare(l.Value, r.Value) switch
+            (UpperBound<T>.Inclusive l, UpperBound<T>.Exclusive r) => this.Comparer.Compare(l.Value, r.Value) switch
             {
                 0 => 1,
                 var n => n,
@@ -123,22 +129,22 @@ namespace Yoakke.Collections.Intervals
         public int Compare(LowerBound<T> x, UpperBound<T> y) => (x, y) switch
         {
             (LowerBound<T>.Unbounded, _) or (_, UpperBound<T>.Unbounded) => -1,
-            (LowerBound<T>.Exclusive l, LowerBound<T>.Exclusive r) => this.comparer.Compare(l.Value, r.Value) switch
+            (LowerBound<T>.Exclusive l, LowerBound<T>.Exclusive r) => this.Comparer.Compare(l.Value, r.Value) switch
             {
                 0 => 1,
                 var n => n,
             },
-            (LowerBound<T>.Exclusive l, LowerBound<T>.Inclusive r) => this.comparer.Compare(l.Value, r.Value) switch
+            (LowerBound<T>.Exclusive l, LowerBound<T>.Inclusive r) => this.Comparer.Compare(l.Value, r.Value) switch
             {
                 0 => 1,
                 var n => n,
             },
-            (LowerBound<T>.Inclusive l, LowerBound<T>.Exclusive r) => this.comparer.Compare(l.Value, r.Value) switch
+            (LowerBound<T>.Inclusive l, LowerBound<T>.Exclusive r) => this.Comparer.Compare(l.Value, r.Value) switch
             {
                 0 => 1,
                 var n => n,
             },
-            (LowerBound<T>.Inclusive l, LowerBound<T>.Inclusive r) => this.comparer.Compare(l.Value, r.Value) switch
+            (LowerBound<T>.Inclusive l, LowerBound<T>.Inclusive r) => this.Comparer.Compare(l.Value, r.Value) switch
             {
                 0 => -1,
                 var n => n,
@@ -155,11 +161,32 @@ namespace Yoakke.Collections.Intervals
         /// See <see cref="IComparer{T}.Compare(T, T)"/> for further information.</returns>
         public int Compare(UpperBound<T> x, LowerBound<T> y) => -this.Compare(y, x);
 
+        /// <summary>
+        /// Checks, if a lower bound is in touching relation with an upper bound.
+        /// </summary>
+        /// <param name="x">The <see cref="LowerBound{T}"/> to check.</param>
+        /// <param name="y">The <see cref="UpperBound{T}"/> to check.</param>
+        /// <returns>True, if <paramref name="x"/> is touching <paramref name="y"/>.</returns>
+        public bool IsTouching(LowerBound<T> x, UpperBound<T> y) => (x, y) switch
+        {
+            (LowerBound<T>.Inclusive l, LowerBound<T>.Exclusive r) => this.EqualityComparer.Equals(l.Value, r.Value),
+            (LowerBound<T>.Exclusive l, LowerBound<T>.Inclusive r) => this.EqualityComparer.Equals(l.Value, r.Value),
+            _ => false,
+        };
+
+        /// <summary>
+        /// Checks, if a lower bound is in touching relation with an upper bound.
+        /// </summary>
+        /// <param name="x">The <see cref="UpperBound{T}"/> to check.</param>
+        /// <param name="y">The <see cref="LowerBound{T}"/> to check.</param>
+        /// <returns>True, if <paramref name="x"/> is touching <paramref name="y"/>.</returns>
+        public bool IsTouching(UpperBound<T> x, LowerBound<T> y) => this.IsTouching(y, x);
+
         private int MakeHash(Type type, T value)
         {
             var h = default(HashCode);
             h.Add(type);
-            h.Add(value, this.equalityComparer);
+            h.Add(value, this.EqualityComparer);
             return h.ToHashCode();
         }
     }
