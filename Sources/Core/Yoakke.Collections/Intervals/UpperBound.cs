@@ -53,7 +53,7 @@ namespace Yoakke.Collections.Intervals
         public record Exclusive(T Value) : UpperBound<T>
         {
             /// <inheritdoc/>
-            public override LowerBound<T>? Touching => new LowerBound<T>.Inclusive(this.Value);
+            public override LowerBound<T>? Touching => LowerBound.Inclusive(this.Value);
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace Yoakke.Collections.Intervals
         public record Inclusive(T Value) : UpperBound<T>
         {
             /// <inheritdoc/>
-            public override LowerBound<T>? Touching => new LowerBound<T>.Exclusive(this.Value);
+            public override LowerBound<T>? Touching => LowerBound.Exclusive(this.Value);
         }
 
         #region Operators
