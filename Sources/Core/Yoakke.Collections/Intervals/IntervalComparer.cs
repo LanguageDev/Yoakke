@@ -107,5 +107,42 @@ namespace Yoakke.Collections.Intervals
         /// <param name="y">The second interval to check.</param>
         /// <returns>True, if <paramref name="x"/> and <paramref name="y"/> are completely disjunct.</returns>
         public bool IsDisjunct(Interval<T> x, Interval<T> y) => this.IsBefore(x, y) || this.IsBefore(y, x);
+
+        /// <summary>
+        /// Calculates the relation of two intervals.
+        /// </summary>
+        /// <param name="x">The first interval.</param>
+        /// <param name="y">The second interval.</param>
+        /// <returns>An <see cref="IntervalRelation{T}"/> of <paramref name="x"/> and <paramref name="y"/>.</returns>
+        public IntervalRelation<T> Relation(Interval<T> x, Interval<T> y)
+        {
+            var (first, second) = this.boundComparer.Compare(x.Lower, y.Lower) < 0 ? (x, y) : (y, x);
+
+            if (this.boundComparer.IsTouching(first.Upper, second.Lower)) return new IntervalRelation<T>.Touching(first, second);
+            if (this.boundComparer.Compare(first.Upper, second.Lower) < 0) return new IntervalRelation<T>.Disjunct(first, second);
+            if (this.Equals(first, second)) return new IntervalRelation<T>.Equal(first);
+            var upperCmp = this.boundComparer.Compare(first.Upper, second.Upper);
+            if (this.boundComparer.Compare(first.Lower, second.Lower) == 0)
+            {
+                // Starting relation, depends on which ends first
+                var (a, b) = upperCmp < 0 ? (first, second) : (second, first);
+                return new IntervalRelation<T>.Starting(a, new Interval<T>(a.Upper.Touching!, b.Upper));
+            }
+            if (upperCmp == 0)
+            {
+                return new IntervalRelation<T>.Finishing(new Interval<T>(first.Lower, second.Lower.Touching!), second);
+            }
+            if (upperCmp > 0)
+            {
+                return new IntervalRelation<T>.Containing(
+                    new Interval<T>(first.Lower, second.Lower.Touching!),
+                    second,
+                    new Interval<T>(second.Upper.Touching!, first.Upper));
+            }
+            return new IntervalRelation<T>.Overlapping(
+                new Interval<T>(first.Lower, second.Lower.Touching!),
+                new Interval<T>(second.Lower, first.Upper),
+                new Interval<T>(first.Upper.Touching!, second.Upper));
+        }
     }
 }

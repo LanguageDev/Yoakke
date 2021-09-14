@@ -47,12 +47,12 @@ namespace Yoakke.Collections.Intervals
         /// <summary>
         /// A full interval.
         /// </summary>
-        public static readonly Interval<T> Full = new(LowerBound.Unbounded<T>(), UpperBound.Unbounded<T>());
+        public static readonly Interval<T> Full = new(LowerBound<T>.Unbounded.Instance, UpperBound<T>.Unbounded.Instance);
 
         /// <summary>
         /// An empty interval.
         /// </summary>
-        public static readonly Interval<T> Empty = new(LowerBound.Exclusive(default(T)!), UpperBound.Exclusive(default(T)!));
+        public static readonly Interval<T> Empty = new(new LowerBound<T>.Exclusive(default!), new UpperBound<T>.Exclusive(default!));
 
         /// <summary>
         /// The lower-bound of the interval.
@@ -85,7 +85,7 @@ namespace Yoakke.Collections.Intervals
         /// </summary>
         /// <param name="value">The element that is contained by the interval.</param>
         /// <returns>A new interval, that only contains <paramref name="value"/>.</returns>
-        public static Interval<T> Singleton(T value) => new(LowerBound.Inclusive(value), UpperBound.Inclusive(value));
+        public static Interval<T> Singleton(T value) => new(new LowerBound<T>.Inclusive(value), new UpperBound<T>.Inclusive(value));
 
         /// <inheritdoc/>
         public override bool Equals(object obj) => obj is Interval<T> other && this.Equals(other);
@@ -136,6 +136,13 @@ namespace Yoakke.Collections.Intervals
         /// <param name="other">The other interval to check.</param>
         /// <returns>True, if this and <paramref name="other"/> are completely disjunct.</returns>
         public bool IsDisjunct(Interval<T> other) => IntervalComparer<T>.Default.IsDisjunct(this, other);
+
+        /// <summary>
+        /// Calculates the relation to another interval.
+        /// </summary>
+        /// <param name="other">The interval to calculate the relation to.</param>
+        /// <returns>An <see cref="IntervalRelation{T}"/> of this and <paramref name="other"/>.</returns>
+        public IntervalRelation<T> RelationTo(Interval<T> other) => IntervalComparer<T>.Default.Relation(this, other);
 
         /// <summary>
         /// Compares two <see cref="Interval{T}"/>s for equality.
@@ -252,18 +259,18 @@ namespace Yoakke.Collections.Intervals
             var lowerSpan = text[1..semicolIndex].Trim();
             var upperSpan = text[(semicolIndex + 1)..^1].Trim();
             // We handle some defaults for infinities
-            var lower = TryParseInfinity(lowerSpan, true) ? LowerBound.Unbounded<T>() : null;
-            var upper = TryParseInfinity(upperSpan, true) ? UpperBound.Unbounded<T>() : null;
+            LowerBound<T>? lower = TryParseInfinity(lowerSpan, true) ? LowerBound<T>.Unbounded.Instance : null;
+            UpperBound<T>? upper = TryParseInfinity(upperSpan, true) ? UpperBound<T>.Unbounded.Instance : null;
             // Call the parser function for the remaining needed bounds
             if (lower is null)
             {
                 if (!parser(lowerSpan, out var lowerValue)) return false;
-                lower = firstChar == '(' ? LowerBound.Exclusive(lowerValue) : LowerBound.Inclusive(lowerValue);
+                lower = firstChar == '(' ? new LowerBound<T>.Exclusive(lowerValue) : new LowerBound<T>.Inclusive(lowerValue);
             }
             if (upper is null)
             {
                 if (!parser(upperSpan, out var upperValue)) return false;
-                upper = lastChar == ')' ? UpperBound.Exclusive(upperValue) : UpperBound.Inclusive(upperValue);
+                upper = lastChar == ')' ? new UpperBound<T>.Exclusive(upperValue) : new UpperBound<T>.Inclusive(upperValue);
             }
             // We are done
             interval = new(lower, upper);
