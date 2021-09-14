@@ -70,6 +70,7 @@ namespace Yoakke.Collections.Intervals
         /// <inheritdoc/>
         public bool Contains(Interval<T> item)
         {
+            if (this.Comparer.IsEmpty(item)) return true;
             this.BinarySearch(0, this.intervals.Count, item.Lower, iv => iv.Upper, out var from);
             if (from == this.intervals.Count) return false;
             return this.Comparer.Contains(this.intervals[from], item);
@@ -82,7 +83,37 @@ namespace Yoakke.Collections.Intervals
         public void Add(T item) => this.Add(Interval<T>.Singleton(item));
 
         /// <inheritdoc/>
-        public void Add(Interval<T> item) => throw new NotImplementedException();
+        public void Add(Interval<T> item)
+        {
+            // If there are no items, it's trivial
+            if (this.intervals.Count == 0)
+            {
+                this.intervals.Add(item);
+                return;
+            }
+
+            // Not empty, find all the intervals that are touched
+            var (from, to) = this.TouchingRange(item);
+
+            if (from == to)
+            {
+                // Just insert, touches nothing
+                this.intervals.Insert(from, item);
+            }
+            else
+            {
+                // We need to remove all touched intervals
+                // First we need to modify the inserted interval, because the touched intervals might extend beyond
+                // the inserted one
+                item = new(
+                    this.Comparer.BoundComparer.Min(this.intervals[from].Lower, item.Lower),
+                    this.Comparer.BoundComparer.Max(this.intervals[to - 1].Upper, item.Upper));
+                // Remove all touched ranges, except the first one
+                this.intervals.RemoveRange(from + 1, to - from - 1);
+                // We modify the first, not removed touched range to save on memory juggling a bit
+                this.intervals[from] = item;
+            }
+        }
 
         /// <inheritdoc/>
         public bool Remove(T item) => this.Remove(Interval<T>.Singleton(item));

@@ -126,7 +126,6 @@ namespace Yoakke.Collections.Intervals
                this.IsEmpty(y)
             || (this.BoundComparer.Compare(x.Lower, y.Lower) <= 0 && this.BoundComparer.Compare(x.Upper, y.Upper) >= 0);
 
-
         /// <summary>
         /// Calculates the relation of two intervals.
         /// </summary>

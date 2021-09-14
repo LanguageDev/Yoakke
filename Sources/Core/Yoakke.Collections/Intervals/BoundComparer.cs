@@ -208,6 +208,38 @@ namespace Yoakke.Collections.Intervals
         /// <returns>True, if <paramref name="x"/> is touching <paramref name="y"/>.</returns>
         public bool IsTouching(UpperBound<T> x, LowerBound<T> y) => this.IsTouching(y, x);
 
+        /// <summary>
+        /// Retrieves the smaller lower bound of the two passed.
+        /// </summary>
+        /// <param name="x">The first bound.</param>
+        /// <param name="y">The second bound.</param>
+        /// <returns>The smaller between <paramref name="x"/> and <paramref name="y"/>.</returns>
+        public LowerBound<T> Min(LowerBound<T> x, LowerBound<T> y) => this.Compare(x, y) < 0 ? x : y;
+
+        /// <summary>
+        /// Retrieves the larger lower bound of the two passed.
+        /// </summary>
+        /// <param name="x">The first bound.</param>
+        /// <param name="y">The second bound.</param>
+        /// <returns>The larger between <paramref name="x"/> and <paramref name="y"/>.</returns>
+        public LowerBound<T> Max(LowerBound<T> x, LowerBound<T> y) => this.Compare(x, y) > 0 ? x : y;
+
+        /// <summary>
+        /// Retrieves the smaller upper bound of the two passed.
+        /// </summary>
+        /// <param name="x">The first bound.</param>
+        /// <param name="y">The second bound.</param>
+        /// <returns>The smaller between <paramref name="x"/> and <paramref name="y"/>.</returns>
+        public UpperBound<T> Min(UpperBound<T> x, UpperBound<T> y) => this.Compare(x, y) < 0 ? x : y;
+
+        /// <summary>
+        /// Retrieves the larger upper bound of the two passed.
+        /// </summary>
+        /// <param name="x">The first bound.</param>
+        /// <param name="y">The second bound.</param>
+        /// <returns>The larger between <paramref name="x"/> and <paramref name="y"/>.</returns>
+        public UpperBound<T> Max(UpperBound<T> x, UpperBound<T> y) => this.Compare(x, y) > 0 ? x : y;
+
         private int MakeHash(Type type, T value)
         {
             var h = default(HashCode);
