@@ -42,8 +42,8 @@ namespace Yoakke.Collections.Intervals
         }
 
         /// <inheritdoc/>
-        public bool Equals(Interval<T> x, Interval<T> y) => this.boundComparer.Equals(x.Lower, y.Lower)
-                                                         && this.boundComparer.Equals(x.Upper, y.Upper);
+        public bool Equals(Interval<T> x, Interval<T> y) => (this.boundComparer.Equals(x.Lower, y.Lower) && this.boundComparer.Equals(x.Upper, y.Upper))
+                                                         || (this.IsEmpty(x) && this.IsEmpty(y));
 
         /// <inheritdoc/>
         public int GetHashCode(Interval<T> obj)
@@ -89,6 +89,7 @@ namespace Yoakke.Collections.Intervals
             (LowerBound<T>.Inclusive l, UpperBound<T>.Exclusive r) => this.Comparer.Compare(l.Value, r.Value) >= 0,
             (LowerBound<T>.Exclusive l, UpperBound<T>.Inclusive r) => this.Comparer.Compare(l.Value, r.Value) >= 0,
             (LowerBound<T>.Exclusive l, UpperBound<T>.Exclusive r) => this.Comparer.Compare(l.Value, r.Value) >= 0,
+            (LowerBound<T>.Inclusive l, UpperBound<T>.Inclusive r) => this.Comparer.Compare(l.Value, r.Value) > 0,
             _ => false,
         };
 
@@ -98,7 +99,8 @@ namespace Yoakke.Collections.Intervals
         /// <param name="x">The first interval to check.</param>
         /// <param name="y">The second interval to check.</param>
         /// <returns>True, if <paramref name="x"/> is completely before <paramref name="y"/>.</returns>
-        public bool IsBefore(Interval<T> x, Interval<T> y) => this.boundComparer.Compare(x.Upper, y.Lower) < 0;
+        public bool IsBefore(Interval<T> x, Interval<T> y) => this.boundComparer.Compare(x.Upper, y.Lower) < 0
+                                                           && !(this.IsEmpty(x) && this.IsEmpty(y));
 
         /// <summary>
         /// Checks if an interval is disjunct with another one.
@@ -106,7 +108,7 @@ namespace Yoakke.Collections.Intervals
         /// <param name="x">The first interval to check.</param>
         /// <param name="y">The second interval to check.</param>
         /// <returns>True, if <paramref name="x"/> and <paramref name="y"/> are completely disjunct.</returns>
-        public bool IsDisjunct(Interval<T> x, Interval<T> y) => this.IsBefore(x, y) || this.IsBefore(y, x);
+        public bool IsDisjunct(Interval<T> x, Interval<T> y) => this.IsBefore(x, y) || this.IsBefore(y, x) || (this.IsEmpty(x) && this.IsEmpty(y));
 
         /// <summary>
         /// Calculates the relation of two intervals.
@@ -116,11 +118,11 @@ namespace Yoakke.Collections.Intervals
         /// <returns>An <see cref="IntervalRelation{T}"/> of <paramref name="x"/> and <paramref name="y"/>.</returns>
         public IntervalRelation<T> Relation(Interval<T> x, Interval<T> y)
         {
-            var (first, second) = this.boundComparer.Compare(x.Lower, y.Lower) < 0 ? (x, y) : (y, x);
+            if (this.Equals(x, y)) return new IntervalRelation<T>.Equal(x);
 
+            var (first, second) = this.boundComparer.Compare(x.Lower, y.Lower) < 0 ? (x, y) : (y, x);
             if (this.boundComparer.IsTouching(first.Upper, second.Lower)) return new IntervalRelation<T>.Touching(first, second);
             if (this.boundComparer.Compare(first.Upper, second.Lower) < 0) return new IntervalRelation<T>.Disjunct(first, second);
-            if (this.Equals(first, second)) return new IntervalRelation<T>.Equal(first);
             var upperCmp = this.boundComparer.Compare(first.Upper, second.Upper);
             if (this.boundComparer.Compare(first.Lower, second.Lower) == 0)
             {

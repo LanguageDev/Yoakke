@@ -234,7 +234,8 @@ namespace Yoakke.Collections.Intervals
             var firstChar = text[0];
             var lastChar = text[^1];
             // Check, if the borderline characters are OK
-            if ((firstChar != '(' && firstChar != '[') || (lastChar != ')' && lastChar != ']')) interval = default;
+            if (firstChar != '(' && firstChar != '[' && firstChar != ']') return false;
+            if (lastChar != ')' && lastChar != ']' && lastChar != '[') return false;
             // Search for the ';'
             var semicolIndex = text.IndexOf(';');
             if (semicolIndex == -1) return false;
@@ -242,18 +243,18 @@ namespace Yoakke.Collections.Intervals
             var lowerSpan = text[1..semicolIndex].Trim();
             var upperSpan = text[(semicolIndex + 1)..^1].Trim();
             // We handle some defaults for infinities
-            LowerBound<T>? lower = TryParseInfinity(lowerSpan, true) ? LowerBound<T>.Unbounded.Instance : null;
-            UpperBound<T>? upper = TryParseInfinity(upperSpan, false) ? UpperBound<T>.Unbounded.Instance : null;
+            LowerBound<T>? lower = (firstChar == '(' || firstChar == ']') && TryParseInfinity(lowerSpan, true) ? LowerBound<T>.Unbounded.Instance : null;
+            UpperBound<T>? upper = (lastChar == ')' || lastChar == '[') && TryParseInfinity(upperSpan, false) ? UpperBound<T>.Unbounded.Instance : null;
             // Call the parser function for the remaining needed bounds
             if (lower is null)
             {
                 if (!parser(lowerSpan, out var lowerValue)) return false;
-                lower = firstChar == '(' ? new LowerBound<T>.Exclusive(lowerValue) : new LowerBound<T>.Inclusive(lowerValue);
+                lower = firstChar == '[' ? new LowerBound<T>.Inclusive(lowerValue) : new LowerBound<T>.Exclusive(lowerValue);
             }
             if (upper is null)
             {
                 if (!parser(upperSpan, out var upperValue)) return false;
-                upper = lastChar == ')' ? new UpperBound<T>.Exclusive(upperValue) : new UpperBound<T>.Inclusive(upperValue);
+                upper = lastChar == ']' ? new UpperBound<T>.Inclusive(upperValue) : new UpperBound<T>.Exclusive(upperValue);
             }
             // We are done
             interval = new(lower, upper);

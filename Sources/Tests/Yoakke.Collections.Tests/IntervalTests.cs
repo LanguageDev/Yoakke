@@ -15,7 +15,7 @@ namespace Yoakke.Collections.Tests
     [TestClass]
     public class IntervalTests
     {
-        private static IEnumerable<object[]> IntervalToStringInputData { get; } = new object[][]
+        private static IEnumerable<object[]> IntervalToStringData { get; } = new object[][]
         {
             new object[] { Interval<int>.Full, "(-∞; +∞)" },
             new object[] { new Interval<int>(new LowerBound<int>.Exclusive(-12), new UpperBound<int>.Exclusive(56)), "(-12; 56)" },
@@ -26,7 +26,7 @@ namespace Yoakke.Collections.Tests
             new object[] { new Interval<int>(new LowerBound<int>.Inclusive(-12), UpperBound<int>.Unbounded.Instance), "[-12; +∞)" },
         };
 
-        private static IEnumerable<object[]> IntervalParseInputData { get; } = new object[][]
+        private static IEnumerable<object[]> IntervalParseData { get; } = new object[][]
         {
             new object[] { "(-oo; +oo)", Interval<int>.Full },
             new object[] { "(-infty;∞)", Interval<int>.Full },
@@ -38,9 +38,13 @@ namespace Yoakke.Collections.Tests
             new object[] { "[-12; 56]", new Interval<int>(new LowerBound<int>.Inclusive(-12), new UpperBound<int>.Inclusive(56)) },
             new object[] { "[-12; oo)", new Interval<int>(new LowerBound<int>.Inclusive(-12), UpperBound<int>.Unbounded.Instance) },
             new object[] { "(-oo; 56]", new Interval<int>(LowerBound<int>.Unbounded.Instance, new UpperBound<int>.Inclusive(56)) },
+            new object[] { "]-infty;∞[", Interval<int>.Full },
+            new object[] { "]-12; 56[", new Interval<int>(new LowerBound<int>.Exclusive(-12), new UpperBound<int>.Exclusive(56)) },
+            new object[] { "[-12; 56[", new Interval<int>(new LowerBound<int>.Inclusive(-12), new UpperBound<int>.Exclusive(56)) },
+            new object[] { "]-12; 56]", new Interval<int>(new LowerBound<int>.Exclusive(-12), new UpperBound<int>.Inclusive(56)) },
         };
 
-        private static IEnumerable<object[]> LowerBoundLowerBoundComparisonInputData { get; } = new object[][]
+        private static IEnumerable<object[]> LowerBoundLowerBoundComparisonData { get; } = new object[][]
         {
             new object[] { LowerBound<int>.Unbounded.Instance, LowerBound<int>.Unbounded.Instance, 0 },
             new object[] { LowerBound<int>.Unbounded.Instance, new LowerBound<int>.Exclusive(0), -1 },
@@ -53,7 +57,7 @@ namespace Yoakke.Collections.Tests
             new object[] { new LowerBound<int>.Inclusive(0), new LowerBound<int>.Inclusive(1), -1 },
         };
 
-        private static IEnumerable<object[]> UpperBoundUpperBoundComparisonInputData { get; } = new object[][]
+        private static IEnumerable<object[]> UpperBoundUpperBoundComparisonData { get; } = new object[][]
         {
             new object[] { UpperBound<int>.Unbounded.Instance, UpperBound<int>.Unbounded.Instance, 0 },
             new object[] { UpperBound<int>.Unbounded.Instance, new UpperBound<int>.Exclusive(0), 1 },
@@ -66,7 +70,7 @@ namespace Yoakke.Collections.Tests
             new object[] { new UpperBound<int>.Inclusive(0), new UpperBound<int>.Inclusive(1), -1 },
         };
 
-        private static IEnumerable<object[]> LowerBoundUpperBoundComparisonInputData { get; } = new object[][]
+        private static IEnumerable<object[]> LowerBoundUpperBoundComparisonData { get; } = new object[][]
         {
             new object[] { LowerBound<int>.Unbounded.Instance, UpperBound<int>.Unbounded.Instance, -1 },
             new object[] { LowerBound<int>.Unbounded.Instance, new UpperBound<int>.Exclusive(0), -1 },
@@ -81,7 +85,7 @@ namespace Yoakke.Collections.Tests
             new object[] { new LowerBound<int>.Inclusive(0), new UpperBound<int>.Inclusive(1), -1 },
         };
 
-        private static IEnumerable<object[]> TouchingBoundsInputData { get; } = new object[][]
+        private static IEnumerable<object[]> TouchingBoundsData { get; } = new object[][]
         {
             new object[] { LowerBound<int>.Unbounded.Instance, UpperBound<int>.Unbounded.Instance, false },
             new object[] { LowerBound<int>.Unbounded.Instance, new UpperBound<int>.Exclusive(0), false },
@@ -96,15 +100,64 @@ namespace Yoakke.Collections.Tests
             new object[] { new LowerBound<int>.Inclusive(0), new UpperBound<int>.Inclusive(1), false },
         };
 
+        private static IEnumerable<object[]> ContainmentData { get; } = new object[][]
+        {
+            new object[] { "(-oo; +oo)", 0, true },
+            new object[] { "(-oo; 0)", 0, false },
+            new object[] { "(-oo; 0]", 0, true },
+            new object[] { "[0; 0]", 0, true },
+            new object[] { "(0; 0]", 0, false },
+            new object[] { "[0; 0)", 0, false },
+            new object[] { "(0; 0)", 0, false },
+            new object[] { "[-1; 0)", 0, false },
+            new object[] { "[-1; 0]", 0, true },
+        };
+
+        private static IEnumerable<object[]> EmptinessData { get; } = new object[][]
+        {
+            new object[] { "(-oo; +oo)", false },
+            new object[] { "(-oo; 0)", false },
+            new object[] { "(-oo; 0]", false },
+            new object[] { "[0; 0]", false },
+            new object[] { "(0; 0]", true },
+            new object[] { "[0; 0)", true },
+            new object[] { "(0; 0)", true },
+            new object[] { "[-1; 0)", false },
+            new object[] { "[-1; 0]", false },
+            new object[] { "(0; -1)", true },
+            new object[] { "[0; -1)", true },
+            new object[] { "(0; -1]", true },
+            new object[] { "[0; -1]", true },
+        };
+
+        private static IEnumerable<object[]> RelationData { get; } = new object[][]
+        {
+            // Empty intervals are equal
+            new object[] { "(0; 0)", "(1; 1)", typeof(IntervalRelation<int>.Equal), "(0; 0)", "(0; 0)", "(0; 0)" },
+            new object[] { "[0; 0)", "(0; 0)", typeof(IntervalRelation<int>.Equal), "(0; 0)", "(0; 0)", "(0; 0)" },
+            new object[] { "[0; -1]", "(0; 0)", typeof(IntervalRelation<int>.Equal), "(0; 0)", "(0; 0)", "(0; 0)" },
+            // Disjunct
+            new object[] { "(1; 2)", "[3; 4)", typeof(IntervalRelation<int>.Disjunct), "(1; 2)", "(0; 0)", "[3; 4)" },
+            new object[] { "(1; 2)", "(2; 4)", typeof(IntervalRelation<int>.Disjunct), "(1; 2)", "(0; 0)", "(2; 4)" },
+            // Touching
+            new object[] { "(1; 2)", "[2; 4)", typeof(IntervalRelation<int>.Touching), "(1; 2)", "(0; 0)", "[2; 4)" },
+            new object[] { "(1; 2]", "(2; 4)", typeof(IntervalRelation<int>.Touching), "(1; 2]", "(0; 0)", "(2; 4)" },
+            // Overlapping
+            new object[] { "(1; 3)", "(2; 4)", typeof(IntervalRelation<int>.Overlapping), "(1; 2]", "(2; 3)", "[3; 4)" },
+            new object[] { "(1; 3]", "(2; 4)", typeof(IntervalRelation<int>.Overlapping), "(1; 2]", "(2; 3]", "(3; 4)" },
+            new object[] { "(1; 3)", "[2; 4)", typeof(IntervalRelation<int>.Overlapping), "(1; 2)", "[2; 3)", "[3; 4)" },
+            new object[] { "(1; 3]", "[2; 4)", typeof(IntervalRelation<int>.Overlapping), "(1; 2)", "[2; 3]", "(3; 4)" },
+        };
+
         [DataTestMethod]
-        [DynamicData(nameof(IntervalToStringInputData))]
+        [DynamicData(nameof(IntervalToStringData))]
         public void IntervalToString(Interval<int> interval, string text)
         {
             Assert.AreEqual(text, interval.ToString());
         }
 
         [DataTestMethod]
-        [DynamicData(nameof(IntervalParseInputData))]
+        [DynamicData(nameof(IntervalParseData))]
         public void IntervalParse(string text, Interval<int> interval)
         {
             // Parse all ways
@@ -121,7 +174,7 @@ namespace Yoakke.Collections.Tests
         }
 
         [DataTestMethod]
-        [DynamicData(nameof(LowerBoundLowerBoundComparisonInputData))]
+        [DynamicData(nameof(LowerBoundLowerBoundComparisonData))]
         public void LowerBoundLowerBoundCompare(LowerBound<int> a, LowerBound<int> b, int cmp)
         {
             if (cmp < 0) AssertLess(a, b);
@@ -130,7 +183,7 @@ namespace Yoakke.Collections.Tests
         }
 
         [DataTestMethod]
-        [DynamicData(nameof(UpperBoundUpperBoundComparisonInputData))]
+        [DynamicData(nameof(UpperBoundUpperBoundComparisonData))]
         public void UpperBoundUpperBoundCompare(UpperBound<int> a, UpperBound<int> b, int cmp)
         {
             if (cmp < 0) AssertLess(a, b);
@@ -139,7 +192,7 @@ namespace Yoakke.Collections.Tests
         }
 
         [DataTestMethod]
-        [DynamicData(nameof(LowerBoundUpperBoundComparisonInputData))]
+        [DynamicData(nameof(LowerBoundUpperBoundComparisonData))]
         public void LowerBoundUpperBoundCompare(LowerBound<int> a, UpperBound<int> b, int cmp)
         {
             if (cmp < 0) AssertLess(a, b);
@@ -147,7 +200,7 @@ namespace Yoakke.Collections.Tests
         }
 
         [DataTestMethod]
-        [DynamicData(nameof(TouchingBoundsInputData))]
+        [DynamicData(nameof(TouchingBoundsData))]
         public void TouchingBounds(LowerBound<int> a, UpperBound<int> b, bool touching)
         {
             if (touching)
@@ -170,6 +223,65 @@ namespace Yoakke.Collections.Tests
                 Assert.IsFalse(BoundComparer<int>.Default.IsTouching(a, b));
                 Assert.IsFalse(BoundComparer<int>.Default.IsTouching(b, a));
             }
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(ContainmentData))]
+        public void Containment(string text, int value, bool contains)
+        {
+            var interval = Interval<int>.Parse(text, int.Parse);
+            if (contains)
+            {
+                Assert.IsTrue(interval.Contains(value));
+                Assert.IsTrue(IntervalComparer<int>.Default.Contains(interval, value));
+            }
+            else
+            {
+                Assert.IsFalse(interval.Contains(value));
+                Assert.IsFalse(IntervalComparer<int>.Default.Contains(interval, value));
+            }
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(EmptinessData))]
+        public void Emptiness(string text, bool empty)
+        {
+            var interval = Interval<int>.Parse(text, int.Parse);
+            if (empty)
+            {
+                Assert.IsTrue(interval.IsEmpty);
+                Assert.IsTrue(IntervalComparer<int>.Default.IsEmpty(interval));
+            }
+            else
+            {
+                Assert.IsFalse(interval.IsEmpty);
+                Assert.IsFalse(IntervalComparer<int>.Default.IsEmpty(interval));
+            }
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(RelationData))]
+        public void Relation(string ivText1, string ivText2, Type exactRelationType, string lowerDisjText, string overlapText, string upperDisjText)
+        {
+            var iv1 = Interval<int>.Parse(ivText1, int.Parse);
+            var iv2 = Interval<int>.Parse(ivText2, int.Parse);
+
+            var lowerDisjunct = Interval<int>.Parse(lowerDisjText, int.Parse);
+            var overlapping = Interval<int>.Parse(overlapText, int.Parse);
+            var upperDisjunct = Interval<int>.Parse(upperDisjText, int.Parse);
+
+            var rel1 = iv1.RelationTo(iv2);
+            var rel2 = iv2.RelationTo(iv1);
+
+            Assert.AreEqual(exactRelationType, rel1.GetType());
+            Assert.AreEqual(lowerDisjunct, rel1.LowerDisjunct);
+            Assert.AreEqual(overlapping, rel1.Intersecting);
+            Assert.AreEqual(upperDisjunct, rel1.UpperDisjunct);
+
+            Assert.AreEqual(exactRelationType, rel2.GetType());
+            Assert.AreEqual(lowerDisjunct, rel2.LowerDisjunct);
+            Assert.AreEqual(overlapping, rel2.Intersecting);
+            Assert.AreEqual(upperDisjunct, rel2.UpperDisjunct);
         }
 
         #region Comparers
