@@ -10,7 +10,7 @@ namespace Yoakke.Collections.Intervals
     /// Represents the upper-bound of an interval.
     /// </summary>
     /// <typeparam name="T">The type of the endpoint value.</typeparam>
-    public abstract record UpperBound<T> : IComparable<LowerBound<T>>, IComparable<UpperBound<T>>
+    public abstract record UpperBound<T> : Bound<T>, IComparable<LowerBound<T>>, IComparable<UpperBound<T>>
     {
         /// <inheritdoc/>
         public int CompareTo(LowerBound<T> other) => BoundComparer<T>.Default.Compare(this, other);
@@ -45,6 +45,9 @@ namespace Yoakke.Collections.Intervals
 
             /// <inheritdoc/>
             public override LowerBound<T>? Touching => null;
+
+            /// <inheritdoc/>
+            public override string ToString() => "+∞)";
         }
 
         /// <summary>
@@ -54,6 +57,9 @@ namespace Yoakke.Collections.Intervals
         {
             /// <inheritdoc/>
             public override LowerBound<T>? Touching => new LowerBound<T>.Inclusive(this.Value);
+
+            /// <inheritdoc/>
+            public override string ToString() => $"{this.Value})";
         }
 
         /// <summary>
@@ -63,6 +69,9 @@ namespace Yoakke.Collections.Intervals
         {
             /// <inheritdoc/>
             public override LowerBound<T>? Touching => new LowerBound<T>.Exclusive(this.Value);
+
+            /// <inheritdoc/>
+            public override string ToString() => $"{this.Value}]";
         }
 
         #region Operators

@@ -97,24 +97,7 @@ namespace Yoakke.Collections.Intervals
         public override int GetHashCode() => IntervalComparer<T>.Default.GetHashCode(this);
 
         /// <inheritdoc/>
-        public override string ToString()
-        {
-            var lower = this.Lower switch
-            {
-                LowerBound<T>.Unbounded => "(-∞",
-                LowerBound<T>.Exclusive e => $"({e.Value}",
-                LowerBound<T>.Inclusive i => $"[{i.Value}",
-                _ => throw new ArgumentOutOfRangeException(),
-            };
-            var upper = this.Upper switch
-            {
-                LowerBound<T>.Unbounded => "+∞)",
-                LowerBound<T>.Exclusive e => $"{e.Value})",
-                LowerBound<T>.Inclusive i => $"{i.Value}]",
-                _ => throw new ArgumentOutOfRangeException(),
-            };
-            return $"{lower}; {upper}";
-        }
+        public override string ToString() => $"{this.Lower}; {this.Upper}";
 
         /// <summary>
         /// Checks if a value is inside an interval.
@@ -185,7 +168,7 @@ namespace Yoakke.Collections.Intervals
         /// <returns>True, if the parse was successful.</returns>
         public static bool TryParse(string text, TryParseValueString valueParser, [MaybeNullWhen(false)] out Interval<T> interval)
         {
-            bool TryParseAdapter(ReadOnlySpan<char> _, [MaybeNullWhen(false)] out T value) => valueParser(text, out value);
+            bool TryParseAdapter(ReadOnlySpan<char> text, [MaybeNullWhen(false)] out T value) => valueParser(text.ToString(), out value);
 
             return TryParseInternal(text.AsSpan(), TryParseAdapter, out interval);
         }
@@ -260,7 +243,7 @@ namespace Yoakke.Collections.Intervals
             var upperSpan = text[(semicolIndex + 1)..^1].Trim();
             // We handle some defaults for infinities
             LowerBound<T>? lower = TryParseInfinity(lowerSpan, true) ? LowerBound<T>.Unbounded.Instance : null;
-            UpperBound<T>? upper = TryParseInfinity(upperSpan, true) ? UpperBound<T>.Unbounded.Instance : null;
+            UpperBound<T>? upper = TryParseInfinity(upperSpan, false) ? UpperBound<T>.Unbounded.Instance : null;
             // Call the parser function for the remaining needed bounds
             if (lower is null)
             {
