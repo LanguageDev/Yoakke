@@ -147,6 +147,23 @@ namespace Yoakke.Collections.Tests
             new object[] { "(1; 3]", "(2; 4)", typeof(IntervalRelation<int>.Overlapping), "(1; 2]", "(2; 3]", "(3; 4)" },
             new object[] { "(1; 3)", "[2; 4)", typeof(IntervalRelation<int>.Overlapping), "(1; 2)", "[2; 3)", "[3; 4)" },
             new object[] { "(1; 3]", "[2; 4)", typeof(IntervalRelation<int>.Overlapping), "(1; 2)", "[2; 3]", "(3; 4)" },
+            // Containing
+            new object[] { "(1; 4)", "(2; 3)", typeof(IntervalRelation<int>.Containing), "(1; 2]", "(2; 3)", "[3; 4)" },
+            new object[] { "(1; 4)", "[2; 3)", typeof(IntervalRelation<int>.Containing), "(1; 2)", "[2; 3)", "[3; 4)" },
+            new object[] { "(1; 4)", "(2; 3]", typeof(IntervalRelation<int>.Containing), "(1; 2]", "(2; 3]", "(3; 4)" },
+            new object[] { "(1; 4)", "[2; 3]", typeof(IntervalRelation<int>.Containing), "(1; 2)", "[2; 3]", "(3; 4)" },
+            new object[] { "[1; 4]", "(1; 4)", typeof(IntervalRelation<int>.Containing), "[1; 1]", "(1; 4)", "[4; 4]" },
+            // Starting
+            new object[] { "(1; 4)", "(1; 3)", typeof(IntervalRelation<int>.Starting), "(0; 0)", "(1; 3)", "[3; 4)" },
+            new object[] { "(1; 4)", "(1; 3]", typeof(IntervalRelation<int>.Starting), "(0; 0)", "(1; 3]", "(3; 4)" },
+            // Finishing
+            new object[] { "(1; 4)", "(3; 4)", typeof(IntervalRelation<int>.Finishing), "(1; 3]", "(3; 4)", "(0; 0)" },
+            new object[] { "(1; 4)", "[3; 4)", typeof(IntervalRelation<int>.Finishing), "(1; 3)", "[3; 4)", "(0; 0)" },
+            // Equal
+            new object[] { "(1; 4)", "(1; 4)", typeof(IntervalRelation<int>.Equal), "(0; 0)", "(1; 4)", "(0; 0)" },
+            new object[] { "[1; 4)", "[1; 4)", typeof(IntervalRelation<int>.Equal), "(0; 0)", "[1; 4)", "(0; 0)" },
+            new object[] { "(1; 4]", "(1; 4]", typeof(IntervalRelation<int>.Equal), "(0; 0)", "(1; 4]", "(0; 0)" },
+            new object[] { "[1; 4]", "[1; 4]", typeof(IntervalRelation<int>.Equal), "(0; 0)", "[1; 4]", "(0; 0)" },
         };
 
         [DataTestMethod]
