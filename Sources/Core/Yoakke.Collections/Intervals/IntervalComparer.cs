@@ -117,6 +117,17 @@ namespace Yoakke.Collections.Intervals
         public bool IsDisjunct(Interval<T> x, Interval<T> y) => this.IsBefore(x, y) || this.IsBefore(y, x) || (this.IsEmpty(x) && this.IsEmpty(y));
 
         /// <summary>
+        /// Checks if an interval completely contains another one.
+        /// </summary>
+        /// <param name="x">The container interval.</param>
+        /// <param name="y">The contained interval.</param>
+        /// <returns>True, if <paramref name="x"/> contains all elements of <paramref name="y"/>.</returns>
+        public bool Contains(Interval<T> x, Interval<T> y) =>
+               this.IsEmpty(y)
+            || (this.BoundComparer.Compare(x.Lower, y.Lower) <= 0 && this.BoundComparer.Compare(x.Upper, y.Upper) >= 0);
+
+
+        /// <summary>
         /// Calculates the relation of two intervals.
         /// </summary>
         /// <param name="x">The first interval.</param>

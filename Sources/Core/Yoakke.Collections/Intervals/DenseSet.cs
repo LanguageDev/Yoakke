@@ -16,7 +16,7 @@ namespace Yoakke.Collections.Intervals
     public class DenseSet<T> : IDenseSet<T>
     {
         /// <inheritdoc/>
-        public int Count => intervals.Count;
+        public int Count => this.intervals.Count;
 
         /// <inheritdoc/>
         public bool IsReadOnly => false;
@@ -68,7 +68,12 @@ namespace Yoakke.Collections.Intervals
         public bool Contains(T item) => this.Contains(Interval<T>.Singleton(item));
 
         /// <inheritdoc/>
-        public bool Contains(Interval<T> item) => throw new NotImplementedException();
+        public bool Contains(Interval<T> item)
+        {
+            this.BinarySearch(0, this.intervals.Count, item.Lower, iv => iv.Upper, out var from);
+            if (from == this.intervals.Count) return false;
+            return this.Comparer.Contains(this.intervals[from], item);
+        }
 
         /// <inheritdoc/>
         public void Clear() => this.intervals.Clear();
@@ -86,15 +91,62 @@ namespace Yoakke.Collections.Intervals
         public bool Remove(Interval<T> item) => throw new NotImplementedException();
 
         /// <inheritdoc/>
-        public void CopyTo(Interval<T>[] array, int arrayIndex) => throw new NotImplementedException();
+        public void Invert() => throw new NotImplementedException();
 
         /// <inheritdoc/>
-        public void Invert() => throw new NotImplementedException();
+        public void CopyTo(Interval<T>[] array, int arrayIndex) => this.intervals.CopyTo(array, arrayIndex);
 
         /// <inheritdoc/>
         public IEnumerator<Interval<T>> GetEnumerator() => this.intervals.GetEnumerator();
 
         /// <inheritdoc/>
         IEnumerator IEnumerable.GetEnumerator() => (this.intervals as IEnumerable).GetEnumerator();
+
+        private (int From, int To) TouchingRange(Interval<T> interval)
+        {
+            var (from, to) = this.IntersectingRange(interval);
+            if (from != 0 && this.Comparer.BoundComparer.IsTouching(interval.Lower, this.intervals[from - 1].Upper)) from -= 1;
+            if (to != this.intervals.Count && this.Comparer.BoundComparer.IsTouching(interval.Upper, this.intervals[to].Lower)) to += 1;
+            return (from, to);
+        }
+
+        private (int From, int To) IntersectingRange(Interval<T> interval)
+        {
+            this.BinarySearch(0, this.intervals.Count, interval.Lower, iv => iv.Upper, out var from);
+            this.BinarySearch(from, this.intervals.Count - from, interval.Upper, iv => iv.Lower, out var to);
+            return (from, to);
+        }
+
+        private bool BinarySearch(int start, int size, Bound<T> searchedKey, Func<Interval<T>, Bound<T>> keySelector, out int index)
+        {
+            if (size == 0)
+            {
+                index = 0;
+                return false;
+            }
+
+            while (size > 1)
+            {
+                var half = size / 2;
+                var mid = start + half;
+                var key = keySelector(this.intervals[mid]);
+                var cmp = this.Comparer.BoundComparer.Compare(searchedKey, key);
+                start = cmp > 0 ? mid : start;
+                size -= half;
+            }
+
+            var resultKey = keySelector(this.intervals[start]);
+            var resultCmp = this.Comparer.BoundComparer.Compare(searchedKey, resultKey);
+            if (resultCmp == 0)
+            {
+                index = start;
+                return true;
+            }
+            else
+            {
+                index = start + (resultCmp > 0 ? 1 : 0);
+                return false;
+            }
+        }
     }
 }
