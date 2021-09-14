@@ -18,9 +18,15 @@ namespace Yoakke.Collections.Intervals
         /// </summary>
         public static readonly IntervalComparer<T> Default = new(BoundComparer<T>.Default);
 
-        private readonly BoundComparer<T> boundComparer;
+        /// <summary>
+        /// The bounds comparer used.
+        /// </summary>
+        public BoundComparer<T> BoundComparer { get; }
 
-        private IComparer<T> Comparer => this.boundComparer.Comparer;
+        /// <summary>
+        /// The element comparer used.
+        /// </summary>
+        public IComparer<T> ValueComparer => this.BoundComparer.ValueComparer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IntervalComparer{T}"/> class.
@@ -28,7 +34,7 @@ namespace Yoakke.Collections.Intervals
         /// <param name="boundComparer">The <see cref="BoundComparer{T}"/> to use.</param>
         public IntervalComparer(BoundComparer<T> boundComparer)
         {
-            this.boundComparer = boundComparer;
+            this.BoundComparer = boundComparer;
         }
 
         /// <summary>
@@ -42,15 +48,15 @@ namespace Yoakke.Collections.Intervals
         }
 
         /// <inheritdoc/>
-        public bool Equals(Interval<T> x, Interval<T> y) => (this.boundComparer.Equals(x.Lower, y.Lower) && this.boundComparer.Equals(x.Upper, y.Upper))
+        public bool Equals(Interval<T> x, Interval<T> y) => (this.BoundComparer.Equals(x.Lower, y.Lower) && this.BoundComparer.Equals(x.Upper, y.Upper))
                                                          || (this.IsEmpty(x) && this.IsEmpty(y));
 
         /// <inheritdoc/>
         public int GetHashCode(Interval<T> obj)
         {
             var h = default(HashCode);
-            h.Add(obj.Lower, this.boundComparer);
-            h.Add(obj.Upper, this.boundComparer);
+            h.Add(obj.Lower, this.BoundComparer);
+            h.Add(obj.Upper, this.BoundComparer);
             return h.ToHashCode();
         }
 
@@ -64,17 +70,17 @@ namespace Yoakke.Collections.Intervals
         {
             (LowerBound<T>.Unbounded, UpperBound<T>.Unbounded) => true,
 
-            (LowerBound<T>.Unbounded, UpperBound<T>.Exclusive r) => this.Comparer.Compare(value, r.Value) < 0,
-            (LowerBound<T>.Unbounded, UpperBound<T>.Inclusive r) => this.Comparer.Compare(value, r.Value) <= 0,
+            (LowerBound<T>.Unbounded, UpperBound<T>.Exclusive r) => this.ValueComparer.Compare(value, r.Value) < 0,
+            (LowerBound<T>.Unbounded, UpperBound<T>.Inclusive r) => this.ValueComparer.Compare(value, r.Value) <= 0,
 
-            (LowerBound<T>.Exclusive l, UpperBound<T>.Unbounded) => this.Comparer.Compare(l.Value, value) < 0,
-            (LowerBound<T>.Inclusive l, UpperBound<T>.Unbounded) => this.Comparer.Compare(l.Value, value) <= 0,
+            (LowerBound<T>.Exclusive l, UpperBound<T>.Unbounded) => this.ValueComparer.Compare(l.Value, value) < 0,
+            (LowerBound<T>.Inclusive l, UpperBound<T>.Unbounded) => this.ValueComparer.Compare(l.Value, value) <= 0,
 
-            (LowerBound<T>.Exclusive l, UpperBound<T>.Exclusive r) => this.Comparer.Compare(l.Value, value) < 0 && this.Comparer.Compare(value, r.Value) < 0,
-            (LowerBound<T>.Inclusive l, UpperBound<T>.Inclusive r) => this.Comparer.Compare(l.Value, value) <= 0 && this.Comparer.Compare(value, r.Value) <= 0,
+            (LowerBound<T>.Exclusive l, UpperBound<T>.Exclusive r) => this.ValueComparer.Compare(l.Value, value) < 0 && this.ValueComparer.Compare(value, r.Value) < 0,
+            (LowerBound<T>.Inclusive l, UpperBound<T>.Inclusive r) => this.ValueComparer.Compare(l.Value, value) <= 0 && this.ValueComparer.Compare(value, r.Value) <= 0,
 
-            (LowerBound<T>.Inclusive l, UpperBound<T>.Exclusive r) => this.Comparer.Compare(l.Value, value) <= 0 && this.Comparer.Compare(value, r.Value) < 0,
-            (LowerBound<T>.Exclusive l, UpperBound<T>.Inclusive r) => this.Comparer.Compare(l.Value, value) < 0 && this.Comparer.Compare(value, r.Value) <= 0,
+            (LowerBound<T>.Inclusive l, UpperBound<T>.Exclusive r) => this.ValueComparer.Compare(l.Value, value) <= 0 && this.ValueComparer.Compare(value, r.Value) < 0,
+            (LowerBound<T>.Exclusive l, UpperBound<T>.Inclusive r) => this.ValueComparer.Compare(l.Value, value) < 0 && this.ValueComparer.Compare(value, r.Value) <= 0,
 
             _ => throw new ArgumentOutOfRangeException(),
         };
@@ -86,10 +92,10 @@ namespace Yoakke.Collections.Intervals
         /// <returns>True, if <paramref name="interval"/> is empty.</returns>
         public bool IsEmpty(Interval<T> interval) => (interval.Lower, interval.Upper) switch
         {
-            (LowerBound<T>.Inclusive l, UpperBound<T>.Exclusive r) => this.Comparer.Compare(l.Value, r.Value) >= 0,
-            (LowerBound<T>.Exclusive l, UpperBound<T>.Inclusive r) => this.Comparer.Compare(l.Value, r.Value) >= 0,
-            (LowerBound<T>.Exclusive l, UpperBound<T>.Exclusive r) => this.Comparer.Compare(l.Value, r.Value) >= 0,
-            (LowerBound<T>.Inclusive l, UpperBound<T>.Inclusive r) => this.Comparer.Compare(l.Value, r.Value) > 0,
+            (LowerBound<T>.Inclusive l, UpperBound<T>.Exclusive r) => this.ValueComparer.Compare(l.Value, r.Value) >= 0,
+            (LowerBound<T>.Exclusive l, UpperBound<T>.Inclusive r) => this.ValueComparer.Compare(l.Value, r.Value) >= 0,
+            (LowerBound<T>.Exclusive l, UpperBound<T>.Exclusive r) => this.ValueComparer.Compare(l.Value, r.Value) >= 0,
+            (LowerBound<T>.Inclusive l, UpperBound<T>.Inclusive r) => this.ValueComparer.Compare(l.Value, r.Value) > 0,
             _ => false,
         };
 
@@ -99,7 +105,7 @@ namespace Yoakke.Collections.Intervals
         /// <param name="x">The first interval to check.</param>
         /// <param name="y">The second interval to check.</param>
         /// <returns>True, if <paramref name="x"/> is completely before <paramref name="y"/>.</returns>
-        public bool IsBefore(Interval<T> x, Interval<T> y) => this.boundComparer.Compare(x.Upper, y.Lower) < 0
+        public bool IsBefore(Interval<T> x, Interval<T> y) => this.BoundComparer.Compare(x.Upper, y.Lower) < 0
                                                            && !(this.IsEmpty(x) && this.IsEmpty(y));
 
         /// <summary>
@@ -120,11 +126,11 @@ namespace Yoakke.Collections.Intervals
         {
             if (this.Equals(x, y)) return new IntervalRelation<T>.Equal(x);
 
-            var (first, second) = this.boundComparer.Compare(x.Lower, y.Lower) < 0 ? (x, y) : (y, x);
-            if (this.boundComparer.IsTouching(first.Upper, second.Lower)) return new IntervalRelation<T>.Touching(first, second);
-            if (this.boundComparer.Compare(first.Upper, second.Lower) < 0) return new IntervalRelation<T>.Disjunct(first, second);
-            var upperCmp = this.boundComparer.Compare(first.Upper, second.Upper);
-            if (this.boundComparer.Compare(first.Lower, second.Lower) == 0)
+            var (first, second) = this.BoundComparer.Compare(x.Lower, y.Lower) < 0 ? (x, y) : (y, x);
+            if (this.BoundComparer.IsTouching(first.Upper, second.Lower)) return new IntervalRelation<T>.Touching(first, second);
+            if (this.BoundComparer.Compare(first.Upper, second.Lower) < 0) return new IntervalRelation<T>.Disjunct(first, second);
+            var upperCmp = this.BoundComparer.Compare(first.Upper, second.Upper);
+            if (this.BoundComparer.Compare(first.Lower, second.Lower) == 0)
             {
                 // Starting relation, depends on which ends first
                 var (a, b) = upperCmp < 0 ? (first, second) : (second, first);
