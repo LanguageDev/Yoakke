@@ -105,52 +105,52 @@ namespace Yoakke.Collections.Dense
         public void IntersectWith(IEnumerable<Interval<T>> other) => throw new NotImplementedException();
 
         /// <inheritdoc/>
-        public bool IsProperSubsetOf(IEnumerable<T> other) => throw new NotImplementedException();
-
-        /// <inheritdoc/>
-        public bool IsProperSupersetOf(IEnumerable<T> other) => throw new NotImplementedException();
-
-        /// <inheritdoc/>
-        public bool IsSubsetOf(IEnumerable<T> other) => throw new NotImplementedException();
-
-        /// <inheritdoc/>
-        public bool IsSupersetOf(IEnumerable<T> other) => throw new NotImplementedException();
-
-        /// <inheritdoc/>
-        public bool Overlaps(IEnumerable<T> other) => throw new NotImplementedException();
-
-        /// <inheritdoc/>
-        public bool SetEquals(IEnumerable<T> other) => throw new NotImplementedException();
-
-        /// <inheritdoc/>
-        public void SymmetricExceptWith(IEnumerable<Interval<T>> other) => throw new NotImplementedException();
-
-        /// <inheritdoc/>
-        public void SymmetricExceptWith(IEnumerable<T> other) => throw new NotImplementedException();
-
-        /// <inheritdoc/>
-        public void UnionWith(IEnumerable<T> other) => throw new NotImplementedException();
-
-        /// <inheritdoc/>
-        public void UnionWith(IEnumerable<Interval<T>> other) => throw new NotImplementedException();
+        public bool IsProperSubsetOf(IEnumerable<T> other) => this.IsProperSubsetOf(other.Select(i => Interval<T>.Singleton(i)));
 
         /// <inheritdoc/>
         public bool IsProperSubsetOf(IEnumerable<Interval<T>> other) => throw new NotImplementedException();
 
         /// <inheritdoc/>
+        public bool IsProperSupersetOf(IEnumerable<T> other) => this.IsProperSupersetOf(other.Select(i => Interval<T>.Singleton(i)));
+
+        /// <inheritdoc/>
         public bool IsProperSupersetOf(IEnumerable<Interval<T>> other) => throw new NotImplementedException();
+
+        /// <inheritdoc/>
+        public bool IsSubsetOf(IEnumerable<T> other) => this.IsSubsetOf(other.Select(i => Interval<T>.Singleton(i)));
 
         /// <inheritdoc/>
         public bool IsSubsetOf(IEnumerable<Interval<T>> other) => throw new NotImplementedException();
 
         /// <inheritdoc/>
+        public bool IsSupersetOf(IEnumerable<T> other) => this.IsSupersetOf(other.Select(i => Interval<T>.Singleton(i)));
+
+        /// <inheritdoc/>
         public bool IsSupersetOf(IEnumerable<Interval<T>> other) => throw new NotImplementedException();
+
+        /// <inheritdoc/>
+        public bool Overlaps(IEnumerable<T> other) => this.Overlaps(other.Select(i => Interval<T>.Singleton(i)));
 
         /// <inheritdoc/>
         public bool Overlaps(IEnumerable<Interval<T>> other) => throw new NotImplementedException();
 
         /// <inheritdoc/>
+        public bool SetEquals(IEnumerable<T> other) => this.SetEquals(other.Select(i => Interval<T>.Singleton(i)));
+
+        /// <inheritdoc/>
         public bool SetEquals(IEnumerable<Interval<T>> other) => throw new NotImplementedException();
+
+        /// <inheritdoc/>
+        public void SymmetricExceptWith(IEnumerable<T> other) => this.SymmetricExceptWith(other.Select(i => Interval<T>.Singleton(i)));
+
+        /// <inheritdoc/>
+        public void SymmetricExceptWith(IEnumerable<Interval<T>> other) => throw new NotImplementedException();
+
+        /// <inheritdoc/>
+        public void UnionWith(IEnumerable<T> other) => this.UnionWith(other.Select(i => Interval<T>.Singleton(i)));
+
+        /// <inheritdoc/>
+        public void UnionWith(IEnumerable<Interval<T>> other) => throw new NotImplementedException();
 
         /// <inheritdoc/>
         public IEnumerator<Interval<T>> GetEnumerator() => this.intervals.GetEnumerator();
