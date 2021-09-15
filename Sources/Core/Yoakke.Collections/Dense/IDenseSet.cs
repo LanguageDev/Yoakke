@@ -18,16 +18,16 @@ namespace Yoakke.Collections.Dense
         /// <summary>
         /// Adds an interval of elements to the current set and returns a value to indicate if there was any value newly added.
         /// </summary>
-        /// <param name="iterval">The interval of elements to add to the set.</param>
+        /// <param name="interval">The interval of elements to add to the set.</param>
         /// <returns>True if the there were any elements added to the set.</returns>
-        public bool Add(Interval<T> iterval);
+        public bool Add(Interval<T> interval);
 
         /// <summary>
         /// Removes an interval of elements from the set.
         /// </summary>
-        /// <param name="iterval">The interval to remove.</param>
+        /// <param name="interval">The interval to remove.</param>
         /// <returns>True, if there were any elements removed, false otherwise.</returns>
-        public bool Remove(Interval<T> iterval);
+        public bool Remove(Interval<T> interval);
 
         /// <summary>
         /// Removes all intervals of elements in the specified collection from the current set.

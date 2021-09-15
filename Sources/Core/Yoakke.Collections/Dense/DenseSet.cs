@@ -78,13 +78,25 @@ namespace Yoakke.Collections.Dense
         public bool Add(T item) => this.Add(Interval<T>.Singleton(item));
 
         /// <inheritdoc/>
-        public bool Add(Interval<T> iterval) => throw new NotImplementedException();
+        public bool Add(Interval<T> interval)
+        {
+            if (this.Comparer.IsEmpty(interval)) return false;
+
+            // For an empty set, it's trivial, we just add it
+            if (this.intervals.Count == 0)
+            {
+                this.intervals.Add(interval);
+                return true;
+            }
+
+            throw new NotImplementedException();
+        }
 
         /// <inheritdoc/>
         public bool Remove(T item) => this.Remove(Interval<T>.Singleton(item));
 
         /// <inheritdoc/>
-        public bool Remove(Interval<T> iterval) => throw new NotImplementedException();
+        public bool Remove(Interval<T> interval) => throw new NotImplementedException();
 
         /// <inheritdoc/>
         public bool Contains(T item) => this.Contains(Interval<T>.Singleton(item));
@@ -93,7 +105,7 @@ namespace Yoakke.Collections.Dense
         public bool Contains(Interval<T> interval) => throw new NotImplementedException();
 
         /// <inheritdoc/>
-        public bool Overlaps(Interval<T> iterval) => throw new NotImplementedException();
+        public bool Overlaps(Interval<T> interval) => throw new NotImplementedException();
 
         /// <inheritdoc/>
         public bool IsProperSubsetOf(IEnumerable<T> other) => this.IsProperSubsetOf(other.Select(i => Interval<T>.Singleton(i)));
