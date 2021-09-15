@@ -40,6 +40,7 @@ namespace Yoakke.Collections.Tests
         [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "12", "(-oo; 5] U (7; 9) U (12; 16]")]
         [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "8", "(-oo; 5] U (7; 8) U (8; 9) U [12; 16]")]
         [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "14", "(-oo; 5] U (7; 9) U [12; 14) U (14; 16]")]
+        [DataRow("(-oo; +oo)", "0", "(-oo; 0) U (0; +oo)")]
         public void RemoveItem(string setText, string itemText, string resultText)
         {
             var originalSet = ParseDenseSet(setText);
@@ -74,7 +75,7 @@ namespace Yoakke.Collections.Tests
         {
             var originalSet = ParseDenseSet(setText);
             var resultingSet = ParseDenseSet(resultText);
-            var interval = Interval<int>.Parse(intervalText, int.Parse);
+            var interval = ParseInterval(intervalText);
 
             originalSet.Add(interval);
 
@@ -100,11 +101,12 @@ namespace Yoakke.Collections.Tests
         [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; +oo)", "")]
         [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; 24)", "")]
         [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(-2; 24]", "(-oo; -2]")]
+        [DataRow("(-oo; +oo)", "[0; 3)", "(-oo; 0) U [3; +oo)")]
         public void RemoveInterval(string setText, string intervalText, string resultText)
         {
             var originalSet = ParseDenseSet(setText);
             var resultingSet = ParseDenseSet(resultText);
-            var interval = Interval<int>.Parse(intervalText, int.Parse);
+            var interval = ParseInterval(intervalText);
 
             originalSet.Remove(interval);
 
@@ -130,6 +132,169 @@ namespace Yoakke.Collections.Tests
             AssertEquals(originalSet, resultingSet);
         }
 
+        [DataTestMethod]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "4", true)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "12", true)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "7", false)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "6", false)]
+        [DataRow("(-oo; +oo)", "0", true)]
+        [DataRow("(-oo; 0) U (0; +oo)", "0", false)]
+        public void ContainsItem(string setText, string itemText, bool contained)
+        {
+            var set = ParseDenseSet(setText);
+            var item = int.Parse(itemText);
+
+            var result = set.Contains(item);
+
+            if (contained) Assert.IsTrue(result);
+            else Assert.IsFalse(result);
+        }
+
+        [DataTestMethod]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(7; 9)", true)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "[2; 5]", true)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "[5; 5]", true)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(13; 15]", true)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(0; 0)", true)]
+        [DataRow("(-oo; +oo)", "[-123; 54]", true)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "[2; 6]", false)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(5; 7]", false)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(7; 16]", false)]
+        public void ContainsInterval(string setText, string intervalText, bool contained)
+        {
+            var set = ParseDenseSet(setText);
+            var interval = ParseInterval(intervalText);
+
+            var result = set.Contains(interval);
+
+            if (contained) Assert.IsTrue(result);
+            else Assert.IsFalse(result);
+        }
+
+        [DataTestMethod]
+        [DataRow("(-oo; 5] U (7; 9)", "(-oo; 5] U (7; 9) U [12; 16]", true)]
+        [DataRow("", "", true)]
+        [DataRow("[12; 16]", "(-oo; 5] U (7; 9) U [12; 16]", true)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; 5] U (7; 9) U [12; 16]", true)]
+        [DataRow("(12; 16]", "(-oo; 5] U (7; 9) U [12; 16]", true)]
+        [DataRow("[16; 16]", "(-oo; 5] U (7; 9) U [12; 16]", true)]
+        [DataRow("", "(-oo; 5] U (7; 9) U [12; 16]", true)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; +oo)", true)]
+        [DataRow("(-oo; +oo)", "(-oo; 5] U (7; 9) U [12; 16]", false)]
+        [DataRow("[3; 7) U [9; 13)", "(-oo; 5] U (7; 9) U [12; 16]", false)]
+        [DataRow("[9; 9]", "(-oo; 5] U (7; 9) U [12; 16]", false)]
+        [DataRow("(5; 7] U [9; 12)", "(-oo; 5] U (7; 9) U [12; 16]", false)]
+        public void IsSubset(string set1Text, string set2Text, bool isSubset)
+        {
+            var set1 = ParseDenseSet(set1Text);
+            var set2 = ParseDenseSet(set2Text);
+
+            var result = set1.IsSubsetOf(set2);
+
+            if (isSubset) Assert.IsTrue(result);
+            else Assert.IsFalse(result);
+        }
+
+        [DataTestMethod]
+        [DataRow("(-oo; 5] U (7; 9)", "(-oo; 5] U (7; 9) U [12; 16]", true)]
+        [DataRow("", "", false)]
+        [DataRow("[12; 16]", "(-oo; 5] U (7; 9) U [12; 16]", true)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; 5] U (7; 9) U [12; 16]", false)]
+        [DataRow("(12; 16]", "(-oo; 5] U (7; 9) U [12; 16]", true)]
+        [DataRow("[16; 16]", "(-oo; 5] U (7; 9) U [12; 16]", true)]
+        [DataRow("", "(-oo; 5] U (7; 9) U [12; 16]", true)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; +oo)", true)]
+        [DataRow("(-oo; +oo)", "(-oo; 5] U (7; 9) U [12; 16]", false)]
+        [DataRow("[3; 7) U [9; 13)", "(-oo; 5] U (7; 9) U [12; 16]", false)]
+        [DataRow("[9; 9]", "(-oo; 5] U (7; 9) U [12; 16]", false)]
+        [DataRow("(5; 7] U [9; 12)", "(-oo; 5] U (7; 9) U [12; 16]", false)]
+        public void IsProperSubset(string set1Text, string set2Text, bool isSubset)
+        {
+            var set1 = ParseDenseSet(set1Text);
+            var set2 = ParseDenseSet(set2Text);
+
+            var result = set1.IsProperSubsetOf(set2);
+
+            if (isSubset) Assert.IsTrue(result);
+            else Assert.IsFalse(result);
+        }
+
+        [DataTestMethod]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; 5]", true)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; +oo)", true)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "[2; 7)", true)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "[13; 14)", true)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "[9; 12)", false)]
+        [DataRow("", "(0; 0)", false)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "[1; 1]", true)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "[6; 6]", false)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(0; 0)", false)]
+        [DataRow("", "(2; 6)", false)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "[2; 20)", true)]
+        [DataRow("[5; 5]", "[5; 5]", true)]
+        [DataRow("[5; 5]", "[1; 1]", true)]
+        public void OverlapsInterval(string setText, string intervalText, bool overlaps)
+        {
+            var set = ParseDenseSet(setText);
+            var interval = ParseInterval(intervalText);
+
+            var result = set.Overlaps(interval);
+
+            if (overlaps) Assert.IsTrue(result);
+            else Assert.IsFalse(result);
+        }
+
+        [DataTestMethod]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; 5] U (7; 9) U [12; 16]", true)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; 4] U (4; +oo)", true)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(5; 7] U [9; 12) U (16; +oo)", false)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "[5; 7) U [18; 20)", true)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(6; 7) U [18; 20)", false)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "[3; 7) U [18; 20)", true)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "[3; 10) U [18; 20)", true)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "[3; 10) U [13; 20)", true)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "[1; 1]", true)]
+        public void OverlapsSet(string set1Text, string set2Text, bool hasOverlap)
+        {
+            var set1 = ParseDenseSet(set1Text);
+            var set2 = ParseDenseSet(set2Text);
+
+            var result = set1.Overlaps(set2);
+
+            if (hasOverlap) Assert.IsTrue(result);
+            else Assert.IsFalse(result);
+        }
+
+        [DataTestMethod]
+        [DataRow("", "", true)]
+        [DataRow("[1; 1]", "[1; 1]", true)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; 5] U (7; 9) U [12; 16]", true)]
+        [DataRow("(1; 2) U (3; 4)", "(1; 2) U (3; 4)", true)]
+        [DataRow("[1; 2] U (3; 4)", "[1; 2] U (3; 4)", true)]
+        [DataRow("[1; 2] U (3; 4)", "(1; 2] U (3; 4)", false)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(7; 9) U [12; 16]", false)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; 5] U [12; 16]", false)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; 5] U (7; 9)", false)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "", false)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; 4] U (4; +oo)", false)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(5; 7] U [9; 12) U (16; +oo)", false)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "[5; 7) U [18; 20)", false)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(6; 7) U [18; 20)", false)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "[3; 7) U [18; 20)", false)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "[3; 10) U [18; 20)", false)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "[3; 10) U [13; 20)", false)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "[1; 1]", false)]
+        public void EqualSet(string set1Text, string set2Text, bool equal)
+        {
+            var set1 = ParseDenseSet(set1Text);
+            var set2 = ParseDenseSet(set2Text);
+
+            var result = set1.SetEquals(set2);
+
+            if (equal) Assert.IsTrue(result);
+            else Assert.IsFalse(result);
+        }
+
         private static void AssertEquals(DenseSet<int> a, DenseSet<int> b)
         {
             Assert.IsTrue(a.SequenceEqual(b));
@@ -153,7 +318,7 @@ namespace Yoakke.Collections.Tests
 
             // Split by Union and parse intervals
             var intervalParts = text.Split('U');
-            var intervals = intervalParts.Select(t => Interval<int>.Parse(t.Trim(), int.Parse));
+            var intervals = intervalParts.Select(ParseInterval);
 
             // Construct the dense set
             var result = new DenseSet<int>();
@@ -164,5 +329,7 @@ namespace Yoakke.Collections.Tests
 
             return result;
         }
+
+        private static Interval<int> ParseInterval(string text) => Interval<int>.Parse(text.Trim(), int.Parse);
     }
 }
