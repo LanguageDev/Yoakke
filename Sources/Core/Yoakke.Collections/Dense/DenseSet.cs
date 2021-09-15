@@ -288,7 +288,7 @@ namespace Yoakke.Collections.Dense
         public bool IsProperSubsetOf(IEnumerable<T> other) => this.IsProperSubsetOf(other.Select(i => Interval<T>.Singleton(i)));
 
         /// <inheritdoc/>
-        public bool IsProperSubsetOf(IEnumerable<Interval<T>> other) => throw new NotImplementedException();
+        public bool IsProperSubsetOf(IEnumerable<Interval<T>> other) => this.IsSubsetOf(other, out var proper) && proper;
 
         /// <inheritdoc/>
         public bool IsProperSupersetOf(IEnumerable<T> other) => this.IsProperSupersetOf(other.Select(i => Interval<T>.Singleton(i)));
@@ -304,16 +304,13 @@ namespace Yoakke.Collections.Dense
         public bool IsSubsetOf(IEnumerable<Interval<T>> other) => this.MakeDenseSet(other).IsSupersetOf(this);
 
         /// <inheritdoc/>
-        public bool IsSubsetOf(IEnumerable<Interval<T>> other, out bool proper) => throw new NotImplementedException();
-
-        /// <inheritdoc/>
         public bool IsSubsetOf(IEnumerable<T> other, out bool proper) => throw new NotImplementedException();
 
         /// <inheritdoc/>
-        public bool IsSupersetOf(IEnumerable<T> other) => this.IsSupersetOf(other.Select(i => Interval<T>.Singleton(i)));
+        public bool IsSubsetOf(IEnumerable<Interval<T>> other, out bool proper) => throw new NotImplementedException();
 
         /// <inheritdoc/>
-        public bool IsSupersetOf(IEnumerable<Interval<T>> other, out bool proper) => throw new NotImplementedException();
+        public bool IsSupersetOf(IEnumerable<T> other) => this.IsSupersetOf(other.Select(i => Interval<T>.Singleton(i)));
 
         /// <inheritdoc/>
         public bool IsSupersetOf(IEnumerable<Interval<T>> other)
@@ -327,6 +324,9 @@ namespace Yoakke.Collections.Dense
 
         /// <inheritdoc/>
         public bool IsSupersetOf(IEnumerable<T> other, out bool proper) => throw new NotImplementedException();
+
+        /// <inheritdoc/>
+        public bool IsSupersetOf(IEnumerable<Interval<T>> other, out bool proper) => throw new NotImplementedException();
 
         /// <inheritdoc/>
         public bool Overlaps(IEnumerable<T> other) => this.Overlaps(other.Select(i => Interval<T>.Singleton(i)));
