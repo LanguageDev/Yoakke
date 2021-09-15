@@ -437,7 +437,7 @@ namespace Yoakke.Collections.Dense
         private int BinarySearch(int start, Bound<T> searchedKey, Func<Interval<T>, Bound<T>> keySelector)
         {
             var size = this.intervals.Count - start;
-            if (size == 0) return 0;
+            if (size == 0) return start;
 
             while (size > 1)
             {
