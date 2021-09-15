@@ -190,10 +190,16 @@ namespace Yoakke.Collections.Tests
             var set1 = ParseDenseSet(set1Text);
             var set2 = ParseDenseSet(set2Text);
 
-            var result = set1.IsSubsetOf(set2);
-
-            if (isSubset) Assert.IsTrue(result);
-            else Assert.IsFalse(result);
+            if (isSubset)
+            {
+                Assert.IsTrue(set1.IsSubsetOf(set2));
+                Assert.IsTrue(set2.IsSupersetOf(set1));
+            }
+            else
+            {
+                Assert.IsFalse(set1.IsSubsetOf(set2));
+                Assert.IsFalse(set2.IsSupersetOf(set1));
+            }
         }
 
         [DataTestMethod]
@@ -214,10 +220,16 @@ namespace Yoakke.Collections.Tests
             var set1 = ParseDenseSet(set1Text);
             var set2 = ParseDenseSet(set2Text);
 
-            var result = set1.IsProperSubsetOf(set2);
-
-            if (isSubset) Assert.IsTrue(result);
-            else Assert.IsFalse(result);
+            if (isSubset)
+            {
+                Assert.IsTrue(set1.IsProperSubsetOf(set2));
+                Assert.IsTrue(set2.IsProperSupersetOf(set1));
+            }
+            else
+            {
+                Assert.IsFalse(set1.IsProperSubsetOf(set2));
+                Assert.IsFalse(set2.IsProperSupersetOf(set1));
+            }
         }
 
         [DataTestMethod]
@@ -260,10 +272,16 @@ namespace Yoakke.Collections.Tests
             var set1 = ParseDenseSet(set1Text);
             var set2 = ParseDenseSet(set2Text);
 
-            var result = set1.Overlaps(set2);
-
-            if (hasOverlap) Assert.IsTrue(result);
-            else Assert.IsFalse(result);
+            if (hasOverlap)
+            {
+                Assert.IsTrue(set1.Overlaps(set2));
+                Assert.IsTrue(set2.Overlaps(set1));
+            }
+            else
+            {
+                Assert.IsFalse(set1.Overlaps(set2));
+                Assert.IsFalse(set2.Overlaps(set1));
+            }
         }
 
         [DataTestMethod]
@@ -290,10 +308,16 @@ namespace Yoakke.Collections.Tests
             var set1 = ParseDenseSet(set1Text);
             var set2 = ParseDenseSet(set2Text);
 
-            var result = set1.SetEquals(set2);
-
-            if (equal) Assert.IsTrue(result);
-            else Assert.IsFalse(result);
+            if (equal)
+            {
+                Assert.IsTrue(set1.SetEquals(set2));
+                Assert.IsTrue(set2.SetEquals(set1));
+            }
+            else
+            {
+                Assert.IsFalse(set1.SetEquals(set2));
+                Assert.IsFalse(set2.SetEquals(set1));
+            }
         }
 
         private static void AssertEquals(DenseSet<int> a, DenseSet<int> b)

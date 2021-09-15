@@ -398,14 +398,7 @@ namespace Yoakke.Collections.Dense
         public bool SetEquals(IEnumerable<T> other) => this.SetEquals(ToInterval(other));
 
         /// <inheritdoc/>
-        public bool SetEquals(IEnumerable<Interval<T>> other)
-        {
-            foreach (var iv in other)
-            {
-                if (!this.TryGetIntersecting(iv, out var existing) || !this.Comparer.Equals(iv, existing)) return false;
-            }
-            return true;
-        }
+        public bool SetEquals(IEnumerable<Interval<T>> other) => throw new NotImplementedException();
 
         #endregion
 
