@@ -55,6 +55,9 @@ namespace Yoakke.Collections.Intervals
         /// <inheritdoc/>
         public int GetHashCode(Interval<T> obj)
         {
+            // NOTE: All empty intervals are equal
+            if (this.IsEmpty(obj)) return 0;
+
             var h = default(HashCode);
             h.Add(obj.Lower, this.BoundComparer);
             h.Add(obj.Upper, this.BoundComparer);

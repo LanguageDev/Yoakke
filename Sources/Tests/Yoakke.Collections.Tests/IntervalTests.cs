@@ -166,6 +166,22 @@ namespace Yoakke.Collections.Tests
             new object[] { "[1; 4]", "[1; 4]", typeof(IntervalRelation<int>.Equal), "(0; 0)", "[1; 4]", "(0; 0)" },
         };
 
+        private static IEnumerable<object[]> EqualityData { get; } = new object[][]
+{
+            // Empty intervals are equal
+            new object[] { "(0; 0)", "(0; 0)", true },
+            new object[] { "(0; 0)", "(1; 1)", true },
+            new object[] { "[0; 0)", "(0; 0)", true },
+            new object[] { "[0; -1]", "(0; 0)", true },
+            // Non-empty tests
+            new object[] { "(-oo; +oo)", "(-oo; +oo)", true },
+            new object[] { "(0; 1)", "(0; 1)", true },
+            new object[] { "[2; 4)", "[2; 4)", true },
+            new object[] { "(0; 2)", "(0; 1)", false },
+            new object[] { "[0; 1)", "[0; 1]", false },
+            new object[] { "[0; 2]", "(0; 2)", false },
+};
+
         [DataTestMethod]
         [DynamicData(nameof(IntervalToStringData))]
         public void IntervalToString(Interval<int> interval, string text)
@@ -301,6 +317,17 @@ namespace Yoakke.Collections.Tests
             Assert.AreEqual(upperDisjunct, rel2.UpperDisjunct);
         }
 
+        [DataTestMethod]
+        [DynamicData(nameof(EqualityData))]
+        public void Equality(string ivText1, string ivText2, bool eq)
+        {
+            var a = Interval<int>.Parse(ivText1, int.Parse);
+            var b = Interval<int>.Parse(ivText2, int.Parse);
+
+            if (eq) AssertEquals(a, b);
+            else AssertNotEquals(a, b);
+        }
+
         #region Comparers
 
         private static void AssertGreater(Bound<int> a, Bound<int> b)
@@ -330,6 +357,27 @@ namespace Yoakke.Collections.Tests
             Assert.AreEqual(0, a.CompareTo(b));
             Assert.AreEqual(0, b.CompareTo(a));
             Assert.AreEqual(a.GetHashCode(), b.GetHashCode());
+        }
+
+        private static void AssertEquals(Interval<int> a, Interval<int> b)
+        {
+            Assert.IsTrue(a == b);
+            Assert.IsTrue(b == a);
+            Assert.IsTrue(IntervalComparer<int>.Default.Equals(a, b));
+            Assert.IsTrue(IntervalComparer<int>.Default.Equals(b, a));
+            Assert.IsTrue(a.Equals(b));
+            Assert.IsTrue(b.Equals(a));
+            Assert.AreEqual(a.GetHashCode(), b.GetHashCode());
+        }
+
+        private static void AssertNotEquals(Interval<int> a, Interval<int> b)
+        {
+            Assert.IsFalse(a == b);
+            Assert.IsFalse(b == a);
+            Assert.IsFalse(IntervalComparer<int>.Default.Equals(a, b));
+            Assert.IsFalse(IntervalComparer<int>.Default.Equals(b, a));
+            Assert.IsFalse(a.Equals(b));
+            Assert.IsFalse(b.Equals(a));
         }
 
         #endregion
