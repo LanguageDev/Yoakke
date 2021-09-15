@@ -199,7 +199,7 @@ namespace Yoakke.Collections.Dense
                 if (upperCompare > 0)
                 {
                     // Need to split upper
-                    var newUpper = new Interval<T>(interval.Upper.Touching!, interval.Upper);
+                    var newUpper = new Interval<T>(interval.Upper.Touching!, upperExisting.Upper);
                     this.intervals[to - 1] = newUpper;
                     --deleteTo;
                 }

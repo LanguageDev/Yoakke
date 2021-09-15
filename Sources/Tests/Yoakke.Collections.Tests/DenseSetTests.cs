@@ -38,7 +38,7 @@ namespace Yoakke.Collections.Tests
         [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "4", "(-oo; 4) U (4; 5] U (7; 9) U [12; 16]")]
         [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "6", "(-oo; 5] U (7; 9) U [12; 16]")]
         [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "12", "(-oo; 5] U (7; 9) U (12; 16]")]
-        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "8", "(-oo; 5] U (7; 8) U (8; 9) U (12; 16]")]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "8", "(-oo; 5] U (7; 8) U (8; 9) U [12; 16]")]
         [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "14", "(-oo; 5] U (7; 9) U [12; 14) U (14; 16]")]
         public void RemoveItem(string setText, string itemText, string resultText)
         {
@@ -87,7 +87,7 @@ namespace Yoakke.Collections.Tests
         [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "[6; 6]", "(-oo; 5] U (7; 9) U [12; 16]")]
         [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(0; 0)", "(-oo; 5] U (7; 9) U [12; 16]")]
         [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(3; 5]", "(-oo; 3] U (7; 9) U [12; 16]")]
-        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(14; 15]", "(-oo; 5] U (7; 9) U [12; 14] U (15; 16)")]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(14; 15]", "(-oo; 5] U (7; 9) U [12; 14] U (15; 16]")]
         [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(7; 9)", "(-oo; 5] U [12; 16]")]
         [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(5; 7]", "(-oo; 5] U (7; 9) U [12; 16]")]
         [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(9; 13)", "(-oo; 5] U (7; 9) U [13; 16]")]
@@ -99,7 +99,7 @@ namespace Yoakke.Collections.Tests
         [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "[3; 13)", "(-oo; 3) U [13; 16]")]
         [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; +oo)", "")]
         [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; 24)", "")]
-        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(-2; 24]", "")]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(-2; 24]", "(-oo; -2]")]
         public void RemoveInterval(string setText, string intervalText, string resultText)
         {
             var originalSet = ParseDenseSet(setText);
