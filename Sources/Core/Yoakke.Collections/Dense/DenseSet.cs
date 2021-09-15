@@ -145,7 +145,9 @@ namespace Yoakke.Collections.Dense
                 return;
             }
 
-            if (this.intervals[0].Lower is LowerBound<T>.Unbounded && this.intervals[0].Upper is UpperBound<T>.Unbounded)
+            if (this.intervals.Count == 1
+             && this.intervals[0].Lower is LowerBound<T>.Unbounded
+             && this.intervals[0].Upper is UpperBound<T>.Unbounded)
             {
                 // Inverse of full interval is the empty one
                 this.intervals.Clear();
@@ -157,16 +159,109 @@ namespace Yoakke.Collections.Dense
             //  - One end is unbounded: for N intervals this creates N intervals when inverted
             //  - Both ends are bounded: for N intervals this creates N + 1 intervals when inverted
             var lowerUnbounded = this.intervals[0].Lower is LowerBound<T>.Unbounded;
-            var upperUnbounded = this.intervals[this.intervals.Count - 1].Upper is UpperBound<T>.Unbounded;
+            var upperUnbounded = this.intervals[^1].Upper is UpperBound<T>.Unbounded;
 
-            throw new NotImplementedException();
+            if (lowerUnbounded && upperUnbounded)
+            {
+                var nIntervals = this.intervals.Count - 1;
+                for (var i = 0; i < nIntervals; ++i)
+                {
+                    var lower = this.intervals[i].Upper.Touching!;
+                    var upper = this.intervals[i + 1].Lower.Touching!;
+                    this.intervals[i] = new(lower, upper);
+                }
+                this.intervals.RemoveAt(this.intervals.Count - 1);
+            }
+            else if (lowerUnbounded)
+            {
+                var nIntervals = this.intervals.Count;
+                if (nIntervals > 1)
+                {
+                    var prevTouch = this.intervals[nIntervals - 1].Lower.Touching!;
+
+                    // Modify the last one
+                    var lastLower = this.intervals[nIntervals - 1].Upper.Touching!;
+                    this.intervals[nIntervals - 1] = new(lastLower, UpperBound<T>.Unbounded.Instance);
+
+                    for (var i = nIntervals - 2; i > 0; --i)
+                    {
+                        var loTouch = prevTouch;
+                        var hiTouch = this.intervals[i].Upper.Touching!;
+                        prevTouch = this.intervals[i].Lower.Touching!;
+                        this.intervals[i] = new(hiTouch, loTouch);
+                    }
+
+                    // First one
+                    var hTouch = this.intervals[0].Upper.Touching!;
+                    this.intervals[0] = new(hTouch, prevTouch);
+                }
+                else
+                {
+                    // Modify the only one
+                    var lower = this.intervals[0].Upper.Touching!;
+                    this.intervals[0] = new(lower, UpperBound<T>.Unbounded.Instance);
+                }
+            }
+            else if (upperUnbounded)
+            {
+                var nIntervals = this.intervals.Count;
+                if (nIntervals > 1)
+                {
+                    var prevTouch = this.intervals[0].Upper.Touching!;
+
+                    // Modify the first one
+                    var firstUpper = this.intervals[0].Lower.Touching!;
+                    this.intervals[0] = new(LowerBound<T>.Unbounded.Instance, firstUpper);
+
+                    for (var i = 1; i < nIntervals - 1; ++i)
+                    {
+                        var loTouch = this.intervals[i].Lower.Touching!;
+                        var hiTouch = prevTouch;
+                        prevTouch = this.intervals[i].Upper.Touching!;
+                        this.intervals[i] = new(hiTouch, loTouch);
+                    }
+
+                    // Last one
+                    var lTouch = this.intervals[nIntervals - 1].Lower.Touching!;
+                    this.intervals[nIntervals - 1] = new(prevTouch, lTouch);
+                }
+                else
+                {
+                    // Modify the only one
+                    var upper = this.intervals[0].Lower.Touching!;
+                    this.intervals[0] = new(LowerBound<T>.Unbounded.Instance, upper);
+                }
+            }
+            else
+            {
+                // Bounded, meaning N + 1 entries
+                var nIntervals = this.intervals.Count;
+
+                // Add a last entry
+                this.intervals.Add(new(this.intervals[^1].Upper.Touching!, UpperBound<T>.Unbounded.Instance));
+
+                var prevTouch = this.intervals[0].Upper.Touching!;
+
+                // Modify first one
+                var firstUpper = this.intervals[0].Lower.Touching!;
+                this.intervals[0] = new(LowerBound<T>.Unbounded.Instance, firstUpper);
+
+                for (var i = 1; i < nIntervals; ++i)
+                {
+                    var loTouch = this.intervals[i].Lower.Touching!;
+                    var upper = prevTouch;
+                    prevTouch = this.intervals[i].Upper.Touching!;
+                    this.intervals[i] = new(upper, loTouch);
+                }
+            }
         }
 
         /// <inheritdoc/>
         public bool Contains(T item) => this.Contains(Interval<T>.Singleton(item));
 
         /// <inheritdoc/>
-        public bool Contains(Interval<T> interval) => throw new NotImplementedException();
+        public bool Contains(Interval<T> interval) =>
+            this.TryGetIntersecting(interval, out var existing) && this.Comparer.Contains(existing, interval);
 
         /// <inheritdoc/>
         public bool Overlaps(Interval<T> interval) => this.TryGetIntersecting(interval, out _);
