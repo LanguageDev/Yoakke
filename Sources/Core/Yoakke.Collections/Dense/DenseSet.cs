@@ -133,7 +133,19 @@ namespace Yoakke.Collections.Dense
         public bool Remove(T item) => this.Remove(Interval<T>.Singleton(item));
 
         /// <inheritdoc/>
-        public bool Remove(Interval<T> interval) => throw new NotImplementedException();
+        public bool Remove(Interval<T> interval)
+        {
+            // An empty set or an empty removal is trivial
+            if (this.intervals.Count == 0 || this.Comparer.IsEmpty(interval)) return false;
+
+            // Not empty, find all the intervals that are intersecting
+            var (from, to) = this.IntersectingRange(interval);
+
+            // If the removed interval intersects nothing, we are done
+            if (from == to) return false;
+
+            throw new NotImplementedException();
+        }
 
         /// <inheritdoc/>
         public void Complement()
@@ -282,7 +294,8 @@ namespace Yoakke.Collections.Dense
         public bool IsSubsetOf(IEnumerable<T> other) => this.IsSubsetOf(other.Select(i => Interval<T>.Singleton(i)));
 
         /// <inheritdoc/>
-        public bool IsSubsetOf(IEnumerable<Interval<T>> other) => throw new NotImplementedException();
+        // NOTE: Quite inefficient, but correct for now
+        public bool IsSubsetOf(IEnumerable<Interval<T>> other) => this.MakeDenseSet(other).IsSupersetOf(this);
 
         /// <inheritdoc/>
         public bool IsSupersetOf(IEnumerable<T> other) => this.IsSupersetOf(other.Select(i => Interval<T>.Singleton(i)));
@@ -422,6 +435,14 @@ namespace Yoakke.Collections.Dense
             var resultKey = keySelector(this.intervals[start]);
             var resultCmp = this.Comparer.BoundComparer.Compare(searchedKey, resultKey);
             return start + (resultCmp > 0 ? 1 : 0);
+        }
+
+        private IReadOnlyDenseSet<T> MakeDenseSet(IEnumerable<Interval<T>> intervals)
+        {
+            // if (intervals is IReadOnlyDenseSet<T> set) return set;
+            var result = new DenseSet<T>(this.Comparer);
+            foreach (var iv in intervals) result.Add(iv);
+            return result;
         }
     }
 }
