@@ -12,7 +12,7 @@ namespace Yoakke.Collections.Intervals
     /// Represents a finite or infinite interval.
     /// </summary>
     /// <typeparam name="T">The type of the endpoint value.</typeparam>
-    public class Interval<T> : IEquatable<Interval<T>>
+    public sealed class Interval<T> : IEquatable<Interval<T>>
     {
         /// <summary>
         /// A value parser function.

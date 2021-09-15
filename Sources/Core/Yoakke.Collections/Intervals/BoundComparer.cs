@@ -11,7 +11,7 @@ namespace Yoakke.Collections.Intervals
     /// A comparer that can compare <see cref="LowerBound{T}"/> and <see cref="UpperBound{T}"/> instances.
     /// </summary>
     /// <typeparam name="T">The type of the endpoint value.</typeparam>
-    public class BoundComparer<T>
+    public sealed class BoundComparer<T>
         : IEqualityComparer<Bound<T>>, IEqualityComparer<LowerBound<T>>, IEqualityComparer<UpperBound<T>>,
           IComparer<Bound<T>>, IComparer<LowerBound<T>>, IComparer<UpperBound<T>>
     {

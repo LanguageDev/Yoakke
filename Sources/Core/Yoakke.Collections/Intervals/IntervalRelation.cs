@@ -34,7 +34,7 @@ namespace Yoakke.Collections.Intervals
         /// <summary>
         /// Represents a disjunct relation of intervals, where the two intervals share no elements and are not touching.
         /// </summary>
-        public record Disjunct : IntervalRelation<T>
+        public sealed record Disjunct : IntervalRelation<T>
         {
             /// <inheritdoc/>
             public override Interval<T> LowerDisjunct { get; }
@@ -57,7 +57,7 @@ namespace Yoakke.Collections.Intervals
         /// <summary>
         /// Represents a touching relation of intervals, where the two intervals share no elements, but their endpoints touch.
         /// </summary>
-        public record Touching : IntervalRelation<T>
+        public sealed record Touching : IntervalRelation<T>
         {
             /// <inheritdoc/>
             public override Interval<T> LowerDisjunct { get; }
@@ -81,7 +81,7 @@ namespace Yoakke.Collections.Intervals
         /// Represents an overlapping relation of intervals, where the two intervals share elements,
         /// but neither contain the other.
         /// </summary>
-        public record Overlapping : IntervalRelation<T>
+        public sealed record Overlapping : IntervalRelation<T>
         {
             /// <inheritdoc/>
             public override Interval<T> LowerDisjunct { get; }
@@ -110,7 +110,7 @@ namespace Yoakke.Collections.Intervals
         /// Represents a containing relation of intervals, where one interval completely contains another, but none
         /// of the endpoints are equal.
         /// </summary>
-        public record Containing : IntervalRelation<T>
+        public sealed record Containing : IntervalRelation<T>
         {
             /// <inheritdoc/>
             public override Interval<T> LowerDisjunct { get; }
@@ -139,7 +139,7 @@ namespace Yoakke.Collections.Intervals
         /// Represents a starting relation of intervals, where one interval completely contains another, and
         /// the starting points are equal.
         /// </summary>
-        public record Starting : IntervalRelation<T>
+        public sealed record Starting : IntervalRelation<T>
         {
             /// <inheritdoc/>
             public override Interval<T> Intersecting { get; }
@@ -163,7 +163,7 @@ namespace Yoakke.Collections.Intervals
         /// Represents a finishing relation of intervals, where one interval completely contains another, and
         /// the finishing points are equal.
         /// </summary>
-        public record Finishing : IntervalRelation<T>
+        public sealed record Finishing : IntervalRelation<T>
         {
             /// <inheritdoc/>
             public override Interval<T> LowerDisjunct { get; }
@@ -186,7 +186,7 @@ namespace Yoakke.Collections.Intervals
         /// <summary>
         /// Represents an equal relation of intervals, where the two intervals are completely equal.
         /// </summary>
-        public record Equal : IntervalRelation<T>
+        public sealed record Equal : IntervalRelation<T>
         {
             /// <inheritdoc/>
             public override Interval<T> Intersecting { get; }

@@ -11,7 +11,7 @@ namespace Yoakke.Collections.Intervals
     /// An equality comparer that can compare <see cref="Interval{T}"/>s.
     /// </summary>
     /// <typeparam name="T">The type of the endpoint value.</typeparam>
-    public class IntervalComparer<T> : IEqualityComparer<Interval<T>>
+    public sealed class IntervalComparer<T> : IEqualityComparer<Interval<T>>
     {
         /// <summary>
         /// The default instance of the comparer.

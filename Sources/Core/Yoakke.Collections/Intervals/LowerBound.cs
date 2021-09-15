@@ -36,7 +36,7 @@ namespace Yoakke.Collections.Intervals
         /// <summary>
         /// Unbounded endpoint.
         /// </summary>
-        public record Unbounded : LowerBound<T>
+        public sealed record Unbounded : LowerBound<T>
         {
             private Unbounded()
             {
@@ -57,7 +57,7 @@ namespace Yoakke.Collections.Intervals
         /// <summary>
         /// Exclusive endpoint.
         /// </summary>
-        public record Exclusive(T Value) : LowerBound<T>
+        public sealed record Exclusive(T Value) : LowerBound<T>
         {
             /// <inheritdoc/>
             public override UpperBound<T>? Touching => new UpperBound<T>.Inclusive(this.Value);
@@ -69,7 +69,7 @@ namespace Yoakke.Collections.Intervals
         /// <summary>
         /// Inclusive endpoint.
         /// </summary>
-        public record Inclusive(T Value) : LowerBound<T>
+        public sealed record Inclusive(T Value) : LowerBound<T>
         {
             /// <inheritdoc/>
             public override UpperBound<T>? Touching => new UpperBound<T>.Exclusive(this.Value);

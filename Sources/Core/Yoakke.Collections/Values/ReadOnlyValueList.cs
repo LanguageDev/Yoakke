@@ -12,7 +12,7 @@ namespace Yoakke.Collections.Values
     /// A wrapper around <see cref="IReadOnlyList{T}"/>s to have value-based equality.
     /// </summary>
     /// <typeparam name="T">The element type.</typeparam>
-    public class ReadOnlyValueList<T> : IReadOnlyValueList<T>
+    public sealed class ReadOnlyValueList<T> : IReadOnlyValueList<T>
     {
         /// <inheritdoc/>
         public T this[int index] => this.Underlying[index];

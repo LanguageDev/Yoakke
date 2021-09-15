@@ -16,7 +16,7 @@ namespace Yoakke.Collections.Dense
     /// A default <see cref="IDenseSet{T}"/> implementation backed by a list of intervals.
     /// </summary>
     /// <typeparam name="T">The set element and interval endpoint type.</typeparam>
-    public class DenseSet<T> : IDenseSet<T>
+    public sealed class DenseSet<T> : IDenseSet<T>
     {
         /// <inheritdoc/>
         public bool IsEmpty => this.intervals.Count > 0;

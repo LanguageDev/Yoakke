@@ -14,7 +14,7 @@ namespace Yoakke.Collections.Values
     /// </summary>
     /// <typeparam name="TKey">The key type.</typeparam>
     /// <typeparam name="TValue">The value type.</typeparam>
-    public class ReadOnlyValueDictionary<TKey, TValue> : IReadOnlyValueDictionary<TKey, TValue>
+    public sealed class ReadOnlyValueDictionary<TKey, TValue> : IReadOnlyValueDictionary<TKey, TValue>
     {
         /// <inheritdoc/>
         public TValue this[TKey key] => this.Underlying[key];
