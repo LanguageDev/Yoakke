@@ -15,6 +15,11 @@ namespace Yoakke.Collections
     public interface IReadOnlyMathSet<T>
     {
         /// <summary>
+        /// True, if the set contains no elements.
+        /// </summary>
+        public bool IsEmpty { get; }
+
+        /// <summary>
         /// Gets the number of elements in the set, if it is finite.
         /// It is null, if the set contains infinite elements.
         /// </summary>

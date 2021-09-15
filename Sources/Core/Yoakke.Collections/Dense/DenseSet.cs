@@ -5,6 +5,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using Yoakke.Collections.Intervals;
@@ -17,6 +18,9 @@ namespace Yoakke.Collections.Dense
     /// <typeparam name="T">The set element and interval endpoint type.</typeparam>
     public class DenseSet<T> : IDenseSet<T>
     {
+        /// <inheritdoc/>
+        public bool IsEmpty => this.intervals.Count > 0;
+
         // NOTE: We can implement these later
         // For that we need some domain information with some IDomain<T> interface
 
@@ -132,13 +136,40 @@ namespace Yoakke.Collections.Dense
         public bool Remove(Interval<T> interval) => throw new NotImplementedException();
 
         /// <inheritdoc/>
+        public void Complement()
+        {
+            if (this.intervals.Count == 0)
+            {
+                // Inverse of the empty set is the full interval
+                this.intervals.Add(Interval<T>.Full);
+                return;
+            }
+
+            if (this.intervals[0].Lower is LowerBound<T>.Unbounded && this.intervals[0].Upper is UpperBound<T>.Unbounded)
+            {
+                // Inverse of full interval is the empty one
+                this.intervals.Clear();
+                return;
+            }
+
+            // The interval set is neither empty, nor full, there are 3 cases:
+            //  - Both ends are unbounded: for N intervals this creates N - 1 intervals when inverted
+            //  - One end is unbounded: for N intervals this creates N intervals when inverted
+            //  - Both ends are bounded: for N intervals this creates N + 1 intervals when inverted
+            var lowerUnbounded = this.intervals[0].Lower is LowerBound<T>.Unbounded;
+            var upperUnbounded = this.intervals[this.intervals.Count - 1].Upper is UpperBound<T>.Unbounded;
+
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
         public bool Contains(T item) => this.Contains(Interval<T>.Singleton(item));
 
         /// <inheritdoc/>
         public bool Contains(Interval<T> interval) => throw new NotImplementedException();
 
         /// <inheritdoc/>
-        public bool Overlaps(Interval<T> interval) => throw new NotImplementedException();
+        public bool Overlaps(Interval<T> interval) => this.TryGetIntersecting(interval, out _);
 
         /// <inheritdoc/>
         public bool IsProperSubsetOf(IEnumerable<T> other) => this.IsProperSubsetOf(other.Select(i => Interval<T>.Singleton(i)));
@@ -188,7 +219,14 @@ namespace Yoakke.Collections.Dense
         public bool SetEquals(IEnumerable<T> other) => this.SetEquals(other.Select(i => Interval<T>.Singleton(i)));
 
         /// <inheritdoc/>
-        public bool SetEquals(IEnumerable<Interval<T>> other) => throw new NotImplementedException();
+        public bool SetEquals(IEnumerable<Interval<T>> other)
+        {
+            foreach (var iv in other)
+            {
+                if (!this.TryGetIntersecting(iv, out var existing) || !this.Comparer.Equals(iv, existing)) return false;
+            }
+            return true;
+        }
 
         /// <inheritdoc/>
         public void ExceptWith(IEnumerable<T> other) => this.ExceptWith(other.Select(i => Interval<T>.Singleton(i)));
@@ -225,6 +263,36 @@ namespace Yoakke.Collections.Dense
 
         /// <inheritdoc/>
         IEnumerator IEnumerable.GetEnumerator() => (this.intervals as IEnumerable).GetEnumerator();
+
+        private bool TryGetTouching(Interval<T> interval, [MaybeNullWhen(false)] out Interval<T> existing)
+        {
+            var (from, to) = this.TouchingRange(interval);
+            if (from == to || to - from > 1)
+            {
+                existing = null;
+                return false;
+            }
+            else
+            {
+                existing = this.intervals[from];
+                return true;
+            }
+        }
+
+        private bool TryGetIntersecting(Interval<T> interval, [MaybeNullWhen(false)] out Interval<T> existing)
+        {
+            var (from, to) = this.IntersectingRange(interval);
+            if (from == to || to - from > 1)
+            {
+                existing = null;
+                return false;
+            }
+            else
+            {
+                existing = this.intervals[from];
+                return true;
+            }
+        }
 
         private (int From, int To) TouchingRange(Interval<T> interval)
         {

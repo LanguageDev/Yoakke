@@ -30,6 +30,11 @@ namespace Yoakke.Collections.Dense
         public bool Remove(Interval<T> interval);
 
         /// <summary>
+        /// Inverts this set, meaning that any value that was contained before won't be contained and vice versa.
+        /// </summary>
+        public void Complement();
+
+        /// <summary>
         /// Removes all intervals of elements in the specified collection from the current set.
         /// </summary>
         /// <param name="other">The collection of intervals to remove from the set.</param>
