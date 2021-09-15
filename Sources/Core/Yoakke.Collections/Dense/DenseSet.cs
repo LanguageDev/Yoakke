@@ -177,13 +177,36 @@ namespace Yoakke.Collections.Dense
                     this.intervals[from] = newInterval1;
                     this.intervals.Insert(from + 1, newInterval2);
                 }
-                return true;
             }
             else
             {
                 // Intersects multiple intervals
-                throw new NotImplementedException();
+                // Let's look at the edge relations
+                var lowerExisting = this.intervals[from];
+                var upperExisting = this.intervals[to - 1];
+                var lowerCompare = this.Comparer.BoundComparer.Compare(lowerExisting.Lower, interval.Lower);
+                var upperCompare = this.Comparer.BoundComparer.Compare(upperExisting.Upper, interval.Upper);
+                // Split edges if needed, track indices for deletion
+                var deleteFrom = from;
+                var deleteTo = to;
+                if (lowerCompare < 0)
+                {
+                    // Need to split lower
+                    var newLower = new Interval<T>(lowerExisting.Lower, interval.Lower.Touching!);
+                    this.intervals[from] = newLower;
+                    ++deleteFrom;
+                }
+                if (upperCompare > 0)
+                {
+                    // Need to split upper
+                    var newUpper = new Interval<T>(interval.Upper.Touching!, interval.Upper);
+                    this.intervals[to - 1] = newUpper;
+                    --deleteTo;
+                }
+                // Remove all fully removed intervals
+                this.intervals.RemoveRange(deleteFrom, deleteTo - deleteFrom);
             }
+            return true;
         }
 
         /// <inheritdoc/>
