@@ -30,7 +30,7 @@ namespace Yoakke.Collections
         /// Removes the specified item from the set.
         /// </summary>
         /// <param name="item">The item to remove.</param>
-        /// <returns>True, if the item was dound and successfully removed from the set, false, if it was not found.</returns>
+        /// <returns>True, if the item was found and successfully removed from the set, false, if it was not found.</returns>
         public bool Remove(T item);
 
         /// <summary>
