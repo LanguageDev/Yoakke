@@ -75,6 +75,8 @@ namespace Yoakke.Collections.Dense
         {
         }
 
+        #region Elemental Operations
+
         /// <inheritdoc/>
         public void Clear() => this.intervals.Clear();
 
@@ -278,6 +280,10 @@ namespace Yoakke.Collections.Dense
         /// <inheritdoc/>
         public bool Overlaps(Interval<T> interval) => this.TryGetIntersecting(interval, out _);
 
+        #endregion
+
+        #region Set Relation
+
         /// <inheritdoc/>
         public bool IsProperSubsetOf(IEnumerable<T> other) => this.IsProperSubsetOf(other.Select(i => Interval<T>.Singleton(i)));
 
@@ -298,7 +304,16 @@ namespace Yoakke.Collections.Dense
         public bool IsSubsetOf(IEnumerable<Interval<T>> other) => this.MakeDenseSet(other).IsSupersetOf(this);
 
         /// <inheritdoc/>
+        public bool IsSubsetOf(IEnumerable<Interval<T>> other, out bool proper) => throw new NotImplementedException();
+
+        /// <inheritdoc/>
+        public bool IsSubsetOf(IEnumerable<T> other, out bool proper) => throw new NotImplementedException();
+
+        /// <inheritdoc/>
         public bool IsSupersetOf(IEnumerable<T> other) => this.IsSupersetOf(other.Select(i => Interval<T>.Singleton(i)));
+
+        /// <inheritdoc/>
+        public bool IsSupersetOf(IEnumerable<Interval<T>> other, out bool proper) => throw new NotImplementedException();
 
         /// <inheritdoc/>
         public bool IsSupersetOf(IEnumerable<Interval<T>> other)
@@ -309,6 +324,9 @@ namespace Yoakke.Collections.Dense
             }
             return true;
         }
+
+        /// <inheritdoc/>
+        public bool IsSupersetOf(IEnumerable<T> other, out bool proper) => throw new NotImplementedException();
 
         /// <inheritdoc/>
         public bool Overlaps(IEnumerable<T> other) => this.Overlaps(other.Select(i => Interval<T>.Singleton(i)));
@@ -335,6 +353,10 @@ namespace Yoakke.Collections.Dense
             }
             return true;
         }
+
+        #endregion
+
+        #region Set Operations
 
         /// <inheritdoc/>
         public void ExceptWith(IEnumerable<T> other) => this.ExceptWith(other.Select(i => Interval<T>.Singleton(i)));
@@ -365,6 +387,8 @@ namespace Yoakke.Collections.Dense
         {
             foreach (var iv in other) this.Add(iv);
         }
+
+        #endregion
 
         /// <inheritdoc/>
         public IEnumerator<Interval<T>> GetEnumerator() => this.intervals.GetEnumerator();
