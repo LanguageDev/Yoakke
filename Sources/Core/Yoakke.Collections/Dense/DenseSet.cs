@@ -146,7 +146,44 @@ namespace Yoakke.Collections.Dense
             // If the removed interval intersects nothing, we are done
             if (from == to) return false;
 
-            throw new NotImplementedException();
+            if (to - from == 1)
+            {
+                // Intersects a single interval
+                var existing = this.intervals[from];
+                var lowerCompare = this.Comparer.BoundComparer.Compare(existing.Lower, interval.Lower);
+                var upperCompare = this.Comparer.BoundComparer.Compare(existing.Upper, interval.Upper);
+                if (lowerCompare >= 0 && upperCompare <= 0)
+                {
+                    // Simplest case, we just remove the entry, as the interval completelx covers this one
+                    this.intervals.RemoveAt(from);
+                }
+                else if (lowerCompare >= 0)
+                {
+                    // The upper bound does not match, we need to modify
+                    var newInterval = new Interval<T>(interval.Upper.Touching!, existing.Upper);
+                    this.intervals[from] = newInterval;
+                }
+                else if (upperCompare <= 0)
+                {
+                    // The lower bound does not match, we need to modify
+                    var newInterval = new Interval<T>(existing.Lower, interval.Lower.Touching!);
+                    this.intervals[from] = newInterval;
+                }
+                else
+                {
+                    // The interval is being split into 2
+                    var newInterval1 = new Interval<T>(existing.Lower, interval.Lower.Touching!);
+                    var newInterval2 = new Interval<T>(interval.Upper.Touching!, existing.Upper);
+                    this.intervals[from] = newInterval1;
+                    this.intervals.Insert(from + 1, newInterval2);
+                }
+                return true;
+            }
+            else
+            {
+                // Intersects multiple intervals
+                throw new NotImplementedException();
+            }
         }
 
         /// <inheritdoc/>

@@ -38,6 +38,8 @@ namespace Yoakke.Collections.Tests
         [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "4", "(-oo; 4) U (4; 5] U (7; 9) U [12; 16]")]
         [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "6", "(-oo; 5] U (7; 9) U [12; 16]")]
         [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "12", "(-oo; 5] U (7; 9) U (12; 16]")]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "8", "(-oo; 5] U (7; 8) U (8; 9) U (12; 16]")]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "14", "(-oo; 5] U (7; 9) U [12; 14) U (14; 16]")]
         public void RemoveItem(string setText, string itemText, string resultText)
         {
             var originalSet = ParseDenseSet(setText);
@@ -110,6 +112,7 @@ namespace Yoakke.Collections.Tests
         }
 
         [DataTestMethod]
+        [DataRow("", "(-oo; +oo)")]
         [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(5; 7] U [9; 12) U (16; +oo)")]
         [DataRow("(-oo; +oo)", "")]
         [DataRow("(4; 23]", "(-oo; 4] U (23; +oo)")]
