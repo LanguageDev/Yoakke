@@ -22,5 +22,47 @@ namespace Yoakke.Collections.Dense
         /// <returns>True if all elements of <paramref name="interval"/> are contained in the set,
         /// otherwise false.</returns>
         public bool Contains(Interval<T> interval);
+
+        /// <summary>
+        /// Determines whether the current set is a proper (strict) subset of a specified collection.
+        /// </summary>
+        /// <param name="other">The collection to compare to the current set.</param>
+        /// <returns>True if the current set is a proper subset of other, otherwise false.</returns>
+        public bool IsProperSubsetOf(IEnumerable<Interval<T>> other);
+
+        /// <summary>
+        /// Determines whether the current set is a proper (strict) superset of a specified collection.
+        /// </summary>
+        /// <param name="other">The collection to compare to the current set.</param>
+        /// <returns>True if the collection is a proper superset of other, otherwise false.</returns>
+        public bool IsProperSupersetOf(IEnumerable<Interval<T>> other);
+
+        /// <summary>
+        /// Determine whether the current set is a subset of a specified collection.
+        /// </summary>
+        /// <param name="other">The collection to compare to the current set.</param>
+        /// <returns>True if the current set is a subset of other, otherwise false.</returns>
+        public bool IsSubsetOf(IEnumerable<Interval<T>> other);
+
+        /// <summary>
+        /// Determine whether the current set is a super set of a specified collection.
+        /// </summary>
+        /// <param name="other">The collection to compare to the current set.</param>
+        /// <returns>True if the current set is a subset of other, otherwise false.</returns>
+        public bool IsSupersetOf(IEnumerable<Interval<T>> other);
+
+        /// <summary>
+        /// Determines whether the current set overlaps with the specified collection.
+        /// </summary>
+        /// <param name="other">The collection to compare to the current set.</param>
+        /// <returns>True, if the current set and other share at least one common element, otherwise false.</returns>
+        public bool Overlaps(IEnumerable<Interval<T>> other);
+
+        /// <summary>
+        /// Determines whether the current set and the specified collection contain the same elements.
+        /// </summary>
+        /// <param name="other">The collection to compare to the current set.</param>
+        /// <returns>True if the current set is equal to other, otherwise false.</returns>
+        public bool SetEquals(IEnumerable<Interval<T>> other);
     }
 }
