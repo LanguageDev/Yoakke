@@ -22,6 +22,7 @@ namespace Yoakke.Collections.Tests
         [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "7", "(-oo; 5] U [7; 9) U [12; 16]")]
         [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "12", "(-oo; 5] U (7; 9) U [12; 16]")]
         [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "10", "(-oo; 5] U (7; 9) U [10; 10] U [12; 16]")]
+        [DataRow("(-oo; 0) U (0; +oo)", "0", "(-oo; +oo)")]
         public void AddItem(string setText, string itemText, string resultText)
         {
             var originalSet = ParseDenseSet(setText);
