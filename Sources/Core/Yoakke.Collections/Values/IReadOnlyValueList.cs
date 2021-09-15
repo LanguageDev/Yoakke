@@ -15,7 +15,6 @@ namespace Yoakke.Collections.Values
         : IReadOnlyList<T>,
           IEquatable<IReadOnlyList<T>>,
           IEquatable<IReadOnlyValueList<T>>
-        where T : IEquatable<T>
     {
     }
 }

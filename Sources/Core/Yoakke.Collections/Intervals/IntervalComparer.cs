@@ -16,7 +16,7 @@ namespace Yoakke.Collections.Intervals
         /// <summary>
         /// The default instance of the comparer.
         /// </summary>
-        public static readonly IntervalComparer<T> Default = new(BoundComparer<T>.Default);
+        public static IntervalComparer<T> Default { get; } = new(BoundComparer<T>.Default);
 
         /// <summary>
         /// The bounds comparer used.
@@ -48,8 +48,9 @@ namespace Yoakke.Collections.Intervals
         }
 
         /// <inheritdoc/>
-        public bool Equals(Interval<T> x, Interval<T> y) => (this.BoundComparer.Equals(x.Lower, y.Lower) && this.BoundComparer.Equals(x.Upper, y.Upper))
-                                                         || (this.IsEmpty(x) && this.IsEmpty(y));
+        public bool Equals(Interval<T> x, Interval<T> y) =>
+               (this.BoundComparer.Equals(x.Lower, y.Lower) && this.BoundComparer.Equals(x.Upper, y.Upper))
+            || (this.IsEmpty(x) && this.IsEmpty(y));
 
         /// <inheritdoc/>
         public int GetHashCode(Interval<T> obj)
@@ -105,8 +106,9 @@ namespace Yoakke.Collections.Intervals
         /// <param name="x">The first interval to check.</param>
         /// <param name="y">The second interval to check.</param>
         /// <returns>True, if <paramref name="x"/> is completely before <paramref name="y"/>.</returns>
-        public bool IsBefore(Interval<T> x, Interval<T> y) => this.BoundComparer.Compare(x.Upper, y.Lower) < 0
-                                                           && !(this.IsEmpty(x) && this.IsEmpty(y));
+        public bool IsBefore(Interval<T> x, Interval<T> y) =>
+               this.BoundComparer.Compare(x.Upper, y.Lower) < 0
+            && !(this.IsEmpty(x) && this.IsEmpty(y));
 
         /// <summary>
         /// Checks if an interval is disjunct with another one.
@@ -114,7 +116,8 @@ namespace Yoakke.Collections.Intervals
         /// <param name="x">The first interval to check.</param>
         /// <param name="y">The second interval to check.</param>
         /// <returns>True, if <paramref name="x"/> and <paramref name="y"/> are completely disjunct.</returns>
-        public bool IsDisjunct(Interval<T> x, Interval<T> y) => this.IsBefore(x, y) || this.IsBefore(y, x) || (this.IsEmpty(x) && this.IsEmpty(y));
+        public bool IsDisjunct(Interval<T> x, Interval<T> y) =>
+            this.IsBefore(x, y) || this.IsBefore(y, x) || (this.IsEmpty(x) && this.IsEmpty(y));
 
         /// <summary>
         /// Checks if an interval completely contains another one.

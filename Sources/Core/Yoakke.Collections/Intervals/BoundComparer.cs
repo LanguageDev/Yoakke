@@ -11,14 +11,14 @@ namespace Yoakke.Collections.Intervals
     /// A comparer that can compare <see cref="LowerBound{T}"/> and <see cref="UpperBound{T}"/> instances.
     /// </summary>
     /// <typeparam name="T">The type of the endpoint value.</typeparam>
-    public class BoundComparer<T> :
-        IEqualityComparer<Bound<T>>, IEqualityComparer<LowerBound<T>>, IEqualityComparer<UpperBound<T>>,
-        IComparer<Bound<T>>, IComparer<LowerBound<T>>, IComparer<UpperBound<T>>
+    public class BoundComparer<T>
+        : IEqualityComparer<Bound<T>>, IEqualityComparer<LowerBound<T>>, IEqualityComparer<UpperBound<T>>,
+          IComparer<Bound<T>>, IComparer<LowerBound<T>>, IComparer<UpperBound<T>>
     {
         /// <summary>
         /// The default instance of the comparer.
         /// </summary>
-        public static readonly BoundComparer<T> Default = new(EqualityComparer<T>.Default, Comparer<T>.Default);
+        public static BoundComparer<T> Default { get; } = new(EqualityComparer<T>.Default, Comparer<T>.Default);
 
         /// <summary>
         /// The used <see cref="IEqualityComparer{T}"/>.

@@ -18,15 +18,15 @@ namespace Yoakke.Collections.Intervals
         /// <inheritdoc/>
         public int CompareTo(UpperBound<T> other) => BoundComparer<T>.Default.Compare(this, other);
 
+        /// <inheritdoc/>
+        public override int GetHashCode() => BoundComparer<T>.Default.GetHashCode(this);
+
         /// <summary>
         /// Checks, if this bound is in touching relation with a lower bound.
         /// </summary>
         /// <param name="other">The <see cref="LowerBound{T}"/> to compare with.</param>
         /// <returns>True, if this is touching <paramref name="other"/>.</returns>
         public bool IsTouching(LowerBound<T> other) => BoundComparer<T>.Default.IsTouching(this, other);
-
-        /// <inheritdoc/>
-        public override int GetHashCode() => BoundComparer<T>.Default.GetHashCode(this);
 
         /// <summary>
         /// The touching bound of this one.
@@ -38,10 +38,14 @@ namespace Yoakke.Collections.Intervals
         /// </summary>
         public record Unbounded : UpperBound<T>
         {
+            private Unbounded()
+            {
+            }
+
             /// <summary>
             /// A singleton instance to use.
             /// </summary>
-            public static readonly Unbounded Instance = new();
+            public static Unbounded Instance { get; } = new();
 
             /// <inheritdoc/>
             public override LowerBound<T>? Touching => null;

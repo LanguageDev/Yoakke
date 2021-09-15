@@ -16,8 +16,6 @@ namespace Yoakke.Collections.Values
         : IReadOnlyDictionary<TKey, TValue>,
           IEquatable<IReadOnlyDictionary<TKey, TValue>>,
           IEquatable<IReadOnlyValueDictionary<TKey, TValue>>
-        where TKey : IEquatable<TKey>
-        where TValue : IEquatable<TValue>
     {
     }
 }
