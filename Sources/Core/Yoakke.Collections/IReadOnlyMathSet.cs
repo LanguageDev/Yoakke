@@ -9,7 +9,7 @@ using System.Text;
 namespace Yoakke.Collections
 {
     /// <summary>
-    /// A read-only set interface that allows for infinite elements and does not require element count or iterability.
+    /// A read-only set interface that allows for an infinite amount of elements and does not require element count or iterability.
     /// </summary>
     /// <typeparam name="T">The set element type.</typeparam>
     public interface IReadOnlyMathSet<T>
