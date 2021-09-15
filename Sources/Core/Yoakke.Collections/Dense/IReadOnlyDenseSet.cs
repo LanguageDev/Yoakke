@@ -24,6 +24,13 @@ namespace Yoakke.Collections.Dense
         public bool Contains(Interval<T> interval);
 
         /// <summary>
+        /// Checks, if set overlaps with any elements of an interval.
+        /// </summary>
+        /// <param name="iterval">The interval to check if the set overlaps.</param>
+        /// <returns>True, if <paramref name="iterval"/> contains elements of this set.</returns>
+        public bool Overlaps(Interval<T> iterval);
+
+        /// <summary>
         /// Determines whether the current set is a proper (strict) subset of a specified collection.
         /// </summary>
         /// <param name="other">The collection to compare to the current set.</param>

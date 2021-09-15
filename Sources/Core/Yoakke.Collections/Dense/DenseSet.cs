@@ -93,6 +93,9 @@ namespace Yoakke.Collections.Dense
         public bool Contains(Interval<T> interval) => throw new NotImplementedException();
 
         /// <inheritdoc/>
+        public bool Overlaps(Interval<T> iterval) => throw new NotImplementedException();
+
+        /// <inheritdoc/>
         public bool IsProperSubsetOf(IEnumerable<T> other) => this.IsProperSubsetOf(other.Select(i => Interval<T>.Singleton(i)));
 
         /// <inheritdoc/>
@@ -114,13 +117,27 @@ namespace Yoakke.Collections.Dense
         public bool IsSupersetOf(IEnumerable<T> other) => this.IsSupersetOf(other.Select(i => Interval<T>.Singleton(i)));
 
         /// <inheritdoc/>
-        public bool IsSupersetOf(IEnumerable<Interval<T>> other) => throw new NotImplementedException();
+        public bool IsSupersetOf(IEnumerable<Interval<T>> other)
+        {
+            foreach (var iv in other)
+            {
+                if (!this.Contains(iv)) return false;
+            }
+            return true;
+        }
 
         /// <inheritdoc/>
         public bool Overlaps(IEnumerable<T> other) => this.Overlaps(other.Select(i => Interval<T>.Singleton(i)));
 
         /// <inheritdoc/>
-        public bool Overlaps(IEnumerable<Interval<T>> other) => throw new NotImplementedException();
+        public bool Overlaps(IEnumerable<Interval<T>> other)
+        {
+            foreach (var iv in other)
+            {
+                if (this.Overlaps(iv)) return true;
+            }
+            return false;
+        }
 
         /// <inheritdoc/>
         public bool SetEquals(IEnumerable<T> other) => this.SetEquals(other.Select(i => Interval<T>.Singleton(i)));
