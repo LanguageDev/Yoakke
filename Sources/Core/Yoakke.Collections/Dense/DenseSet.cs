@@ -93,18 +93,6 @@ namespace Yoakke.Collections.Dense
         public bool Contains(Interval<T> interval) => throw new NotImplementedException();
 
         /// <inheritdoc/>
-        public void ExceptWith(IEnumerable<T> other) => this.ExceptWith(other.Select(i => Interval<T>.Singleton(i)));
-
-        /// <inheritdoc/>
-        public void ExceptWith(IEnumerable<Interval<T>> other) => throw new NotImplementedException();
-
-        /// <inheritdoc/>
-        public void IntersectWith(IEnumerable<T> other) => this.IntersectWith(other.Select(i => Interval<T>.Singleton(i)));
-
-        /// <inheritdoc/>
-        public void IntersectWith(IEnumerable<Interval<T>> other) => throw new NotImplementedException();
-
-        /// <inheritdoc/>
         public bool IsProperSubsetOf(IEnumerable<T> other) => this.IsProperSubsetOf(other.Select(i => Interval<T>.Singleton(i)));
 
         /// <inheritdoc/>
@@ -141,6 +129,21 @@ namespace Yoakke.Collections.Dense
         public bool SetEquals(IEnumerable<Interval<T>> other) => throw new NotImplementedException();
 
         /// <inheritdoc/>
+        public void ExceptWith(IEnumerable<T> other) => this.ExceptWith(other.Select(i => Interval<T>.Singleton(i)));
+
+        /// <inheritdoc/>
+        public void ExceptWith(IEnumerable<Interval<T>> other)
+        {
+            foreach (var iv in other) this.Remove(iv);
+        }
+
+        /// <inheritdoc/>
+        public void IntersectWith(IEnumerable<T> other) => this.IntersectWith(other.Select(i => Interval<T>.Singleton(i)));
+
+        /// <inheritdoc/>
+        public void IntersectWith(IEnumerable<Interval<T>> other) => throw new NotImplementedException();
+
+        /// <inheritdoc/>
         public void SymmetricExceptWith(IEnumerable<T> other) => this.SymmetricExceptWith(other.Select(i => Interval<T>.Singleton(i)));
 
         /// <inheritdoc/>
@@ -150,7 +153,10 @@ namespace Yoakke.Collections.Dense
         public void UnionWith(IEnumerable<T> other) => this.UnionWith(other.Select(i => Interval<T>.Singleton(i)));
 
         /// <inheritdoc/>
-        public void UnionWith(IEnumerable<Interval<T>> other) => throw new NotImplementedException();
+        public void UnionWith(IEnumerable<Interval<T>> other)
+        {
+            foreach (var iv in other) this.Add(iv);
+        }
 
         /// <inheritdoc/>
         public IEnumerator<Interval<T>> GetEnumerator() => this.intervals.GetEnumerator();
