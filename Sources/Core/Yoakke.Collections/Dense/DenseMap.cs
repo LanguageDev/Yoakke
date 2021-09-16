@@ -240,7 +240,42 @@ namespace Yoakke.Collections.Dense
         public bool Remove(TKey key) => this.Remove(ToInterval(key));
 
         /// <inheritdoc/>
-        public bool Remove(Interval<TKey> keys) => throw new NotImplementedException();
+        public bool Remove(Interval<TKey> keys)
+        {
+            if (this.Comparer.IsEmpty(keys)) return false;
+
+            // Find the range that this interval intersects
+            var (from, to) = this.IntersectingRange(keys);
+
+            // If intersects nothing, return
+            if (from == to) return false;
+
+            // It intersects one or more intervals
+            var lowerExisting = this.intervals[from];
+            var upperExisting = this.intervals[to - 1];
+            var lowerCmp = this.BoundComparer.Compare(lowerExisting.Key.Lower, keys.Lower);
+            var upperCmp = this.BoundComparer.Compare(upperExisting.Key.Upper, keys.Upper);
+            // Split edges if needed, track indices for deletion
+            var deleteFrom = from;
+            var deleteTo = to;
+            if (lowerCmp < 0)
+            {
+                // Split lower
+                var newInterval = new Interval<TKey>(lowerExisting.Key.Lower, keys.Lower.Touching!);
+                this.intervals[from] = new(newInterval, lowerExisting.Value);
+                ++deleteFrom;
+            }
+            if (upperCmp > 0)
+            {
+                // Split upper
+                var newInterval = new Interval<TKey>(keys.Upper.Touching!, upperExisting.Key.Upper);
+                this.intervals[to - 1] = new(newInterval, upperExisting.Value);
+                --deleteTo;
+            }
+            // Delete everything in between that is completely covered
+            this.intervals.RemoveRange(deleteFrom, deleteTo - deleteFrom);
+            return true;
+        }
 
         /// <inheritdoc/>
         public bool ContainsKey(TKey key) => this.ContainsKeys(ToInterval(key));
