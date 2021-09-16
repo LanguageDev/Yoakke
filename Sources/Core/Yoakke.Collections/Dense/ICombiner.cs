@@ -20,6 +20,7 @@ namespace Yoakke.Collections.Dense
         /// </summary>
         /// <param name="existing">The existing value.</param>
         /// <param name="added">The new value.</param>
-        public void Combine(T existing, T added);
+        /// <returns>The new, combined value of <paramref name="existing"/> and <paramref name="added"/>.</returns>
+        public T Combine(T existing, T added);
     }
 }

@@ -14,7 +14,7 @@ namespace Yoakke.Collections.Dense
     /// </summary>
     /// <typeparam name="TKey">The key type.</typeparam>
     /// <typeparam name="TValue">The value type.</typeparam>
-    public interface IDenseMap<TKey, TValue> : IReadOnlyDenseMap<TKey, TValue>
+    public interface IDenseMap<TKey, TValue> : IReadOnlyDenseMap<TKey, TValue>, IMathMap<TKey, TValue>
     {
         /// <summary>
         /// Adds an element with the provided interval of keys and value to the mapping.
