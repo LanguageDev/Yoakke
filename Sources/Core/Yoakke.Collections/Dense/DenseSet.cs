@@ -40,6 +40,8 @@ namespace Yoakke.Collections.Dense
         /// </summary>
         public IntervalComparer<T> Comparer { get; }
 
+        private BoundComparer<T> BoundComparer => this.Comparer.BoundComparer;
+
         private readonly List<Interval<T>> intervals = new();
 
         /// <summary>
@@ -114,15 +116,15 @@ namespace Yoakke.Collections.Dense
                 // the inserted one
                 var firstLower = this.intervals[from].Lower;
                 var lastUpper = this.intervals[to - 1].Upper;
-                var minLower = this.Comparer.BoundComparer.Min(firstLower, interval.Lower);
-                var maxUpper = this.Comparer.BoundComparer.Max(lastUpper, interval.Upper);
+                var minLower = this.BoundComparer.Min(firstLower, interval.Lower);
+                var maxUpper = this.BoundComparer.Max(lastUpper, interval.Upper);
                 // There are 3 ways we can cover a new value
                 //  - There are more than 1 touched intervals, because that means we fill out values in between
                 //  - The first touched intervals lower value is below the inserted one
                 //  - The last touched intervals upper value is above the inserted one
                 var coversNewValue = to - from > 1
-                                 || !this.Comparer.BoundComparer.Equals(minLower, interval.Lower)
-                                 || !this.Comparer.BoundComparer.Equals(maxUpper, interval.Upper);
+                                 || !this.BoundComparer.Equals(minLower, interval.Lower)
+                                 || !this.BoundComparer.Equals(maxUpper, interval.Upper);
                 if (!coversNewValue) return false;
                 // It covers something new, we need to do the insertion
                 interval = new(minLower, maxUpper);
@@ -153,8 +155,8 @@ namespace Yoakke.Collections.Dense
             {
                 // Intersects a single interval
                 var existing = this.intervals[from];
-                var lowerCompare = this.Comparer.BoundComparer.Compare(existing.Lower, interval.Lower);
-                var upperCompare = this.Comparer.BoundComparer.Compare(existing.Upper, interval.Upper);
+                var lowerCompare = this.BoundComparer.Compare(existing.Lower, interval.Lower);
+                var upperCompare = this.BoundComparer.Compare(existing.Upper, interval.Upper);
                 if (lowerCompare >= 0 && upperCompare <= 0)
                 {
                     // Simplest case, we just remove the entry, as the interval completelx covers this one
@@ -187,8 +189,8 @@ namespace Yoakke.Collections.Dense
                 // Let's look at the edge relations
                 var lowerExisting = this.intervals[from];
                 var upperExisting = this.intervals[to - 1];
-                var lowerCompare = this.Comparer.BoundComparer.Compare(lowerExisting.Lower, interval.Lower);
-                var upperCompare = this.Comparer.BoundComparer.Compare(upperExisting.Upper, interval.Upper);
+                var lowerCompare = this.BoundComparer.Compare(lowerExisting.Lower, interval.Lower);
+                var upperCompare = this.BoundComparer.Compare(upperExisting.Upper, interval.Upper);
                 // Split edges if needed, track indices for deletion
                 var deleteFrom = from;
                 var deleteTo = to;
@@ -399,8 +401,8 @@ namespace Yoakke.Collections.Dense
                 if (to - from != 1) return false;
                 var existing = this.intervals[from];
                 // Some efficiency on the comparisons
-                var lowerCmp = this.Comparer.BoundComparer.Compare(existing.Lower, iv.Lower);
-                var upperCmp = this.Comparer.BoundComparer.Compare(existing.Upper, iv.Upper);
+                var lowerCmp = this.BoundComparer.Compare(existing.Lower, iv.Lower);
+                var upperCmp = this.BoundComparer.Compare(existing.Upper, iv.Upper);
                 if (lowerCmp > 0 || upperCmp < 0) return false;
                 proper = proper || lowerCmp < 0 || upperCmp > 0;
             }
@@ -487,8 +489,8 @@ namespace Yoakke.Collections.Dense
         private (int From, int To) TouchingRange(Interval<T> interval)
         {
             var (from, to) = this.IntersectingRange(interval);
-            if (from != 0 && this.Comparer.BoundComparer.IsTouching(interval.Lower, this.intervals[from - 1].Upper)) from -= 1;
-            if (to != this.intervals.Count && this.Comparer.BoundComparer.IsTouching(interval.Upper, this.intervals[to].Lower)) to += 1;
+            if (from != 0 && this.BoundComparer.IsTouching(interval.Lower, this.intervals[from - 1].Upper)) from -= 1;
+            if (to != this.intervals.Count && this.BoundComparer.IsTouching(interval.Upper, this.intervals[to].Lower)) to += 1;
             return (from, to);
         }
 
@@ -509,13 +511,13 @@ namespace Yoakke.Collections.Dense
                 var half = size / 2;
                 var mid = start + half;
                 var key = keySelector(this.intervals[mid]);
-                var cmp = this.Comparer.BoundComparer.Compare(searchedKey, key);
+                var cmp = this.BoundComparer.Compare(searchedKey, key);
                 start = cmp > 0 ? mid : start;
                 size -= half;
             }
 
             var resultKey = keySelector(this.intervals[start]);
-            var resultCmp = this.Comparer.BoundComparer.Compare(searchedKey, resultKey);
+            var resultCmp = this.BoundComparer.Compare(searchedKey, resultKey);
             return start + (resultCmp > 0 ? 1 : 0);
         }
 
