@@ -72,6 +72,15 @@ namespace Yoakke.Collections.Tests
         [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; +oo)", "(-oo; +oo)")]
         [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; 24)", "(-oo; 24)")]
         [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(-2; 24]", "(-oo; 24]")]
+        // Legacy tests
+        [DataRow("", "[2; 3)", "[2; 3)")]
+        [DataRow("[5; 7) U [12; 15)", "[2; 3)", "[2; 3) U [5; 7) U [12; 15)")]
+        [DataRow("[5; 7) U [12; 15)", "[17; 19)", "[5; 7) U [12; 15) U [17; 19)")]
+        [DataRow("[5; 7) U [12; 15)", "[8; 11)", "[5; 7) U [8; 11) U [12; 15)")]
+        [DataRow("[5; 7) U [12; 15)", "[3; 5)", "[3; 7) U [12; 15)")]
+        [DataRow("[5; 7) U [12; 15)", "[3; 6)", "[3; 7) U [12; 15)")]
+        [DataRow("[5; 7) U [12; 15)", "[7; 12)", "[5; 15)")]
+        [DataRow("[5; 7) U [12; 15)", "[3; 16)", "[3; 16)")]
         public void AddInterval(string setText, string intervalText, string resultText)
         {
             var originalSet = ParseDenseSet(setText);
@@ -115,14 +124,25 @@ namespace Yoakke.Collections.Tests
         }
 
         [DataTestMethod]
-        [DataRow("", "(-oo; +oo)")]
         [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(5; 7] U [9; 12) U (16; +oo)")]
-        [DataRow("(-oo; +oo)", "")]
         [DataRow("(4; 23]", "(-oo; 4] U (23; +oo)")]
         [DataRow("[0; +oo)", "(-oo; 0)")]
         [DataRow("(2; 5) U (7; 9)", "(-oo; 2] U [5; 7] U [9; +oo)")]
         [DataRow("[2; 5] U [7; 9]", "(-oo; 2) U (5; 7) U (9; +oo)")]
         [DataRow("[1; 1]", "(-oo; 1) U (1; +oo)")]
+        // Legacy tests
+        [DataRow("", "(-oo; +oo)")]
+        [DataRow("(-oo; +oo)", "")]
+        [DataRow("[3; 5)", "(-oo; 3) U [5; +oo)")]
+        [DataRow("[3; 5) U [7; 9)", "(-oo; 3) U [5; 7) U [9; +oo)")]
+        [DataRow("[3; 5) U [7; 8) U [10; 14) U [18; 21)", "(-oo; 3) U [5; 7) U [8; 10) U [14; 18) U [21; +oo)")]
+        [DataRow("[3; 5) U [7; 8) U [10; 14) U [18; 21) U [24; 26)", "(-oo; 3) U [5; 7) U [8; 10) U [14; 18) U [21; 24) U [26; +oo)")]
+        [DataRow("(-oo; 5)", "[5; +oo)")]
+        [DataRow("[5; +oo)", "(-oo; 5)")]
+        [DataRow("[2; 4) U [6; 7) U [8; 11) U [14; +oo)", "(-oo; 2) U [4; 6) U [7; 8) U [11; 14)")]
+        [DataRow("[2; 4) U [6; 7) U [8; 11) U [14; 16) U [18; +oo)", "(-oo; 2) U [4; 6) U [7; 8) U [11; 14) U [16; 18)")]
+        [DataRow("(-oo; 2) U [6; 7) U [8; 11) U [14; 16)", "[2; 6) U [7; 8) U [11; 14) U [16; +oo)")]
+        [DataRow("(-oo; 2) U [6; 7) U [8; 11) U [14; 16) U [18; 21)", "[2; 6) U [7; 8) U [11; 14) U [16; 18) U [21; +oo)")]
         public void Complement(string setText, string resultText)
         {
             var originalSet = ParseDenseSet(setText);

@@ -238,6 +238,7 @@ namespace Yoakke.Collections.Tests
         // Disjunct
         [DataRow("(1; 2)", "[3; 4)", typeof(IntervalRelation<int>.Disjunct), "(1; 2)", "(0; 0)", "[3; 4)")]
         [DataRow("(1; 2)", "(2; 4)", typeof(IntervalRelation<int>.Disjunct), "(1; 2)", "(0; 0)", "(2; 4)")]
+        [DataRow("(1; 2)", "[3; 4)", typeof(IntervalRelation<int>.Disjunct), "(1; 2)", "(0; 0)", "[3; 4)")]
         // Touching
         [DataRow("(1; 2)", "[2; 4)", typeof(IntervalRelation<int>.Touching), "(1; 2)", "(0; 0)", "[2; 4)")]
         [DataRow("(1; 2]", "(2; 4)", typeof(IntervalRelation<int>.Touching), "(1; 2]", "(0; 0)", "(2; 4)")]
@@ -263,6 +264,14 @@ namespace Yoakke.Collections.Tests
         [DataRow("[1; 4)", "[1; 4)", typeof(IntervalRelation<int>.Equal), "(0; 0)", "[1; 4)", "(0; 0)")]
         [DataRow("(1; 4]", "(1; 4]", typeof(IntervalRelation<int>.Equal), "(0; 0)", "(1; 4]", "(0; 0)")]
         [DataRow("[1; 4]", "[1; 4]", typeof(IntervalRelation<int>.Equal), "(0; 0)", "[1; 4]", "(0; 0)")]
+        // Legacy tests
+        [DataRow("[1; 4)", "[5; 7)", typeof(IntervalRelation<int>.Disjunct), "[1; 4)", "(0; 0)", "[5; 7)")]
+        [DataRow("[1; 4)", "[4; 7)", typeof(IntervalRelation<int>.Touching), "[1; 4)", "(0; 0)", "[4; 7)")]
+        [DataRow("[4; 8)", "[4; 6)", typeof(IntervalRelation<int>.Starting), "(0; 0)", "[4; 6)", "[6; 8)")]
+        [DataRow("[6; 8)", "[4; 8)", typeof(IntervalRelation<int>.Finishing), "[4; 6)", "[6; 8)", "(0; 0)")]
+        [DataRow("[4; 7)", "[2; 10)", typeof(IntervalRelation<int>.Containing), "[2; 4)", "[4; 7)", "[7; 10)")]
+        [DataRow("[4; 6]", "[6; 8)", typeof(IntervalRelation<int>.Overlapping), "[4; 6)", "[6; 6]", "(6; 8)")]
+        [DataRow("[2; 7)", "[4; 9)", typeof(IntervalRelation<int>.Overlapping), "[2; 4)", "[4; 7)", "[7; 9)")]
         public void Relation(string ivText1, string ivText2, Type exactRelationType, string lowerDisjText, string overlapText, string upperDisjText)
         {
             var iv1 = Interval<int>.Parse(ivText1, int.Parse);
