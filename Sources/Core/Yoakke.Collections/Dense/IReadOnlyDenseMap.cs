@@ -26,12 +26,10 @@ namespace Yoakke.Collections.Dense
         public bool ContainsKeys(Interval<TKey> keys);
 
         /// <summary>
-        /// Gets the value that is associated with the specified interval of keys.
+        /// Gets the values that are associated with the specified interval of keys.
         /// </summary>
         /// <param name="keys">The keys to locate.</param>
-        /// <param name="value">When this method returns, the value associated with the specified keys, if the keys are found,
-        /// otherwise, the default value for the type of the value parameter. This parameter is passed uninitialized.</param>
-        /// <returns>True if the mapping contains the elements that has the specified keys, otherwise false.</returns>
-        public bool TryGetValue(Interval<TKey> keys, out TValue value);
+        /// <returns>The sequence of values that are overlapped with <paramref name="keys"/>.</returns>
+        public IEnumerable<TValue> GetValues(Interval<TKey> keys);
     }
 }

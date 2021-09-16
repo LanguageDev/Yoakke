@@ -5,6 +5,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Text;
 using Yoakke.Collections.Intervals;
 
@@ -115,13 +118,34 @@ namespace Yoakke.Collections.Dense
         public bool ContainsKey(TKey key) => this.ContainsKeys(ToInterval(key));
 
         /// <inheritdoc/>
-        public bool ContainsKeys(Interval<TKey> keys) => this.TryGetValue(keys, out _);
+        public bool ContainsKeys(Interval<TKey> keys)
+        {
+            var (from, to) = this.IntersectingRange(keys);
+            if (to - from != 1) return false;
+            var existing = this.intervals[from].Key;
+            return this.Comparer.Contains(existing, keys);
+        }
 
         /// <inheritdoc/>
-        public bool TryGetValue(TKey key, out TValue value) => this.TryGetValue(ToInterval(key), out value);
+        public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
+        {
+            var seq = this.GetValues(ToInterval(key));
+            var enumerator = seq.GetEnumerator();
+            if (enumerator.MoveNext())
+            {
+                value = enumerator.Current;
+                Debug.Assert(!enumerator.MoveNext(), "The singleton element should have only intersected at most one interval.");
+                return true;
+            }
+            else
+            {
+                value = default;
+                return false;
+            }
+        }
 
         /// <inheritdoc/>
-        public bool TryGetValue(Interval<TKey> keys, out TValue value) => throw new NotImplementedException();
+        public IEnumerable<TValue> GetValues(Interval<TKey> keys) => throw new NotImplementedException();
 
         /// <inheritdoc/>
         public IEnumerator<KeyValuePair<Interval<TKey>, TValue>> GetEnumerator() => this.intervals.GetEnumerator();

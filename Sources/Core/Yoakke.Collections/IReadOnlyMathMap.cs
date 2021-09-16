@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace Yoakke.Collections
@@ -54,6 +55,6 @@ namespace Yoakke.Collections
         /// <param name="value">When this method returns, the value associated with the specified key, if the key is found,
         /// otherwise, the default value for the type of the value parameter. This parameter is passed uninitialized.</param>
         /// <returns>True if the mapping contains an element that has the specified key, otherwise false.</returns>
-        public bool TryGetValue(TKey key, out TValue value);
+        public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value);
     }
 }
