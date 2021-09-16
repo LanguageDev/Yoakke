@@ -116,18 +116,16 @@ namespace Yoakke.Collections.Dense
                 // the inserted one
                 var firstLower = this.intervals[from].Lower;
                 var lastUpper = this.intervals[to - 1].Upper;
-                var minLower = this.BoundComparer.Min(firstLower, interval.Lower);
-                var maxUpper = this.BoundComparer.Max(lastUpper, interval.Upper);
+                var lowerCmp = this.BoundComparer.Compare(firstLower, interval.Lower);
+                var upperCmp = this.BoundComparer.Compare(lastUpper, interval.Upper);
                 // There are 3 ways we can cover a new value
                 //  - There are more than 1 touched intervals, because that means we fill out values in between
-                //  - The first touched intervals lower value is below the inserted one
-                //  - The last touched intervals upper value is above the inserted one
-                var coversNewValue = to - from > 1
-                                 || !this.BoundComparer.Equals(minLower, interval.Lower)
-                                 || !this.BoundComparer.Equals(maxUpper, interval.Upper);
+                //  - The first touched intervals lower value is above the inserted one
+                //  - The last touched intervals upper value is below the inserted one
+                var coversNewValue = to - from > 1 || lowerCmp > 0 || upperCmp < 0;
                 if (!coversNewValue) return false;
                 // It covers something new, we need to do the insertion
-                interval = new(minLower, maxUpper);
+                interval = new(lowerCmp > 0 ? interval.Lower : firstLower, upperCmp < 0 ? interval.Upper : lastUpper);
                 // Remove all touched ranges, except the first one
                 this.intervals.RemoveRange(from + 1, to - from - 1);
                 // We modify the first, not removed touched range to save on memory juggling a bit

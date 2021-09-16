@@ -27,11 +27,13 @@ namespace Yoakke.Collections.Tests
         {
             var originalSet = ParseDenseSet(setText);
             var resultingSet = ParseDenseSet(resultText);
+            var shouldChange = !originalSet.SequenceEqual(resultingSet);
             var item = int.Parse(itemText);
 
-            originalSet.Add(item);
+            var newAdded = originalSet.Add(item);
 
             AssertEquals(originalSet, resultingSet);
+            Assert.AreEqual(shouldChange, newAdded);
         }
 
         [DataTestMethod]
@@ -46,11 +48,13 @@ namespace Yoakke.Collections.Tests
         {
             var originalSet = ParseDenseSet(setText);
             var resultingSet = ParseDenseSet(resultText);
+            var shouldChange = !originalSet.SequenceEqual(resultingSet);
             var item = int.Parse(itemText);
 
-            originalSet.Remove(item);
+            var oldRemoved = originalSet.Remove(item);
 
             AssertEquals(originalSet, resultingSet);
+            Assert.AreEqual(shouldChange, oldRemoved);
         }
 
         [DataTestMethod]
@@ -85,11 +89,13 @@ namespace Yoakke.Collections.Tests
         {
             var originalSet = ParseDenseSet(setText);
             var resultingSet = ParseDenseSet(resultText);
+            var shouldChange = !originalSet.SequenceEqual(resultingSet);
             var interval = ParseInterval(intervalText);
 
-            originalSet.Add(interval);
+            var newAdded = originalSet.Add(interval);
 
             AssertEquals(originalSet, resultingSet);
+            Assert.AreEqual(shouldChange, newAdded);
         }
 
         [DataTestMethod]
@@ -116,11 +122,13 @@ namespace Yoakke.Collections.Tests
         {
             var originalSet = ParseDenseSet(setText);
             var resultingSet = ParseDenseSet(resultText);
+            var shouldChange = !originalSet.SequenceEqual(resultingSet);
             var interval = ParseInterval(intervalText);
 
-            originalSet.Remove(interval);
+            var oldRemoved = originalSet.Remove(interval);
 
             AssertEquals(originalSet, resultingSet);
+            Assert.AreEqual(shouldChange, oldRemoved);
         }
 
         [DataTestMethod]
