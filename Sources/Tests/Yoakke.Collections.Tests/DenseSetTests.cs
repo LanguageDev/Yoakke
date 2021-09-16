@@ -222,6 +222,10 @@ namespace Yoakke.Collections.Tests
 
             if (isSubset)
             {
+                // Non-proper
+                Assert.IsTrue(set1.IsSubsetOf(set2));
+                Assert.IsTrue(set2.IsSupersetOf(set1));
+                // Proper
                 Assert.IsTrue(set1.IsProperSubsetOf(set2));
                 Assert.IsTrue(set2.IsProperSupersetOf(set1));
             }
@@ -310,8 +314,7 @@ namespace Yoakke.Collections.Tests
 
             if (equal)
             {
-                Assert.IsTrue(set1.SetEquals(set2));
-                Assert.IsTrue(set2.SetEquals(set1));
+                AssertEquals(set1, set2);
             }
             else
             {
@@ -322,17 +325,23 @@ namespace Yoakke.Collections.Tests
 
         private static void AssertEquals(DenseSet<int> a, DenseSet<int> b)
         {
+            // Same intervals
             Assert.IsTrue(a.SequenceEqual(b));
-            // Assert.IsTrue(a.SetEquals(b));
-            // Assert.IsTrue(b.SetEquals(a));
-            // Assert.IsTrue(a.IsSubsetOf(b));
-            // Assert.IsTrue(b.IsSubsetOf(a));
-            // Assert.IsFalse(a.IsProperSubsetOf(b));
-            // Assert.IsFalse(b.IsProperSubsetOf(a));
-            // Assert.IsTrue(a.IsSupersetOf(b));
-            // Assert.IsTrue(b.IsSupersetOf(a));
-            // Assert.IsFalse(a.IsProperSupersetOf(b));
-            // Assert.IsFalse(b.IsProperSupersetOf(a));
+            // Set-equality
+            Assert.IsTrue(a.SetEquals(b));
+            Assert.IsTrue(b.SetEquals(a));
+            // Subset-ness
+            Assert.IsTrue(a.IsSubsetOf(b));
+            Assert.IsTrue(b.IsSubsetOf(a));
+            // Proper subset-ness
+            Assert.IsFalse(a.IsProperSubsetOf(b));
+            Assert.IsFalse(b.IsProperSubsetOf(a));
+            // Superset-ness
+            Assert.IsTrue(a.IsSupersetOf(b));
+            Assert.IsTrue(b.IsSupersetOf(a));
+            // Proper superset-ness
+            Assert.IsFalse(a.IsProperSupersetOf(b));
+            Assert.IsFalse(b.IsProperSupersetOf(a));
         }
 
         private static DenseSet<int> ParseDenseSet(string text)
