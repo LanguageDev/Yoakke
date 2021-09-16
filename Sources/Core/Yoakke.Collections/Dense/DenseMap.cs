@@ -55,6 +55,8 @@ namespace Yoakke.Collections.Dense
         /// </summary>
         public ICombiner<TValue> Combiner { get; set; }
 
+        private BoundComparer<TKey> BoundComparer => this.Comparer.BoundComparer;
+
         private readonly List<KeyValuePair<Interval<TKey>, TValue>> intervals = new();
 
         /// <summary>
@@ -126,6 +128,33 @@ namespace Yoakke.Collections.Dense
 
         /// <inheritdoc/>
         IEnumerator IEnumerable.GetEnumerator() => (this.intervals as IEnumerable).GetEnumerator();
+
+        private (int From, int To) IntersectingRange(Interval<TKey> interval)
+        {
+            var from = this.BinarySearch(0, interval.Lower, iv => iv.Upper);
+            var to = this.BinarySearch(from, interval.Upper, iv => iv.Lower);
+            return (from, to);
+        }
+
+        private int BinarySearch(int start, Bound<TKey> searchedKey, Func<Interval<TKey>, Bound<TKey>> keySelector)
+        {
+            var size = this.intervals.Count - start;
+            if (size == 0) return start;
+
+            while (size > 1)
+            {
+                var half = size / 2;
+                var mid = start + half;
+                var key = keySelector(this.intervals[mid].Key);
+                var cmp = this.BoundComparer.Compare(searchedKey, key);
+                start = cmp > 0 ? mid : start;
+                size -= half;
+            }
+
+            var resultKey = keySelector(this.intervals[start].Key);
+            var resultCmp = this.BoundComparer.Compare(searchedKey, resultKey);
+            return start + (resultCmp > 0 ? 1 : 0);
+        }
 
         private static Interval<TKey> ToInterval(TKey value) => Interval<TKey>.Singleton(value);
     }
