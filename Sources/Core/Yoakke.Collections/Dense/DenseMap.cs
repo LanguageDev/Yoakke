@@ -126,16 +126,77 @@ namespace Yoakke.Collections.Dense
             }
             else if (to - from == 1)
             {
-                // Intersects one interval
-                // This interval potentially has to be split once or twice
                 throw new NotImplementedException();
             }
             else
             {
                 // Intersects more intervals
                 // The first and last intervals potentially have to be split
-                // The rest are unified and spaces inbetween are filled in
-                throw new NotImplementedException();
+                // The rest between are unified and spaces inbetween are filled in
+                // First comper the bottom and top intersecting intervals
+                var lowerExisting = this.intervals[from];
+                var upperExisting = this.intervals[to - 1];
+                var lowerCmp = this.BoundComparer.Compare(lowerExisting.Key.Lower, keys.Lower);
+                var upperCmp = this.BoundComparer.Compare(upperExisting.Key.Upper, keys.Upper);
+                var lowerCombinedValue = this.Combiner.Combine(lowerExisting.Value, value);
+                var upperCombinedValue = this.Combiner.Combine(upperExisting.Value, value);
+                // In general we move from top to bottom with insertions, as that will cause less indexing mess-up
+                // First we observe the upper intersecting interval
+                if (upperCmp < 0)
+                {
+                    // We overextend past the end, completely cover and need to add extra
+                    this.intervals[to - 1] = new(upperExisting.Key, upperCombinedValue);
+                    this.intervals.Insert(to, new(new(upperExisting.Key.Upper.Touching!, keys.Upper), value));
+                }
+                else if (upperCmp > 0)
+                {
+                    // We don't reach the end, need to split that off
+                    this.intervals.Insert(to, new(new(keys.Upper.Touching!, upperExisting.Key.Upper), upperExisting.Value));
+                    this.intervals[to - 1] = new(new(upperExisting.Key.Lower, keys.Upper), upperCombinedValue);
+                }
+                else
+                {
+                    // We just update with the combined value
+                    this.intervals[to - 1] = new(upperExisting.Key, upperCombinedValue);
+                }
+                // Second, we fill up the gap in between lower and upper intersected intervals
+                for (var offset = to - 2; offset > from; --offset)
+                {
+                    var current = this.intervals[offset];
+                    var next = this.intervals[offset + 1];
+                    // Fill the gap after
+                    var gapInterval = new Interval<TKey>(current.Key.Upper.Touching!, next.Key.Lower.Touching!);
+                    // If not empty gap, fill it
+                    if (!this.Comparer.IsEmpty(gapInterval)) this.intervals.Insert(offset + 1, new(gapInterval, value));
+                    // Unify this intervals value with the added one and update
+                    var combinedValue = this.Combiner.Combine(current.Value, value);
+                    this.intervals[offset + 1] = new(current.Key, combinedValue);
+                }
+                // There is one more gap right after the lower intersecting
+                {
+                    var next = this.intervals[from + 1];
+                    var gapInterval = new Interval<TKey>(lowerExisting.Key.Upper.Touching!, next.Key.Lower.Touching!);
+                    // If not empty gap, fill it
+                    if (!this.Comparer.IsEmpty(gapInterval)) this.intervals.Insert(from + 1, new(gapInterval, value));
+                }
+                // Lastly we observe the lower intersecting interval
+                if (lowerCmp > 0)
+                {
+                    // We overextend before the start, completely cover and need to add extra
+                    this.intervals[from] = new(lowerExisting.Key, lowerCombinedValue);
+                    this.intervals.Insert(from, new(new(keys.Lower, lowerExisting.Key.Lower.Touching!), value));
+                }
+                else if (lowerCmp < 0)
+                {
+                    // We don't reach the start, need to split that off
+                    this.intervals.Insert(from, new(new(lowerExisting.Key.Lower, keys.Lower.Touching!), lowerExisting.Value));
+                    this.intervals[from + 1] = new(new(keys.Lower, lowerExisting.Key.Upper), lowerCombinedValue);
+                }
+                else
+                {
+                    // We just update with the combined value
+                    this.intervals[from] = new(lowerExisting.Key, lowerCombinedValue);
+                }
             }
         }
 
