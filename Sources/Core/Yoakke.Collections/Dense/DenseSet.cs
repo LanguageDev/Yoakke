@@ -377,7 +377,7 @@ namespace Yoakke.Collections.Dense
         public bool IsSubsetOf(IEnumerable<Interval<T>> other, out bool proper)
         {
             // Just make a dense set of the other
-            var otherSet = this.AsDenseSet(other);
+            var otherSet = this.AsReadOnlyDenseSet(other);
             return otherSet.IsSupersetOf(this, out proper);
         }
 
@@ -393,7 +393,7 @@ namespace Yoakke.Collections.Dense
         /// <inheritdoc/>
         public bool IsSupersetOf(IEnumerable<Interval<T>> other, out bool proper)
         {
-            var otherSet = this.AsDenseSet(other);
+            var otherSet = this.AsReadOnlyDenseSet(other);
             proper = this.intervals.Count > otherSet.IntervalCount;
             foreach (var iv in otherSet)
             {
@@ -453,13 +453,31 @@ namespace Yoakke.Collections.Dense
         public void IntersectWith(IEnumerable<T> other) => this.IntersectWith(ToInterval(other));
 
         /// <inheritdoc/>
-        public void IntersectWith(IEnumerable<Interval<T>> other) => throw new NotImplementedException();
+        public void IntersectWith(IEnumerable<Interval<T>> other)
+        {
+            // Make the result using the identity A /\ B = ~B \ A
+            var otherSet = this.ToDenseSet(other);
+            otherSet.Complement();
+            otherSet.Except(this);
+
+            // Copy back
+            this.intervals.Clear();
+            this.intervals.AddRange(otherSet);
+        }
 
         /// <inheritdoc/>
         public void SymmetricExceptWith(IEnumerable<T> other) => this.SymmetricExceptWith(ToInterval(other));
 
         /// <inheritdoc/>
-        public void SymmetricExceptWith(IEnumerable<Interval<T>> other) => throw new NotImplementedException();
+        public void SymmetricExceptWith(IEnumerable<Interval<T>> other)
+        {
+            // Use the identity A xor B = (A \ B) U (B \ A)
+            var thisSet = this.intervals.ToArray();
+            var otherSet = this.ToDenseSet(other);
+            this.Except(otherSet);
+            otherSet.Except(thisSet);
+            this.Union(otherSet);
+        }
 
         /// <inheritdoc/>
         public void UnionWith(IEnumerable<T> other) => this.UnionWith(ToInterval(other));
@@ -477,14 +495,6 @@ namespace Yoakke.Collections.Dense
 
         /// <inheritdoc/>
         IEnumerator IEnumerable.GetEnumerator() => (this.intervals as IEnumerable).GetEnumerator();
-
-        private IReadOnlyDenseSet<T> AsDenseSet(IEnumerable<Interval<T>> intervals)
-        {
-            if (intervals is IReadOnlyDenseSet<T> set) return set;
-            var result = new DenseSet<T>(this.Comparer);
-            foreach (var iv in intervals) result.Add(iv);
-            return result;
-        }
 
         private (int From, int To) TouchingRange(Interval<T> interval)
         {
@@ -521,9 +531,16 @@ namespace Yoakke.Collections.Dense
             return start + (resultCmp > 0 ? 1 : 0);
         }
 
-        private IReadOnlyDenseSet<T> MakeDenseSet(IEnumerable<Interval<T>> intervals)
+        private IDenseSet<T> ToDenseSet(IEnumerable<Interval<T>> intervals)
         {
-            // if (intervals is IReadOnlyDenseSet<T> set) return set;
+            var result = new DenseSet<T>(this.Comparer);
+            foreach (var iv in intervals) result.Add(iv);
+            return result;
+        }
+
+        private IReadOnlyDenseSet<T> AsReadOnlyDenseSet(IEnumerable<Interval<T>> intervals)
+        {
+            if (intervals is IReadOnlyDenseSet<T> set) return set;
             var result = new DenseSet<T>(this.Comparer);
             foreach (var iv in intervals) result.Add(iv);
             return result;
