@@ -334,9 +334,14 @@ namespace Yoakke.Collections.Dense
         public bool Contains(T item) => this.Contains(ToInterval(item));
 
         /// <inheritdoc/>
-        public bool Contains(Interval<T> interval) =>
-               this.Comparer.IsEmpty(interval)
-            || (this.TryGetIntersecting(interval, out var existing) && this.Comparer.Contains(existing, interval));
+        public bool Contains(Interval<T> interval)
+        {
+            if (this.Comparer.IsEmpty(interval)) return true;
+            var (from, to) = this.IntersectingRange(interval);
+            if (to - from != 1) return false;
+            var existing = this.intervals[from];
+            return this.Comparer.Contains(existing, interval);
+        }
 
         #endregion
 
@@ -392,7 +397,12 @@ namespace Yoakke.Collections.Dense
         }
 
         /// <inheritdoc/>
-        public bool Overlaps(Interval<T> interval) => this.TryGetIntersecting(interval, out _);
+        public bool Overlaps(Interval<T> interval)
+        {
+            if (this.Comparer.IsEmpty(interval)) return false;
+            var (from, to) = this.IntersectingRange(interval);
+            return from != to;
+        }
 
         /// <inheritdoc/>
         public bool SetEquals(IEnumerable<T> other) => this.SetEquals(ToInterval(other));
@@ -441,36 +451,6 @@ namespace Yoakke.Collections.Dense
 
         /// <inheritdoc/>
         IEnumerator IEnumerable.GetEnumerator() => (this.intervals as IEnumerable).GetEnumerator();
-
-        private bool TryGetTouching(Interval<T> interval, [MaybeNullWhen(false)] out Interval<T> existing)
-        {
-            var (from, to) = this.TouchingRange(interval);
-            if (from == to || to - from > 1)
-            {
-                existing = null;
-                return false;
-            }
-            else
-            {
-                existing = this.intervals[from];
-                return true;
-            }
-        }
-
-        private bool TryGetIntersecting(Interval<T> interval, [MaybeNullWhen(false)] out Interval<T> existing)
-        {
-            var (from, to) = this.IntersectingRange(interval);
-            if (from == to || to - from > 1)
-            {
-                existing = null;
-                return false;
-            }
-            else
-            {
-                existing = this.intervals[from];
-                return true;
-            }
-        }
 
         private (int From, int To) TouchingRange(Interval<T> interval)
         {

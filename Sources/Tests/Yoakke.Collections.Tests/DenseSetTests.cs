@@ -245,7 +245,7 @@ namespace Yoakke.Collections.Tests
         [DataRow("", "(2; 6)", false)]
         [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "[2; 20)", true)]
         [DataRow("[5; 5]", "[5; 5]", true)]
-        [DataRow("[5; 5]", "[1; 1]", true)]
+        [DataRow("[5; 5]", "[1; 1]", false)]
         public void OverlapsInterval(string setText, string intervalText, bool overlaps)
         {
             var set = ParseDenseSet(setText);
@@ -259,7 +259,7 @@ namespace Yoakke.Collections.Tests
 
         [DataTestMethod]
         [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; 5] U (7; 9) U [12; 16]", true)]
-        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; 4] U (4; +oo)", true)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; 4) U (4; +oo)", true)]
         [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(5; 7] U [9; 12) U (16; +oo)", false)]
         [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "[5; 7) U [18; 20)", true)]
         [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(6; 7) U [18; 20)", false)]
