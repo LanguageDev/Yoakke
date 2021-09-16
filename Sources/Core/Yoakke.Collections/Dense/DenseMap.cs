@@ -126,7 +126,43 @@ namespace Yoakke.Collections.Dense
             }
             else if (to - from == 1)
             {
-                throw new NotImplementedException();
+                // Intersects a single interval
+                // This can either not split the interval, or split it once or twice
+                // First, compare the bounds
+                var existing = this.intervals[from];
+                var lowerCmp = this.BoundComparer.Compare(existing.Key.Lower, keys.Lower);
+                var upperCmp = this.BoundComparer.Compare(existing.Key.Upper, keys.Upper);
+                var combinedValue = this.Combiner.Combine(existing.Value, value);
+                // First we observe the upper bound
+                if (upperCmp < 0)
+                {
+                    // We overextend past the end, completely cover and need to add extra
+                    this.intervals[from] = new(existing.Key, combinedValue);
+                    this.intervals.Insert(from + 1, new(new(existing.Key.Upper.Touching!, keys.Upper), value));
+                }
+                else if (upperCmp > 0)
+                {
+                    // We don't reach the end, need to split that off
+                    this.intervals.Insert(from + 1, new(new(keys.Upper.Touching!, existing.Key.Upper), existing.Value));
+                    this.intervals[from] = new(new(existing.Key.Lower, keys.Upper), combinedValue);
+                }
+                // Update the existing value
+                existing = this.intervals[from];
+                // Lastly we observe the lower bound
+                if (lowerCmp > 0)
+                {
+                    // We overextend before the start, completely cover and need to add extra
+                    this.intervals[from] = new(existing.Key, combinedValue);
+                    this.intervals.Insert(from, new(new(keys.Lower, existing.Key.Lower.Touching!), value));
+                }
+                else if (lowerCmp < 0)
+                {
+                    // We don't reach the start, need to split that off
+                    this.intervals.Insert(from, new(new(existing.Key.Lower, keys.Lower.Touching!), existing.Value));
+                    this.intervals[from + 1] = new(new(keys.Lower, existing.Key.Upper), combinedValue);
+                }
+                // If both bounds match, just update with the combined value
+                if (lowerCmp == 0 && upperCmp == 0) this.intervals[from] = new(existing.Key, combinedValue);
             }
             else
             {
