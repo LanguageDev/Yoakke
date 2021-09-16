@@ -19,7 +19,7 @@ namespace Yoakke.Collections.Dense
     public sealed class DenseSet<T> : IDenseSet<T>
     {
         /// <inheritdoc/>
-        public bool IsEmpty => this.intervals.Count > 0;
+        public bool IsEmpty => this.intervals.Count == 0;
 
         // NOTE: We can implement these later
         // For that we need some domain information with some IDomain<T> interface
