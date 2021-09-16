@@ -32,6 +32,9 @@ namespace Yoakke.Collections.Dense
         /// <inheritdoc/>
         public IEnumerable<T>? Values => null;
 
+        /// <inheritdoc/>
+        public int IntervalCount => this.intervals.Count;
+
         /// <summary>
         /// The comparer used.
         /// </summary>
@@ -369,7 +372,12 @@ namespace Yoakke.Collections.Dense
         public bool IsSubsetOf(IEnumerable<T> other, out bool proper) => this.IsSubsetOf(ToInterval(other), out proper);
 
         /// <inheritdoc/>
-        public bool IsSubsetOf(IEnumerable<Interval<T>> other, out bool proper) => throw new NotImplementedException();
+        public bool IsSubsetOf(IEnumerable<Interval<T>> other, out bool proper)
+        {
+            // Just make a dense set of the other
+            var otherSet = this.AsDenseSet(other);
+            return otherSet.IsSupersetOf(this, out proper);
+        }
 
         /// <inheritdoc/>
         public bool IsSupersetOf(IEnumerable<T> other) => this.IsSupersetOf(ToInterval(other));
@@ -381,7 +389,23 @@ namespace Yoakke.Collections.Dense
         public bool IsSupersetOf(IEnumerable<T> other, out bool proper) => this.IsSupersetOf(ToInterval(other), out proper);
 
         /// <inheritdoc/>
-        public bool IsSupersetOf(IEnumerable<Interval<T>> other, out bool proper) => throw new NotImplementedException();
+        public bool IsSupersetOf(IEnumerable<Interval<T>> other, out bool proper)
+        {
+            var otherSet = this.AsDenseSet(other);
+            proper = this.intervals.Count > otherSet.IntervalCount;
+            foreach (var iv in otherSet)
+            {
+                var (from, to) = this.IntersectingRange(iv);
+                if (to - from != 1) return false;
+                var existing = this.intervals[from];
+                // Some efficiency on the comparisons
+                var lowerCmp = this.Comparer.BoundComparer.Compare(existing.Lower, iv.Lower);
+                var upperCmp = this.Comparer.BoundComparer.Compare(existing.Upper, iv.Upper);
+                if (lowerCmp > 0 || upperCmp < 0) return false;
+                proper = proper || lowerCmp < 0 || upperCmp > 0;
+            }
+            return true;
+        }
 
         /// <inheritdoc/>
         public bool Overlaps(IEnumerable<T> other) => this.Overlaps(ToInterval(other));
@@ -408,7 +432,7 @@ namespace Yoakke.Collections.Dense
         public bool SetEquals(IEnumerable<T> other) => this.SetEquals(ToInterval(other));
 
         /// <inheritdoc/>
-        public bool SetEquals(IEnumerable<Interval<T>> other) => throw new NotImplementedException();
+        public bool SetEquals(IEnumerable<Interval<T>> other) => this.IsSubsetOf(other) && this.IsSupersetOf(other);
 
         #endregion
 
@@ -451,6 +475,14 @@ namespace Yoakke.Collections.Dense
 
         /// <inheritdoc/>
         IEnumerator IEnumerable.GetEnumerator() => (this.intervals as IEnumerable).GetEnumerator();
+
+        private IReadOnlyDenseSet<T> AsDenseSet(IEnumerable<Interval<T>> intervals)
+        {
+            if (intervals is IReadOnlyDenseSet<T> set) return set;
+            var result = new DenseSet<T>(this.Comparer);
+            foreach (var iv in intervals) result.Add(iv);
+            return result;
+        }
 
         private (int From, int To) TouchingRange(Interval<T> interval)
         {

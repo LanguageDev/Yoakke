@@ -16,6 +16,11 @@ namespace Yoakke.Collections.Dense
     public interface IReadOnlyDenseSet<T> : IReadOnlyMathSet<T>, IEnumerable<Interval<T>>
     {
         /// <summary>
+        /// The number of disjunct intervals in this set.
+        /// </summary>
+        public int IntervalCount { get; }
+
+        /// <summary>
         /// Determines if the set contains a full interval of items.
         /// </summary>
         /// <param name="interval">The interval to check if the set contains.</param>

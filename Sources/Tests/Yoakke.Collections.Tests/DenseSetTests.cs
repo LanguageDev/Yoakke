@@ -295,7 +295,7 @@ namespace Yoakke.Collections.Tests
         [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; 5] U [12; 16]", false)]
         [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; 5] U (7; 9)", false)]
         [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "", false)]
-        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; 4] U (4; +oo)", false)]
+        [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; +oo)", false)]
         [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(5; 7] U [9; 12) U (16; +oo)", false)]
         [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "[5; 7) U [18; 20)", false)]
         [DataRow("(-oo; 5] U (7; 9) U [12; 16]", "(6; 7) U [18; 20)", false)]
