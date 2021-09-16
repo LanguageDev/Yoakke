@@ -106,7 +106,29 @@ namespace Yoakke.Collections.Dense
         public void Add(TKey key, TValue value) => this.Add(ToInterval(key), value);
 
         /// <inheritdoc/>
-        public void Add(Interval<TKey> keys, TValue value) => throw new NotImplementedException();
+        public void Add(Interval<TKey> keys, TValue value)
+        {
+            if (this.Comparer.IsEmpty(keys)) return;
+
+            // For an empty set, it's trivial, we just add it
+            if (this.intervals.Count == 0)
+            {
+                this.intervals.Add(new(keys, value));
+                return;
+            }
+
+            // Mapping is not empty, find the intersecting intervals
+            var (from, to) = this.IntersectingRange(keys);
+            if (from == to)
+            {
+                // Intersects nothing, we can just insert
+                this.intervals.Insert(from, new(keys, value));
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
 
         /// <inheritdoc/>
         public bool Remove(TKey key) => this.Remove(ToInterval(key));
@@ -145,7 +167,11 @@ namespace Yoakke.Collections.Dense
         }
 
         /// <inheritdoc/>
-        public IEnumerable<TValue> GetValues(Interval<TKey> keys) => throw new NotImplementedException();
+        public IEnumerable<TValue> GetValues(Interval<TKey> keys)
+        {
+            var (from, to) = this.IntersectingRange(keys);
+            for (; from != to; ++from) yield return this.intervals[from].Value;
+        }
 
         /// <inheritdoc/>
         public IEnumerator<KeyValuePair<Interval<TKey>, TValue>> GetEnumerator() => this.intervals.GetEnumerator();
