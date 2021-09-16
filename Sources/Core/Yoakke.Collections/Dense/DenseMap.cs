@@ -37,8 +37,12 @@ namespace Yoakke.Collections.Dense
         /// <inheritdoc/>
         public TValue this[TKey key]
         {
-            get => throw new NotImplementedException();
-            set => throw new NotImplementedException();
+            get
+            {
+                if (!this.TryGetValue(key, out var value)) throw new KeyNotFoundException();
+                return value;
+            }
+            set => this.Add(key, value);
         }
 
         /// <summary>
@@ -109,7 +113,7 @@ namespace Yoakke.Collections.Dense
         public bool ContainsKey(TKey key) => this.ContainsKeys(ToInterval(key));
 
         /// <inheritdoc/>
-        public bool ContainsKeys(Interval<TKey> keys) => throw new NotImplementedException();
+        public bool ContainsKeys(Interval<TKey> keys) => this.TryGetValue(keys, out _);
 
         /// <inheritdoc/>
         public bool TryGetValue(TKey key, out TValue value) => this.TryGetValue(ToInterval(key), out value);
