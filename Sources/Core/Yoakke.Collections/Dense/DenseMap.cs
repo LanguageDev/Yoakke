@@ -124,8 +124,17 @@ namespace Yoakke.Collections.Dense
                 // Intersects nothing, we can just insert
                 this.intervals.Insert(from, new(keys, value));
             }
+            else if (to - from == 1)
+            {
+                // Intersects one interval
+                // This interval potentially has to be split once or twice
+                throw new NotImplementedException();
+            }
             else
             {
+                // Intersects more intervals
+                // The first and last intervals potentially have to be split
+                // The rest are unified and spaces inbetween are filled in
                 throw new NotImplementedException();
             }
         }
