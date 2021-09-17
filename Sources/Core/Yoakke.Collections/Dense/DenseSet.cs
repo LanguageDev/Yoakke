@@ -437,7 +437,7 @@ namespace Yoakke.Collections.Dense
             // Make the result using the identity A /\ B = ~B \ A
             var otherSet = this.ToDenseSet(other);
             otherSet.Complement();
-            otherSet.Except(this);
+            otherSet.ExceptWith(this);
 
             // Copy back
             this.intervals.Clear();
@@ -453,9 +453,9 @@ namespace Yoakke.Collections.Dense
             // Use the identity A xor B = (A \ B) U (B \ A)
             var thisSet = this.intervals.ToArray();
             var otherSet = this.ToDenseSet(other);
-            this.Except(otherSet);
-            otherSet.Except(thisSet);
-            this.Union(otherSet);
+            this.ExceptWith(otherSet);
+            otherSet.ExceptWith(thisSet);
+            this.UnionWith(otherSet);
         }
 
         /// <inheritdoc/>
