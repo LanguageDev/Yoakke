@@ -324,10 +324,29 @@ namespace Yoakke.Collections.Dense
         /// <inheritdoc/>
         public bool ContainsKeys(Interval<TKey> keys)
         {
+            // Get all intersecting ranges
             var (from, to) = this.IntersectingRange(keys);
-            if (to - from != 1) return false;
-            var existing = this.intervals[from].Key;
-            return this.Comparer.Contains(existing, keys);
+            // No intersecting intervals, certainly does not contain
+            if (to - from == 0) return false;
+
+            // Intersects one or more intervals
+            var lowerExisting = this.intervals[from];
+            var upperExisting = this.intervals[to - 1];
+            var lowerCmp = this.BoundComparer.Compare(lowerExisting.Key.Lower, keys.Lower);
+            var upperCmp = this.BoundComparer.Compare(upperExisting.Key.Upper, keys.Upper);
+
+            // If we overextend, we don't contain it
+            if (lowerCmp > 0 || upperCmp < 0) return false;
+
+            // All the in-between intervals must touch
+            for (var i = from; i < to - 1; ++i)
+            {
+                var a = this.intervals[i].Key;
+                var b = this.intervals[i + 1].Key;
+                if (!this.BoundComparer.IsTouching(a.Upper, b.Lower)) return false;
+            }
+
+            return true;
         }
 
         /// <inheritdoc/>
@@ -349,10 +368,13 @@ namespace Yoakke.Collections.Dense
         }
 
         /// <inheritdoc/>
-        public IEnumerable<TValue> GetValues(Interval<TKey> keys)
+        public IEnumerable<TValue> GetValues(Interval<TKey> keys) => this.GetIntervalsAndValues(keys).Select(kv => kv.Value);
+
+        /// <inheritdoc/>
+        public IEnumerable<KeyValuePair<Interval<TKey>, TValue>> GetIntervalsAndValues(Interval<TKey> keys)
         {
             var (from, to) = this.IntersectingRange(keys);
-            for (; from != to; ++from) yield return this.intervals[from].Value;
+            for (; from != to; ++from) yield return this.intervals[from];
         }
 
         /// <inheritdoc/>

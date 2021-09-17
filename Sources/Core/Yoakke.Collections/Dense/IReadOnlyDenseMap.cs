@@ -31,5 +31,12 @@ namespace Yoakke.Collections.Dense
         /// <param name="keys">The keys to locate.</param>
         /// <returns>The sequence of values that are overlapped with <paramref name="keys"/>.</returns>
         public IEnumerable<TValue> GetValues(Interval<TKey> keys);
+
+        /// <summary>
+        /// Gets the intervals and values that are associated with the specified interval of keys.
+        /// </summary>
+        /// <param name="keys">The keys to locate.</param>
+        /// <returns>The sequence of intervals and values that are overlapped with <paramref name="keys"/>.</returns>
+        public IEnumerable<KeyValuePair<Interval<TKey>, TValue>> GetIntervalsAndValues(Interval<TKey> keys);
     }
 }
