@@ -118,6 +118,18 @@ namespace Yoakke.Collections.Tests
         }
 
         [DataTestMethod]
+        [DataRow(
+            "[2; 5) => { 1 } U [7; 9) => { 1 }",
+            "[4; 8)",
+            "[2; 4) => { 1 } U [8; 9) => { 1 }")]
+        [DataRow(
+            "[2; 5) => { 1 } U [7; 9) => { 1 }",
+            "[4; 9)",
+            "[2; 4) => { 1 }")]
+        [DataRow(
+            "[2; 5) => { 1 } U [7; 9) => { 1 }",
+            "[2; 8)",
+            "[8; 9) => { 1 }")]
         // Legacy tests inverted
         [DataRow(
             "",
