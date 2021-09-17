@@ -181,6 +181,7 @@ partial {parserClass.GetTypeKindName()} {className}{genericTypes} {genericConstr
 
 #nullable enable
 #pragma warning disable CS8600
+#pragma warning disable CS8602
 #pragma warning disable CS8604
 #pragma warning disable CS8619
 #pragma warning disable CS8632
@@ -188,6 +189,7 @@ partial {parserClass.GetTypeKindName()} {className}{genericTypes} {genericConstr
 #pragma warning restore CS8632
 #pragma warning restore CS8619
 #pragma warning restore CS8604
+#pragma warning restore CS8602
 #pragma warning restore CS8600
 #nullable restore
 }}

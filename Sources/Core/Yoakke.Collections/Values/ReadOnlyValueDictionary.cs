@@ -14,9 +14,7 @@ namespace Yoakke.Collections.Values
     /// </summary>
     /// <typeparam name="TKey">The key type.</typeparam>
     /// <typeparam name="TValue">The value type.</typeparam>
-    public class ReadOnlyValueDictionary<TKey, TValue> : IReadOnlyValueDictionary<TKey, TValue>
-        where TKey : IEquatable<TKey>
-        where TValue : IEquatable<TValue>
+    public sealed class ReadOnlyValueDictionary<TKey, TValue> : IReadOnlyValueDictionary<TKey, TValue>
     {
         /// <inheritdoc/>
         public TValue this[TKey key] => this.Underlying[key];
@@ -76,7 +74,8 @@ namespace Yoakke.Collections.Values
         public override bool Equals(object? obj) => this.Equals(obj as IReadOnlyDictionary<TKey, TValue>);
 
         /// <inheritdoc/>
-        public bool Equals(IReadOnlyValueDictionary<TKey, TValue>? other) => this.Equals(other as IReadOnlyDictionary<TKey, TValue>);
+        public bool Equals(IReadOnlyValueDictionary<TKey, TValue>? other) =>
+            this.Equals(other as IReadOnlyDictionary<TKey, TValue>);
 
         /// <inheritdoc/>
         public bool Equals(IReadOnlyDictionary<TKey, TValue>? other)
@@ -110,7 +109,8 @@ namespace Yoakke.Collections.Values
         }
 
         /// <inheritdoc/>
-        public override string ToString() => $"{{ {string.Join(", ", this.Underlying.Select(kv => $"{kv.Key} => {kv.Value}"))} }}";
+        public override string ToString() =>
+            $"{{ {string.Join(", ", this.Underlying.Select(kv => $"{kv.Key} => {kv.Value}"))} }}";
 
         /// <inheritdoc/>
         public bool ContainsKey(TKey key) => this.Underlying.ContainsKey(key);

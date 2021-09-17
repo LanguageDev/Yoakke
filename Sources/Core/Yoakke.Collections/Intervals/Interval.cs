@@ -12,7 +12,7 @@ namespace Yoakke.Collections.Intervals
     /// Represents a finite or infinite interval.
     /// </summary>
     /// <typeparam name="T">The type of the endpoint value.</typeparam>
-    public class Interval<T> : IEquatable<Interval<T>>
+    public sealed class Interval<T> : IEquatable<Interval<T>>
     {
         /// <summary>
         /// A value parser function.
@@ -47,12 +47,12 @@ namespace Yoakke.Collections.Intervals
         /// <summary>
         /// A full interval.
         /// </summary>
-        public static readonly Interval<T> Full = new(LowerBound<T>.Unbounded.Instance, UpperBound<T>.Unbounded.Instance);
+        public static Interval<T> Full { get; } = new(LowerBound<T>.Unbounded.Instance, UpperBound<T>.Unbounded.Instance);
 
         /// <summary>
         /// An empty interval.
         /// </summary>
-        public static readonly Interval<T> Empty = new(new LowerBound<T>.Exclusive(default!), new UpperBound<T>.Exclusive(default!));
+        public static Interval<T> Empty { get; } = new(new LowerBound<T>.Exclusive(default!), new UpperBound<T>.Exclusive(default!));
 
         /// <summary>
         /// The lower-bound of the interval.

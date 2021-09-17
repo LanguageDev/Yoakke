@@ -5,8 +5,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Yoakke.Collections.Dense;
+using Yoakke.Collections.Intervals;
 using Yoakke.LexerUtils.FiniteAutomata;
-using Yoakke.LexerUtils.Intervals;
 
 namespace Yoakke.LexerUtils.RegEx
 {
@@ -58,12 +59,12 @@ namespace Yoakke.LexerUtils.RegEx
             public override (State Start, State End) ThompsonConstruct(DenseNfa<char> denseNfa)
             {
                 // Build the range
-                var range = new IntervalSet<char>();
+                var range = new DenseSet<char>();
                 foreach (var (from, to) in this.Ranges)
                 {
-                    range.Add(new Interval<char>(LowerBound<char>.Inclusive(from), UpperBound<char>.Inclusive(to)));
+                    range.Add(new Interval<char>(new LowerBound<char>.Inclusive(from), new UpperBound<char>.Inclusive(to)));
                 }
-                if (this.Negate) range.Invert();
+                if (this.Negate) range.Complement();
                 // Write the transitions
                 var start = denseNfa.NewState();
                 var end = denseNfa.NewState();

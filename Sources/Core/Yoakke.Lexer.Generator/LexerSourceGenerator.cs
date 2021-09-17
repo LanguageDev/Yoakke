@@ -8,8 +8,8 @@ using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Yoakke.Collections.Intervals;
 using Yoakke.LexerUtils.FiniteAutomata;
-using Yoakke.LexerUtils.Intervals;
 using Yoakke.LexerUtils.RegEx;
 using Yoakke.SourceGenerator.Common;
 using Yoakke.SourceGenerator.Common.RoslynExtensions;
@@ -371,19 +371,19 @@ end_loop:
 
         private static (char? Lower, char? Upper) ToInclusive(Interval<char> interval)
         {
-            char? lower = interval.Lower.Type switch
+            char? lower = interval.Lower switch
             {
-                BoundType.Inclusive => interval.Lower.Value,
-                BoundType.Exclusive => (char)(interval.Lower.Value + 1),
-                BoundType.Unbounded => null,
-                _ => throw new InvalidOperationException(),
+                LowerBound<char>.Inclusive i => i.Value,
+                LowerBound<char>.Exclusive e => (char)(e.Value + 1),
+                LowerBound<char>.Unbounded => null,
+                _ => throw new ArgumentOutOfRangeException(),
             };
-            char? upper = interval.Upper.Type switch
+            char? upper = interval.Upper switch
             {
-                BoundType.Inclusive => interval.Upper.Value,
-                BoundType.Exclusive => (char)(interval.Upper.Value - 1),
-                BoundType.Unbounded => null,
-                _ => throw new InvalidOperationException(),
+                UpperBound<char>.Inclusive i => i.Value,
+                UpperBound<char>.Exclusive e => (char)(e.Value - 1),
+                UpperBound<char>.Unbounded => null,
+                _ => throw new ArgumentOutOfRangeException(),
             };
             return (lower, upper);
         }
