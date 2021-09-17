@@ -84,7 +84,7 @@ namespace Yoakke.Collections
         public void Clear() => throw new NotImplementedException();
 
         /// <inheritdoc/>
-        public void Add(T item) => throw new NotImplementedException();
+        public void Add(T item) => this.AddBack(item);
 
         /// <inheritdoc/>
         public void AddFront(T item) => throw new NotImplementedException();
@@ -96,7 +96,15 @@ namespace Yoakke.Collections
         public void Insert(int index, T item) => throw new NotImplementedException();
 
         /// <inheritdoc/>
-        public bool Remove(T item) => throw new NotImplementedException();
+        public bool Remove(T item)
+        {
+            var index = this.IndexOf(item);
+
+            if (index == -1) return false;
+
+            this.RemoveAt(index);
+            return true;
+        }
 
         /// <inheritdoc/>
         public T RemoveFront() => throw new NotImplementedException();
@@ -108,19 +116,42 @@ namespace Yoakke.Collections
         public void RemoveAt(int index) => throw new NotImplementedException();
 
         /// <inheritdoc/>
-        public bool Contains(T item) => throw new NotImplementedException();
+        public bool Contains(T item) => this.IndexOf(item) != -1;
 
         /// <inheritdoc/>
-        public int IndexOf(T item) => throw new NotImplementedException();
+        public int IndexOf(T item)
+        {
+            var (first, second) = this.AsMemory();
+            var index = 0;
+            for (var i = 0; i < first.Length; ++i, ++index)
+            {
+                if (EqualityComparer<T>.Default.Equals(item, first.Span[i])) return index;
+            }
+            for (var i = 0; i < second.Length; ++i, ++index)
+            {
+                if (EqualityComparer<T>.Default.Equals(item, second.Span[i])) return index;
+            }
+            return -1;
+        }
 
         /// <inheritdoc/>
-        public void CopyTo(T[] array, int arrayIndex) => throw new NotImplementedException();
+        public void CopyTo(T[] array, int arrayIndex)
+        {
+            var (first, second) = this.AsMemory();
+            first.CopyTo(array.AsMemory(arrayIndex));
+            second.CopyTo(array.AsMemory(arrayIndex + first.Length));
+        }
 
         /// <inheritdoc/>
-        public IEnumerator<T> GetEnumerator() => throw new NotImplementedException();
+        public IEnumerator<T> GetEnumerator()
+        {
+            var (first, second) = this.AsMemory();
+            for (var i = 0; i < first.Length; ++i) yield return first.Span[i];
+            for (var i = 0; i < second.Length; ++i) yield return second.Span[i];
+        }
 
         /// <inheritdoc/>
-        IEnumerator IEnumerable.GetEnumerator() => throw new NotImplementedException();
+        IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
         private (Memory<T> First, Memory<T> Second) AsMemory()
         {
@@ -130,7 +161,7 @@ namespace Yoakke.Collections
             // For non-empty buffers we can assum that if tail <= head, then the buffer is split in 2
             return this.Tail > this.Head
                 ? (this.storage.AsMemory(this.Head, this.Count), Memory<T>.Empty)
-                : (this.storage.AsMemory(this.Head, this.Count - this.Head), this.storage.AsMemory(0, this.Tail));
+                : (this.storage.AsMemory(this.Head, this.Capacity - this.Head), this.storage.AsMemory(0, this.Tail));
         }
     }
 }
