@@ -61,25 +61,6 @@ namespace Yoakke.Collections.Dense
             this.Comparer = comparer;
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DenseSet{T}"/> class.
-        /// </summary>
-        /// <param name="comparer">The comparer to use.</param>
-        public DenseSet(BoundComparer<T> comparer)
-            : this(new IntervalComparer<T>(comparer))
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DenseSet{T}"/> class.
-        /// </summary>
-        /// <param name="equalityComparer">The equality comparer to use.</param>
-        /// <param name="comparer">The comparer to use.</param>
-        public DenseSet(IEqualityComparer<T> equalityComparer, IComparer<T> comparer)
-            : this(new BoundComparer<T>(equalityComparer, comparer))
-        {
-        }
-
         #region Elemental Operations
 
         /// <inheritdoc/>
