@@ -32,12 +32,18 @@ namespace Yoakke.Collections
             set
             {
                 // If we try to reduce it below the current count, throw
-                if (value < this.Capacity) throw new ArgumentOutOfRangeException(nameof(value));
+                if (value < this.Count) throw new ArgumentOutOfRangeException(nameof(value));
 
-                // If capacity equals, early-return
-                if (value == this.Capacity) return;
+                // If capacity is already enough, early-return
+                if (value <= this.Capacity) return;
 
-                throw new NotImplementedException();
+                // If we reallocate, we use this occasion to reorder the elements to have the head in the front
+                var newStorage = new T[value];
+                var (first, second) = this.AsMemory();
+                first.CopyTo(newStorage);
+                second.CopyTo(newStorage.AsMemory(first.Length));
+                this.Head = 0;
+                this.storage = newStorage;
             }
         }
 
@@ -54,8 +60,17 @@ namespace Yoakke.Collections
         /// <inheritdoc/>
         public T this[int index]
         {
-            get => throw new NotImplementedException();
-            set => throw new NotImplementedException();
+            get
+            {
+                if (index < 0 || index >= this.Count) throw new ArgumentOutOfRangeException(nameof(index));
+                return this.storage[(this.Head + index) % this.Capacity];
+            }
+
+            set
+            {
+                if (index < 0 || index >= this.Count) throw new ArgumentOutOfRangeException(nameof(index));
+                this.storage[(this.Head + index) % this.Capacity] = value;
+            }
         }
 
         /// <inheritdoc/>
@@ -81,7 +96,14 @@ namespace Yoakke.Collections
         }
 
         /// <inheritdoc/>
-        public void Clear() => throw new NotImplementedException();
+        public void Clear()
+        {
+            var (first, second) = this.AsMemory();
+            first.Span.Clear();
+            second.Span.Clear();
+            this.Head = 0;
+            this.Count = 0;
+        }
 
         /// <inheritdoc/>
         public void Add(T item) => this.AddBack(item);
