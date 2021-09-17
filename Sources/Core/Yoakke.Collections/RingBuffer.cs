@@ -145,8 +145,22 @@ namespace Yoakke.Collections
 
             // We are inserting to somewhere in the middle
             this.EnsureCapacity(this.Count + 1);
+            var absIndex = (this.Head + index) % this.Capacity;
+
+            if (absIndex < this.Head)
+            {
+                // We expand the part before the head to the right
+                for (var i = this.Tail - 1; i >= absIndex; --i) this.storage[i + 1] = this.storage[i];
+            }
+            else
+            {
+                // We expand the part after the head to the left
+                for (var i = this.Head - 1; i < absIndex; ++i) this.storage[i] = this.storage[i + 1];
+                this.Head = this.Head == 0 ? this.Capacity - 1 : this.Head - 1;
+            }
+
+            this.storage[absIndex] = item;
             ++this.Count;
-            throw new NotImplementedException();
         }
 
         /// <inheritdoc/>
@@ -203,7 +217,20 @@ namespace Yoakke.Collections
                 return;
             }
 
-            throw new NotImplementedException();
+            var absIndex = (this.Head + index) % this.Capacity;
+            if (absIndex < this.Head)
+            {
+                // We collapse the part before the head to the left
+                for (var i = absIndex; i < this.Tail - 1; ++i) this.storage[i] = this.storage[i + 1];
+                this.storage[this.Tail - 1] = default!;
+            }
+            else
+            {
+                // We collapse the part after the head to the right
+                for (var i = absIndex - 1; i > this.Head; --i) this.storage[i + 1] = this.storage[i];
+                this.storage[this.Head] = default!;
+            }
+            --this.Count;
         }
 
         /// <inheritdoc/>
