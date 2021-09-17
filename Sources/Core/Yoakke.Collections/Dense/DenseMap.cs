@@ -251,30 +251,70 @@ namespace Yoakke.Collections.Dense
             // If intersects nothing, return
             if (from == to) return false;
 
-            // It intersects one or more intervals
-            var lowerExisting = this.intervals[from];
-            var upperExisting = this.intervals[to - 1];
-            var lowerCmp = this.BoundComparer.Compare(lowerExisting.Key.Lower, keys.Lower);
-            var upperCmp = this.BoundComparer.Compare(upperExisting.Key.Upper, keys.Upper);
-            // Split edges if needed, track indices for deletion
-            var deleteFrom = from;
-            var deleteTo = to;
-            if (lowerCmp < 0)
+            if (to - from == 1)
             {
-                // Split lower
-                var newInterval = new Interval<TKey>(lowerExisting.Key.Lower, keys.Lower.Touching!);
-                this.intervals[from] = new(newInterval, lowerExisting.Value);
-                ++deleteFrom;
+                // It intersects a single interval
+                var existing = this.intervals[from];
+                var lowerCmp = this.BoundComparer.Compare(existing.Key.Lower, keys.Lower);
+                var upperCmp = this.BoundComparer.Compare(existing.Key.Upper, keys.Upper);
+                // Split edges if needed, track indices for deletion
+                if (lowerCmp < 0 && upperCmp > 0)
+                {
+                    // Split into two
+                    // First the lower
+                    var newLowerInterval = new Interval<TKey>(existing.Key.Lower, keys.Lower.Touching!);
+                    this.intervals[from] = new(newLowerInterval, existing.Value);
+                    // Then the upper
+                    var newUpperInterval = new Interval<TKey>(keys.Upper.Touching!, existing.Key.Upper);
+                    this.intervals.Insert(from + 1, new(newUpperInterval, existing.Value));
+                }
+                else if (lowerCmp < 0)
+                {
+                    // Split lower
+                    var newInterval = new Interval<TKey>(existing.Key.Lower, keys.Lower.Touching!);
+                    this.intervals[from] = new(newInterval, existing.Value);
+                }
+                else if (upperCmp > 0)
+                {
+                    // Split upper
+                    var newInterval = new Interval<TKey>(keys.Upper.Touching!, existing.Key.Upper);
+                    this.intervals[from] = new(newInterval, existing.Value);
+                }
+                else
+                {
+                    // Totally covered, just remove
+                    this.intervals.RemoveAt(from);
+                }
             }
-            if (upperCmp > 0)
+            else
             {
-                // Split upper
-                var newInterval = new Interval<TKey>(keys.Upper.Touching!, upperExisting.Key.Upper);
-                this.intervals[to - 1] = new(newInterval, upperExisting.Value);
-                --deleteTo;
+
+                // It intersects multiple intervals
+                var lowerExisting = this.intervals[from];
+                var upperExisting = this.intervals[to - 1];
+                var lowerCmp = this.BoundComparer.Compare(lowerExisting.Key.Lower, keys.Lower);
+                var upperCmp = this.BoundComparer.Compare(upperExisting.Key.Upper, keys.Upper);
+                // Split edges if needed, track indices for deletion
+                var deleteFrom = from;
+                var deleteTo = to;
+                if (lowerCmp < 0)
+                {
+                    // Split lower
+                    var newInterval = new Interval<TKey>(lowerExisting.Key.Lower, keys.Lower.Touching!);
+                    this.intervals[from] = new(newInterval, lowerExisting.Value);
+                    ++deleteFrom;
+                }
+                if (upperCmp > 0)
+                {
+                    // Split upper
+                    var newInterval = new Interval<TKey>(keys.Upper.Touching!, upperExisting.Key.Upper);
+                    this.intervals[to - 1] = new(newInterval, upperExisting.Value);
+                    --deleteTo;
+                }
+                // Delete everything in between that is completely covered
+                this.intervals.RemoveRange(deleteFrom, deleteTo - deleteFrom);
             }
-            // Delete everything in between that is completely covered
-            this.intervals.RemoveRange(deleteFrom, deleteTo - deleteFrom);
+
             return true;
         }
 
