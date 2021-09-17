@@ -126,7 +126,28 @@ namespace Yoakke.Collections
         }
 
         /// <inheritdoc/>
-        public void Insert(int index, T item) => throw new NotImplementedException();
+        public void Insert(int index, T item)
+        {
+            if (index < 0 || index > this.Count) throw new ArgumentOutOfRangeException(nameof(index));
+
+            // If we are adding to the back, use the handler for that
+            if (index == this.Count)
+            {
+                this.AddBack(item);
+                return;
+            }
+            // Same with adding to the front
+            if (index == 0)
+            {
+                this.AddFront(item);
+                return;
+            }
+
+            // We are inserting to somewhere in the middle
+            this.EnsureCapacity(this.Count + 1);
+            ++this.Count;
+            throw new NotImplementedException();
+        }
 
         /// <inheritdoc/>
         public bool Remove(T item)
@@ -164,7 +185,26 @@ namespace Yoakke.Collections
         }
 
         /// <inheritdoc/>
-        public void RemoveAt(int index) => throw new NotImplementedException();
+        public void RemoveAt(int index)
+        {
+            if (this.Count == 0) throw new InvalidOperationException("The ring buffer was empty");
+            if (index < 0 || index >= this.Count) throw new ArgumentOutOfRangeException(nameof(index));
+
+            // If we are removing from the back, use the handler for that
+            if (index == this.Count - 1)
+            {
+                this.RemoveBack();
+                return;
+            }
+            // Same with removing from front
+            if (index == 0)
+            {
+                this.RemoveFront();
+                return;
+            }
+
+            throw new NotImplementedException();
+        }
 
         /// <inheritdoc/>
         public bool Contains(T item) => this.IndexOf(item) != -1;
