@@ -130,6 +130,10 @@ namespace Yoakke.Collections.Tests
             "[2; 5) => { 1 } U [7; 9) => { 1 }",
             "[2; 8)",
             "[8; 9) => { 1 }")]
+        [DataRow(
+            "(-oo; +oo) => { 1 }",
+            "[0; 0]",
+            "(-oo; 0) => { 1 } U (0; +oo) => { 1 }")]
         // Legacy tests inverted
         [DataRow(
             "",
@@ -228,6 +232,30 @@ namespace Yoakke.Collections.Tests
             originalMap.Remove(interval);
 
             AssertEquals(originalMap, resultingMap);
+        }
+
+        [DataTestMethod]
+        [DataRow("", "(0; 0)", true)]
+        [DataRow("[0; 5) => { 1 }", "[6; 7)", false)]
+        [DataRow("[0; 5) => { 1 }", "[0; 5)", true)]
+        [DataRow("[0; 5) => { 1 }", "[0; 1)", true)]
+        [DataRow("[0; 5) => { 1 }", "[4; 5)", true)]
+        [DataRow("[0; 5) => { 1 }", "[2; 3)", true)]
+        [DataRow("(-oo; +oo) => { 1 }", "[2; 3)", true)]
+        [DataRow("[0; 1) => { 1 } U [1; 2) => { 1 }", "[0; 2)", true)]
+        [DataRow("[0; 1) => { 1 } U [1; 2) => { 1 }", "[0; 3)", false)]
+        [DataRow("[0; 1) => { 1 } U [1; 2) => { 1 }", "[-1; 2)", false)]
+        [DataRow("[0; 1) => { 1 } U [1; 2) => { 1 }", "[-1; 3)", false)]
+        [DataRow("[0; 1) => { 1 } U [2; 3) => { 1 }", "[1; 2)", false)]
+        [DataRow("[0; 1) => { 1 } U [2; 3) => { 1 }", "[0; 3)", false)]
+        public void ContainsInterval(string mapText, string intervalText, bool contains)
+        {
+            var map = ParseDenseMap(mapText);
+            var interval = ParseInterval(intervalText);
+
+            var result = map.ContainsKeys(interval);
+
+            Assert.AreEqual(contains, result);
         }
 
         private static void AssertEquals(DenseMap<int, HashSet<int>> a, IEnumerable<KeyValuePair<Interval<int>, HashSet<int>>> b)

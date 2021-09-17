@@ -324,6 +324,8 @@ namespace Yoakke.Collections.Dense
         /// <inheritdoc/>
         public bool ContainsKeys(Interval<TKey> keys)
         {
+            if (this.Comparer.IsEmpty(keys)) return true;
+
             // Get all intersecting ranges
             var (from, to) = this.IntersectingRange(keys);
             // No intersecting intervals, certainly does not contain
