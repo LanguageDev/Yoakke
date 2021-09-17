@@ -162,6 +162,46 @@ namespace Yoakke.Collections.Tests
         }
 
         [TestMethod]
+        public void InsertingElementInTheMiddleWhileSplitFirst()
+        {
+            var rb = new RingBuffer<int>(5) { 1, 2, 3, 4 };
+
+            rb.RemoveFront();
+            rb.RemoveFront();
+            rb.AddBack(5);
+            rb.AddBack(6);
+
+            rb.Insert(1, 7);
+
+            Assert.AreEqual(5, rb.Count);
+            Assert.AreEqual(3, rb[0]);
+            Assert.AreEqual(7, rb[1]);
+            Assert.AreEqual(4, rb[2]);
+            Assert.AreEqual(5, rb[3]);
+            Assert.AreEqual(6, rb[4]);
+        }
+
+        [TestMethod]
+        public void InsertingElementInTheMiddleWhileSplitSecond()
+        {
+            var rb = new RingBuffer<int>(5) { 1, 2, 3, 4 };
+
+            rb.RemoveFront();
+            rb.RemoveFront();
+            rb.AddBack(5);
+            rb.AddBack(6);
+
+            rb.Insert(3, 7);
+
+            Assert.AreEqual(5, rb.Count);
+            Assert.AreEqual(3, rb[0]);
+            Assert.AreEqual(4, rb[1]);
+            Assert.AreEqual(5, rb[2]);
+            Assert.AreEqual(7, rb[3]);
+            Assert.AreEqual(6, rb[4]);
+        }
+
+        [TestMethod]
         public void RemovingElementInTheMiddle()
         {
             var rb = new RingBuffer<int> { 1, 2, 3, 4, 5, 6 };

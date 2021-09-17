@@ -145,7 +145,22 @@ namespace Yoakke.Collections
 
             // We are inserting to somewhere in the middle
             this.EnsureCapacity(this.Count + 1);
-            throw new NotImplementedException();
+            var absIndex = (this.Head + index) % this.Capacity;
+
+            if (this.Head < this.Tail || absIndex < this.Tail)
+            {
+                // Buffer is in one piece, or it's being split into two, but insertion is in the latter piece
+                for (var i = this.Tail; i > absIndex; --i) this.storage[i] = this.storage[i - 1];
+            }
+            else
+            {
+                // Buffer is split into two and it's in the first section
+                for (var i = this.Tail; i > 0; --i) this.storage[i] = this.storage[i - 1];
+                this.storage[0] = this.storage[^1];
+                for (var i = this.Capacity - 1; i > absIndex; --i) this.storage[i] = this.storage[i - 1];
+            }
+            ++this.Count;
+            this.storage[absIndex] = item;
         }
 
         /// <inheritdoc/>
