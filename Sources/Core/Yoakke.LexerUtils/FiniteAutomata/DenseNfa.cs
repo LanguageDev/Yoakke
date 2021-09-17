@@ -6,7 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Yoakke.LexerUtils.Intervals;
+using Yoakke.Collections.Dense;
+using Yoakke.Collections.Intervals;
 
 namespace Yoakke.LexerUtils.FiniteAutomata
 {
@@ -30,6 +31,12 @@ namespace Yoakke.LexerUtils.FiniteAutomata
             }
         }
 
+        private static readonly ICombiner<ISet<State>> HashSetCombiner =
+            Combiner<ISet<State>>.Create((existing, added) => existing.Concat(added).ToHashSet());
+
+        private static readonly ICombiner<SortedSet<State>> SortedSetCombiner =
+            Combiner<SortedSet<State>>.Create((existing, added) => new SortedSet<State>(existing.Concat(added)));
+
         /// <inheritdoc/>
         public State InitalState { get; set; } = State.Invalid;
 
@@ -43,22 +50,22 @@ namespace Yoakke.LexerUtils.FiniteAutomata
 
         /// <inheritdoc/>
         public IEnumerable<State> States => this.transitions.Keys
-            .Concat(this.transitions.Values.SelectMany(t => t.Values.SelectMany(v => v)))
+            .Concat(this.transitions.Values.SelectMany(t => t.SelectMany(v => v.Value)))
             .Concat(this.epsilon.Keys)
             .Concat(this.epsilon.Values.SelectMany(v => v))
             .Append(this.InitalState)
             .Distinct();
 
-        private readonly Dictionary<State, IntervalMap<TSymbol, ISet<State>>> transitions;
+        private readonly Dictionary<State, DenseMap<TSymbol, ISet<State>>> transitions;
         private readonly Dictionary<State, HashSet<State>> epsilon;
-        private readonly IComparer<TSymbol> comparer;
+        private readonly IntervalComparer<TSymbol> comparer;
         private int stateCounter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DenseNfa{TSymbol}"/> class.
         /// </summary>
         public DenseNfa()
-            : this(Comparer<TSymbol>.Default)
+            : this(IntervalComparer<TSymbol>.Default)
         {
         }
 
@@ -66,9 +73,9 @@ namespace Yoakke.LexerUtils.FiniteAutomata
         /// Initializes a new instance of the <see cref="DenseNfa{TSymbol}"/> class.
         /// </summary>
         /// <param name="comparer">The comparer to use.</param>
-        public DenseNfa(IComparer<TSymbol> comparer)
+        public DenseNfa(IntervalComparer<TSymbol> comparer)
         {
-            this.transitions = new Dictionary<State, IntervalMap<TSymbol, ISet<State>>>();
+            this.transitions = new Dictionary<State, DenseMap<TSymbol, ISet<State>>>();
             this.epsilon = new Dictionary<State, HashSet<State>>();
             this.comparer = comparer;
         }
@@ -140,7 +147,7 @@ namespace Yoakke.LexerUtils.FiniteAutomata
                 var (nfaStates, dfaState) = top;
 
                 // Collect where we can go to
-                var resultingTransitions = new IntervalMap<TSymbol, SortedSet<State>>();
+                var resultingTransitions = new DenseMap<TSymbol, SortedSet<State>>(this.comparer, SortedSetCombiner);
 
                 foreach (var nfaState in nfaStates)
                 {
@@ -149,7 +156,7 @@ namespace Yoakke.LexerUtils.FiniteAutomata
                         foreach (var (iv, destStates) in trs)
                         {
                             var ds = new SortedSet<State>(destStates.SelectMany(this.EpsilonClosure));
-                            resultingTransitions.AddAndUpdate(iv, ds, (existing, added) => new SortedSet<State>(existing.Concat(added)));
+                            resultingTransitions.Add(iv, ds);
                         }
                     }
                 }
@@ -227,10 +234,10 @@ namespace Yoakke.LexerUtils.FiniteAutomata
         {
             if (!this.transitions.TryGetValue(from, out var onMap))
             {
-                onMap = new IntervalMap<TSymbol, ISet<State>>(this.comparer);
+                onMap = new DenseMap<TSymbol, ISet<State>>(this.comparer, HashSetCombiner);
                 this.transitions.Add(from, onMap);
             }
-            onMap.AddAndUpdate(on, new HashSet<State> { to }, (existing, added) => existing.Concat(added).ToHashSet());
+            onMap.Add(on, new HashSet<State> { to });
         }
 
         /// <summary>

@@ -6,7 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Yoakke.LexerUtils.Intervals;
+using Yoakke.Collections.Dense;
+using Yoakke.Collections.Intervals;
 
 namespace Yoakke.LexerUtils.FiniteAutomata
 {
@@ -16,6 +17,8 @@ namespace Yoakke.LexerUtils.FiniteAutomata
     /// <typeparam name="TSymbol">The symbol type the automata steps on.</typeparam>
     public class DenseDfa<TSymbol> : IDeterministicFiniteAutomata<TSymbol>
     {
+        private static readonly ICombiner<State> Combiner = Combiner<State>.Create((x, y) => throw new InvalidOperationException());
+
         /// <inheritdoc/>
         public State InitalState { get; set; } = State.Invalid;
 
@@ -29,17 +32,17 @@ namespace Yoakke.LexerUtils.FiniteAutomata
 
         /// <inheritdoc/>
         public IEnumerable<State> States =>
-            this.transitions.Keys.Concat(this.transitions.Values.SelectMany(t => t.Values)).Append(this.InitalState).Distinct();
+            this.transitions.Keys.Concat(this.transitions.Values.SelectMany(t => t.Select(v => v.Value))).Append(this.InitalState).Distinct();
 
-        private readonly Dictionary<State, IntervalMap<TSymbol, State>> transitions;
-        private readonly IComparer<TSymbol> comparer;
+        private readonly Dictionary<State, DenseMap<TSymbol, State>> transitions;
+        private readonly IntervalComparer<TSymbol> comparer;
         private int stateCounter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DenseDfa{TSymbol}"/> class.
         /// </summary>
         public DenseDfa()
-            : this(Comparer<TSymbol>.Default)
+            : this(IntervalComparer<TSymbol>.Default)
         {
         }
 
@@ -47,10 +50,10 @@ namespace Yoakke.LexerUtils.FiniteAutomata
         /// Initializes a new instance of the <see cref="DenseDfa{TSymbol}"/> class.
         /// </summary>
         /// <param name="comparer">The comparer to use.</param>
-        public DenseDfa(IComparer<TSymbol> comparer)
+        public DenseDfa(IntervalComparer<TSymbol> comparer)
         {
             this.comparer = comparer;
-            this.transitions = new Dictionary<State, IntervalMap<TSymbol, State>>();
+            this.transitions = new Dictionary<State, DenseMap<TSymbol, State>>();
         }
 
         /// <inheritdoc/>
@@ -124,12 +127,12 @@ namespace Yoakke.LexerUtils.FiniteAutomata
         {
             if (!this.transitions.TryGetValue(from, out var onMap))
             {
-                onMap = new IntervalMap<TSymbol, State>(this.comparer);
+                onMap = new DenseMap<TSymbol, State>(this.comparer, Combiner);
                 this.transitions.Add(from, onMap);
             }
             // If unification is called, it means that we transition to multiple states for a given symbol,
             // which is illegal for DFAs.
-            onMap.AddAndUpdate(on, to, (_, _) => throw new InvalidOperationException());
+            onMap.Add(on, to);
         }
 
         /// <summary>
@@ -138,7 +141,7 @@ namespace Yoakke.LexerUtils.FiniteAutomata
         /// <param name="from">The state to get transitions from.</param>
         /// <param name="value">The transitions, if they are present at a state, null otherwise.</param>
         /// <returns>True, if there are transitions from the given state, false otherwise.</returns>
-        public bool TryGetTransitionsFrom(State from, out IIntervalMap<TSymbol, State> value)
+        public bool TryGetTransitionsFrom(State from, out IReadOnlyDenseMap<TSymbol, State> value)
         {
             var result = this.transitions.TryGetValue(from, out var value1);
             value = value1;
