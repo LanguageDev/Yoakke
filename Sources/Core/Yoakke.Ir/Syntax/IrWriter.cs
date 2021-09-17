@@ -25,7 +25,7 @@ namespace Yoakke.Ir.Syntax
         public TextWriter Underlying { get; }
 
         private readonly Context context;
-        private readonly Dictionary<Instruction, int> localValues = new(ReferenceEqualityComparer<Instruction>.Instance);
+        private readonly Dictionary<Instruction, int> localValues = new(ReferenceEqualityComparer.Instance);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IrWriter"/> class.
