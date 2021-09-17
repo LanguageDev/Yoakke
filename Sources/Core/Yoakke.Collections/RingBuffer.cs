@@ -109,10 +109,21 @@ namespace Yoakke.Collections
         public void Add(T item) => this.AddBack(item);
 
         /// <inheritdoc/>
-        public void AddFront(T item) => throw new NotImplementedException();
+        public void AddFront(T item)
+        {
+            this.EnsureCapacity(this.Count + 1);
+            this.Head = this.Head == 0 ? this.Capacity - 1 : this.Head - 1;
+            this.storage[this.Head] = item;
+            ++this.Count;
+        }
 
         /// <inheritdoc/>
-        public void AddBack(T item) => throw new NotImplementedException();
+        public void AddBack(T item)
+        {
+            this.EnsureCapacity(this.Count + 1);
+            this.storage[this.Tail] = item;
+            ++this.Count;
+        }
 
         /// <inheritdoc/>
         public void Insert(int index, T item) => throw new NotImplementedException();
@@ -129,10 +140,28 @@ namespace Yoakke.Collections
         }
 
         /// <inheritdoc/>
-        public T RemoveFront() => throw new NotImplementedException();
+        public T RemoveFront()
+        {
+            if (this.Count == 0) throw new InvalidOperationException("The ring buffer was empty");
+
+            var result = this.storage[this.Head];
+            this.storage[this.Head] = default!;
+            this.Head = (this.Head + 1) % this.Capacity;
+            --this.Count;
+            return result;
+        }
 
         /// <inheritdoc/>
-        public T RemoveBack() => throw new NotImplementedException();
+        public T RemoveBack()
+        {
+            if (this.Count == 0) throw new InvalidOperationException("The ring buffer was empty");
+
+            var index = this.Tail - 1;
+            var result = this.storage[index];
+            this.storage[index] = default!;
+            --this.Count;
+            return result!;
+        }
 
         /// <inheritdoc/>
         public void RemoveAt(int index) => throw new NotImplementedException();
@@ -174,6 +203,26 @@ namespace Yoakke.Collections
 
         /// <inheritdoc/>
         IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
+
+        /// <summary>
+        /// Ensures that the capacity of this ring buffer is at least the specified <paramref name="capacity"/>.
+        /// If the current capacity of the ring buffer is less than specified <paramref name="capacity"/>,
+        /// the capacity is increased by continuously twice current capacity until it is at least the
+        /// specified <paramref name="capacity"/>.
+        /// </summary>
+        /// <param name="capacity">The minimum capacity to ensure.</param>
+        /// <returns>The new capacity of this ring buffer.</returns>
+        public int EnsureCapacity(int capacity)
+        {
+            if (capacity < 0) throw new ArgumentOutOfRangeException(nameof(capacity));
+            if (this.Capacity < capacity)
+            {
+                var newCapacity = this.Capacity == 0 ? DefaultCapacity : this.Capacity * 2;
+                newCapacity = Math.Max(newCapacity, capacity);
+                this.Capacity = newCapacity;
+            }
+            return this.Capacity;
+        }
 
         private (Memory<T> First, Memory<T> Second) AsMemory()
         {
