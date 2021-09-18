@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
+using Yoakke.Automata.Internal;
 using Yoakke.Collections;
 
 namespace Yoakke.Automata.Discrete
@@ -72,33 +73,9 @@ namespace Yoakke.Automata.Discrete
         /// <inheritdoc/>
         public string ToDot()
         {
-            // To make names consistent, we only call .ToString() on states once
-            // This is because on a state set we could potentially get differently ordered, but equivalent sets (HashSet quirk)
-            var stateNames = new Dictionary<TState, string>(this.StateComparer);
+            var helper = new ToDotHelper<TState, TSymbol>(this);
+            helper.WriteStart();
 
-            string GetStateName(TState state)
-            {
-                if (!stateNames!.TryGetValue(state, out var name))
-                {
-                    name = state!.ToString();
-                    stateNames.Add(state, name);
-                }
-                return name;
-            }
-
-            var result = new StringBuilder();
-            result
-                .AppendLine("digraph dfa {")
-                // Left-to-right layout
-                .AppendLine("    rankdir=LR;");
-            // Double-circle accepting states
-            if (this.acceptingStates.Count > 0)
-            {
-                var acceptingStates = string.Join(" ", this.acceptingStates.Select(s => $"\"{GetStateName(s)}\""));
-                result.AppendLine($"    node [shape=doublecircle]; {acceptingStates};");
-            }
-            // Rest are simple circle
-            result.AppendLine($"    node [shape=circle];");
             // Go through each transition
             foreach (var (from, onMap) in this.transitions)
             {
@@ -108,15 +85,12 @@ namespace Yoakke.Automata.Discrete
                 {
                     var to = group.Key;
                     var ons = string.Join(", ", group.Select(kv => kv.Key));
-                    result.AppendLine($"    \"{GetStateName(from)}\" -> \"{GetStateName(to)}\" [label = \"{ons}\"];");
+                    helper.WriteTransition(from, ons, to);
                 }
             }
-            // Initial state
-            result
-                .AppendLine("    init [label=\"\", shape=point]")
-                .AppendLine($"    init -> \"{GetStateName(this.InitialState)}\"")
-                .Append("}");
-            return result.ToString();
+
+            helper.WriteEnd();
+            return helper.Code;
         }
 
         /// <inheritdoc/>
