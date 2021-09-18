@@ -73,7 +73,7 @@ namespace Yoakke.Automata.Discrete
         /// <inheritdoc/>
         public string ToDot()
         {
-            var helper = new ToDotHelper<TState, TSymbol>(this);
+            var helper = new DotWriter<TState, TSymbol>(this);
             helper.WriteStart();
 
             // Go through each transition

@@ -14,7 +14,7 @@ namespace Yoakke.Automata.Internal
     /// </summary>
     /// <typeparam name="TState">The state type.</typeparam>
     /// <typeparam name="TSymbol">The symbol type.</typeparam>
-    internal class ToDotHelper<TState, TSymbol>
+    internal class DotWriter<TState, TSymbol>
     {
         private readonly IFiniteAutomaton<TState, TSymbol> automaton;
         private readonly Dictionary<TState, string> stateNames;
@@ -26,10 +26,10 @@ namespace Yoakke.Automata.Internal
         public string Code => this.stringBuilder.ToString();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ToDotHelper{TState, TSymbol}"/> class.
+        /// Initializes a new instance of the <see cref="DotWriter{TState, TSymbol}"/> class.
         /// </summary>
         /// <param name="automaton">The automaton to generate the code for.</param>
-        public ToDotHelper(IFiniteAutomaton<TState, TSymbol> automaton)
+        public DotWriter(IFiniteAutomaton<TState, TSymbol> automaton)
         {
             this.automaton = automaton;
             this.stateNames = new(automaton.StateComparer);
