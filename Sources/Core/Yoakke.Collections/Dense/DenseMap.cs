@@ -288,7 +288,6 @@ namespace Yoakke.Collections.Dense
             }
             else
             {
-
                 // It intersects multiple intervals
                 var lowerExisting = this.intervals[from];
                 var upperExisting = this.intervals[to - 1];

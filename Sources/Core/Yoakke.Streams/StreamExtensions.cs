@@ -59,6 +59,24 @@ namespace Yoakke.Streams
             : throw new InvalidOperationException("The stream had no more items.");
 
         /// <summary>
+        /// A default implementation for <see cref="IStream{TItem}.Consume(int)"/>.
+        /// </summary>
+        /// <typeparam name="TItem">The item type of the stream.</typeparam>
+        /// <param name="stream">The stream to consume from.</param>
+        /// <param name="amount">The amount to consume.</param>
+        /// <returns>The amount that was actually consumed.</returns>
+        public static int Consume<TItem>(IStream<TItem> stream, int amount)
+        {
+            if (amount == 0) return 0;
+            var i = 0;
+            for (; i < amount && stream.TryConsume(out _); ++i)
+            {
+                // Pass
+            }
+            return i;
+        }
+
+        /// <summary>
         /// Retrieves the upcoming item without consuming it.
         /// </summary>
         /// <typeparam name="TItem">The item type of the stream.</typeparam>
@@ -77,24 +95,6 @@ namespace Yoakke.Streams
         public static TItem LookAhead<TItem>(this IPeekableStream<TItem> stream, int offset) => stream.TryLookAhead(offset, out var item)
             ? item
             : throw new InvalidOperationException("The stream had no more items.");
-
-        /// <summary>
-        /// A default implementation for <see cref="IStream{TItem}.Consume(int)"/>.
-        /// </summary>
-        /// <typeparam name="TItem">The item type of the stream.</typeparam>
-        /// <param name="stream">The stream to consume from.</param>
-        /// <param name="amount">The amount to consume.</param>
-        /// <returns>The amount that was actually consumed.</returns>
-        public static int Consume<TItem>(IStream<TItem> stream, int amount)
-        {
-            if (amount == 0) return 0;
-            var i = 0;
-            for (; i < amount && stream.TryConsume(out _); ++i)
-            {
-                // Pass
-            }
-            return i;
-        }
 
         #endregion
     }

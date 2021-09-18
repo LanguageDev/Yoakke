@@ -12,11 +12,11 @@ namespace Yoakke.Streams.Tests
             var ms = new MemoryStream<int>(new int[] { 1, 2, 3 }.AsMemory());
 
             Assert.IsFalse(ms.IsEnd);
-            Assert.AreEqual(ms.Consume(), 1);
+            Assert.AreEqual(1, ms.Consume());
             Assert.IsFalse(ms.IsEnd);
-            Assert.AreEqual(ms.Consume(), 2);
+            Assert.AreEqual(2, ms.Consume());
             Assert.IsFalse(ms.IsEnd);
-            Assert.AreEqual(ms.Consume(), 3);
+            Assert.AreEqual(3, ms.Consume());
             Assert.IsTrue(ms.IsEnd);
         }
 
@@ -26,11 +26,11 @@ namespace Yoakke.Streams.Tests
             var ms = new MemoryStream<int>(new int[] { 1, 2, 3, 4, 5, 6 }.AsMemory()).Filter(n => n % 2 == 1);
 
             Assert.IsFalse(ms.IsEnd);
-            Assert.AreEqual(ms.Consume(), 1);
+            Assert.AreEqual(1, ms.Consume());
             Assert.IsFalse(ms.IsEnd);
-            Assert.AreEqual(ms.Consume(), 3);
+            Assert.AreEqual(3, ms.Consume());
             Assert.IsFalse(ms.IsEnd);
-            Assert.AreEqual(ms.Consume(), 5);
+            Assert.AreEqual(5, ms.Consume());
             Assert.IsTrue(ms.IsEnd);
         }
 
@@ -45,11 +45,11 @@ namespace Yoakke.Streams.Tests
             Assert.IsTrue(ms.TryLookAhead(1, out var t1));
             Assert.AreEqual(t1, 3);
             Assert.IsFalse(ms.IsEnd);
-            Assert.AreEqual(ms.Consume(), 1);
+            Assert.AreEqual(1, ms.Consume());
             Assert.IsFalse(ms.IsEnd);
-            Assert.AreEqual(ms.Consume(), 3);
+            Assert.AreEqual(3, ms.Consume());
             Assert.IsFalse(ms.IsEnd);
-            Assert.AreEqual(ms.Consume(), 5);
+            Assert.AreEqual(5, ms.Consume());
             Assert.IsTrue(ms.IsEnd);
         }
     }
