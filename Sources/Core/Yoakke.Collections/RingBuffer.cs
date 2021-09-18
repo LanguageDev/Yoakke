@@ -13,7 +13,7 @@ namespace Yoakke.Collections
     /// A ring-buffer backed <see cref="IDeque{T}"/> implementation.
     /// </summary>
     /// <typeparam name="T">The item type.</typeparam>
-    public class RingBuffer<T> : IDeque<T>
+    public sealed class RingBuffer<T> : IDeque<T>
     {
         private const int DefaultCapacity = 8;
 

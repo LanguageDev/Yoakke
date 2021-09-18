@@ -29,13 +29,6 @@ namespace Yoakke.Collections.Dense
         public bool Contains(Interval<T> interval);
 
         /// <summary>
-        /// Checks, if set overlaps with any elements of an interval.
-        /// </summary>
-        /// <param name="interval">The interval to check if the set overlaps.</param>
-        /// <returns>True, if <paramref name="interval"/> contains elements of this set.</returns>
-        public bool Overlaps(Interval<T> interval);
-
-        /// <summary>
         /// Determines whether the current set is a proper (strict) subset of a specified collection.
         /// </summary>
         /// <param name="other">The collection to compare to the current set.</param>
@@ -57,13 +50,6 @@ namespace Yoakke.Collections.Dense
         public bool IsSubsetOf(IEnumerable<Interval<T>> other);
 
         /// <summary>
-        /// Determine whether the current set is a super set of a specified collection.
-        /// </summary>
-        /// <param name="other">The collection to compare to the current set.</param>
-        /// <returns>True if the current set is a subset of other, otherwise false.</returns>
-        public bool IsSupersetOf(IEnumerable<Interval<T>> other);
-
-        /// <summary>
         /// Determine whether the current set is a subset of a specified collection.
         /// </summary>
         /// <param name="other">The collection to compare to the current set.</param>
@@ -76,10 +62,24 @@ namespace Yoakke.Collections.Dense
         /// Determine whether the current set is a super set of a specified collection.
         /// </summary>
         /// <param name="other">The collection to compare to the current set.</param>
+        /// <returns>True if the current set is a subset of other, otherwise false.</returns>
+        public bool IsSupersetOf(IEnumerable<Interval<T>> other);
+
+        /// <summary>
+        /// Determine whether the current set is a super set of a specified collection.
+        /// </summary>
+        /// <param name="other">The collection to compare to the current set.</param>
         /// <param name="proper">True gets written here, if the superset relation is a proper superset relation,
         /// otherwise false.</param>
         /// <returns>True if the current set is a subset of other, otherwise false.</returns>
         public bool IsSupersetOf(IEnumerable<Interval<T>> other, out bool proper);
+
+        /// <summary>
+        /// Checks, if set overlaps with any elements of an interval.
+        /// </summary>
+        /// <param name="interval">The interval to check if the set overlaps.</param>
+        /// <returns>True, if <paramref name="interval"/> contains elements of this set.</returns>
+        public bool Overlaps(Interval<T> interval);
 
         /// <summary>
         /// Determines whether the current set overlaps with the specified collection.

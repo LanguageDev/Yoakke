@@ -100,7 +100,7 @@ namespace Yoakke.Collections.Intervals
             (LowerBound<T> l, UpperBound<T> r) => this.Compare(l, r),
             (UpperBound<T> l, LowerBound<T> r) => this.Compare(l, r),
             (UpperBound<T> l, UpperBound<T> r) => this.Compare(l, r),
-            _ => throw new ArgumentOutOfRangeException(),
+            _ => throw new ArgumentOutOfRangeException("The passed in bounds were not LowerBound<T> or UpperBound<T> instances"),
         };
 
         /// <inheritdoc/>
@@ -121,7 +121,7 @@ namespace Yoakke.Collections.Intervals
                 0 => -1,
                 var n => n,
             },
-            _ => throw new ArgumentOutOfRangeException(),
+            _ => throw new ArgumentOutOfRangeException("The passed in lower bounds were not of the pre-defined Inculive/Exclusive/Unbounded"),
         };
 
         /// <inheritdoc/>
@@ -142,7 +142,7 @@ namespace Yoakke.Collections.Intervals
                 0 => 1,
                 var n => n,
             },
-            _ => throw new ArgumentOutOfRangeException(),
+            _ => throw new ArgumentOutOfRangeException("The passed in upper bounds were not of the pre-defined Inculive/Exclusive/Unbounded"),
         };
 
         /// <summary>
@@ -175,7 +175,7 @@ namespace Yoakke.Collections.Intervals
                 0 => -1,
                 var n => n,
             },
-            _ => throw new ArgumentOutOfRangeException(),
+            _ => throw new ArgumentOutOfRangeException("The passed in bounds were not of the pre-defined Inculive/Exclusive/Unbounded"),
         };
 
         /// <summary>
@@ -217,20 +217,20 @@ namespace Yoakke.Collections.Intervals
         public LowerBound<T> Min(LowerBound<T> x, LowerBound<T> y) => this.Compare(x, y) < 0 ? x : y;
 
         /// <summary>
-        /// Retrieves the larger lower bound of the two passed.
-        /// </summary>
-        /// <param name="x">The first bound.</param>
-        /// <param name="y">The second bound.</param>
-        /// <returns>The larger between <paramref name="x"/> and <paramref name="y"/>.</returns>
-        public LowerBound<T> Max(LowerBound<T> x, LowerBound<T> y) => this.Compare(x, y) > 0 ? x : y;
-
-        /// <summary>
         /// Retrieves the smaller upper bound of the two passed.
         /// </summary>
         /// <param name="x">The first bound.</param>
         /// <param name="y">The second bound.</param>
         /// <returns>The smaller between <paramref name="x"/> and <paramref name="y"/>.</returns>
         public UpperBound<T> Min(UpperBound<T> x, UpperBound<T> y) => this.Compare(x, y) < 0 ? x : y;
+
+        /// <summary>
+        /// Retrieves the larger lower bound of the two passed.
+        /// </summary>
+        /// <param name="x">The first bound.</param>
+        /// <param name="y">The second bound.</param>
+        /// <returns>The larger between <paramref name="x"/> and <paramref name="y"/>.</returns>
+        public LowerBound<T> Max(LowerBound<T> x, LowerBound<T> y) => this.Compare(x, y) > 0 ? x : y;
 
         /// <summary>
         /// Retrieves the larger upper bound of the two passed.

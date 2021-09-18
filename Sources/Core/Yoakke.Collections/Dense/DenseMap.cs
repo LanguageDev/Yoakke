@@ -18,7 +18,7 @@ namespace Yoakke.Collections.Dense
     /// </summary>
     /// <typeparam name="TKey">The key type.</typeparam>
     /// <typeparam name="TValue">The value type.</typeparam>
-    public class DenseMap<TKey, TValue> : IDenseMap<TKey, TValue>
+    public sealed class DenseMap<TKey, TValue> : IDenseMap<TKey, TValue>
     {
         /// <inheritdoc/>
         public bool IsEmpty => this.intervals.Count == 0;

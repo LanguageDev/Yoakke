@@ -60,13 +60,6 @@ namespace Yoakke.Collections
         public bool IsSubsetOf(IEnumerable<T> other);
 
         /// <summary>
-        /// Determine whether the current set is a super set of a specified collection.
-        /// </summary>
-        /// <param name="other">The collection to compare to the current set.</param>
-        /// <returns>True if the current set is a subset of other, otherwise false.</returns>
-        public bool IsSupersetOf(IEnumerable<T> other);
-
-        /// <summary>
         /// Determine whether the current set is a subset of a specified collection.
         /// </summary>
         /// <param name="other">The collection to compare to the current set.</param>
@@ -74,6 +67,13 @@ namespace Yoakke.Collections
         /// otherwise false.</param>
         /// <returns>True if the current set is a subset of other, otherwise false.</returns>
         public bool IsSubsetOf(IEnumerable<T> other, out bool proper);
+
+        /// <summary>
+        /// Determine whether the current set is a super set of a specified collection.
+        /// </summary>
+        /// <param name="other">The collection to compare to the current set.</param>
+        /// <returns>True if the current set is a subset of other, otherwise false.</returns>
+        public bool IsSupersetOf(IEnumerable<T> other);
 
         /// <summary>
         /// Determine whether the current set is a super set of a specified collection.

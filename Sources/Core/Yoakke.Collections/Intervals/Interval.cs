@@ -199,11 +199,6 @@ namespace Yoakke.Collections.Intervals
         public static Interval<T> Parse(string text, ParseValueString valueParser) =>
             Parse(text.AsSpan(), text => valueParser(text.ToString()));
 
-        private static readonly string[] ValidInfinities = new[]
-        {
-            "∞", "oo", "infinity", "infty", string.Empty,
-        };
-
         private static bool TryParseInfinity(ReadOnlySpan<char> text, bool negative)
         {
             // First we consume the sign
@@ -217,9 +212,9 @@ namespace Yoakke.Collections.Intervals
                 text = text[1..].TrimStart();
             }
             // Then we check if the string is contained within the valid infinities
-            for (var i = 0; i < ValidInfinities.Length; ++i)
+            for (var i = 0; i < Interval.InfinityStrings.Count; ++i)
             {
-                if (text.Equals(ValidInfinities[i].AsSpan(), StringComparison.InvariantCulture)) return true;
+                if (text.Equals(Interval.InfinityStrings[i].AsSpan(), StringComparison.InvariantCulture)) return true;
             }
             return false;
         }
