@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Yoakke.Automata.Internal;
 
 namespace Yoakke.Automata.Discrete
 {
@@ -30,7 +31,7 @@ namespace Yoakke.Automata.Discrete
 
         /// <inheritdoc/>
         public IEnumerable<TState> States => this.transitions.Keys
-            .Concat(this.transitions.Values.SelectMany(t => t.Values))
+            .Concat(this.transitions.Values.SelectMany(t => t.Values.SelectMany(v => v)))
             .Concat(this.epsilonTransitions.Keys)
             .Concat(this.epsilonTransitions.Values.SelectMany(v => v))
             .Append(this.InitialState)
@@ -45,7 +46,7 @@ namespace Yoakke.Automata.Discrete
         public IEqualityComparer<TSymbol> SymbolComparer { get; }
 
         private readonly HashSet<TState> acceptingStates;
-        private readonly Dictionary<TState, Dictionary<TSymbol, TState>> transitions;
+        private readonly Dictionary<TState, Dictionary<TSymbol, HashSet<TState>>> transitions;
         private readonly Dictionary<TState, HashSet<TState>> epsilonTransitions;
 
         /// <summary>
@@ -72,19 +73,78 @@ namespace Yoakke.Automata.Discrete
         }
 
         /// <inheritdoc/>
-        public string ToDot() => throw new NotImplementedException();
+        public string ToDot()
+        {
+            var helper = new DotWriter<TState, TSymbol>(this);
+            helper.WriteStart();
+
+            // Go through each transition
+            foreach (var (from, onMap) in this.transitions)
+            {
+                // For a bit more dense repr, we group by to states so we can draw a single arrow between 2 states
+                var epsilon = new HashSet<TState>(this.StateComparer);
+                if (this.epsilonTransitions.TryGetValue(from, out var e))
+                {
+                    foreach (var s in e) epsilon.Add(s);
+                }
+                var toOnGroup = onMap
+                    .SelectMany(kv => kv.Value.Select(v => (Key: kv.Key, Value: v)))
+                    .GroupBy(kv => kv.Value, this.StateComparer);
+                foreach (var group in toOnGroup)
+                {
+                    var to = group.Key;
+                    var ons = string.Join(", ", group.Select(kv => kv.Key));
+                    if (epsilon.Remove(to)) ons = $"{ons}, Ɛ";
+                    helper.WriteTransition(from, ons, to);
+                }
+                foreach (var to in epsilon) helper.WriteTransition(from, "Ɛ", to);
+            }
+
+            helper.WriteEnd();
+            return helper.Code;
+        }
 
         /// <inheritdoc/>
-        public bool Accepts(TState initial, IEnumerable<TSymbol> input) => throw new NotImplementedException();
+        public bool Accepts(TState initial, IEnumerable<TSymbol> input)
+        {
+            var currentState = new StateSet<TState>(new[] { initial });
+            foreach (var symbol in input)
+            {
+                currentState = this.GetTransitions(currentState, symbol);
+                if (currentState.Count == 0) return false;
+            }
+            return currentState.Any(s => this.acceptingStates.Contains(s));
+        }
 
         /// <inheritdoc/>
         public StateSet<TState> GetTransitions(StateSet<TState> from, TSymbol on) => throw new NotImplementedException();
 
         /// <inheritdoc/>
-        public bool AddTransition(TState from, TSymbol on, TState to) => throw new NotImplementedException();
+        public bool AddTransition(TState from, TSymbol on, TState to)
+        {
+            if (!this.transitions.TryGetValue(from, out var onMap))
+            {
+                onMap = new(this.SymbolComparer);
+                this.transitions.Add(from, onMap);
+            }
+            if (!onMap.TryGetValue(on, out var toSet))
+            {
+                toSet = new(this.StateComparer);
+                onMap.Add(on, toSet);
+            }
+            return toSet.Add(to);
+        }
 
         /// <inheritdoc/>
-        public bool AddEpsilonTransition(TState from, TState to) => throw new NotImplementedException();
+        public bool AddEpsilonTransition(TState from, TState to)
+        {
+            if (!this.epsilonTransitions.TryGetValue(from, out var toSet))
+            {
+                toSet = new(this.StateComparer);
+                this.epsilonTransitions.Add(from, toSet);
+            }
+            return toSet.Add(to);
+        }
 
         /// <inheritdoc/>
         public StateSet<TState> EpsilonClosure(TState state) => throw new NotImplementedException();
