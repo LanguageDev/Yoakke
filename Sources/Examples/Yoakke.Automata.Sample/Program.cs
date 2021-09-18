@@ -32,6 +32,7 @@ namespace Yoakke.Automata.Sample
             var minDfa = dfa.Minimize();
 
             Console.WriteLine(dfa.ToDot());
+            Console.WriteLine(minDfa.ToDot());
         }
     }
 }

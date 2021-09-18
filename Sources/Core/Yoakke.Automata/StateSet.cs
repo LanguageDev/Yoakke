@@ -5,6 +5,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Yoakke.Automata
@@ -19,36 +20,25 @@ namespace Yoakke.Automata
         /// <inheritdoc/>
         public int Count => this.states.Count;
 
-        private readonly HashSet<TState> states;
+        private readonly IReadOnlyList<TState> states;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StateSet{TState}"/> class.
         /// </summary>
         /// <param name="states">The states this set consists of.</param>
-        /// <param name="equalityComparer">The comparer to use.</param>
-        public StateSet(IEnumerable<TState> states, IEqualityComparer<TState> equalityComparer)
+        public StateSet(IEnumerable<TState> states)
         {
-            this.states = new(states, equalityComparer);
+            this.states = states.ToList();
         }
 
         /// <inheritdoc/>
         public override bool Equals(object obj) => obj is StateSet<TState> other && this.Equals(other);
 
         /// <inheritdoc/>
-        public bool Equals(StateSet<TState> other)
-        {
-            if (!this.states.Comparer.Equals(other.states.Comparer)) throw new InvalidOperationException("The comparer of the two state set are different");
-            return this.states.SetEquals(other.states);
-        }
+        public bool Equals(StateSet<TState> other) => StateSetEqualityComparer<TState>.Default.Equals(this, other);
 
         /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            var h = 0;
-            // NOTE: We use XOR to have order-independent hashing
-            foreach (var s in this.states) h ^= this.states.Comparer.GetHashCode(s);
-            return h;
-        }
+        public override int GetHashCode() => StateSetEqualityComparer<TState>.Default.GetHashCode(this);
 
         /// <inheritdoc/>
         public override string ToString() => string.Join(", ", this.states);

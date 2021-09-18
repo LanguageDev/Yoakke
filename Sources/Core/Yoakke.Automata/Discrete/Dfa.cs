@@ -235,7 +235,8 @@ namespace Yoakke.Automata.Discrete
         /// <inheritdoc/>
         public IDfa<StateSet<TState>, TSymbol> Minimize(IEnumerable<(TState, TState)> differentiatePairs)
         {
-            var result = new Dfa<StateSet<TState>, TSymbol>();
+            var stateSetComparer = new StateSetEqualityComparer<TState>(this.StateComparer);
+            var result = new Dfa<StateSet<TState>, TSymbol>(stateSetComparer, this.SymbolComparer);
             var tupleComparer = new TupleEqualityComparer<TState, TState>(this.StateComparer, this.StateComparer);
             var table = new HashSet<(TState, TState)>(tupleComparer);
 
@@ -294,7 +295,30 @@ namespace Yoakke.Automata.Discrete
             }
 
             // Now we have a table that is empty, where two states are equivalent
-            throw new NotImplementedException();
+            // Create a state mapping of old-state -> equivalent-state
+            var stateMap = new Dictionary<TState, StateSet<TState>>(this.StateComparer);
+            for (var i = 0; i < states.Count; ++i)
+            {
+                var s1 = states[i];
+                var equivalentLists = new List<TState> { s1 };
+                for (var j = 0; j < states.Count; ++j)
+                {
+                    if (i == j) continue;
+                    var s2 = states[j];
+                    if (!table.Contains((s1, s2))) equivalentLists.Add(s2);
+                }
+                stateMap.Add(s1, new StateSet<TState>(equivalentLists));
+            }
+
+            // Now build the new transitions with the state equivalences
+            foreach (var (from, onMap) in this.transitions)
+            {
+                foreach (var (on, to) in onMap) result.AddTransition(stateMap[from], on, stateMap[to]);
+            }
+
+            // Introduce the initial state and all the accepting states
+            result.InitialState = stateMap[this.InitialState];
+            foreach (var s in this.acceptingStates) result.AcceptingStates.Add(stateMap[s]);
 
             return result;
         }
