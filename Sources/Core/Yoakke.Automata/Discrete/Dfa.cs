@@ -81,10 +81,10 @@ namespace Yoakke.Automata.Discrete
             if (this.acceptingStates.Count > 0)
             {
                 var acceptingStates = string.Join(" ", this.acceptingStates.Select(s => $"\"{s}\""));
-                result.AppendLine($"    node [shape = doublecircle]; {acceptingStates};");
+                result.AppendLine($"    node [shape=doublecircle]; {acceptingStates};");
             }
             // Rest are simple circle
-            result.AppendLine($"    node [shape = circle];");
+            result.AppendLine($"    node [shape=circle];");
             // Go through each transition
             foreach (var (from, onMap) in this.transitions)
             {
@@ -97,7 +97,11 @@ namespace Yoakke.Automata.Discrete
                     result.AppendLine($"    \"{from}\" -> \"{to}\" [label = \"{ons}\"];");
                 }
             }
-            result.Append("}");
+            // Initial state
+            result
+                .AppendLine("    init [label=\"\", shape=point]")
+                .AppendLine($"    init -> \"{this.InitialState}\"")
+                .Append("}");
             return result.ToString();
         }
 
@@ -142,7 +146,34 @@ namespace Yoakke.Automata.Discrete
         }
 
         /// <inheritdoc/>
-        public void RemoveUnreachable() => throw new NotImplementedException();
+        public bool RemoveUnreachable() => this.RemoveUnreachable(this.InitialState);
+
+        /// <inheritdoc/>
+        public bool RemoveUnreachable(TState from)
+        {
+            // Simple search algo to go through all reachable states from the initial
+            var touched = new HashSet<TState>(this.StateComparer);
+            var stk = new Stack<TState>();
+            stk.Push(from);
+            while (stk.TryPop(out var top))
+            {
+                touched.Add(top);
+                if (!this.transitions.TryGetValue(top, out var onMap)) continue;
+                foreach (var to in onMap.Values)
+                {
+                    if (touched.Add(to)) stk.Push(to);
+                }
+            }
+
+            // Now prune transitions that are not in this set
+            var result = false;
+            var untouchedStates = this.transitions.Keys.Except(touched);
+            foreach (var untouched in untouchedStates)
+            {
+                if (this.transitions.Remove(untouched)) result = true;
+            }
+            return result;
+        }
 
         /// <inheritdoc/>
         public bool Complete(IEnumerable<TSymbol> alphabet, TState trap)

@@ -33,7 +33,9 @@ namespace Yoakke.Automata.Discrete
         public bool RemoveEpsilonTransitions() => throw new NotImplementedException();
         public bool RemoveTransition(TState from, TSymbol on, TState to) => throw new NotImplementedException();
         public void RemoveUnreachable() => throw new NotImplementedException();
+        public bool RemoveUnreachable(TState from) => throw new NotImplementedException();
         public string ToDot() => throw new NotImplementedException();
         IReadOnlyDfa<TState, StateSet<TSymbol>> IReadOnlyNfa<TState, TSymbol>.Determinize() => throw new NotImplementedException();
+        bool IFiniteAutomaton<TState, TSymbol>.RemoveUnreachable() => throw new NotImplementedException();
     }
 }

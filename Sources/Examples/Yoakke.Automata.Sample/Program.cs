@@ -13,6 +13,10 @@ namespace Yoakke.Automata.Sample
             dfa.AddTransition('q', 'a', 'q');
             dfa.Complete("ab", 't');
             Console.WriteLine(dfa.ToDot());
+
+            dfa.AddTransition('c', 'a', 'd');
+            dfa.RemoveUnreachable();
+            Console.WriteLine(dfa.ToDot());
         }
     }
 }
