@@ -86,8 +86,18 @@ namespace Yoakke.Collections.Intervals
             (LowerBound<T>.Inclusive l, UpperBound<T>.Exclusive r) => this.ValueComparer.Compare(l.Value, value) <= 0 && this.ValueComparer.Compare(value, r.Value) < 0,
             (LowerBound<T>.Exclusive l, UpperBound<T>.Inclusive r) => this.ValueComparer.Compare(l.Value, value) < 0 && this.ValueComparer.Compare(value, r.Value) <= 0,
 
-            _ => throw new ArgumentOutOfRangeException(),
+            _ => throw new ArgumentOutOfRangeException(nameof(interval), "The interval bounds are not of the allowed Inclusive/Exclusive/Unbounded"),
         };
+
+        /// <summary>
+        /// Checks if an interval completely contains another one.
+        /// </summary>
+        /// <param name="x">The container interval.</param>
+        /// <param name="y">The contained interval.</param>
+        /// <returns>True, if <paramref name="x"/> contains all elements of <paramref name="y"/>.</returns>
+        public bool Contains(Interval<T> x, Interval<T> y) =>
+               this.IsEmpty(y)
+            || (this.BoundComparer.Compare(x.Lower, y.Lower) <= 0 && this.BoundComparer.Compare(x.Upper, y.Upper) >= 0);
 
         /// <summary>
         /// Checks if an interval is empty.
@@ -121,16 +131,6 @@ namespace Yoakke.Collections.Intervals
         /// <returns>True, if <paramref name="x"/> and <paramref name="y"/> are completely disjunct.</returns>
         public bool IsDisjunct(Interval<T> x, Interval<T> y) =>
             this.IsBefore(x, y) || this.IsBefore(y, x) || (this.IsEmpty(x) && this.IsEmpty(y));
-
-        /// <summary>
-        /// Checks if an interval completely contains another one.
-        /// </summary>
-        /// <param name="x">The container interval.</param>
-        /// <param name="y">The contained interval.</param>
-        /// <returns>True, if <paramref name="x"/> contains all elements of <paramref name="y"/>.</returns>
-        public bool Contains(Interval<T> x, Interval<T> y) =>
-               this.IsEmpty(y)
-            || (this.BoundComparer.Compare(x.Lower, y.Lower) <= 0 && this.BoundComparer.Compare(x.Upper, y.Upper) >= 0);
 
         /// <summary>
         /// Calculates the relation of two intervals.

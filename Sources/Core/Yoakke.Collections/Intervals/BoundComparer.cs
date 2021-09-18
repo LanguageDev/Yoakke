@@ -100,7 +100,8 @@ namespace Yoakke.Collections.Intervals
             (LowerBound<T> l, UpperBound<T> r) => this.Compare(l, r),
             (UpperBound<T> l, LowerBound<T> r) => this.Compare(l, r),
             (UpperBound<T> l, UpperBound<T> r) => this.Compare(l, r),
-            _ => throw new ArgumentOutOfRangeException("The passed in bounds were not LowerBound<T> or UpperBound<T> instances"),
+            (LowerBound<T> or UpperBound<T>, _) => throw new ArgumentOutOfRangeException(nameof(y)),
+            _ => throw new ArgumentOutOfRangeException(nameof(x)),
         };
 
         /// <inheritdoc/>
@@ -121,7 +122,8 @@ namespace Yoakke.Collections.Intervals
                 0 => -1,
                 var n => n,
             },
-            _ => throw new ArgumentOutOfRangeException("The passed in lower bounds were not of the pre-defined Inculive/Exclusive/Unbounded"),
+            (LowerBound<T>.Inclusive or LowerBound<T>.Exclusive or LowerBound<T>.Unbounded, _) => throw new ArgumentOutOfRangeException(nameof(y)),
+            _ => throw new ArgumentOutOfRangeException(nameof(x)),
         };
 
         /// <inheritdoc/>
@@ -142,7 +144,8 @@ namespace Yoakke.Collections.Intervals
                 0 => 1,
                 var n => n,
             },
-            _ => throw new ArgumentOutOfRangeException("The passed in upper bounds were not of the pre-defined Inculive/Exclusive/Unbounded"),
+            (UpperBound<T>.Inclusive or UpperBound<T>.Exclusive or UpperBound<T>.Unbounded, _) => throw new ArgumentOutOfRangeException(nameof(y)),
+            _ => throw new ArgumentOutOfRangeException(nameof(x)),
         };
 
         /// <summary>
@@ -175,7 +178,8 @@ namespace Yoakke.Collections.Intervals
                 0 => -1,
                 var n => n,
             },
-            _ => throw new ArgumentOutOfRangeException("The passed in bounds were not of the pre-defined Inculive/Exclusive/Unbounded"),
+            (LowerBound<T>.Inclusive or LowerBound<T>.Exclusive or LowerBound<T>.Unbounded, _) => throw new ArgumentOutOfRangeException(nameof(y)),
+            _ => throw new ArgumentOutOfRangeException(nameof(x)),
         };
 
         /// <summary>
