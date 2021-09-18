@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
+using Yoakke.Collections;
 
 namespace Yoakke.Automata.Discrete
 {
@@ -232,8 +233,71 @@ namespace Yoakke.Automata.Discrete
             this.Minimize(differentiate.SelectMany(s1 => this.States.Where(s2 => !this.StateComparer.Equals(s1, s2)).Select(s2 => (s1, s2))));
 
         /// <inheritdoc/>
-        public IDfa<StateSet<TState>, TSymbol> Minimize(IEnumerable<(TState, TState)> differentiatePairs) =>
+        public IDfa<StateSet<TState>, TSymbol> Minimize(IEnumerable<(TState, TState)> differentiatePairs)
+        {
+            var result = new Dfa<StateSet<TState>, TSymbol>();
+            var tupleComparer = new TupleEqualityComparer<TState, TState>(this.StateComparer, this.StateComparer);
+            var table = new HashSet<(TState, TState)>(tupleComparer);
+
+            void Plot(TState s1, TState s2)
+            {
+                table!.Add((s1, s2));
+                table!.Add((s2, s1));
+            }
+
+            // First, all (accepting, non-accepting) pairs get plotted in the table
+            var states = this.States.ToList();
+            for (var i = 0; i < states.Count; ++i)
+            {
+                var s1 = states[i];
+                for (var j = 0; j < i; ++j)
+                {
+                    var s2 = states[j];
+                    if (this.AcceptingStates.Contains(s1) != this.AcceptingStates.Contains(s2)) Plot(s1, s2);
+                }
+            }
+
+            // Then we plot the custom pairs too
+            foreach (var (s1, s2) in differentiatePairs) Plot(s1, s2);
+
+            // Now for each (p, q) pair of states
+            //   If (p, q) is unplotted and exists a symbol X, so that (delta(p, X), delta(q, X)) is not empty
+            //     plot (p, q)
+            // Repeat until there is no change
+            while (true)
+            {
+                var changed = false;
+                for (var i = 0; i < states.Count; ++i)
+                {
+                    var s1 = states[i];
+                    for (var j = 0; j < i; ++j)
+                    {
+                        var s2 = states[j];
+
+                        if (table.Contains((s1, s2))) continue;
+                        if (!this.transitions.TryGetValue(s1, out var s1on)
+                         || !this.transitions.TryGetValue(s2, out var s2on)) continue;
+
+                        foreach (var (on, to1) in s1on)
+                        {
+                            if (!s2on.TryGetValue(on, out var to2)) continue;
+                            if (table.Contains((to1, to2)))
+                            {
+                                changed = true;
+                                Plot(s1, s2);
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (!changed) break;
+            }
+
+            // Now we have a table that is empty, where two states are equivalent
             throw new NotImplementedException();
+
+            return result;
+        }
 
         /// <inheritdoc/>
         IReadOnlyDfa<StateSet<TState>, TSymbol> IReadOnlyDfa<TState, TSymbol>.Minimize(IEnumerable<(TState, TState)> differentiatePairs) =>

@@ -29,6 +29,8 @@ namespace Yoakke.Automata.Sample
 
             dfa.InitialState = "S";
 
+            var minDfa = dfa.Minimize();
+
             Console.WriteLine(dfa.ToDot());
         }
     }
