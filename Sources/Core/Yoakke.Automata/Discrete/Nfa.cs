@@ -30,6 +30,7 @@ namespace Yoakke.Automata.Discrete
         public bool AddTransition(TState from, TSymbol on, TState to) => throw new NotImplementedException();
         public IDfa<StateSet<TState>, TSymbol> Determinize() => throw new NotImplementedException();
         public StateSet<TState> EpsilonClosure(TState state) => throw new NotImplementedException();
+        public StateSet<TState> GetTransitions(StateSet<TState> from, TSymbol on) => throw new NotImplementedException();
         public bool RemoveEpsilonTransitions() => throw new NotImplementedException();
         public bool RemoveTransition(TState from, TSymbol on, TState to) => throw new NotImplementedException();
         public void RemoveUnreachable() => throw new NotImplementedException();

@@ -26,15 +26,23 @@ namespace Yoakke.Automata
         /// <summary>
         /// Minimizes this DFA into an equivalent one with the least amount of states possible.
         /// </summary>
-        /// <param name="differentiate">The states that must not be merged in the minimization process.
+        /// <param name="differentiatePairs">The pairs of states that must not be merged in the minimization process.
         /// This can be useful if some states have associated values to them that we want to keep.</param>
         /// <returns>The minimized DFA.</returns>
-        public IDfa<StateSet<TState>, TSymbol> Minimize(IEnumerable<TState> differentiate);
+        public new IDfa<StateSet<TState>, TSymbol> Minimize(IEnumerable<(TState, TState)> differentiatePairs);
+
+        /// <summary>
+        /// Minimizes this DFA into an equivalent one with the least amount of states possible.
+        /// </summary>
+        /// <param name="differentiate">The states that must not be merged with anything in the minimization process.
+        /// This can be useful if some states have associated values to them that we want to keep.</param>
+        /// <returns>The minimized DFA.</returns>
+        public new IDfa<StateSet<TState>, TSymbol> Minimize(IEnumerable<TState> differentiate);
 
         /// <summary>
         /// Minimizes this DFA into an equivalent one with the least amount of states possible.
         /// </summary>
         /// <returns>The minimized DFA.</returns>
-        public IDfa<StateSet<TState>, TSymbol> Minimize();
+        public new IDfa<StateSet<TState>, TSymbol> Minimize();
     }
 }

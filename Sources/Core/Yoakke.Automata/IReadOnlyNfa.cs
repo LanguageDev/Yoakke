@@ -16,6 +16,14 @@ namespace Yoakke.Automata
     public interface IReadOnlyNfa<TState, TSymbol> : IReadOnlyFiniteAutomaton<TState, TSymbol>
     {
         /// <summary>
+        /// Gets all transitions that are valid from a set of states on an input.
+        /// </summary>
+        /// <param name="from">The set of states to transition from.</param>
+        /// <param name="on">The symbol to transition on.</param>
+        /// <returns>The set of states that are valid from the starting set on the input.</returns>
+        public StateSet<TState> GetTransitions(StateSet<TState> from, TSymbol on);
+
+        /// <summary>
         /// Retrieves the epsilon-closure of a given state, which is all the states reachable with only
         /// epsilon transitions.
         /// </summary>

@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 
@@ -125,8 +126,7 @@ namespace Yoakke.Automata.Discrete
             var currentState = this.InitialState;
             foreach (var symbol in input)
             {
-                if (!this.transitions.TryGetValue(currentState, out var transitionsFromCurrent)) return false;
-                if (!transitionsFromCurrent.TryGetValue(symbol, out var destinationState)) return false;
+                if (!this.TryGetTransition(currentState, symbol, out var destinationState)) return false;
                 currentState = destinationState;
             }
             return this.acceptingStates.Contains(currentState);
@@ -140,6 +140,17 @@ namespace Yoakke.Automata.Discrete
                    if (!this.transitions.TryGetValue(state, out var onMap)) return false;
                    return alphabet.All(symbol => onMap.ContainsKey(symbol));
                });
+
+        /// <inheritdoc/>
+        public bool TryGetTransition(TState from, TSymbol on, [MaybeNullWhen(false)] out TState to)
+        {
+            if (!this.transitions.TryGetValue(from, out var fromMap))
+            {
+                to = default;
+                return false;
+            }
+            return fromMap.TryGetValue(on, out to);
+        }
 
         /// <inheritdoc/>
         public bool AddTransition(TState from, TSymbol on, TState to)
@@ -213,11 +224,28 @@ namespace Yoakke.Automata.Discrete
         }
 
         /// <inheritdoc/>
-        public IDfa<StateSet<TState>, TSymbol> Minimize(IEnumerable<TState> differentiate) =>
+        public IDfa<StateSet<TState>, TSymbol> Minimize() =>
             this.Minimize(Enumerable.Empty<TState>());
 
         /// <inheritdoc/>
-        public IDfa<StateSet<TState>, TSymbol> Minimize() => throw new NotImplementedException();
+        public IDfa<StateSet<TState>, TSymbol> Minimize(IEnumerable<TState> differentiate) =>
+            this.Minimize(differentiate.SelectMany(s1 => this.States.Where(s2 => !this.StateComparer.Equals(s1, s2)).Select(s2 => (s1, s2))));
+
+        /// <inheritdoc/>
+        public IDfa<StateSet<TState>, TSymbol> Minimize(IEnumerable<(TState, TState)> differentiatePairs) =>
+            throw new NotImplementedException();
+
+        /// <inheritdoc/>
+        IReadOnlyDfa<StateSet<TState>, TSymbol> IReadOnlyDfa<TState, TSymbol>.Minimize(IEnumerable<(TState, TState)> differentiatePairs) =>
+            this.Minimize(differentiatePairs);
+
+        /// <inheritdoc/>
+        IReadOnlyDfa<StateSet<TState>, TSymbol> IReadOnlyDfa<TState, TSymbol>.Minimize(IEnumerable<TState> differentiate) =>
+            this.Minimize(differentiate);
+
+        /// <inheritdoc/>
+        IReadOnlyDfa<StateSet<TState>, TSymbol> IReadOnlyDfa<TState, TSymbol>.Minimize() =>
+            this.Minimize();
 
         private Dictionary<TSymbol, TState> GetTransitionsFrom(TState state)
         {
