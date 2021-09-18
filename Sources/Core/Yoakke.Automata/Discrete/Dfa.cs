@@ -34,7 +34,7 @@ namespace Yoakke.Automata.Discrete
         public IEnumerable<TState> States => this.transitions.Keys
             .Concat(this.transitions.Values.SelectMany(t => t.Select(v => v.Value)))
             .Append(this.InitialState)
-            .Distinct();
+            .Distinct(this.StateComparer);
 
         /// <inheritdoc/>
         public IEqualityComparer<TState> StateComparer { get; }
@@ -120,9 +120,9 @@ namespace Yoakke.Automata.Discrete
         }
 
         /// <inheritdoc/>
-        public bool Accepts(IEnumerable<TSymbol> input)
+        public bool Accepts(TState initial, IEnumerable<TSymbol> input)
         {
-            var currentState = this.InitialState;
+            var currentState = initial;
             foreach (var symbol in input)
             {
                 if (!this.TryGetTransition(currentState, symbol, out var destinationState)) return false;
@@ -168,9 +168,6 @@ namespace Yoakke.Automata.Discrete
             if (!this.StateComparer.Equals(to, existingTo)) return false;
             return onMap.Remove(on);
         }
-
-        /// <inheritdoc/>
-        public bool RemoveUnreachable() => this.RemoveUnreachable(this.InitialState);
 
         /// <inheritdoc/>
         public bool RemoveUnreachable(TState from)

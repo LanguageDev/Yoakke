@@ -31,9 +31,16 @@ namespace Yoakke.Automata.Discrete
         public IEnumerable<TState> States => throw new NotImplementedException();
 
         /// <inheritdoc/>
-        public IEqualityComparer<TState> StateComparer => throw new NotImplementedException();
+        public IEqualityComparer<TState> StateComparer { get; }
+
+        /// <summary>
+        /// The comparer used for alphabet symbols.
+        /// </summary>
+        public IEqualityComparer<TSymbol> SymbolComparer { get; }
 
         private readonly HashSet<TState> acceptingStates;
+        private readonly Dictionary<TState, Dictionary<TSymbol, TState>> transitions;
+        private readonly Dictionary<TState, HashSet<TState>> epsilonTransitions;
 
         public bool Accepts(IEnumerable<TSymbol> input) => throw new NotImplementedException();
         public bool AddEpsilonTransition(TState from, TState to) => throw new NotImplementedException();
@@ -46,7 +53,8 @@ namespace Yoakke.Automata.Discrete
         public void RemoveUnreachable() => throw new NotImplementedException();
         public bool RemoveUnreachable(TState from) => throw new NotImplementedException();
         public string ToDot() => throw new NotImplementedException();
-        IReadOnlyDfa<TState, StateSet<TSymbol>> IReadOnlyNfa<TState, TSymbol>.Determinize() => throw new NotImplementedException();
-        bool IFiniteAutomaton<TState, TSymbol>.RemoveUnreachable() => throw new NotImplementedException();
+        public IDfa<TResultState, TSymbol> Determinize<TResultState>(IStateCombiner<TState, TResultState> combiner) => throw new NotImplementedException();
+        IReadOnlyDfa<TResultState, TSymbol> IReadOnlyNfa<TState, TSymbol>.Determinize<TResultState>(IStateCombiner<TState, TResultState> combiner) => throw new NotImplementedException();
+        public bool Accepts(TState initial, IEnumerable<TSymbol> input) => throw new NotImplementedException();
     }
 }

@@ -34,9 +34,10 @@ namespace Yoakke.Automata
         /// <summary>
         /// Checks if this automaton results in an accepting state for the given input.
         /// </summary>
+        /// <param name="initial">The initial state to start from.</param>
         /// <param name="input">The sequence of input to feed in for the automaton.</param>
         /// <returns>True, if the automaton accepts the input, false otherwise.</returns>
-        public bool Accepts(IEnumerable<TSymbol> input);
+        public bool Accepts(TState initial, IEnumerable<TSymbol> input);
 
         /// <summary>
         /// Creates a Graphviz DOT code representation of this automata for visualization.

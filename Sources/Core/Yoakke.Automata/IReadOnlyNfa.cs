@@ -34,7 +34,9 @@ namespace Yoakke.Automata
         /// <summary>
         /// Constructs an equivalent DFA from this NFA.
         /// </summary>
+        /// <typeparam name="TResultState">The result state type.</typeparam>
+        /// <param name="combiner">The state combiner to use.</param>
         /// <returns>The constructed DFA.</returns>
-        public IReadOnlyDfa<TState, StateSet<TSymbol>> Determinize();
+        public IReadOnlyDfa<TResultState, TSymbol> Determinize<TResultState>(IStateCombiner<TState, TResultState> combiner);
     }
 }

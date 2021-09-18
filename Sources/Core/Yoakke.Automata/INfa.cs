@@ -30,9 +30,11 @@ namespace Yoakke.Automata
         public bool RemoveEpsilonTransitions();
 
         /// <summary>
-        /// Determinizes this nondeterministic finite automaton into a deterministic one.
+        /// Constructs an equivalent DFA from this NFA.
         /// </summary>
+        /// <typeparam name="TResultState">The result state type.</typeparam>
+        /// <param name="combiner">The state combiner to use.</param>
         /// <returns>The constructed DFA.</returns>
-        public new IDfa<StateSet<TState>, TSymbol> Determinize();
+        public new IDfa<TResultState, TSymbol> Determinize<TResultState>(IStateCombiner<TState, TResultState> combiner);
     }
 }
