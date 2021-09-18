@@ -45,16 +45,11 @@ namespace Yoakke.Parser.Tests
         private static string Parse(string source) =>
             new Parser(new Lexer(source)).ParseGrouping().Ok.Value;
 
-        [Fact]
-        public void TestOne() => Assert.Equal("a", Parse("a"));
-
-        [Fact]
-        public void TestTwo() => Assert.Equal("(a, b)", Parse("a b"));
-
-        [Fact]
-        public void TestThree() => Assert.Equal("((a, b), c)", Parse("a b c"));
-
-        [Fact]
-        public void TestFour() => Assert.Equal("(((a, b), c), d)", Parse("a b c d"));
+        [Theory]
+        [InlineData("a", "a")]
+        [InlineData("(a, b)", "a b")]
+        [InlineData("((a, b), c)", "a b c")]
+        [InlineData("(((a, b), c), d)", "a b c d")]
+        public void Tests(string expected, string input) => Assert.Equal(expected, Parse(input));
     }
 }

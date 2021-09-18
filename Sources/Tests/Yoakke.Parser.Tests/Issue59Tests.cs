@@ -52,16 +52,11 @@ namespace Yoakke.Parser.Tests
         private static string Parse(string source) =>
            new Parser(new Lexer(source)).ParseCall().Ok.Value;
 
-        [Fact]
-        public void TestPrimary() => Assert.Equal("x", Parse("x"));
-
-        [Fact]
-        public void TestCall() => Assert.Equal("(x())", Parse("x()"));
-
-        [Fact]
-        public void TestMemberAccess() => Assert.Equal("(x.y)", Parse("x.y"));
-
-        [Fact]
-        public void TestLongChain() => Assert.Equal("(((((((x.y)())()).z).w)()).q)", Parse("x.y()().z.w().q"));
+        [Theory]
+        [InlineData("x", "x")]
+        [InlineData("(x())", "x()")]
+        [InlineData("(x.y)", "x.y")]
+        [InlineData("(((((((x.y)())()).z).w)()).q)", "x.y()().z.w().q")]
+        public void Tests(string expected, string input) => Assert.Equal(expected, Parse(input));
     }
 }

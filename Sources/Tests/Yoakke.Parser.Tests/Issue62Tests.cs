@@ -42,13 +42,10 @@ namespace Yoakke.Parser.Tests
         private static string Parse(string source) =>
            new Parser(new Lexer(source)).ParseProgram().Ok.Value;
 
-        [Fact]
-        public void TestSampleInput() => Assert.Equal(string.Empty, Parse("; ^"));
-
-        [Fact]
-        public void TestSingleton() => Assert.Equal("x", Parse("x ;"));
-
-        [Fact]
-        public void TestPair() => Assert.Equal("x, y", Parse("x; y;"));
+        [Theory]
+        [InlineData("", "; ^")]
+        [InlineData("x", "x ;")]
+        [InlineData("x, y", "x; y;")]
+        public void Tests(string expected, string input) => Assert.Equal(expected, Parse(input));
     }
 }
