@@ -15,15 +15,25 @@ namespace Yoakke.Automata.Discrete
     /// <typeparam name="TSymbol">The symbol type.</typeparam>
     public class Nfa<TState, TSymbol> : INfa<TState, TSymbol>
     {
-        public TState InitialState { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        /// <inheritdoc/>
+        public TState InitialState { get; set; } = default!;
 
-        public ICollection<TState> AcceptingStates => throw new NotImplementedException();
+        /// <inheritdoc/>
+        TState IReadOnlyFiniteAutomaton<TState, TSymbol>.InitialState => this.InitialState;
 
+        /// <inheritdoc/>
+        public ICollection<TState> AcceptingStates => this.acceptingStates;
+
+        /// <inheritdoc/>
+        IReadOnlyCollection<TState> IReadOnlyFiniteAutomaton<TState, TSymbol>.AcceptingStates => this.acceptingStates;
+
+        /// <inheritdoc/>
         public IEnumerable<TState> States => throw new NotImplementedException();
 
-        TState IReadOnlyFiniteAutomaton<TState, TSymbol>.InitialState => throw new NotImplementedException();
+        /// <inheritdoc/>
+        public IEqualityComparer<TState> StateComparer => throw new NotImplementedException();
 
-        IReadOnlyCollection<TState> IReadOnlyFiniteAutomaton<TState, TSymbol>.AcceptingStates => throw new NotImplementedException();
+        private readonly HashSet<TState> acceptingStates;
 
         public bool Accepts(IEnumerable<TSymbol> input) => throw new NotImplementedException();
         public bool AddEpsilonTransition(TState from, TState to) => throw new NotImplementedException();

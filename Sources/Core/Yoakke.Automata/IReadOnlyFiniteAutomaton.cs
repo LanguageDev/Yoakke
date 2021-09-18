@@ -27,6 +27,11 @@ namespace Yoakke.Automata
         public IEnumerable<TState> States { get; }
 
         /// <summary>
+        /// The state comparer used by the automaton.
+        /// </summary>
+        public IEqualityComparer<TState> StateComparer { get; }
+
+        /// <summary>
         /// Checks if this automaton results in an accepting state for the given input.
         /// </summary>
         /// <param name="input">The sequence of input to feed in for the automaton.</param>

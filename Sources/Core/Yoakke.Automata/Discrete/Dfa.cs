@@ -36,9 +36,7 @@ namespace Yoakke.Automata.Discrete
             .Append(this.InitialState)
             .Distinct();
 
-        /// <summary>
-        /// The comparer used for states.
-        /// </summary>
+        /// <inheritdoc/>
         public IEqualityComparer<TState> StateComparer { get; }
 
         /// <summary>
@@ -225,18 +223,11 @@ namespace Yoakke.Automata.Discrete
         }
 
         /// <inheritdoc/>
-        public IDfa<StateSet<TState>, TSymbol> Minimize() =>
-            this.Minimize(Enumerable.Empty<TState>());
-
-        /// <inheritdoc/>
-        public IDfa<StateSet<TState>, TSymbol> Minimize(IEnumerable<TState> differentiate) =>
-            this.Minimize(differentiate.SelectMany(s1 => this.States.Where(s2 => !this.StateComparer.Equals(s1, s2)).Select(s2 => (s1, s2))));
-
-        /// <inheritdoc/>
-        public IDfa<StateSet<TState>, TSymbol> Minimize(IEnumerable<(TState, TState)> differentiatePairs)
+        public IDfa<TResultState, TSymbol> Minimize<TResultState>(
+            IStateCombiner<TState, TResultState> combiner,
+            IEnumerable<(TState, TState)> differentiatePairs)
         {
-            var stateSetComparer = new StateSetEqualityComparer<TState>(this.StateComparer);
-            var result = new Dfa<StateSet<TState>, TSymbol>(stateSetComparer, this.SymbolComparer);
+            var result = new Dfa<TResultState, TSymbol>(combiner.ResultComparer, this.SymbolComparer);
             var tupleComparer = new TupleEqualityComparer<TState, TState>(this.StateComparer, this.StateComparer);
             var table = new HashSet<(TState, TState)>(tupleComparer);
 
@@ -296,7 +287,7 @@ namespace Yoakke.Automata.Discrete
 
             // Now we have a table that is empty, where two states are equivalent
             // Create a state mapping of old-state -> equivalent-state
-            var stateMap = new Dictionary<TState, StateSet<TState>>(this.StateComparer);
+            var stateMap = new Dictionary<TState, TResultState>(this.StateComparer);
             for (var i = 0; i < states.Count; ++i)
             {
                 var s1 = states[i];
@@ -307,7 +298,7 @@ namespace Yoakke.Automata.Discrete
                     var s2 = states[j];
                     if (!table.Contains((s1, s2))) equivalentLists.Add(s2);
                 }
-                stateMap.Add(s1, new StateSet<TState>(equivalentLists));
+                stateMap.Add(s1, combiner.Combine(equivalentLists));
             }
 
             // Now build the new transitions with the state equivalences
@@ -324,16 +315,9 @@ namespace Yoakke.Automata.Discrete
         }
 
         /// <inheritdoc/>
-        IReadOnlyDfa<StateSet<TState>, TSymbol> IReadOnlyDfa<TState, TSymbol>.Minimize(IEnumerable<(TState, TState)> differentiatePairs) =>
-            this.Minimize(differentiatePairs);
-
-        /// <inheritdoc/>
-        IReadOnlyDfa<StateSet<TState>, TSymbol> IReadOnlyDfa<TState, TSymbol>.Minimize(IEnumerable<TState> differentiate) =>
-            this.Minimize(differentiate);
-
-        /// <inheritdoc/>
-        IReadOnlyDfa<StateSet<TState>, TSymbol> IReadOnlyDfa<TState, TSymbol>.Minimize() =>
-            this.Minimize();
+        IReadOnlyDfa<TResultState, TSymbol> IReadOnlyDfa<TState, TSymbol>.Minimize<TResultState>(
+            IStateCombiner<TState, TResultState> combiner,
+            IEnumerable<(TState, TState)> differentiatePairs) => this.Minimize(combiner, differentiatePairs);
 
         private Dictionary<TSymbol, TState> GetTransitionsFrom(TState state)
         {
