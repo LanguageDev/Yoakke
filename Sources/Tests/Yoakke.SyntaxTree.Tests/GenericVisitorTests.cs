@@ -2,12 +2,11 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using Yoakke.SyntaxTree.Attributes;
 
 namespace Yoakke.SyntaxTree.Tests
 {
-    [TestClass]
     public partial class GenericVisitorTests
     {
         [SyntaxTree]
@@ -41,20 +40,20 @@ namespace Yoakke.SyntaxTree.Tests
             protected override string Visit(Ast.Bar bar) => "bar";
         }
 
-        [TestMethod]
+        [Fact]
         public void IntVisitorTests()
         {
             var visitor = new IntVisitor();
-            Assert.AreEqual(1, visitor.GetInt(new Ast.Foo()));
-            Assert.AreEqual(2, visitor.GetInt(new Ast.Bar()));
+            Assert.Equal(1, visitor.GetInt(new Ast.Foo()));
+            Assert.Equal(2, visitor.GetInt(new Ast.Bar()));
         }
 
-        [TestMethod]
+        [Fact]
         public void StringVisitorTests()
         {
             var visitor = new StringVisitor();
-            Assert.AreEqual("foo", visitor.GetString(new Ast.Foo()));
-            Assert.AreEqual("bar", visitor.GetString(new Ast.Bar()));
+            Assert.Equal("foo", visitor.GetString(new Ast.Foo()));
+            Assert.Equal("bar", visitor.GetString(new Ast.Bar()));
         }
     }
 }

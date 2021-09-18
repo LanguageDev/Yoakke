@@ -3,7 +3,7 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using Yoakke.Lexer;
 using Yoakke.Parser.Attributes;
 using Yoakke.Streams;
@@ -11,7 +11,6 @@ using Yoakke.Streams;
 namespace Yoakke.Parser.Tests
 {
     // https://github.com/LanguageDev/Yoakke/issues/17
-    [TestClass]
     public partial class Issue17Tests
     {
         [Parser]
@@ -31,21 +30,21 @@ namespace Yoakke.Parser.Tests
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void ImplicitCtors()
         {
-            Assert.AreEqual(3, typeof(ImplicitCtorParser).GetConstructors().Length);
-            Assert.IsNotNull(typeof(ImplicitCtorParser).GetConstructor(new[] { typeof(IEnumerable<IToken>) }));
-            Assert.IsNotNull(typeof(ImplicitCtorParser).GetConstructor(new[] { typeof(ILexer<IToken>) }));
-            Assert.IsNotNull(typeof(ImplicitCtorParser).GetConstructor(new[] { typeof(IPeekableStream<IToken>) }));
+            Assert.Equal(3, typeof(ImplicitCtorParser).GetConstructors().Length);
+            Assert.NotNull(typeof(ImplicitCtorParser).GetConstructor(new[] { typeof(IEnumerable<IToken>) }));
+            Assert.NotNull(typeof(ImplicitCtorParser).GetConstructor(new[] { typeof(ILexer<IToken>) }));
+            Assert.NotNull(typeof(ImplicitCtorParser).GetConstructor(new[] { typeof(IPeekableStream<IToken>) }));
         }
 
-        [TestMethod]
+        [Fact]
         public void ExplicitCtors()
         {
-            Assert.AreEqual(1, typeof(ExplicitCtorParser).GetConstructors().Length);
-            Assert.IsNotNull(typeof(ExplicitCtorParser).GetConstructor(new[] { typeof(IEnumerable<IToken>) }));
-            Assert.IsNull(typeof(ExplicitCtorParser).GetConstructor(new[] { typeof(ILexer<IToken>) }));
+            Assert.Single(typeof(ExplicitCtorParser).GetConstructors());
+            Assert.NotNull(typeof(ExplicitCtorParser).GetConstructor(new[] { typeof(IEnumerable<IToken>) }));
+            Assert.Null(typeof(ExplicitCtorParser).GetConstructor(new[] { typeof(ILexer<IToken>) }));
         }
     }
 }

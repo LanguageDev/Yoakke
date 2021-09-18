@@ -3,12 +3,11 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using Yoakke.LexerUtils.RegEx;
 
 namespace Yoakke.LexerUtils.Tests
 {
-    [TestClass]
     public class RegExParseTests
     {
         private static RegExAst Alt(params RegExAst[] nodes)
@@ -42,88 +41,88 @@ namespace Yoakke.LexerUtils.Tests
 
         private static RegExAst Ch(char ch) => new RegExAst.Literal(ch);
 
-        [TestMethod]
+        [Fact]
         public void SimpleSequence()
         {
             var ast = new RegExParser().Parse("abc");
-            Assert.AreEqual(ast, Seq(Ch('a'), Ch('b'), Ch('c')));
+            Assert.Equal(ast, Seq(Ch('a'), Ch('b'), Ch('c')));
         }
 
-        [TestMethod]
+        [Fact]
         public void SimpleAlternation()
         {
             var ast = new RegExParser().Parse("a|b|c");
-            Assert.AreEqual(ast, Alt(Ch('a'), Ch('b'), Ch('c')));
+            Assert.Equal(ast, Alt(Ch('a'), Ch('b'), Ch('c')));
         }
 
-        [TestMethod]
+        [Fact]
         public void SeqenceHigherPriorityThanAlternation()
         {
             var ast = new RegExParser().Parse("ab|cd");
-            Assert.AreEqual(ast, Alt(Seq(Ch('a'), Ch('b')), Seq(Ch('c'), Ch('d'))));
+            Assert.Equal(ast, Alt(Seq(Ch('a'), Ch('b')), Seq(Ch('c'), Ch('d'))));
         }
 
-        [TestMethod]
+        [Fact]
         public void GroupingOverridesPriotity()
         {
             var ast = new RegExParser().Parse("a(b|c)d");
-            Assert.AreEqual(ast, Seq(Ch('a'), Alt(Ch('b'), Ch('c')), Ch('d')));
+            Assert.Equal(ast, Seq(Ch('a'), Alt(Ch('b'), Ch('c')), Ch('d')));
         }
 
-        [TestMethod]
+        [Fact]
         public void Optional()
         {
             var ast = new RegExParser().Parse("a?");
-            Assert.AreEqual(ast, Opt(Ch('a')));
+            Assert.Equal(ast, Opt(Ch('a')));
         }
 
-        [TestMethod]
+        [Fact]
         public void RepeatAnyTimes()
         {
             var ast = new RegExParser().Parse("a*");
-            Assert.AreEqual(ast, Rep0(Ch('a')));
+            Assert.Equal(ast, Rep0(Ch('a')));
         }
 
-        [TestMethod]
+        [Fact]
         public void RepeatAtLeastOnce()
         {
             var ast = new RegExParser().Parse("a+");
-            Assert.AreEqual(ast, Rep1(Ch('a')));
+            Assert.Equal(ast, Rep1(Ch('a')));
         }
 
-        [TestMethod]
+        [Fact]
         public void RepeatExactly3Times()
         {
             var ast = new RegExParser().Parse("a{3}");
-            Assert.AreEqual(ast, Quantified(Ch('a'), 3, 3));
+            Assert.Equal(ast, Quantified(Ch('a'), 3, 3));
         }
 
-        [TestMethod]
+        [Fact]
         public void RepeatBetween3And6Times()
         {
             var ast = new RegExParser().Parse("a{3,6}");
-            Assert.AreEqual(ast, Quantified(Ch('a'), 3, 6));
+            Assert.Equal(ast, Quantified(Ch('a'), 3, 6));
         }
 
-        [TestMethod]
+        [Fact]
         public void RepeatAtLeast3Times()
         {
             var ast = new RegExParser().Parse("a{3,}");
-            Assert.AreEqual(ast, Quantified(Ch('a'), 3));
+            Assert.Equal(ast, Quantified(Ch('a'), 3));
         }
 
-        [TestMethod]
+        [Fact]
         public void LiteralRange()
         {
             var ast = new RegExParser().Parse("[A-Za-z0-9_]");
-            Assert.AreEqual(ast, ChRange(false, ('A', 'Z'), ('a', 'z'), ('0', '9'), '_'));
+            Assert.Equal(ast, ChRange(false, ('A', 'Z'), ('a', 'z'), ('0', '9'), '_'));
         }
 
-        [TestMethod]
+        [Fact]
         public void NegatedLiteralRange()
         {
             var ast = new RegExParser().Parse("[^A-Za-z0-9_]");
-            Assert.AreEqual(ast, ChRange(true, ('A', 'Z'), ('a', 'z'), ('0', '9'), '_'));
+            Assert.Equal(ast, ChRange(true, ('A', 'Z'), ('a', 'z'), ('0', '9'), '_'));
         }
     }
 }

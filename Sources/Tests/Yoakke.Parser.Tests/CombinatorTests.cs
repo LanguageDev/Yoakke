@@ -7,15 +7,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using Yoakke.Streams;
 
 namespace Yoakke.Parser.Tests
 {
-    [TestClass]
     public class CombinatorTests
     {
-        [TestMethod]
+        [Fact]
         public void ItemParser()
         {
             var stream = new MemoryStream<char>("abc".AsMemory());
@@ -26,16 +25,16 @@ namespace Yoakke.Parser.Tests
             var r3 = p.Parse(stream);
             var r4 = p.Parse(stream);
 
-            Assert.IsTrue(r1.IsOk);
-            Assert.IsTrue(r2.IsOk);
-            Assert.IsTrue(r3.IsOk);
-            Assert.IsFalse(r4.IsOk);
-            Assert.AreEqual('a', r1.Ok.Value);
-            Assert.AreEqual('b', r2.Ok.Value);
-            Assert.AreEqual('c', r3.Ok.Value);
+            Assert.True(r1.IsOk);
+            Assert.True(r2.IsOk);
+            Assert.True(r3.IsOk);
+            Assert.False(r4.IsOk);
+            Assert.Equal('a', r1.Ok.Value);
+            Assert.Equal('b', r2.Ok.Value);
+            Assert.Equal('c', r3.Ok.Value);
         }
 
-        [TestMethod]
+        [Fact]
         public void ExactItemParser()
         {
             var stream = new MemoryStream<char>("abc".AsMemory());
@@ -49,16 +48,16 @@ namespace Yoakke.Parser.Tests
             var r3 = p3.Parse(stream);
             var r4 = p4.Parse(stream);
 
-            Assert.IsTrue(r1.IsOk);
-            Assert.IsTrue(r2.IsOk);
-            Assert.IsFalse(r3.IsOk);
-            Assert.IsTrue(r4.IsOk);
-            Assert.AreEqual('a', r1.Ok.Value);
-            Assert.AreEqual('b', r2.Ok.Value);
-            Assert.AreEqual('c', r4.Ok.Value);
+            Assert.True(r1.IsOk);
+            Assert.True(r2.IsOk);
+            Assert.False(r3.IsOk);
+            Assert.True(r4.IsOk);
+            Assert.Equal('a', r1.Ok.Value);
+            Assert.Equal('b', r2.Ok.Value);
+            Assert.Equal('c', r4.Ok.Value);
         }
 
-        [TestMethod]
+        [Fact]
         public void SequenceParser()
         {
             var stream = new MemoryStream<char>("abc".AsMemory());
@@ -69,12 +68,12 @@ namespace Yoakke.Parser.Tests
             var r1 = p1.Parse(stream);
             var r2 = p2.Parse(stream);
 
-            Assert.IsFalse(r1.IsOk);
-            Assert.IsTrue(r2.IsOk);
-            Assert.AreEqual(('a', 'b', 'c'), r2.Ok.Value);
+            Assert.False(r1.IsOk);
+            Assert.True(r2.IsOk);
+            Assert.Equal(('a', 'b', 'c'), r2.Ok.Value);
         }
 
-        [TestMethod]
+        [Fact]
         public void AlternativeParser()
         {
             var stream = new MemoryStream<char>("a".AsMemory());
@@ -85,12 +84,12 @@ namespace Yoakke.Parser.Tests
             var r1 = p1.Parse(stream);
             var r2 = p2.Parse(stream);
 
-            Assert.IsFalse(r1.IsOk);
-            Assert.IsTrue(r2.IsOk);
-            Assert.AreEqual('a', r2.Ok.Value);
+            Assert.False(r1.IsOk);
+            Assert.True(r2.IsOk);
+            Assert.Equal('a', r2.Ok.Value);
         }
 
-        [TestMethod]
+        [Fact]
         public void Repeat0Parser()
         {
             var emptyStream = new MemoryStream<char>(string.Empty.AsMemory());
@@ -101,16 +100,16 @@ namespace Yoakke.Parser.Tests
             var r1 = p.Parse(emptyStream);
             var r2 = p.Parse(nonEmptyStream);
 
-            Assert.IsTrue(r1.IsOk);
-            Assert.IsTrue(r2.IsOk);
-            Assert.AreEqual(0, r1.Ok.Value.Count);
-            Assert.AreEqual(3, r2.Ok.Value.Count);
-            Assert.AreEqual('a', r2.Ok.Value[0]);
-            Assert.AreEqual('a', r2.Ok.Value[1]);
-            Assert.AreEqual('a', r2.Ok.Value[2]);
+            Assert.True(r1.IsOk);
+            Assert.True(r2.IsOk);
+            Assert.Equal(0, r1.Ok.Value.Count);
+            Assert.Equal(3, r2.Ok.Value.Count);
+            Assert.Equal('a', r2.Ok.Value[0]);
+            Assert.Equal('a', r2.Ok.Value[1]);
+            Assert.Equal('a', r2.Ok.Value[2]);
         }
 
-        [TestMethod]
+        [Fact]
         public void Repeat1Parser()
         {
             var emptyStream = new MemoryStream<char>(string.Empty.AsMemory());
@@ -121,15 +120,15 @@ namespace Yoakke.Parser.Tests
             var r1 = p.Parse(emptyStream);
             var r2 = p.Parse(nonEmptyStream);
 
-            Assert.IsFalse(r1.IsOk);
-            Assert.IsTrue(r2.IsOk);
-            Assert.AreEqual(3, r2.Ok.Value.Count);
-            Assert.AreEqual('a', r2.Ok.Value[0]);
-            Assert.AreEqual('a', r2.Ok.Value[1]);
-            Assert.AreEqual('a', r2.Ok.Value[2]);
+            Assert.False(r1.IsOk);
+            Assert.True(r2.IsOk);
+            Assert.Equal(3, r2.Ok.Value.Count);
+            Assert.Equal('a', r2.Ok.Value[0]);
+            Assert.Equal('a', r2.Ok.Value[1]);
+            Assert.Equal('a', r2.Ok.Value[2]);
         }
 
-        [TestMethod]
+        [Fact]
         public void OptParser()
         {
             var stream1 = new MemoryStream<char>("a".AsMemory());
@@ -140,13 +139,13 @@ namespace Yoakke.Parser.Tests
             var r1 = p.Parse(stream1);
             var r2 = p.Parse(stream2);
 
-            Assert.IsTrue(r1.IsOk);
-            Assert.IsTrue(r2.IsOk);
-            Assert.AreEqual('a', r1.Ok.Value);
-            Assert.AreEqual(default, r2.Ok.Value);
+            Assert.True(r1.IsOk);
+            Assert.True(r2.IsOk);
+            Assert.Equal('a', r1.Ok.Value);
+            Assert.Equal(default, r2.Ok.Value);
         }
 
-        [TestMethod]
+        [Fact]
         public void TransformParser()
         {
             var stream1 = new MemoryStream<char>("a".AsMemory());
@@ -157,9 +156,9 @@ namespace Yoakke.Parser.Tests
             var r1 = p.Parse(stream1);
             var r2 = p.Parse(stream2);
 
-            Assert.IsTrue(r1.IsOk);
-            Assert.IsFalse(r2.IsOk);
-            Assert.AreEqual('b', r1.Ok.Value);
+            Assert.True(r1.IsOk);
+            Assert.False(r2.IsOk);
+            Assert.Equal('b', r1.Ok.Value);
         }
     }
 }

@@ -2,7 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using Yoakke.Lexer;
 using Yoakke.Lexer.Attributes;
 using Yoakke.Parser.Attributes;
@@ -10,7 +10,6 @@ using IgnoreAttribute = Yoakke.Lexer.Attributes.IgnoreAttribute;
 
 namespace Yoakke.Parser.Tests
 {
-    [TestClass]
     public partial class IndirectLeftRecursionTests
     {
         internal enum TokenType
@@ -43,16 +42,16 @@ namespace Yoakke.Parser.Tests
         private static string Parse(string source) =>
             new Parser(new Lexer(source)).ParseGrouping().Ok.Value;
 
-        [TestMethod]
-        public void TestOne() => Assert.AreEqual("a", Parse("a"));
+        [Fact]
+        public void TestOne() => Assert.Equal("a", Parse("a"));
 
-        [TestMethod]
-        public void TestTwo() => Assert.AreEqual("(a, b)", Parse("a b"));
+        [Fact]
+        public void TestTwo() => Assert.Equal("(a, b)", Parse("a b"));
 
-        [TestMethod]
-        public void TestThree() => Assert.AreEqual("((a, b), c)", Parse("a b c"));
+        [Fact]
+        public void TestThree() => Assert.Equal("((a, b), c)", Parse("a b c"));
 
-        [TestMethod]
-        public void TestFour() => Assert.AreEqual("(((a, b), c), d)", Parse("a b c d"));
+        [Fact]
+        public void TestFour() => Assert.Equal("(((a, b), c), d)", Parse("a b c d"));
     }
 }

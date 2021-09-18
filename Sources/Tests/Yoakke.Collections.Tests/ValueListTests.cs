@@ -3,43 +3,42 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using Yoakke.Collections.Values;
 
 namespace Yoakke.Collections.Tests
 {
-    [TestClass]
     public class ValueListTests
     {
-        [TestMethod]
+        [Fact]
         public void Equal()
         {
             var list1 = new List<int> { 1, 2, 3 }.ToValue();
             var list2 = new List<int> { 1, 2, 3 }.ToValue();
 
-            Assert.AreEqual(list1, list2);
-            Assert.IsFalse(ReferenceEquals(list1, list2));
-            Assert.AreEqual(list1.GetHashCode(), list2.GetHashCode());
+            Assert.Equal(list1, list2);
+            Assert.False(ReferenceEquals(list1, list2));
+            Assert.Equal(list1.GetHashCode(), list2.GetHashCode());
         }
 
-        [TestMethod]
+        [Fact]
         public void DifferentCount()
         {
             var list1 = new List<int> { 1, 2, 3 }.ToValue();
             var list2 = new List<int> { 1, 2, 3, 4 }.ToValue();
 
-            Assert.AreNotEqual(list1, list2);
-            Assert.IsFalse(ReferenceEquals(list1, list2));
+            Assert.NotEqual(list1, list2);
+            Assert.False(ReferenceEquals(list1, list2));
         }
 
-        [TestMethod]
+        [Fact]
         public void DifferentValue()
         {
             var list1 = new List<int> { 1, 2, 3 }.ToValue();
             var list2 = new List<int> { 1, 2, 4 }.ToValue();
 
-            Assert.AreNotEqual(list1, list2);
-            Assert.IsFalse(ReferenceEquals(list1, list2));
+            Assert.NotEqual(list1, list2);
+            Assert.False(ReferenceEquals(list1, list2));
         }
     }
 }

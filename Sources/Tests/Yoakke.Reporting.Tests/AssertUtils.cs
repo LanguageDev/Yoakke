@@ -2,7 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Yoakke.Reporting.Tests
 {
@@ -12,7 +12,7 @@ namespace Yoakke.Reporting.Tests
     public static class AssertUtils
     {
         public static void AreEqualIgnoreNewlineEncoding(string expected, string got) =>
-            Assert.AreEqual(NormalizeNewlines(expected), NormalizeNewlines(got));
+            Assert.Equal(NormalizeNewlines(expected), NormalizeNewlines(got));
 
         private static string NormalizeNewlines(string s) => s.Replace("\r\n", "\n").Replace('\r', '\n');
     }

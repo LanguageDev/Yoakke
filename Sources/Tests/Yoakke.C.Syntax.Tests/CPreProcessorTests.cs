@@ -3,14 +3,13 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Yoakke.C.Syntax.Tests
 {
-    [TestClass]
     public class CPreProcessorTests
     {
-        private static IEnumerable<object[]> TextEqualsInputs { get; } = new object[][]
+        public static IEnumerable<object[]> TextEqualsInputs { get; } = new object[][]
         {
             TextInput(
                 "a b c",
@@ -102,8 +101,8 @@ __COUNTER__",
 
         private static object[] TextInput(string beforePP, string afterPP) => new object[] { beforePP, afterPP };
 
-        [DynamicData(nameof(TextEqualsInputs))]
-        [DataTestMethod]
+        [Theory]
+        [MemberData(nameof(TextEqualsInputs))]
         public void TextEquals(string beforePP, string afterPP)
         {
             var expectLexer = new CLexer(afterPP);
@@ -114,8 +113,8 @@ __COUNTER__",
                 var expected = expectLexer.Next();
                 var got = pp.Next();
 
-                Assert.AreEqual(expected.Kind, got.Kind);
-                Assert.AreEqual(expected.LogicalText, got.LogicalText);
+                Assert.Equal(expected.Kind, got.Kind);
+                Assert.Equal(expected.LogicalText, got.LogicalText);
                 if (expected.Kind == CTokenType.End) break;
             }
         }

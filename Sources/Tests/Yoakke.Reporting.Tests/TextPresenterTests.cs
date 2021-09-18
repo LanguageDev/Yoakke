@@ -3,19 +3,18 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using Yoakke.Reporting.Present;
 using Yoakke.Text;
 
 namespace Yoakke.Reporting.Tests
 {
-    [TestClass]
     public class TextPresenterTests
     {
         private static Location Loc(ISourceFile source, int line, int column, int length) =>
             new(source, new Range(new Position(line, column), length));
 
-        [TestMethod]
+        [Fact]
         public void BasicSingleAnnotation()
         {
             var src = new SourceFile(
@@ -45,7 +44,7 @@ some other line");
 ", result.ToString());
         }
 
-        [TestMethod]
+        [Fact]
         public void TwoAnnotationsRightUnderEachother()
         {
             var src = new SourceFile(
@@ -78,7 +77,7 @@ last line");
 ", result.ToString());
         }
 
-        [TestMethod]
+        [Fact]
         public void TwoAnnotationsClose()
         {
             var src = new SourceFile(
@@ -113,7 +112,7 @@ last line");
 ", result.ToString());
         }
 
-        [TestMethod]
+        [Fact]
         public void TwoAnnotationsTouching()
         {
             var src = new SourceFile(
@@ -150,7 +149,7 @@ last line");
 ", result.ToString());
         }
 
-        [TestMethod]
+        [Fact]
         public void TwoAnnotationsAlmostDotted()
         {
             var src = new SourceFile(
@@ -189,7 +188,7 @@ last line");
 ", result.ToString());
         }
 
-        [TestMethod]
+        [Fact]
         public void TwoAnnotationsDotted()
         {
             var src = new SourceFile(
@@ -229,7 +228,7 @@ last line");
 ", result.ToString());
         }
 
-        [TestMethod]
+        [Fact]
         public void EmptyLineTrimming()
         {
             var src = new SourceFile(
@@ -263,7 +262,7 @@ context
 ", result.ToString());
         }
 
-        [TestMethod]
+        [Fact]
         public void EmptyLineTrimmingWithDots()
         {
             var src = new SourceFile(

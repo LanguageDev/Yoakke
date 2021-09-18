@@ -4,15 +4,14 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using Yoakke.Collections.Intervals;
 
 namespace Yoakke.Collections.Tests
 {
-    [TestClass]
     public class IntervalTests
     {
-        private static IEnumerable<object[]> IntervalToStringData { get; } = new object[][]
+        public static IEnumerable<object[]> IntervalToStringData { get; } = new object[][]
         {
             new object[] { Interval<int>.Full, "(-∞; +∞)" },
             new object[] { new Interval<int>(new LowerBound<int>.Exclusive(-12), new UpperBound<int>.Exclusive(56)), "(-12; 56)" },
@@ -23,7 +22,7 @@ namespace Yoakke.Collections.Tests
             new object[] { new Interval<int>(new LowerBound<int>.Inclusive(-12), UpperBound<int>.Unbounded.Instance), "[-12; +∞)" },
         };
 
-        private static IEnumerable<object[]> IntervalParseData { get; } = new object[][]
+        public static IEnumerable<object[]> IntervalParseData { get; } = new object[][]
         {
             new object[] { "(-oo; +oo)", Interval<int>.Full },
             new object[] { "(-infty;∞)", Interval<int>.Full },
@@ -41,7 +40,7 @@ namespace Yoakke.Collections.Tests
             new object[] { "]-12; 56]", new Interval<int>(new LowerBound<int>.Exclusive(-12), new UpperBound<int>.Inclusive(56)) },
         };
 
-        private static IEnumerable<object[]> LowerBoundLowerBoundComparisonData { get; } = new object[][]
+        public static IEnumerable<object[]> LowerBoundLowerBoundComparisonData { get; } = new object[][]
         {
             new object[] { LowerBound<int>.Unbounded.Instance, LowerBound<int>.Unbounded.Instance, 0 },
             new object[] { LowerBound<int>.Unbounded.Instance, new LowerBound<int>.Exclusive(0), -1 },
@@ -54,7 +53,7 @@ namespace Yoakke.Collections.Tests
             new object[] { new LowerBound<int>.Inclusive(0), new LowerBound<int>.Inclusive(1), -1 },
         };
 
-        private static IEnumerable<object[]> UpperBoundUpperBoundComparisonData { get; } = new object[][]
+        public static IEnumerable<object[]> UpperBoundUpperBoundComparisonData { get; } = new object[][]
         {
             new object[] { UpperBound<int>.Unbounded.Instance, UpperBound<int>.Unbounded.Instance, 0 },
             new object[] { UpperBound<int>.Unbounded.Instance, new UpperBound<int>.Exclusive(0), 1 },
@@ -67,7 +66,7 @@ namespace Yoakke.Collections.Tests
             new object[] { new UpperBound<int>.Inclusive(0), new UpperBound<int>.Inclusive(1), -1 },
         };
 
-        private static IEnumerable<object[]> LowerBoundUpperBoundComparisonData { get; } = new object[][]
+        public static IEnumerable<object[]> LowerBoundUpperBoundComparisonData { get; } = new object[][]
         {
             new object[] { LowerBound<int>.Unbounded.Instance, UpperBound<int>.Unbounded.Instance, -1 },
             new object[] { LowerBound<int>.Unbounded.Instance, new UpperBound<int>.Exclusive(0), -1 },
@@ -82,7 +81,7 @@ namespace Yoakke.Collections.Tests
             new object[] { new LowerBound<int>.Inclusive(0), new UpperBound<int>.Inclusive(1), -1 },
         };
 
-        private static IEnumerable<object[]> TouchingBoundsData { get; } = new object[][]
+        public static IEnumerable<object[]> TouchingBoundsData { get; } = new object[][]
         {
             new object[] { LowerBound<int>.Unbounded.Instance, UpperBound<int>.Unbounded.Instance, false },
             new object[] { LowerBound<int>.Unbounded.Instance, new UpperBound<int>.Exclusive(0), false },
@@ -97,32 +96,32 @@ namespace Yoakke.Collections.Tests
             new object[] { new LowerBound<int>.Inclusive(0), new UpperBound<int>.Inclusive(1), false },
         };
 
-        [DataTestMethod]
-        [DynamicData(nameof(IntervalToStringData))]
+        [Theory]
+        [MemberData(nameof(IntervalToStringData))]
         public void IntervalToString(Interval<int> interval, string text)
         {
-            Assert.AreEqual(text, interval.ToString());
+            Assert.Equal(text, interval.ToString());
         }
 
-        [DataTestMethod]
-        [DynamicData(nameof(IntervalParseData))]
+        [Theory]
+        [MemberData(nameof(IntervalParseData))]
         public void IntervalParse(string text, Interval<int> interval)
         {
             // Parse all ways
             var parsedFromString = Interval<int>.Parse(text, int.Parse);
             var parsedFromSpan = Interval<int>.Parse(text.AsSpan(), span => int.Parse(span));
-            Assert.IsTrue(Interval<int>.TryParse(text, int.TryParse, out var tryParsedFromString));
-            Assert.IsTrue(Interval<int>.TryParse(text.AsSpan(), int.TryParse, out var tryParsedFromSpan));
+            Assert.True(Interval<int>.TryParse(text, int.TryParse, out var tryParsedFromString));
+            Assert.True(Interval<int>.TryParse(text.AsSpan(), int.TryParse, out var tryParsedFromSpan));
 
             // All must be equal to the expected
-            Assert.AreEqual(interval, parsedFromString);
-            Assert.AreEqual(interval, parsedFromSpan);
-            Assert.AreEqual(interval, tryParsedFromString);
-            Assert.AreEqual(interval, tryParsedFromSpan);
+            Assert.Equal(interval, parsedFromString);
+            Assert.Equal(interval, parsedFromSpan);
+            Assert.Equal(interval, tryParsedFromString);
+            Assert.Equal(interval, tryParsedFromSpan);
         }
 
-        [DataTestMethod]
-        [DynamicData(nameof(LowerBoundLowerBoundComparisonData))]
+        [Theory]
+        [MemberData(nameof(LowerBoundLowerBoundComparisonData))]
         public void LowerBoundLowerBoundCompare(LowerBound<int> a, LowerBound<int> b, int cmp)
         {
             if (cmp < 0) AssertLess(a, b);
@@ -130,8 +129,8 @@ namespace Yoakke.Collections.Tests
             else AssertEquals(a, b);
         }
 
-        [DataTestMethod]
-        [DynamicData(nameof(UpperBoundUpperBoundComparisonData))]
+        [Theory]
+        [MemberData(nameof(UpperBoundUpperBoundComparisonData))]
         public void UpperBoundUpperBoundCompare(UpperBound<int> a, UpperBound<int> b, int cmp)
         {
             if (cmp < 0) AssertLess(a, b);
@@ -139,25 +138,25 @@ namespace Yoakke.Collections.Tests
             else AssertEquals(a, b);
         }
 
-        [DataTestMethod]
-        [DynamicData(nameof(LowerBoundUpperBoundComparisonData))]
+        [Theory]
+        [MemberData(nameof(LowerBoundUpperBoundComparisonData))]
         public void LowerBoundUpperBoundCompare(LowerBound<int> a, UpperBound<int> b, int cmp)
         {
             if (cmp < 0) AssertLess(a, b);
             else AssertGreater(a, b);
         }
 
-        [DataTestMethod]
-        [DynamicData(nameof(TouchingBoundsData))]
+        [Theory]
+        [MemberData(nameof(TouchingBoundsData))]
         public void TouchingBounds(LowerBound<int> a, UpperBound<int> b, bool touching)
         {
             if (touching)
             {
                 // Touching assertions
-                Assert.IsTrue(a.IsTouching(b));
-                Assert.IsTrue(b.IsTouching(a));
-                Assert.IsTrue(BoundComparer<int>.Default.IsTouching(a, b));
-                Assert.IsTrue(BoundComparer<int>.Default.IsTouching(b, a));
+                Assert.True(a.IsTouching(b));
+                Assert.True(b.IsTouching(a));
+                Assert.True(BoundComparer<int>.Default.IsTouching(a, b));
+                Assert.True(BoundComparer<int>.Default.IsTouching(b, a));
 
                 // Touching endpoint equality
                 AssertEquals(a.Touching!, b);
@@ -166,109 +165,108 @@ namespace Yoakke.Collections.Tests
             else
             {
                 // Not touching assertions
-                Assert.IsFalse(a.IsTouching(b));
-                Assert.IsFalse(b.IsTouching(a));
-                Assert.IsFalse(BoundComparer<int>.Default.IsTouching(a, b));
-                Assert.IsFalse(BoundComparer<int>.Default.IsTouching(b, a));
+                Assert.False(a.IsTouching(b));
+                Assert.False(b.IsTouching(a));
+                Assert.False(BoundComparer<int>.Default.IsTouching(a, b));
+                Assert.False(BoundComparer<int>.Default.IsTouching(b, a));
             }
         }
 
-        [DataTestMethod]
-        [DataRow("(-oo; +oo)", 0, true)]
-        [DataRow("(-oo; 0)", 0, false)]
-        [DataRow("(-oo; 0]", 0, true)]
-        [DataRow("[0; 0]", 0, true)]
-        [DataRow("(0; 0]", 0, false)]
-        [DataRow("[0; 0)", 0, false)]
-        [DataRow("(0; 0)", 0, false)]
-        [DataRow("[-1; 0)", 0, false)]
-        [DataRow("[-1; 0]", 0, true)]
+        [Theory]
+        [InlineData("(-oo; +oo)", 0, true)]
+        [InlineData("(-oo; 0)", 0, false)]
+        [InlineData("(-oo; 0]", 0, true)]
+        [InlineData("[0; 0]", 0, true)]
+        [InlineData("(0; 0]", 0, false)]
+        [InlineData("[0; 0)", 0, false)]
+        [InlineData("(0; 0)", 0, false)]
+        [InlineData("[-1; 0)", 0, false)]
+        [InlineData("[-1; 0]", 0, true)]
         public void Containment(string text, int value, bool contains)
         {
             var interval = Interval<int>.Parse(text, int.Parse);
             if (contains)
             {
-                Assert.IsTrue(interval.Contains(value));
-                Assert.IsTrue(IntervalComparer<int>.Default.Contains(interval, value));
+                Assert.True(interval.Contains(value));
+                Assert.True(IntervalComparer<int>.Default.Contains(interval, value));
             }
             else
             {
-                Assert.IsFalse(interval.Contains(value));
-                Assert.IsFalse(IntervalComparer<int>.Default.Contains(interval, value));
+                Assert.False(interval.Contains(value));
+                Assert.False(IntervalComparer<int>.Default.Contains(interval, value));
             }
         }
 
-        [DataTestMethod]
-        [DataRow("(-oo; +oo)", false)]
-        [DataRow("(-oo; 0)", false)]
-        [DataRow("(-oo; 0]", false)]
-        [DataRow("[0; 0]", false)]
-        [DataRow("(0; 0]", true)]
-        [DataRow("[0; 0)", true)]
-        [DataRow("(0; 0)", true)]
-        [DataRow("[-1; 0)", false)]
-        [DataRow("[-1; 0]", false)]
-        [DataRow("(0; -1)", true)]
-        [DataRow("[0; -1)", true)]
-        [DataRow("(0; -1]", true)]
-        [DataRow("[0; -1]", true)]
+        [Theory]
+        [InlineData("(-oo; +oo)", false)]
+        [InlineData("(-oo; 0)", false)]
+        [InlineData("(-oo; 0]", false)]
+        [InlineData("[0; 0]", false)]
+        [InlineData("(0; 0]", true)]
+        [InlineData("[0; 0)", true)]
+        [InlineData("(0; 0)", true)]
+        [InlineData("[-1; 0)", false)]
+        [InlineData("[-1; 0]", false)]
+        [InlineData("(0; -1)", true)]
+        [InlineData("[0; -1)", true)]
+        [InlineData("(0; -1]", true)]
+        [InlineData("[0; -1]", true)]
         public void Emptiness(string text, bool empty)
         {
             var interval = Interval<int>.Parse(text, int.Parse);
             if (empty)
             {
-                Assert.IsTrue(interval.IsEmpty);
-                Assert.IsTrue(IntervalComparer<int>.Default.IsEmpty(interval));
+                Assert.True(interval.IsEmpty);
+                Assert.True(IntervalComparer<int>.Default.IsEmpty(interval));
             }
             else
             {
-                Assert.IsFalse(interval.IsEmpty);
-                Assert.IsFalse(IntervalComparer<int>.Default.IsEmpty(interval));
+                Assert.False(interval.IsEmpty);
+                Assert.False(IntervalComparer<int>.Default.IsEmpty(interval));
             }
         }
 
-        [DataTestMethod]
+        [Theory]
         // Empty intervals are equal
-        [DataRow("(0; 0)", "(1; 1)", typeof(IntervalRelation<int>.Equal), "(0; 0)", "(0; 0)", "(0; 0)")]
-        [DataRow("[0; 0)", "(0; 0)", typeof(IntervalRelation<int>.Equal), "(0; 0)", "(0; 0)", "(0; 0)")]
-        [DataRow("[0; -1]", "(0; 0)", typeof(IntervalRelation<int>.Equal), "(0; 0)", "(0; 0)", "(0; 0)")]
+        [InlineData("(0; 0)", "(1; 1)", typeof(IntervalRelation<int>.Equal), "(0; 0)", "(0; 0)", "(0; 0)")]
+        [InlineData("[0; 0)", "(0; 0)", typeof(IntervalRelation<int>.Equal), "(0; 0)", "(0; 0)", "(0; 0)")]
+        [InlineData("[0; -1]", "(0; 0)", typeof(IntervalRelation<int>.Equal), "(0; 0)", "(0; 0)", "(0; 0)")]
         // Disjunct
-        [DataRow("(1; 2)", "[3; 4)", typeof(IntervalRelation<int>.Disjunct), "(1; 2)", "(0; 0)", "[3; 4)")]
-        [DataRow("(1; 2)", "(2; 4)", typeof(IntervalRelation<int>.Disjunct), "(1; 2)", "(0; 0)", "(2; 4)")]
-        [DataRow("(1; 2)", "[3; 4)", typeof(IntervalRelation<int>.Disjunct), "(1; 2)", "(0; 0)", "[3; 4)")]
+        [InlineData("(1; 2)", "[3; 4)", typeof(IntervalRelation<int>.Disjunct), "(1; 2)", "(0; 0)", "[3; 4)")]
+        [InlineData("(1; 2)", "(2; 4)", typeof(IntervalRelation<int>.Disjunct), "(1; 2)", "(0; 0)", "(2; 4)")]
         // Touching
-        [DataRow("(1; 2)", "[2; 4)", typeof(IntervalRelation<int>.Touching), "(1; 2)", "(0; 0)", "[2; 4)")]
-        [DataRow("(1; 2]", "(2; 4)", typeof(IntervalRelation<int>.Touching), "(1; 2]", "(0; 0)", "(2; 4)")]
+        [InlineData("(1; 2)", "[2; 4)", typeof(IntervalRelation<int>.Touching), "(1; 2)", "(0; 0)", "[2; 4)")]
+        [InlineData("(1; 2]", "(2; 4)", typeof(IntervalRelation<int>.Touching), "(1; 2]", "(0; 0)", "(2; 4)")]
         // Overlapping
-        [DataRow("(1; 3)", "(2; 4)", typeof(IntervalRelation<int>.Overlapping), "(1; 2]", "(2; 3)", "[3; 4)")]
-        [DataRow("(1; 3]", "(2; 4)", typeof(IntervalRelation<int>.Overlapping), "(1; 2]", "(2; 3]", "(3; 4)")]
-        [DataRow("(1; 3)", "[2; 4)", typeof(IntervalRelation<int>.Overlapping), "(1; 2)", "[2; 3)", "[3; 4)")]
-        [DataRow("(1; 3]", "[2; 4)", typeof(IntervalRelation<int>.Overlapping), "(1; 2)", "[2; 3]", "(3; 4)")]
+        [InlineData("(1; 3)", "(2; 4)", typeof(IntervalRelation<int>.Overlapping), "(1; 2]", "(2; 3)", "[3; 4)")]
+        [InlineData("(1; 3]", "(2; 4)", typeof(IntervalRelation<int>.Overlapping), "(1; 2]", "(2; 3]", "(3; 4)")]
+        [InlineData("(1; 3)", "[2; 4)", typeof(IntervalRelation<int>.Overlapping), "(1; 2)", "[2; 3)", "[3; 4)")]
+        [InlineData("(1; 3]", "[2; 4)", typeof(IntervalRelation<int>.Overlapping), "(1; 2)", "[2; 3]", "(3; 4)")]
         // Containing
-        [DataRow("(1; 4)", "(2; 3)", typeof(IntervalRelation<int>.Containing), "(1; 2]", "(2; 3)", "[3; 4)")]
-        [DataRow("(1; 4)", "[2; 3)", typeof(IntervalRelation<int>.Containing), "(1; 2)", "[2; 3)", "[3; 4)")]
-        [DataRow("(1; 4)", "(2; 3]", typeof(IntervalRelation<int>.Containing), "(1; 2]", "(2; 3]", "(3; 4)")]
-        [DataRow("(1; 4)", "[2; 3]", typeof(IntervalRelation<int>.Containing), "(1; 2)", "[2; 3]", "(3; 4)")]
-        [DataRow("[1; 4]", "(1; 4)", typeof(IntervalRelation<int>.Containing), "[1; 1]", "(1; 4)", "[4; 4]")]
+        [InlineData("(1; 4)", "(2; 3)", typeof(IntervalRelation<int>.Containing), "(1; 2]", "(2; 3)", "[3; 4)")]
+        [InlineData("(1; 4)", "[2; 3)", typeof(IntervalRelation<int>.Containing), "(1; 2)", "[2; 3)", "[3; 4)")]
+        [InlineData("(1; 4)", "(2; 3]", typeof(IntervalRelation<int>.Containing), "(1; 2]", "(2; 3]", "(3; 4)")]
+        [InlineData("(1; 4)", "[2; 3]", typeof(IntervalRelation<int>.Containing), "(1; 2)", "[2; 3]", "(3; 4)")]
+        [InlineData("[1; 4]", "(1; 4)", typeof(IntervalRelation<int>.Containing), "[1; 1]", "(1; 4)", "[4; 4]")]
         // Starting
-        [DataRow("(1; 4)", "(1; 3)", typeof(IntervalRelation<int>.Starting), "(0; 0)", "(1; 3)", "[3; 4)")]
-        [DataRow("(1; 4)", "(1; 3]", typeof(IntervalRelation<int>.Starting), "(0; 0)", "(1; 3]", "(3; 4)")]
+        [InlineData("(1; 4)", "(1; 3)", typeof(IntervalRelation<int>.Starting), "(0; 0)", "(1; 3)", "[3; 4)")]
+        [InlineData("(1; 4)", "(1; 3]", typeof(IntervalRelation<int>.Starting), "(0; 0)", "(1; 3]", "(3; 4)")]
         // Finishing
-        [DataRow("(1; 4)", "(3; 4)", typeof(IntervalRelation<int>.Finishing), "(1; 3]", "(3; 4)", "(0; 0)")]
-        [DataRow("(1; 4)", "[3; 4)", typeof(IntervalRelation<int>.Finishing), "(1; 3)", "[3; 4)", "(0; 0)")]
+        [InlineData("(1; 4)", "(3; 4)", typeof(IntervalRelation<int>.Finishing), "(1; 3]", "(3; 4)", "(0; 0)")]
+        [InlineData("(1; 4)", "[3; 4)", typeof(IntervalRelation<int>.Finishing), "(1; 3)", "[3; 4)", "(0; 0)")]
         // Equal
-        [DataRow("(1; 4)", "(1; 4)", typeof(IntervalRelation<int>.Equal), "(0; 0)", "(1; 4)", "(0; 0)")]
-        [DataRow("[1; 4)", "[1; 4)", typeof(IntervalRelation<int>.Equal), "(0; 0)", "[1; 4)", "(0; 0)")]
-        [DataRow("(1; 4]", "(1; 4]", typeof(IntervalRelation<int>.Equal), "(0; 0)", "(1; 4]", "(0; 0)")]
-        [DataRow("[1; 4]", "[1; 4]", typeof(IntervalRelation<int>.Equal), "(0; 0)", "[1; 4]", "(0; 0)")]
+        [InlineData("(1; 4)", "(1; 4)", typeof(IntervalRelation<int>.Equal), "(0; 0)", "(1; 4)", "(0; 0)")]
+        [InlineData("[1; 4)", "[1; 4)", typeof(IntervalRelation<int>.Equal), "(0; 0)", "[1; 4)", "(0; 0)")]
+        [InlineData("(1; 4]", "(1; 4]", typeof(IntervalRelation<int>.Equal), "(0; 0)", "(1; 4]", "(0; 0)")]
+        [InlineData("[1; 4]", "[1; 4]", typeof(IntervalRelation<int>.Equal), "(0; 0)", "[1; 4]", "(0; 0)")]
         // Legacy tests
-        [DataRow("[1; 4)", "[5; 7)", typeof(IntervalRelation<int>.Disjunct), "[1; 4)", "(0; 0)", "[5; 7)")]
-        [DataRow("[1; 4)", "[4; 7)", typeof(IntervalRelation<int>.Touching), "[1; 4)", "(0; 0)", "[4; 7)")]
-        [DataRow("[4; 8)", "[4; 6)", typeof(IntervalRelation<int>.Starting), "(0; 0)", "[4; 6)", "[6; 8)")]
-        [DataRow("[6; 8)", "[4; 8)", typeof(IntervalRelation<int>.Finishing), "[4; 6)", "[6; 8)", "(0; 0)")]
-        [DataRow("[4; 7)", "[2; 10)", typeof(IntervalRelation<int>.Containing), "[2; 4)", "[4; 7)", "[7; 10)")]
-        [DataRow("[4; 6]", "[6; 8)", typeof(IntervalRelation<int>.Overlapping), "[4; 6)", "[6; 6]", "(6; 8)")]
-        [DataRow("[2; 7)", "[4; 9)", typeof(IntervalRelation<int>.Overlapping), "[2; 4)", "[4; 7)", "[7; 9)")]
+        [InlineData("[1; 4)", "[5; 7)", typeof(IntervalRelation<int>.Disjunct), "[1; 4)", "(0; 0)", "[5; 7)")]
+        [InlineData("[1; 4)", "[4; 7)", typeof(IntervalRelation<int>.Touching), "[1; 4)", "(0; 0)", "[4; 7)")]
+        [InlineData("[4; 8)", "[4; 6)", typeof(IntervalRelation<int>.Starting), "(0; 0)", "[4; 6)", "[6; 8)")]
+        [InlineData("[6; 8)", "[4; 8)", typeof(IntervalRelation<int>.Finishing), "[4; 6)", "[6; 8)", "(0; 0)")]
+        [InlineData("[4; 7)", "[2; 10)", typeof(IntervalRelation<int>.Containing), "[2; 4)", "[4; 7)", "[7; 10)")]
+        [InlineData("[4; 6]", "[6; 8)", typeof(IntervalRelation<int>.Overlapping), "[4; 6)", "[6; 6]", "(6; 8)")]
+        [InlineData("[2; 7)", "[4; 9)", typeof(IntervalRelation<int>.Overlapping), "[2; 4)", "[4; 7)", "[7; 9)")]
         public void Relation(string ivText1, string ivText2, Type exactRelationType, string lowerDisjText, string overlapText, string upperDisjText)
         {
             var iv1 = Interval<int>.Parse(ivText1, int.Parse);
@@ -281,30 +279,30 @@ namespace Yoakke.Collections.Tests
             var rel1 = iv1.RelationTo(iv2);
             var rel2 = iv2.RelationTo(iv1);
 
-            Assert.AreEqual(exactRelationType, rel1.GetType());
-            Assert.AreEqual(lowerDisjunct, rel1.LowerDisjunct);
-            Assert.AreEqual(overlapping, rel1.Intersecting);
-            Assert.AreEqual(upperDisjunct, rel1.UpperDisjunct);
+            Assert.Equal(exactRelationType, rel1.GetType());
+            Assert.Equal(lowerDisjunct, rel1.LowerDisjunct);
+            Assert.Equal(overlapping, rel1.Intersecting);
+            Assert.Equal(upperDisjunct, rel1.UpperDisjunct);
 
-            Assert.AreEqual(exactRelationType, rel2.GetType());
-            Assert.AreEqual(lowerDisjunct, rel2.LowerDisjunct);
-            Assert.AreEqual(overlapping, rel2.Intersecting);
-            Assert.AreEqual(upperDisjunct, rel2.UpperDisjunct);
+            Assert.Equal(exactRelationType, rel2.GetType());
+            Assert.Equal(lowerDisjunct, rel2.LowerDisjunct);
+            Assert.Equal(overlapping, rel2.Intersecting);
+            Assert.Equal(upperDisjunct, rel2.UpperDisjunct);
         }
 
-        [DataTestMethod]
+        [Theory]
         // Empty intervals are equal
-        [DataRow("(0; 0)", "(0; 0)", true)]
-        [DataRow("(0; 0)", "(1; 1)", true)]
-        [DataRow("[0; 0)", "(0; 0)", true)]
-        [DataRow("[0; -1]", "(0; 0)", true)]
+        [InlineData("(0; 0)", "(0; 0)", true)]
+        [InlineData("(0; 0)", "(1; 1)", true)]
+        [InlineData("[0; 0)", "(0; 0)", true)]
+        [InlineData("[0; -1]", "(0; 0)", true)]
         // Non-empty tests
-        [DataRow("(-oo; +oo)", "(-oo; +oo)", true)]
-        [DataRow("(0; 1)", "(0; 1)", true)]
-        [DataRow("[2; 4)", "[2; 4)", true)]
-        [DataRow("(0; 2)", "(0; 1)", false)]
-        [DataRow("[0; 1)", "[0; 1]", false)]
-        [DataRow("[0; 2]", "(0; 2)", false)]
+        [InlineData("(-oo; +oo)", "(-oo; +oo)", true)]
+        [InlineData("(0; 1)", "(0; 1)", true)]
+        [InlineData("[2; 4)", "[2; 4)", true)]
+        [InlineData("(0; 2)", "(0; 1)", false)]
+        [InlineData("[0; 1)", "[0; 1]", false)]
+        [InlineData("[0; 2]", "(0; 2)", false)]
         public void Equality(string ivText1, string ivText2, bool eq)
         {
             var a = Interval<int>.Parse(ivText1, int.Parse);
@@ -318,52 +316,52 @@ namespace Yoakke.Collections.Tests
 
         private static void AssertGreater(Bound<int> a, Bound<int> b)
         {
-            Assert.IsTrue(a.CompareTo(b) > 0);
-            Assert.IsTrue(BoundComparer<int>.Default.Compare(a, b) > 0);
-            Assert.IsTrue(b.CompareTo(a) < 0);
-            Assert.IsTrue(BoundComparer<int>.Default.Compare(b, a) < 0);
+            Assert.True(a.CompareTo(b) > 0);
+            Assert.True(BoundComparer<int>.Default.Compare(a, b) > 0);
+            Assert.True(b.CompareTo(a) < 0);
+            Assert.True(BoundComparer<int>.Default.Compare(b, a) < 0);
         }
 
         private static void AssertLess(Bound<int> a, Bound<int> b)
         {
-            Assert.IsTrue(a.CompareTo(b) < 0);
-            Assert.IsTrue(BoundComparer<int>.Default.Compare(a, b) < 0);
-            Assert.IsTrue(b.CompareTo(a) > 0);
-            Assert.IsTrue(BoundComparer<int>.Default.Compare(b, a) > 0);
+            Assert.True(a.CompareTo(b) < 0);
+            Assert.True(BoundComparer<int>.Default.Compare(a, b) < 0);
+            Assert.True(b.CompareTo(a) > 0);
+            Assert.True(BoundComparer<int>.Default.Compare(b, a) > 0);
         }
 
         private static void AssertEquals(Bound<int> a, Bound<int> b)
         {
-            Assert.IsTrue(a == b);
-            Assert.IsTrue(b == a);
-            Assert.IsTrue(BoundComparer<int>.Default.Equals(a, b));
-            Assert.IsTrue(BoundComparer<int>.Default.Equals(b, a));
-            Assert.IsTrue(a.Equals(b));
-            Assert.IsTrue(b.Equals(a));
-            Assert.AreEqual(0, a.CompareTo(b));
-            Assert.AreEqual(0, b.CompareTo(a));
-            Assert.AreEqual(a.GetHashCode(), b.GetHashCode());
+            Assert.True(a == b);
+            Assert.True(b == a);
+            Assert.True(BoundComparer<int>.Default.Equals(a, b));
+            Assert.True(BoundComparer<int>.Default.Equals(b, a));
+            Assert.True(a.Equals(b));
+            Assert.True(b.Equals(a));
+            Assert.Equal(0, a.CompareTo(b));
+            Assert.Equal(0, b.CompareTo(a));
+            Assert.Equal(a.GetHashCode(), b.GetHashCode());
         }
 
         private static void AssertEquals(Interval<int> a, Interval<int> b)
         {
-            Assert.IsTrue(a == b);
-            Assert.IsTrue(b == a);
-            Assert.IsTrue(IntervalComparer<int>.Default.Equals(a, b));
-            Assert.IsTrue(IntervalComparer<int>.Default.Equals(b, a));
-            Assert.IsTrue(a.Equals(b));
-            Assert.IsTrue(b.Equals(a));
-            Assert.AreEqual(a.GetHashCode(), b.GetHashCode());
+            Assert.True(a == b);
+            Assert.True(b == a);
+            Assert.True(IntervalComparer<int>.Default.Equals(a, b));
+            Assert.True(IntervalComparer<int>.Default.Equals(b, a));
+            Assert.True(a.Equals(b));
+            Assert.True(b.Equals(a));
+            Assert.Equal(a.GetHashCode(), b.GetHashCode());
         }
 
         private static void AssertNotEquals(Interval<int> a, Interval<int> b)
         {
-            Assert.IsFalse(a == b);
-            Assert.IsFalse(b == a);
-            Assert.IsFalse(IntervalComparer<int>.Default.Equals(a, b));
-            Assert.IsFalse(IntervalComparer<int>.Default.Equals(b, a));
-            Assert.IsFalse(a.Equals(b));
-            Assert.IsFalse(b.Equals(a));
+            Assert.False(a == b);
+            Assert.False(b == a);
+            Assert.False(IntervalComparer<int>.Default.Equals(a, b));
+            Assert.False(IntervalComparer<int>.Default.Equals(b, a));
+            Assert.False(a.Equals(b));
+            Assert.False(b.Equals(a));
         }
 
         #endregion

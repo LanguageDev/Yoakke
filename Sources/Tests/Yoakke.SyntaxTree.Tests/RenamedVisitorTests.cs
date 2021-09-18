@@ -4,12 +4,11 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using Yoakke.SyntaxTree.Attributes;
 
 namespace Yoakke.SyntaxTree.Tests
 {
-    [TestClass]
     public partial class RenamedVisitorTests
     {
         [SyntaxTree]
@@ -30,7 +29,7 @@ namespace Yoakke.SyntaxTree.Tests
             protected string Stringify(Ast.Node2 n) => $"N2({string.Join(", ", n.Values.Select(this.Stringify))})";
         }
 
-        [TestMethod]
+        [Fact]
         public void StrVisitorBasic()
         {
             var ast = new Ast.Node2(new Ast[]
@@ -43,7 +42,7 @@ namespace Yoakke.SyntaxTree.Tests
             var visitor = new MyStrVisitor();
             var result = visitor.Call(ast);
 
-            Assert.AreEqual("N2(N1(1, 2), N2(N1(3, 4)), N1(5, 6))", result);
+            Assert.Equal("N2(N1(1, 2), N2(N1(3, 4)), N1(5, 6))", result);
         }
     }
 }
