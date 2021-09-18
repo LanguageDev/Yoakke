@@ -161,19 +161,71 @@ namespace Yoakke.Automata.Discrete
         public StateSet<TState> EpsilonClosure(TState state) => new(this.EpsilonClosureAsSet(state));
 
         /// <inheritdoc/>
-        public bool RemoveTransition(TState from, TSymbol on, TState to) => throw new NotImplementedException();
+        public bool RemoveTransition(TState from, TSymbol on, TState to)
+        {
+            if (!this.transitions.TryGetValue(from, out var onMap)) return false;
+            if (onMap.TryGetValue(on, out var toSet)) return false;
+            return toSet.Remove(to);
+        }
 
         /// <inheritdoc/>
-        public bool RemoveEpsilonTransitions() => throw new NotImplementedException();
+        public bool RemoveEpsilonTransition(TState from, TState to)
+        {
+            if (this.epsilonTransitions.TryGetValue(from, out var toSet)) return false;
+            return toSet.Remove(to);
+        }
 
         /// <inheritdoc/>
-        public bool RemoveUnreachable(TState from) => throw new NotImplementedException();
+        public INfa<TResultState, TSymbol> EliminateEpsilonTransitions<TResultState>(IStateCombiner<TState, TResultState> combiner)
+        {
+            throw new NotImplementedException();
+        }
 
         /// <inheritdoc/>
-        public IEnumerable<TState> ReachableStates(TState initial) => throw new NotImplementedException();
+        IReadOnlyNfa<TResultState, TSymbol> IReadOnlyNfa<TState, TSymbol>.EliminateEpsilonTransitions<TResultState>(IStateCombiner<TState, TResultState> combiner) =>
+            this.EliminateEpsilonTransitions(combiner);
 
         /// <inheritdoc/>
-        public IDfa<TResultState, TSymbol> Determinize<TResultState>(IStateCombiner<TState, TResultState> combiner) => throw new NotImplementedException();
+        public bool RemoveUnreachable(TState from)
+        {
+            var touched = this.ReachableStates(from);
+
+            // Prune transitions that are not in this set
+            var result = false;
+            var untouchedStates = this.transitions.Keys.Except(touched, this.StateComparer);
+            foreach (var untouched in untouchedStates)
+            {
+                if (this.transitions.Remove(untouched) || this.epsilonTransitions.Remove(untouched)) result = true;
+            }
+            return result;
+        }
+
+        /// <inheritdoc/>
+        public IEnumerable<TState> ReachableStates(TState initial)
+        {
+            var touched = new HashSet<TState>(this.StateComparer);
+            var stk = new Stack<TState>();
+            stk.Push(initial);
+            touched.Add(initial);
+            while (stk.TryPop(out var top))
+            {
+                yield return top;
+                if (!this.transitions.TryGetValue(top, out var onMap)) continue;
+                foreach (var toSet in onMap.Values)
+                {
+                    foreach (var to in toSet)
+                    {
+                        if (touched.Add(to)) stk.Push(to);
+                    }
+                }
+            }
+        }
+
+        /// <inheritdoc/>
+        public IDfa<TResultState, TSymbol> Determinize<TResultState>(IStateCombiner<TState, TResultState> combiner)
+        {
+            throw new NotImplementedException();
+        }
 
         /// <inheritdoc/>
         IReadOnlyDfa<TResultState, TSymbol> IReadOnlyNfa<TState, TSymbol>.Determinize<TResultState>(

@@ -24,10 +24,20 @@ namespace Yoakke.Automata
         public bool AddEpsilonTransition(TState from, TState to);
 
         /// <summary>
-        /// Removes all epsilon transitions from this NFA (while keeping it equivalent).
+        /// Removes an epsilon transition from this automaton.
         /// </summary>
-        /// <returns>True, if there were epsilon transitions to remove, false otherwise.</returns>
-        public bool RemoveEpsilonTransitions();
+        /// <param name="from">The state to transition from.</param>
+        /// <param name="to">The state to transition to.</param>
+        /// <returns>True, if the transition was found and successfully removed.</returns>
+        public bool RemoveEpsilonTransition(TState from, TState to);
+
+        /// <summary>
+        /// Constructs an equivalent NFA that has no epsilon-transitions.
+        /// </summary>
+        /// <typeparam name="TResultState">The result state type.</typeparam>
+        /// <param name="combiner">The state combiner to use.</param>
+        /// <returns>The equivalent epsilon transition-less NFA.</returns>
+        public new INfa<TResultState, TSymbol> EliminateEpsilonTransitions<TResultState>(IStateCombiner<TState, TResultState> combiner);
 
         /// <summary>
         /// Constructs an equivalent DFA from this NFA.

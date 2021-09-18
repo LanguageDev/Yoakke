@@ -150,7 +150,7 @@ namespace Yoakke.Automata.Discrete
 
             // Prune transitions that are not in this set
             var result = false;
-            var untouchedStates = this.transitions.Keys.Except(touched);
+            var untouchedStates = this.transitions.Keys.Except(touched, this.StateComparer);
             foreach (var untouched in untouchedStates)
             {
                 if (this.transitions.Remove(untouched)) result = true;
