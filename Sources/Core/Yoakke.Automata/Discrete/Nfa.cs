@@ -94,10 +94,10 @@ namespace Yoakke.Automata.Discrete
                 {
                     var to = group.Key;
                     var ons = string.Join(", ", group.Select(kv => kv.Key));
-                    if (epsilon.Remove(to)) ons = $"{ons}, Ɛ";
+                    if (epsilon.Remove(to)) ons = $"{ons}, ε";
                     helper.WriteTransition(from, ons, to);
                 }
-                foreach (var to in epsilon) helper.WriteTransition(from, "Ɛ", to);
+                foreach (var to in epsilon) helper.WriteTransition(from, "ε", to);
             }
 
             helper.WriteEnd();

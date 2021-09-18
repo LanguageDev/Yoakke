@@ -7,32 +7,21 @@ namespace Yoakke.Automata.Sample
     {
         static void Main(string[] args)
         {
-            var dfa = new Dfa<string, char>();
+            var nfa = new Nfa<char, char>();
 
-            dfa.AddTransition("S", 'a', "A");
-            dfa.AddTransition("S", 'b', "B");
-            dfa.AddTransition("B", 'b', "BB");
-            dfa.AddTransition("BB", 'b', "BB");
-            dfa.AddTransition("BB", 'a', "BA");
-            dfa.AddTransition("B", 'a', "BA");
-            dfa.AddTransition("A", 'a', "AA");
-            dfa.AddTransition("A", 'b', "AB");
-            dfa.AddTransition("AA", 'a', "AA");
-            dfa.AddTransition("AA", 'b', "AB");
-            dfa.AddTransition("AB", 'a', "BA");
-            dfa.AddTransition("AB", 'b', "BB");
-            dfa.AddTransition("BA", 'a', "AA");
-            dfa.AddTransition("BA", 'b', "AB");
+            nfa.AddTransition('A', '0', 'A');
+            nfa.AddTransition('A', '1', 'A');
+            nfa.AddTransition('A', '1', 'B');
+            nfa.AddTransition('B', '0', 'C');
+            nfa.AddEpsilonTransition('B', 'C');
+            nfa.AddTransition('C', '1', 'D');
+            nfa.AddTransition('D', '0', 'D');
+            nfa.AddTransition('D', '1', 'D');
 
-            dfa.AcceptingStates.Add("AB");
-            dfa.AcceptingStates.Add("BA");
+            nfa.InitialState = 'A';
+            nfa.AcceptingStates.Add('D');
 
-            dfa.InitialState = "S";
-
-            var minDfa = dfa.Minimize();
-
-            Console.WriteLine(dfa.ToDot());
-            Console.WriteLine(minDfa.ToDot());
+            Console.WriteLine(nfa.ToDot());
         }
     }
 }
