@@ -41,9 +41,9 @@ namespace Yoakke.Streams.Tests
 
             Assert.IsFalse(ms.IsEnd);
             Assert.IsTrue(ms.TryPeek(out var t0));
-            Assert.AreEqual(t0, 1);
+            Assert.AreEqual(1, t0);
             Assert.IsTrue(ms.TryLookAhead(1, out var t1));
-            Assert.AreEqual(t1, 3);
+            Assert.AreEqual(3, t1);
             Assert.IsFalse(ms.IsEnd);
             Assert.AreEqual(1, ms.Consume());
             Assert.IsFalse(ms.IsEnd);
