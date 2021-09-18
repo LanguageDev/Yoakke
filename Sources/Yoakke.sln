@@ -120,7 +120,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Streams.Tests", "Tes
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Formal", "Formal", "{15367647-E3BC-427C-BE9A-ED9C1F5D938B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yoakke.Automatas", "Core\Yoakke.Automatas\Yoakke.Automatas.csproj", "{B266A2BE-86F1-48C2-86C6-83C1D03C5E52}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yoakke.Automata", "Core\Yoakke.Automata\Yoakke.Automata.csproj", "{B266A2BE-86F1-48C2-86C6-83C1D03C5E52}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
