@@ -117,7 +117,18 @@ namespace Yoakke.Automata.Discrete
         }
 
         /// <inheritdoc/>
-        public StateSet<TState> GetTransitions(StateSet<TState> from, TSymbol on) => throw new NotImplementedException();
+        public StateSet<TState> GetTransitions(StateSet<TState> from, TSymbol on)
+        {
+            var set = new HashSet<TState>(this.StateComparer);
+            foreach (var fromState in from.SelectMany(this.EpsilonClosureAsSet))
+            {
+                if (!this.transitions.TryGetValue(fromState, out var onMap)) continue;
+                if (!onMap.TryGetValue(on, out var toSet)) continue;
+
+                foreach (var s in toSet) this.EpsilonClosure(set, s);
+            }
+            return new(set);
+        }
 
         /// <inheritdoc/>
         public bool AddTransition(TState from, TSymbol on, TState to)
@@ -147,7 +158,7 @@ namespace Yoakke.Automata.Discrete
         }
 
         /// <inheritdoc/>
-        public StateSet<TState> EpsilonClosure(TState state) => throw new NotImplementedException();
+        public StateSet<TState> EpsilonClosure(TState state) => new(this.EpsilonClosureAsSet(state));
 
         /// <inheritdoc/>
         public bool RemoveTransition(TState from, TSymbol on, TState to) => throw new NotImplementedException();
@@ -159,10 +170,35 @@ namespace Yoakke.Automata.Discrete
         public bool RemoveUnreachable(TState from) => throw new NotImplementedException();
 
         /// <inheritdoc/>
+        public IEnumerable<TState> ReachableStates(TState initial) => throw new NotImplementedException();
+
+        /// <inheritdoc/>
         public IDfa<TResultState, TSymbol> Determinize<TResultState>(IStateCombiner<TState, TResultState> combiner) => throw new NotImplementedException();
 
         /// <inheritdoc/>
         IReadOnlyDfa<TResultState, TSymbol> IReadOnlyNfa<TState, TSymbol>.Determinize<TResultState>(
             IStateCombiner<TState, TResultState> combiner) => this.Determinize(combiner);
+
+        private HashSet<TState> EpsilonClosureAsSet(TState state)
+        {
+            var set = new HashSet<TState>(this.StateComparer);
+            this.EpsilonClosure(set, state);
+            return new(set);
+        }
+
+        private void EpsilonClosure(HashSet<TState> touched, TState state)
+        {
+            var stk = new Stack<TState>();
+            if (!touched.Add(state)) return;
+            stk.Push(state);
+            while (stk.TryPop(out var top))
+            {
+                if (!this.epsilonTransitions.TryGetValue(top, out var onSet)) continue;
+                foreach (var to in onSet)
+                {
+                    if (touched.Add(to)) stk.Push(to);
+                }
+            }
+        }
     }
 }

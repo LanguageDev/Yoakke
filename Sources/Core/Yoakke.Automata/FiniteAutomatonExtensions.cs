@@ -14,6 +14,17 @@ namespace Yoakke.Automata
     public static class FiniteAutomatonExtensions
     {
         /// <summary>
+        /// Finds all the reachable states from the initial state.
+        /// </summary>
+        /// <typeparam name="TState">The state type.</typeparam>
+        /// <typeparam name="TSymbol">The symbol type.</typeparam>
+        /// <param name="automaton">The automaton to check reachability in.</param>
+        /// <returns>The sequence of reachable states.</returns>
+        public static IEnumerable<TState> ReachableStates<TState, TSymbol>(
+            this IReadOnlyFiniteAutomaton<TState, TSymbol> automaton) =>
+            automaton.ReachableStates(automaton.InitialState);
+
+        /// <summary>
         /// Checks if this automaton results in an accepting state for the given input.
         /// </summary>
         /// <typeparam name="TState">The state type.</typeparam>

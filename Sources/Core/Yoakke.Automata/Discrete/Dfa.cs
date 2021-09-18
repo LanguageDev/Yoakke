@@ -146,21 +146,9 @@ namespace Yoakke.Automata.Discrete
         /// <inheritdoc/>
         public bool RemoveUnreachable(TState from)
         {
-            // Simple search algo to go through all reachable states from the initial
-            var touched = new HashSet<TState>(this.StateComparer);
-            var stk = new Stack<TState>();
-            stk.Push(from);
-            while (stk.TryPop(out var top))
-            {
-                touched.Add(top);
-                if (!this.transitions.TryGetValue(top, out var onMap)) continue;
-                foreach (var to in onMap.Values)
-                {
-                    if (touched.Add(to)) stk.Push(to);
-                }
-            }
+            var touched = this.ReachableStates(from);
 
-            // Now prune transitions that are not in this set
+            // Prune transitions that are not in this set
             var result = false;
             var untouchedStates = this.transitions.Keys.Except(touched);
             foreach (var untouched in untouchedStates)
@@ -168,6 +156,24 @@ namespace Yoakke.Automata.Discrete
                 if (this.transitions.Remove(untouched)) result = true;
             }
             return result;
+        }
+
+        /// <inheritdoc/>
+        public IEnumerable<TState> ReachableStates(TState initial)
+        {
+            var touched = new HashSet<TState>(this.StateComparer);
+            var stk = new Stack<TState>();
+            stk.Push(initial);
+            touched.Add(initial);
+            while (stk.TryPop(out var top))
+            {
+                yield return top;
+                if (!this.transitions.TryGetValue(top, out var onMap)) continue;
+                foreach (var to in onMap.Values)
+                {
+                    if (touched.Add(to)) stk.Push(to);
+                }
+            }
         }
 
         /// <inheritdoc/>

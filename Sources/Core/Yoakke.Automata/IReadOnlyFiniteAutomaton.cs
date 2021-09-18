@@ -40,6 +40,13 @@ namespace Yoakke.Automata
         public bool Accepts(TState initial, IEnumerable<TSymbol> input);
 
         /// <summary>
+        /// Finds all the reachable states from a given initial state.
+        /// </summary>
+        /// <param name="initial">The initial state to start from.</param>
+        /// <returns>The sequence of reachable states.</returns>
+        public IEnumerable<TState> ReachableStates(TState initial);
+
+        /// <summary>
         /// Creates a Graphviz DOT code representation of this automata for visualization.
         /// </summary>
         /// <returns>The full graphviz code.</returns>
