@@ -17,6 +17,13 @@ namespace Yoakke.Automata.Sample
             dfa.AddTransition('c', 'a', 'd');
             dfa.RemoveUnreachable();
             Console.WriteLine(dfa.ToDot());
+
+            while (true)
+            {
+                var line = Console.ReadLine();
+                if (line is null) break;
+                Console.WriteLine(dfa.Accepts(line));
+            }
         }
     }
 }

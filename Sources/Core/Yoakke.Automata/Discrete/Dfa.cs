@@ -72,6 +72,20 @@ namespace Yoakke.Automata.Discrete
         /// <inheritdoc/>
         public string ToDot()
         {
+            // To make names consistent, we only call .ToString() on states once
+            // This is because on a state set we could potentially get differently ordered, but equivalent sets (HashSet quirk)
+            var stateNames = new Dictionary<TState, string>(this.StateComparer);
+
+            string GetStateName(TState state)
+            {
+                if (!stateNames!.TryGetValue(state, out var name))
+                {
+                    name = state!.ToString();
+                    stateNames.Add(state, name);
+                }
+                return name;
+            }
+
             var result = new StringBuilder();
             result
                 .AppendLine("digraph dfa {")
@@ -80,7 +94,7 @@ namespace Yoakke.Automata.Discrete
             // Double-circle accepting states
             if (this.acceptingStates.Count > 0)
             {
-                var acceptingStates = string.Join(" ", this.acceptingStates.Select(s => $"\"{s}\""));
+                var acceptingStates = string.Join(" ", this.acceptingStates.Select(s => $"\"{GetStateName(s)}\""));
                 result.AppendLine($"    node [shape=doublecircle]; {acceptingStates};");
             }
             // Rest are simple circle
@@ -94,13 +108,13 @@ namespace Yoakke.Automata.Discrete
                 {
                     var to = group.Key;
                     var ons = string.Join(", ", group.Select(kv => kv.Key));
-                    result.AppendLine($"    \"{from}\" -> \"{to}\" [label = \"{ons}\"];");
+                    result.AppendLine($"    \"{GetStateName(from)}\" -> \"{GetStateName(to)}\" [label = \"{ons}\"];");
                 }
             }
             // Initial state
             result
                 .AppendLine("    init [label=\"\", shape=point]")
-                .AppendLine($"    init -> \"{this.InitialState}\"")
+                .AppendLine($"    init -> \"{GetStateName(this.InitialState)}\"")
                 .Append("}");
             return result.ToString();
         }
