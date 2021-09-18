@@ -21,7 +21,9 @@ namespace Yoakke.Automata.Sample
             nfa.InitialState = 'A';
             nfa.AcceptingStates.Add('D');
 
-            Console.WriteLine(nfa.ToDot());
+            var dfa = nfa.Determinize();
+
+            Console.WriteLine(dfa.ToDot());
         }
     }
 }

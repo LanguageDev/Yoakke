@@ -224,7 +224,43 @@ namespace Yoakke.Automata.Discrete
         /// <inheritdoc/>
         public IDfa<TResultState, TSymbol> Determinize<TResultState>(IStateCombiner<TState, TResultState> combiner)
         {
-            throw new NotImplementedException();
+            var result = new Dfa<TResultState, TSymbol>(combiner.ResultComparer, this.SymbolComparer);
+            var visited = new HashSet<StateSet<TState>>(new StateSetEqualityComparer<TState>(this.StateComparer));
+            var stk = new Stack<StateSet<TState>>();
+            var first = this.EpsilonClosure(this.InitialState);
+            result.InitialState = combiner.Combine(first);
+            stk.Push(first);
+            while (stk.TryPop(out var top))
+            {
+                // Construct a transition map
+                // Essentially from the current set of states we calculate what set of states we arrive at for a given symbol
+                var resultTransitions = new Dictionary<TSymbol, HashSet<TState>>(this.SymbolComparer);
+                foreach (var primState in top)
+                {
+                    if (!this.transitions.TryGetValue(primState, out var onMap)) continue;
+                    foreach (var (on, toSet) in onMap)
+                    {
+                        if (!resultTransitions.TryGetValue(on, out var existing))
+                        {
+                            existing = new(this.StateComparer);
+                            resultTransitions.Add(on, existing);
+                        }
+                        foreach (var to in toSet.SelectMany(this.EpsilonClosureAsSet)) existing.Add(to);
+                    }
+                }
+                // Add the transitions
+                var from = combiner.Combine(top);
+                foreach (var (on, toHashSet) in resultTransitions)
+                {
+                    var toSet = new StateSet<TState>(toHashSet);
+                    if (visited.Add(toSet)) stk.Push(toSet);
+                    var to = combiner.Combine(toSet);
+                    result.AddTransition(from, on, to);
+                }
+                // Register as accepting, if any
+                if (top.Any(s => this.AcceptingStates.Contains(s))) result.AcceptingStates.Add(from);
+            }
+            return result;
         }
 
         /// <inheritdoc/>
