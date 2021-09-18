@@ -178,7 +178,45 @@ namespace Yoakke.Automata.Discrete
         /// <inheritdoc/>
         public INfa<TResultState, TSymbol> EliminateEpsilonTransitions<TResultState>(IStateCombiner<TState, TResultState> combiner)
         {
-            throw new NotImplementedException();
+            var stateSetComparer = new StateSetEqualityComparer<TState>(this.StateComparer);
+            var result = new Nfa<TResultState, TSymbol>(combiner.ResultComparer, this.SymbolComparer);
+            var visited = new HashSet<StateSet<TState>>(new StateSetEqualityComparer<TState>(this.StateComparer));
+            var stk = new Stack<StateSet<TState>>();
+            var first = this.EpsilonClosure(this.InitialState);
+            result.InitialState = combiner.Combine(first);
+            stk.Push(first);
+            while (stk.TryPop(out var top))
+            {
+                // Construct a transition map
+                // Essentially from the current set of states we calculate what set of states we arrive at for a given symbol
+                var resultTransitions = new Dictionary<TSymbol, HashSet<StateSet<TState>>>(this.SymbolComparer);
+                foreach (var primState in top)
+                {
+                    if (!this.transitions.TryGetValue(primState, out var onMap)) continue;
+                    foreach (var (on, toSet) in onMap)
+                    {
+                        if (!resultTransitions.TryGetValue(on, out var existing))
+                        {
+                            existing = new(stateSetComparer);
+                            resultTransitions.Add(on, existing);
+                        }
+                        foreach (var to in toSet.Select(this.EpsilonClosureAsSet)) existing.Add(new(to));
+                    }
+                }
+                // Add the transitions
+                var from = combiner.Combine(top);
+                foreach (var (on, toSet) in resultTransitions)
+                {
+                    foreach (var to in toSet)
+                    {
+                        if (visited.Add(to)) stk.Push(to);
+                        result.AddTransition(from, on, combiner.Combine(to));
+                    }
+                }
+                // Register as accepting, if any
+                if (top.Any(s => this.AcceptingStates.Contains(s))) result.AcceptingStates.Add(from);
+            }
+            return result;
         }
 
         /// <inheritdoc/>
