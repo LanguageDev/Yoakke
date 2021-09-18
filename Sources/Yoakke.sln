@@ -122,7 +122,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Formal", "Formal", "{153676
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Automata", "Core\Yoakke.Automata\Yoakke.Automata.csproj", "{B266A2BE-86F1-48C2-86C6-83C1D03C5E52}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yoakke.Automata.Sample", "Examples\Yoakke.Automata.Sample\Yoakke.Automata.Sample.csproj", "{6E3AC657-9BDE-4C4A-AB35-27C1909C31D5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Automata.Sample", "Examples\Yoakke.Automata.Sample\Yoakke.Automata.Sample.csproj", "{6E3AC657-9BDE-4C4A-AB35-27C1909C31D5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yoakke.Automata.Tests", "Tests\Yoakke.Automata.Tests\Yoakke.Automata.Tests.csproj", "{CCD5F778-B722-414A-A376-B99E0734C3C7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -302,6 +304,10 @@ Global
 		{6E3AC657-9BDE-4C4A-AB35-27C1909C31D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E3AC657-9BDE-4C4A-AB35-27C1909C31D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E3AC657-9BDE-4C4A-AB35-27C1909C31D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCD5F778-B722-414A-A376-B99E0734C3C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCD5F778-B722-414A-A376-B99E0734C3C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCD5F778-B722-414A-A376-B99E0734C3C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCD5F778-B722-414A-A376-B99E0734C3C7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -347,6 +353,7 @@ Global
 		{1764F8E3-A554-4BA9-8025-A13F78B2F22E} = {9293EB9E-9730-4D48-8DBB-2213E4FCC35F}
 		{B266A2BE-86F1-48C2-86C6-83C1D03C5E52} = {15367647-E3BC-427C-BE9A-ED9C1F5D938B}
 		{6E3AC657-9BDE-4C4A-AB35-27C1909C31D5} = {15367647-E3BC-427C-BE9A-ED9C1F5D938B}
+		{CCD5F778-B722-414A-A376-B99E0734C3C7} = {15367647-E3BC-427C-BE9A-ED9C1F5D938B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1EDE8F07-AE3A-4556-AEF0-3AC518F18F92}
