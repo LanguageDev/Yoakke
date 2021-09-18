@@ -50,6 +50,14 @@ namespace Yoakke.Automata.Discrete
         /// <summary>
         /// Initializes a new instance of the <see cref="Dfa{TState, TSymbol}"/> class.
         /// </summary>
+        public Dfa()
+            : this(EqualityComparer<TState>.Default, EqualityComparer<TSymbol>.Default)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Dfa{TState, TSymbol}"/> class.
+        /// </summary>
         /// <param name="stateComparer">The state comparer to use.</param>
         /// <param name="symbolComparer">The symbol comparer to use.</param>
         public Dfa(IEqualityComparer<TState> stateComparer, IEqualityComparer<TSymbol> symbolComparer)
@@ -80,9 +88,13 @@ namespace Yoakke.Automata.Discrete
             // Go through each transition
             foreach (var (from, onMap) in this.transitions)
             {
-                foreach (var (on, to) in onMap)
+                // For a bit more dense repr, we group by to states so we can draw a single arrow between 2 states
+                var toOnGroup = onMap.GroupBy(kv => kv.Value, this.StateComparer);
+                foreach (var group in toOnGroup)
                 {
-                    result.AppendLine($"    \"{from}\" -> \"{to}\" [label = \"{on}\"];");
+                    var to = group.Key;
+                    var ons = string.Join(", ", group.Select(kv => kv.Key));
+                    result.AppendLine($"    \"{from}\" -> \"{to}\" [label = \"{ons}\"];");
                 }
             }
             result.Append("}");
