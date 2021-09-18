@@ -42,5 +42,10 @@ namespace Yoakke.Automata
         /// <param name="to">The state to transition to.</param>
         /// <returns>True, if the transition was found and removed, false otherwise.</returns>
         public bool RemoveTransition(TState from, TSymbol on, TState to);
+
+        /// <summary>
+        /// Removes all unreachable states and transitions from the automaton.
+        /// </summary>
+        public void RemoveUnreachable();
     }
 }
