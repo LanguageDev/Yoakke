@@ -29,14 +29,17 @@ namespace Yoakke.Automata
 
         private class StateSetStateSetCombiner : IStateCombiner<StateSet<TState>, StateSet<TState>>
         {
-            public IEqualityComparer<StateSet<TState>> ResultComparer { get; }
+            public IEqualityComparer<StateSet<TState>> ResultComparer => this.comparer;
+
+            private readonly StateSetEqualityComparer<TState> comparer;
 
             public StateSetStateSetCombiner(StateSetEqualityComparer<TState> comparer)
             {
-                this.ResultComparer = comparer;
+                this.comparer = comparer;
             }
 
-            public StateSet<TState> Combine(IEnumerable<StateSet<TState>> states) => new(states.SelectMany(s => s));
+            public StateSet<TState> Combine(IEnumerable<StateSet<TState>> states) =>
+                new(states.SelectMany(s => s).Distinct(this.comparer.Comparer));
         }
 
         /// <summary>

@@ -80,6 +80,30 @@ namespace Yoakke.Automata.Tests
             AssertTransition(dfa, "A, D", '1', "A, B, D");
         }
 
+        [Fact]
+        public void Has101DeterminizationAndMinimization()
+        {
+            var dfa = BuildHas101Nfa().Determinize().Minimize(StateCombiner<string>.DefaultSetCombiner);
+
+            var expectedStates = new[] { "A", "A, B", "A, C", "A, B, C, D" }.Select(ParseStateSet);
+            var gotStates = dfa.States.ToHashSet();
+
+            var expectedAcceptingStates = new[] { "A, B, C, D" }.Select(ParseStateSet);
+            var gotAcceptingStates = dfa.AcceptingStates.ToHashSet();
+
+            Assert.True(gotStates.SetEquals(expectedStates));
+            Assert.True(gotAcceptingStates.SetEquals(expectedAcceptingStates));
+
+            AssertTransition(dfa, "A", '0', "A");
+            AssertTransition(dfa, "A", '1', "A, B");
+            AssertTransition(dfa, "A, B", '0', "A, C");
+            AssertTransition(dfa, "A, B", '1', "A, B");
+            AssertTransition(dfa, "A, C", '0', "A");
+            AssertTransition(dfa, "A, C", '1', "A, B, C, D");
+            AssertTransition(dfa, "A, B, C, D", '0', "A, B, C, D");
+            AssertTransition(dfa, "A, B, C, D", '1', "A, B, C, D");
+        }
+
         private static Nfa<string, char> BuildHas101Nfa()
         {
             var nfa = new Nfa<string, char>();
