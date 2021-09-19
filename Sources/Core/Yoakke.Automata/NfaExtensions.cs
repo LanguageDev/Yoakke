@@ -13,6 +13,8 @@ namespace Yoakke.Automata
     /// </summary>
     public static class NfaExtensions
     {
+        // TODO: Reconsider, see notes at interface
+#if false
         /// <summary>
         /// Constructs an equivalent NFA that has no epsilon-transitions.
         /// </summary>
@@ -34,6 +36,7 @@ namespace Yoakke.Automata
         public static IReadOnlyNfa<StateSet<TState>, TSymbol> EliminateEpsilonTransitions<TState, TSymbol>(
             this INfa<TState, TSymbol> nfa) =>
             nfa.EliminateEpsilonTransitions(StateCombiner<TState>.ToSetCombiner(nfa.StateComparer));
+#endif
 
         /// <summary>
         /// Constructs an equivalent DFA from this NFA.

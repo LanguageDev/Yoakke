@@ -31,6 +31,8 @@ namespace Yoakke.Automata
         /// <returns>The states of the epsilon-closure.</returns>
         public StateSet<TState> EpsilonClosure(TState state);
 
+        // TODO: Reconsider feature, it's a bit too expensive, almost determinization
+#if false
         /// <summary>
         /// Constructs an equivalent NFA that has no epsilon-transitions.
         /// </summary>
@@ -38,6 +40,7 @@ namespace Yoakke.Automata
         /// <param name="combiner">The state combiner to use.</param>
         /// <returns>The equivalent epsilon transition-less NFA.</returns>
         public IReadOnlyNfa<TResultState, TSymbol> EliminateEpsilonTransitions<TResultState>(IStateCombiner<TState, TResultState> combiner);
+#endif
 
         /// <summary>
         /// Constructs an equivalent DFA from this NFA.

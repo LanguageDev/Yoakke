@@ -19,6 +19,16 @@ namespace Yoakke.Automata.Tests
             Assert.Equal(to, gotTo);
         }
 
+        protected static void AssertTransitions(IReadOnlyNfa<StateSet<string>, char> nfa, string from, char on, string[] tos)
+        {
+            var fromSet = ParseStateSet(from);
+            var toSet = tos.Select(ParseStateSet).ToHashSet();
+
+            var gotTos = nfa.GetTransitions(new(new[] { fromSet }), on);
+
+            Assert.True(toSet.SetEquals(gotTos));
+        }
+
         protected static void AssertTransition(IReadOnlyDfa<StateSet<string>, char> dfa, string from, char on, string to)
         {
             var fromSet = ParseStateSet(from);
