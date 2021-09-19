@@ -41,7 +41,7 @@ namespace Yoakke.Automata.Internal
         public void WriteStart()
         {
             this.stringBuilder
-                .AppendLine("digraph automata {")
+                .AppendLine("digraph automaton {")
                 // Left-to-right layout
                 .AppendLine("    rankdir=LR;");
             // Double-circle accepting states

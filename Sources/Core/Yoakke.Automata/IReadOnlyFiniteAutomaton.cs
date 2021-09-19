@@ -47,7 +47,7 @@ namespace Yoakke.Automata
         public IEnumerable<TState> ReachableStates(TState initial);
 
         /// <summary>
-        /// Creates a Graphviz DOT code representation of this automata for visualization.
+        /// Creates a Graphviz DOT code representation of this automaton for visualization.
         /// </summary>
         /// <returns>The full graphviz code.</returns>
         public string ToDot();
