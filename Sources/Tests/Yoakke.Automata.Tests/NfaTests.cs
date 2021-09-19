@@ -28,7 +28,9 @@ namespace Yoakke.Automata.Tests
         [InlineData(new string[] { "1 -> A, B", "0 -> A, C", "1 -> A, B, D", "0 -> A, C, D", "0 -> A, D", "1 -> A, B, D" }, true)]
         public void Has101AcceptsTests(string[] transitionTexts, bool accepts)
         {
+            // NOTE: We test the determinized DFA alongside
             var nfa = BuildHas101Nfa();
+            var dfa = nfa.Determinize();
 
             var transitions = transitionTexts.Select(ParseTransition).ToList();
 
@@ -36,9 +38,14 @@ namespace Yoakke.Automata.Tests
             foreach (var (inputChar, expectedNextText) in transitions)
             {
                 var expectedNext = ParseStateSet(expectedNextText).ToHashSet();
-                var nextState = nfa.GetTransitions(state, inputChar);
-                Assert.True(expectedNext.SetEquals(nextState));
-                state = nextState;
+                // NFA
+                var nextNfState = nfa.GetTransitions(state, inputChar);
+                Assert.True(expectedNext.SetEquals(nextNfState));
+                // DFA
+                Assert.True(dfa.TryGetTransition(state, inputChar, out var nextDfState));
+                Assert.True(expectedNext.SetEquals(nextDfState));
+                // Update state
+                state = nextNfState;
             }
 
             var input = transitions.Select(t => t.Item1);
@@ -60,6 +67,17 @@ namespace Yoakke.Automata.Tests
             Assert.True(gotAcceptingStates.SetEquals(expectedAcceptingStates));
 
             AssertTransition(dfa, "A", '0', "A");
+            AssertTransition(dfa, "A", '1', "A, B");
+            AssertTransition(dfa, "A, B", '0', "A, C");
+            AssertTransition(dfa, "A, B", '1', "A, B");
+            AssertTransition(dfa, "A, C", '0', "A");
+            AssertTransition(dfa, "A, C", '1', "A, B, D");
+            AssertTransition(dfa, "A, B, D", '0', "A, C, D");
+            AssertTransition(dfa, "A, B, D", '1', "A, B, D");
+            AssertTransition(dfa, "A, C, D", '0', "A, D");
+            AssertTransition(dfa, "A, C, D", '1', "A, B, D");
+            AssertTransition(dfa, "A, D", '0', "A, D");
+            AssertTransition(dfa, "A, D", '1', "A, B, D");
         }
 
         private static Nfa<string, char> BuildHas101Nfa()

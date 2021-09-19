@@ -35,6 +35,7 @@ namespace Yoakke.Automata.Discrete
             .Concat(this.transitions.Values.SelectMany(t => t.Values.SelectMany(v => v)))
             .Concat(this.epsilonTransitions.Keys)
             .Concat(this.epsilonTransitions.Values.SelectMany(v => v))
+            .Concat(this.AcceptingStates)
             .Append(this.InitialState)
             .Distinct(this.StateComparer);
 

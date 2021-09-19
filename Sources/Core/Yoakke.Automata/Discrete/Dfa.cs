@@ -35,6 +35,7 @@ namespace Yoakke.Automata.Discrete
         /// <inheritdoc/>
         public IEnumerable<TState> States => this.transitions.Keys
             .Concat(this.transitions.Values.SelectMany(t => t.Select(v => v.Value)))
+            .Concat(this.AcceptingStates)
             .Append(this.InitialState)
             .Distinct(this.StateComparer);
 
