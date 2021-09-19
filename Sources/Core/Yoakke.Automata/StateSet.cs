@@ -10,6 +10,7 @@ using System.Text;
 
 namespace Yoakke.Automata
 {
+    // TODO: Make this a proper read-only set, add element -> set conversion, ...
     /// <summary>
     /// Represents a set of states that result from transformations merging multiple states.
     /// Useful for keeping readability.
