@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Generic.Polyfill;
 using System.Linq;
 using System.Text;
 using Yoakke.Automata.Internal;
@@ -15,7 +16,7 @@ namespace Yoakke.Automata.Discrete
     /// </summary>
     /// <typeparam name="TState">The state type.</typeparam>
     /// <typeparam name="TSymbol">The symbol type.</typeparam>
-    public class Nfa<TState, TSymbol> : INfa<TState, TSymbol>
+    public sealed class Nfa<TState, TSymbol> : INfa<TState, TSymbol>
     {
         /// <inheritdoc/>
         public TState InitialState { get; set; } = default!;

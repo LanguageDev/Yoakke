@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Generic.Polyfill;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
@@ -17,7 +18,7 @@ namespace Yoakke.Automata.Discrete
     /// </summary>
     /// <typeparam name="TState">The state type.</typeparam>
     /// <typeparam name="TSymbol">The symbol type.</typeparam>
-    public class Dfa<TState, TSymbol> : IDfa<TState, TSymbol>
+    public sealed class Dfa<TState, TSymbol> : IDfa<TState, TSymbol>
     {
         /// <inheritdoc/>
         public TState InitialState { get; set; } = default!;

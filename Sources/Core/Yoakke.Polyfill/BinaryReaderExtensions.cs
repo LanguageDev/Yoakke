@@ -2,7 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
-namespace System.IO
+namespace System.IO.Polyfill
 {
     /// <summary>
     /// Extensions for <see cref="BinaryReader"/>.

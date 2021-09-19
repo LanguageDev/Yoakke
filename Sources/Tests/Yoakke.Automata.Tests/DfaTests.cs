@@ -4,7 +4,7 @@ using Yoakke.Automata.Discrete;
 
 namespace Yoakke.Automata.Tests
 {
-    public class DfaTests
+    public class DfaTests : AutomatonTestBase
     {
         [Theory]
         [InlineData(new string[] { }, false)]
@@ -131,37 +131,6 @@ namespace Yoakke.Automata.Tests
             dfa.AddTransition("BA", 'a', "AA");
             dfa.AddTransition("BA", 'b', "AB");
             return dfa;
-        }
-
-        private static void AssertTransition<T>(IReadOnlyDfa<T, char> dfa, T from, char on, T to)
-        {
-            Assert.True(dfa.TryGetTransition(from, on, out var gotTo));
-            Assert.Equal(to, gotTo);
-        }
-
-        private static void AssertTransition(IReadOnlyDfa<StateSet<string>, char> dfa, string from, char on, string to)
-        {
-            var fromSet = ParseStateSet(from);
-            var toSet = ParseStateSet(to);
-
-            Assert.True(dfa.TryGetTransition(fromSet, on, out var gotTo));
-            AssertEqual(toSet, gotTo);
-        }
-
-        private static void AssertEqual(StateSet<string> expected, StateSet<string> got)
-        {
-            Assert.Equal(expected.Count, got.Count);
-            Assert.All(expected, e => got.Contains(e));
-            Assert.All(got, s => expected.Contains(s));
-        }
-
-        private static StateSet<string> ParseStateSet(string text) =>
-            new(text.Split(',').Select(t => t.Trim()).ToList());
-
-        private static (char, string) ParseTransition(string text)
-        {
-            var parts = text.Split("->");
-            return (parts[0].Trim()[0], parts[1].Trim());
         }
     }
 }

@@ -5,6 +5,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.IO.Polyfill;
 using Yoakke.Collections;
 using Yoakke.Platform.X86.Operands;
 

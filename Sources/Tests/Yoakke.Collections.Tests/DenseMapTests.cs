@@ -13,7 +13,7 @@ namespace Yoakke.Collections.Tests
     public class DenseMapTests
     {
         private static readonly ICombiner<HashSet<int>> HashSetCombiner =
-            Combiner<HashSet<int>>.Create((s1, s2) => EnumerableExtensions.ToHashSet(s1.Concat(s2)));
+            Combiner<HashSet<int>>.Create((s1, s2) => s1.Concat(s2).ToHashSet());
 
         [Theory]
         // Legacy tests
@@ -298,7 +298,7 @@ namespace Yoakke.Collections.Tests
             text = text.Trim();
             Assert.Equal('{', text[0]);
             Assert.Equal('}', text[^1]);
-            return EnumerableExtensions.ToHashSet(text[1..^1].Split(',').Select(t => int.Parse(t.Trim())));
+            return text[1..^1].Split(',').Select(t => int.Parse(t.Trim())).ToHashSet();
         }
 
         private static Interval<int> ParseInterval(string text) => Interval<int>.Parse(text.Trim(), int.Parse);

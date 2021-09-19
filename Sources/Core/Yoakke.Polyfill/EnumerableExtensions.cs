@@ -2,7 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
-namespace System.Collections.Generic
+namespace System.Collections.Generic.Polyfill
 {
     /// <summary>
     /// Extensions for <see cref="IEnumerable{T}"/>.

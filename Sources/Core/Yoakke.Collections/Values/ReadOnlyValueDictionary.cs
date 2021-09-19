@@ -5,6 +5,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Generic.Polyfill;
 using System.Linq;
 
 namespace Yoakke.Collections.Values

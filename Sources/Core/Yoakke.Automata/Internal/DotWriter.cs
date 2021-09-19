@@ -14,7 +14,7 @@ namespace Yoakke.Automata.Internal
     /// </summary>
     /// <typeparam name="TState">The state type.</typeparam>
     /// <typeparam name="TSymbol">The symbol type.</typeparam>
-    internal class DotWriter<TState, TSymbol>
+    internal sealed class DotWriter<TState, TSymbol>
     {
         private readonly IFiniteAutomaton<TState, TSymbol> automaton;
         private readonly Dictionary<TState, string> stateNames;
