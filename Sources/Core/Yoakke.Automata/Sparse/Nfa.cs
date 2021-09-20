@@ -613,7 +613,8 @@ namespace Yoakke.Automata.Sparse
         public bool Accepts(IEnumerable<TSymbol> input) => this.Accepts(new StateSet<TState>(this.InitialStates), input);
 
         /// <inheritdoc/>
-        public bool Accepts(TState initial, IEnumerable<TSymbol> input) => this.Accepts(this.EpsilonClosure(initial), input);
+        public bool Accepts(TState initial, IEnumerable<TSymbol> input) =>
+            this.Accepts(new StateSet<TState>(new[] { initial }), input);
 
         /// <inheritdoc/>
         public bool Accepts(StateSet<TState> initial, IEnumerable<TSymbol> input) => throw new NotImplementedException();
@@ -622,31 +623,41 @@ namespace Yoakke.Automata.Sparse
         public StateSet<TState> GetTransitions(StateSet<TState> from, TSymbol on) => throw new NotImplementedException();
 
         /// <inheritdoc/>
-        public bool AddTransition(TState from, TSymbol on, TState to) => throw new NotImplementedException();
+        public bool AddTransition(TState from, TSymbol on, TState to) =>
+            this.transitions.AddBool(new Transition<TState, TSymbol>(from, on, to));
 
         /// <inheritdoc/>
-        public bool RemoveTransition(TState from, TSymbol on, TState to) => throw new NotImplementedException();
+        public bool RemoveTransition(TState from, TSymbol on, TState to) =>
+            this.transitions.Remove(new Transition<TState, TSymbol>(from, on, to));
+
+        /// <inheritdoc/>
+        public bool AddEpsilonTransition(TState from, TState to) =>
+            this.transitions.AddBool(new EpsilonTransition<TState>(from, to));
+
+        /// <inheritdoc/>
+        public bool RemoveEpsilonTransition(TState from, TState to) =>
+            this.transitions.Remove(new EpsilonTransition<TState>(from, to));
 
         /// <inheritdoc/>
         public StateSet<TState> EpsilonClosure(TState state) => throw new NotImplementedException();
 
         /// <inheritdoc/>
-        public bool AddEpsilonTransition(TState from, TState to) => throw new NotImplementedException();
+        public bool RemoveUnreachable() => this.RemoveUnreachable(new StateSet<TState>(this.InitialStates));
 
         /// <inheritdoc/>
-        public bool RemoveEpsilonTransition(TState from, TState to) => throw new NotImplementedException();
+        public bool RemoveUnreachable(TState from) => this.RemoveUnreachable(new StateSet<TState>(new[] { from }));
 
         /// <inheritdoc/>
-        public bool RemoveUnreachable() => throw new NotImplementedException();
+        public bool RemoveUnreachable(StateSet<TState> from) => throw new NotImplementedException();
 
         /// <inheritdoc/>
-        public bool RemoveUnreachable(TState from) => throw new NotImplementedException();
+        public IEnumerable<TState> ReachableStates() => this.ReachableStates(new StateSet<TState>(this.InitialStates));
 
         /// <inheritdoc/>
-        public IEnumerable<TState> ReachableStates() => throw new NotImplementedException();
+        public IEnumerable<TState> ReachableStates(TState initial) => this.ReachableStates(new StateSet<TState>(new[] { initial }));
 
         /// <inheritdoc/>
-        public IEnumerable<TState> ReachableStates(TState initial) => throw new NotImplementedException();
+        public IEnumerable<TState> ReachableStates(StateSet<TState> initial) => throw new NotImplementedException();
 
         /// <inheritdoc/>
         public bool EliminateEpsilonTransitions() => throw new NotImplementedException();
@@ -656,6 +667,7 @@ namespace Yoakke.Automata.Sparse
             this.Determinize(combiner);
 
         /// <inheritdoc/>
-        public ISparseDfa<TResultState, TSymbol> Determinize<TResultState>(IStateCombiner<TState, TResultState> combiner) => throw new NotImplementedException();
+        public ISparseDfa<TResultState, TSymbol> Determinize<TResultState>(IStateCombiner<TState, TResultState> combiner) =>
+            throw new NotImplementedException();
     }
 }

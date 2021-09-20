@@ -37,6 +37,13 @@ namespace Yoakke.Automata
         public bool Accepts(StateSet<TState> initial, IEnumerable<TSymbol> input);
 
         /// <summary>
+        /// Finds all the reachable states from a given initial state.
+        /// </summary>
+        /// <param name="initial">The initial set of states to start from.</param>
+        /// <returns>The sequence of reachable states.</returns>
+        public IEnumerable<TState> ReachableStates(StateSet<TState> initial);
+
+        /// <summary>
         /// Retrieves the epsilon-closure of a given state, which is all the states reachable with only
         /// epsilon transitions.
         /// </summary>
