@@ -29,6 +29,14 @@ namespace Yoakke.Automata
         public StateSet<TState> GetTransitions(StateSet<TState> from, TSymbol on);
 
         /// <summary>
+        /// Checks if this automaton results in an accepting state for the given input.
+        /// </summary>
+        /// <param name="initial">The initial set of states to start from.</param>
+        /// <param name="input">The sequence of input to feed in for the automaton.</param>
+        /// <returns>True, if the automaton accepts the input, false otherwise.</returns>
+        public bool Accepts(StateSet<TState> initial, IEnumerable<TSymbol> input);
+
+        /// <summary>
         /// Retrieves the epsilon-closure of a given state, which is all the states reachable with only
         /// epsilon transitions.
         /// </summary>

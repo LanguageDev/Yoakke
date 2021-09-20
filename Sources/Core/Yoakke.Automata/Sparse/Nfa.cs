@@ -9,6 +9,7 @@ using System.Collections.Generic.Polyfill;
 using System.Linq;
 using System.Text;
 using Yoakke.Automata.Internal;
+using Yoakke.Collections;
 
 namespace Yoakke.Automata.Sparse
 {
@@ -568,13 +569,54 @@ namespace Yoakke.Automata.Sparse
         }
 
         /// <inheritdoc/>
-        public string ToDot() => throw new NotImplementedException();
+        public string ToDot()
+        {
+            var writer = new DotWriter<TState, TSymbol>(this.StateComparer);
+            writer.WriteStart("NFA");
+
+            // Accepting states
+            writer.WriteAcceptingStates(this.AcceptingStates);
+            // Non-accepting states
+            writer.WriteStates(this.States.Except(this.AcceptingStates, this.StateComparer));
+            // Initial states
+            writer.WriteInitialStates(this.InitialStates);
+
+            // Transitions
+            var tupleComparer = new TupleEqualityComparer<TState, TState>(this.StateComparer, this.StateComparer);
+            var transitions = this.Transitions.GroupBy(t => (t.Source, t.Destination), tupleComparer);
+            var remainingEpsilon = this.transitions.EpsilonTransitionMap
+                .ToDictionary(kv => kv.Key, kv => kv.Value.ToHashSet(this.StateComparer), this.StateComparer);
+            foreach (var group in transitions)
+            {
+                var from = group.Key.Item1;
+                var to = group.Key.Item2;
+                var on = string.Join(", ", group.Select(g => g.Symbol));
+                if (this.EpsilonTransitions.Contains(new(from, to)))
+                {
+                    remainingEpsilon[from].Remove(to);
+                    on = $"{on}, ε";
+                }
+                writer.WriteTransition(from, on, to);
+            }
+
+            // Epsilon-transitions
+            foreach (var (from, toSet) in remainingEpsilon)
+            {
+                foreach (var to in toSet) writer.WriteTransition(from, "ε", to);
+            }
+
+            writer.WriteEnd();
+            return writer.Code.ToString();
+        }
 
         /// <inheritdoc/>
-        public bool Accepts(IEnumerable<TSymbol> input) => throw new NotImplementedException();
+        public bool Accepts(IEnumerable<TSymbol> input) => this.Accepts(new StateSet<TState>(this.InitialStates), input);
 
         /// <inheritdoc/>
-        public bool Accepts(TState initial, IEnumerable<TSymbol> input) => throw new NotImplementedException();
+        public bool Accepts(TState initial, IEnumerable<TSymbol> input) => this.Accepts(this.EpsilonClosure(initial), input);
+
+        /// <inheritdoc/>
+        public bool Accepts(StateSet<TState> initial, IEnumerable<TSymbol> input) => throw new NotImplementedException();
 
         /// <inheritdoc/>
         public StateSet<TState> GetTransitions(StateSet<TState> from, TSymbol on) => throw new NotImplementedException();
