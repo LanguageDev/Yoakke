@@ -617,10 +617,30 @@ namespace Yoakke.Automata.Sparse
             this.Accepts(new StateSet<TState>(new[] { initial }), input);
 
         /// <inheritdoc/>
-        public bool Accepts(StateSet<TState> initial, IEnumerable<TSymbol> input) => throw new NotImplementedException();
+        public bool Accepts(StateSet<TState> initial, IEnumerable<TSymbol> input)
+        {
+            var currentState = initial;
+            foreach (var symbol in input)
+            {
+                currentState = this.GetTransitions(currentState, symbol);
+                if (currentState.Count == 0) return false;
+            }
+            return currentState.Any(s => this.AcceptingStates.Contains(s));
+        }
 
         /// <inheritdoc/>
-        public StateSet<TState> GetTransitions(StateSet<TState> from, TSymbol on) => throw new NotImplementedException();
+        public StateSet<TState> GetTransitions(StateSet<TState> from, TSymbol on)
+        {
+            var set = new HashSet<TState>(this.StateComparer);
+            foreach (var fromState in from.SelectMany(this.EpsilonClosureAsSet))
+            {
+                if (!this.transitions.TransitionMap.TryGetValue(fromState, out var onMap)) continue;
+                if (!onMap.TryGetValue(on, out var toSet)) continue;
+
+                foreach (var s in toSet) this.EpsilonClosure(set, s);
+            }
+            return new(set);
+        }
 
         /// <inheritdoc/>
         public bool AddTransition(TState from, TSymbol on, TState to) =>
@@ -639,7 +659,7 @@ namespace Yoakke.Automata.Sparse
             this.transitions.Remove(new EpsilonTransition<TState>(from, to));
 
         /// <inheritdoc/>
-        public StateSet<TState> EpsilonClosure(TState state) => throw new NotImplementedException();
+        public StateSet<TState> EpsilonClosure(TState state) => new(this.EpsilonClosureAsSet(state));
 
         /// <inheritdoc/>
         public bool RemoveUnreachable() => this.RemoveUnreachable(new StateSet<TState>(this.InitialStates));
@@ -648,7 +668,16 @@ namespace Yoakke.Automata.Sparse
         public bool RemoveUnreachable(TState from) => this.RemoveUnreachable(new StateSet<TState>(new[] { from }));
 
         /// <inheritdoc/>
-        public bool RemoveUnreachable(StateSet<TState> from) => throw new NotImplementedException();
+        public bool RemoveUnreachable(StateSet<TState> from)
+        {
+            var unreachable = this.transitions.AllStates.Except(this.ReachableStates(from), this.StateComparer);
+            var result = false;
+            foreach (var state in unreachable)
+            {
+                if (this.transitions.Remove(state)) result = true;
+            }
+            return result;
+        }
 
         /// <inheritdoc/>
         public IEnumerable<TState> ReachableStates() => this.ReachableStates(new StateSet<TState>(this.InitialStates));
@@ -667,7 +696,67 @@ namespace Yoakke.Automata.Sparse
             this.Determinize(combiner);
 
         /// <inheritdoc/>
-        public ISparseDfa<TResultState, TSymbol> Determinize<TResultState>(IStateCombiner<TState, TResultState> combiner) =>
-            throw new NotImplementedException();
+        public ISparseDfa<TResultState, TSymbol> Determinize<TResultState>(IStateCombiner<TState, TResultState> combiner)
+        {
+            var result = new Dfa<TResultState, TSymbol>(combiner.ResultComparer, this.SymbolComparer);
+            var visited = new HashSet<StateSet<TState>>(new StateSetEqualityComparer<TState>(this.StateComparer));
+            var stk = new Stack<StateSet<TState>>();
+            var first = new StateSet<TState>(this.InitialStates.SelectMany(this.EpsilonClosure).ToHashSet(this.StateComparer));
+            result.InitialState = combiner.Combine(first);
+            stk.Push(first);
+            while (stk.TryPop(out var top))
+            {
+                // Construct a transition map
+                // Essentially from the current set of states we calculate what set of states we arrive at for a given symbol
+                var resultTransitions = new Dictionary<TSymbol, HashSet<TState>>(this.SymbolComparer);
+                foreach (var primState in top)
+                {
+                    if (!this.transitions.TransitionMap.TryGetValue(primState, out var onMap)) continue;
+                    foreach (var (on, toSet) in onMap)
+                    {
+                        if (!resultTransitions.TryGetValue(on, out var existing))
+                        {
+                            existing = new(this.StateComparer);
+                            resultTransitions.Add(on, existing);
+                        }
+                        foreach (var to in toSet.SelectMany(this.EpsilonClosureAsSet)) existing.Add(to);
+                    }
+                }
+                // Add the transitions
+                var from = combiner.Combine(top);
+                foreach (var (on, toHashSet) in resultTransitions)
+                {
+                    var toSet = new StateSet<TState>(toHashSet);
+                    if (visited.Add(toSet)) stk.Push(toSet);
+                    var to = combiner.Combine(toSet);
+                    result.AddTransition(from, on, to);
+                }
+                // Register as accepting, if any
+                if (top.Any(s => this.AcceptingStates.Contains(s))) result.AcceptingStates.Add(from);
+            }
+            return result;
+        }
+
+        private HashSet<TState> EpsilonClosureAsSet(TState state)
+        {
+            var set = new HashSet<TState>(this.StateComparer);
+            this.EpsilonClosure(set, state);
+            return new(set);
+        }
+
+        private void EpsilonClosure(HashSet<TState> touched, TState state)
+        {
+            var stk = new Stack<TState>();
+            if (!touched.Add(state)) return;
+            stk.Push(state);
+            while (stk.TryPop(out var top))
+            {
+                if (!this.transitions.EpsilonTransitionMap.TryGetValue(top, out var onSet)) continue;
+                foreach (var to in onSet)
+                {
+                    if (touched.Add(to)) stk.Push(to);
+                }
+            }
+        }
     }
 }
