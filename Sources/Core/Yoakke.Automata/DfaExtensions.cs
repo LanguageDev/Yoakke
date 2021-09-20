@@ -14,8 +14,6 @@ namespace Yoakke.Automata
     /// </summary>
     public static class DfaExtensions
     {
-        #region ReadOnlyDfa
-
         /// <summary>
         /// Minimizes the DFA.
         /// </summary>
@@ -26,7 +24,7 @@ namespace Yoakke.Automata
         /// <param name="combiner">The state combiner to use.</param>
         /// <param name="differentiate">The list of states to differentiate from every other state.</param>
         /// <returns>The minimized DFA.</returns>
-        public static IReadOnlyDfa<TResultState, TSymbol> Minimize<TState, TSymbol, TResultState>(
+        public static IDfa<TResultState, TSymbol> Minimize<TState, TSymbol, TResultState>(
             this IReadOnlyDfa<TState, TSymbol> dfa,
             IStateCombiner<TState, TResultState> combiner,
             IEnumerable<TState> differentiate) =>
@@ -41,7 +39,7 @@ namespace Yoakke.Automata
         /// <param name="dfa">The DFA to minimize.</param>
         /// <param name="combiner">The state combiner to use.</param>
         /// <returns>The minimized DFA.</returns>
-        public static IReadOnlyDfa<TResultState, TSymbol> Minimize<TState, TSymbol, TResultState>(
+        public static IDfa<TResultState, TSymbol> Minimize<TState, TSymbol, TResultState>(
             this IReadOnlyDfa<TState, TSymbol> dfa,
             IStateCombiner<TState, TResultState> combiner) =>
             dfa.Minimize(combiner, Enumerable.Empty<(TState, TState)>());
@@ -53,7 +51,7 @@ namespace Yoakke.Automata
         /// <typeparam name="TSymbol">The symbol type.</typeparam>
         /// <param name="dfa">The DFA to minimize.</param>
         /// <returns>The minimized DFA.</returns>
-        public static IReadOnlyDfa<StateSet<TState>, TSymbol> Minimize<TState, TSymbol>(this IReadOnlyDfa<TState, TSymbol> dfa) =>
+        public static IDfa<StateSet<TState>, TSymbol> Minimize<TState, TSymbol>(this IReadOnlyDfa<TState, TSymbol> dfa) =>
             dfa.Minimize(StateCombiner<TState>.ToSetCombiner(dfa.StateComparer), Enumerable.Empty<(TState, TState)>());
 
         /// <summary>
@@ -64,7 +62,7 @@ namespace Yoakke.Automata
         /// <param name="dfa">The DFA to minimize.</param>
         /// <param name="differentiatePairs">The pairs of states to differentiate.</param>
         /// <returns>The minimized DFA.</returns>
-        public static IReadOnlyDfa<StateSet<TState>, TSymbol> Minimize<TState, TSymbol>(
+        public static IDfa<StateSet<TState>, TSymbol> Minimize<TState, TSymbol>(
             this IReadOnlyDfa<TState, TSymbol> dfa,
             IEnumerable<(TState, TState)> differentiatePairs) =>
             dfa.Minimize(StateCombiner<TState>.ToSetCombiner(dfa.StateComparer), differentiatePairs);
@@ -77,81 +75,9 @@ namespace Yoakke.Automata
         /// <param name="dfa">The DFA to minimize.</param>
         /// <param name="differentiate">The states to differentiate from every other state.</param>
         /// <returns>The minimized DFA.</returns>
-        public static IReadOnlyDfa<StateSet<TState>, TSymbol> Minimize<TState, TSymbol>(
+        public static IDfa<StateSet<TState>, TSymbol> Minimize<TState, TSymbol>(
             this IReadOnlyDfa<TState, TSymbol> dfa,
             IEnumerable<TState> differentiate) =>
             dfa.Minimize(StateCombiner<TState>.ToSetCombiner(dfa.StateComparer), differentiate);
-
-        #endregion
-
-        #region Dfa
-
-        /// <summary>
-        /// Minimizes the DFA.
-        /// </summary>
-        /// <typeparam name="TState">The state type.</typeparam>
-        /// <typeparam name="TSymbol">The symbol type.</typeparam>
-        /// <typeparam name="TResultState">The resulting state type.</typeparam>
-        /// <param name="dfa">The DFA to minimize.</param>
-        /// <param name="combiner">The state combiner to use.</param>
-        /// <param name="differentiate">The list of states to differentiate from every other state.</param>
-        /// <returns>The minimized DFA.</returns>
-        public static IDfa<TResultState, TSymbol> Minimize<TState, TSymbol, TResultState>(
-            this IDfa<TState, TSymbol> dfa,
-            IStateCombiner<TState, TResultState> combiner,
-            IEnumerable<TState> differentiate) =>
-            dfa.Minimize(combiner, differentiate.SelectMany(s1 => dfa.States.Select(s2 => (s1, s2))));
-
-        /// <summary>
-        /// Minimizes the DFA.
-        /// </summary>
-        /// <typeparam name="TState">The state type.</typeparam>
-        /// <typeparam name="TSymbol">The symbol type.</typeparam>
-        /// <typeparam name="TResultState">The resulting state type.</typeparam>
-        /// <param name="dfa">The DFA to minimize.</param>
-        /// <param name="combiner">The state combiner to use.</param>
-        /// <returns>The minimized DFA.</returns>
-        public static IDfa<TResultState, TSymbol> Minimize<TState, TSymbol, TResultState>(
-            this IDfa<TState, TSymbol> dfa,
-            IStateCombiner<TState, TResultState> combiner) =>
-            dfa.Minimize(combiner, Enumerable.Empty<(TState, TState)>());
-
-        /// <summary>
-        /// Minimizes the DFA.
-        /// </summary>
-        /// <typeparam name="TState">The state type.</typeparam>
-        /// <typeparam name="TSymbol">The symbol type.</typeparam>
-        /// <param name="dfa">The DFA to minimize.</param>
-        /// <returns>The minimized DFA.</returns>
-        public static IDfa<StateSet<TState>, TSymbol> Minimize<TState, TSymbol>(this IDfa<TState, TSymbol> dfa) =>
-            dfa.Minimize(StateCombiner<TState>.ToSetCombiner(dfa.StateComparer), Enumerable.Empty<(TState, TState)>());
-
-        /// <summary>
-        /// Minimizes the DFA.
-        /// </summary>
-        /// <typeparam name="TState">The state type.</typeparam>
-        /// <typeparam name="TSymbol">The symbol type.</typeparam>
-        /// <param name="dfa">The DFA to minimize.</param>
-        /// <param name="differentiatePairs">The pairs of states to differentiate.</param>
-        /// <returns>The minimized DFA.</returns>
-        public static IDfa<StateSet<TState>, TSymbol> Minimize<TState, TSymbol>(
-            this IDfa<TState, TSymbol> dfa,
-            IEnumerable<(TState, TState)> differentiatePairs) =>
-            dfa.Minimize(StateCombiner<TState>.ToSetCombiner(dfa.StateComparer), differentiatePairs);
-
-        /// <summary>
-        /// Minimizes the DFA.
-        /// </summary>
-        /// <typeparam name="TState">The state type.</typeparam>
-        /// <typeparam name="TSymbol">The symbol type.</typeparam>
-        /// <param name="dfa">The DFA to minimize.</param>
-        /// <param name="differentiate">The states to differentiate from every other state.</param>
-        /// <returns>The minimized DFA.</returns>
-        public static IDfa<StateSet<TState>, TSymbol> Minimize<TState, TSymbol>(
-            this IDfa<TState, TSymbol> dfa,
-            IEnumerable<TState> differentiate) =>
-            dfa.Minimize(StateCombiner<TState>.ToSetCombiner(dfa.StateComparer), differentiate);
-
-        #endregion
     }
 }

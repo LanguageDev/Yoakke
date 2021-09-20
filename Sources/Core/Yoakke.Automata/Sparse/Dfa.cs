@@ -21,17 +21,46 @@ namespace Yoakke.Automata.Sparse
     /// <typeparam name="TSymbol">The symbol type.</typeparam>
     public sealed class Dfa<TState, TSymbol> : ISparseDfa<TState, TSymbol>
     {
+        // Utility to solve the cross-references between the different collections we expose
         private class TransitionCollection
-            : IReadOnlyCollection<Transition<TState, TSymbol>>,
-              ICollection<Transition<TState, TSymbol>>
+            : IReadOnlyCollection<TState>, ICollection<TState>,
+              IReadOnlyCollection<Transition<TState, TSymbol>>, ICollection<Transition<TState, TSymbol>>
         {
+            /* Comparers */
+
             public IEqualityComparer<TState> StateComparer { get; }
 
             public IEqualityComparer<TSymbol> SymbolComparer { get; }
 
-            public Dictionary<TState, Dictionary<TSymbol, TState>> Underlying { get; }
+            /* All containers */
 
-            public int Count => this.Underlying.Values.Sum(v => v.Count);
+            public Dictionary<TState, Dictionary<TSymbol, TState>> TransitionMap { get; }
+
+            public HashSet<TState> AllStates { get; }
+
+            public HashSet<TState> AcceptingStates { get; }
+
+            private TState initialState = default!;
+
+            public TState InitialState
+            {
+                get => this.initialState;
+                set
+                {
+                    this.initialState = value;
+                    this.AllStates.Add(value);
+                }
+            }
+
+            /* Count crud */
+
+            int IReadOnlyCollection<TState>.Count => this.AllStates.Count;
+
+            int ICollection<TState>.Count => (this as IReadOnlyCollection<TState>).Count;
+
+            int IReadOnlyCollection<Transition<TState, TSymbol>>.Count => this.TransitionMap.Values.Sum(v => v.Count);
+
+            int ICollection<Transition<TState, TSymbol>>.Count => (this as IReadOnlyCollection<Transition<TState, TSymbol>>).Count;
 
             public bool IsReadOnly => false;
 
@@ -41,63 +70,148 @@ namespace Yoakke.Automata.Sparse
             {
                 this.StateComparer = stateComparer;
                 this.SymbolComparer = symbolComparer;
-                this.Underlying = new(stateComparer);
+                this.TransitionMap = new(stateComparer);
+                this.AllStates = new(stateComparer);
+                this.AcceptingStates = new(stateComparer);
             }
 
-            public void Clear() => this.Underlying.Clear();
-
-            public void Add(Transition<TState, TSymbol> item)
+            void ICollection<TState>.Clear()
             {
-                if (!this.Underlying.TryGetValue(item.Source, out var onMap))
+                this.TransitionMap.Clear();
+                this.AllStates.Clear();
+                this.AcceptingStates.Clear();
+                this.initialState = default!;
+            }
+
+            void ICollection<Transition<TState, TSymbol>>.Clear() => this.TransitionMap.Clear();
+
+            public void Add(TState item) => this.AllStates.Add(item);
+
+            public void Add(Transition<TState, TSymbol> item) => this.AddBool(item);
+
+            public bool AddBool(Transition<TState, TSymbol> item)
+            {
+                var onMap = this.GetTransitionsFrom(item.Source);
+                if (onMap.TryGetValue(item.Symbol, out var existing) && this.StateComparer.Equals(item.Destination, existing)) return false;
+                onMap[item.Symbol] = item.Destination;
+                this.AllStates.Add(item.Source);
+                this.AllStates.Add(item.Destination);
+                return true;
+            }
+
+            public bool Remove(TState item)
+            {
+                if (!this.AllStates.Remove(item)) return false;
+                this.AcceptingStates.Remove(item);
+                if (this.StateComparer.Equals(this.initialState, item)) this.initialState = default!;
+                // Remove both ways from transitions
+                this.TransitionMap.Remove(item);
+                foreach (var map in this.TransitionMap.Values)
                 {
-                    onMap = new(this.SymbolComparer);
-                    this.Underlying.Add(item.Source, onMap);
+                    var symbolToRemove = map
+                        .Where(kv => this.StateComparer.Equals(kv.Value, item))
+                        .Select(kv => kv.Key)
+                        .GetEnumerator();
+                    if (symbolToRemove.MoveNext()) map.Remove(symbolToRemove.Current);
                 }
-                onMap.Add(item.Symbol, item.Destination);
+                return true;
             }
 
             public bool Remove(Transition<TState, TSymbol> item)
             {
-                if (!this.Underlying.TryGetValue(item.Source, out var onMap)) return false;
+                if (!this.TransitionMap.TryGetValue(item.Source, out var onMap)) return false;
                 if (!onMap.TryGetValue(item.Symbol, out var gotTo)) return false;
                 if (!this.StateComparer.Equals(item.Destination, gotTo)) return false;
                 return onMap.Remove(item.Symbol);
             }
 
+            public bool Contains(TState item) => this.AllStates.Contains(item);
+
             public bool Contains(Transition<TState, TSymbol> item)
             {
-                if (!this.Underlying.TryGetValue(item.Source, out var onMap)) return false;
+                if (!this.TransitionMap.TryGetValue(item.Source, out var onMap)) return false;
                 if (!onMap.TryGetValue(item.Symbol, out var gotTo)) return false;
                 return this.StateComparer.Equals(item.Destination, gotTo);
             }
 
+            public void CopyTo(TState[] array, int arrayIndex) => this.AllStates.CopyTo(array, arrayIndex);
+
             public void CopyTo(Transition<TState, TSymbol>[] array, int arrayIndex)
             {
-                foreach (var t in this) array[arrayIndex++] = t;
+                foreach (var t in this as IEnumerable<Transition<TState, TSymbol>>) array[arrayIndex++] = t;
             }
 
-            public IEnumerator<Transition<TState, TSymbol>> GetEnumerator()
+            IEnumerator<Transition<TState, TSymbol>> IEnumerable<Transition<TState, TSymbol>>.GetEnumerator()
             {
-                foreach (var (from, onMap) in this.Underlying)
+                foreach (var (from, onMap) in this.TransitionMap)
                 {
                     foreach (var (on, to) in onMap) yield return new(from, on, to);
                 }
             }
 
-            IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
+            IEnumerator<TState> IEnumerable<TState>.GetEnumerator() => this.AllStates.GetEnumerator();
+
+            IEnumerator IEnumerable.GetEnumerator() => throw new NotSupportedException();
+
+            public Dictionary<TSymbol, TState> GetTransitionsFrom(TState from)
+            {
+                if (!this.TransitionMap.TryGetValue(from, out var onMap))
+                {
+                    onMap = new(this.SymbolComparer);
+                    this.TransitionMap.Add(from, onMap);
+                }
+                return onMap;
+            }
+        }
+
+        // Helper to expose the accepting states
+        private class AcceptingCollection : IReadOnlyCollection<TState>, ICollection<TState>
+        {
+            public int Count => this.transitions.AcceptingStates.Count;
+
+            public bool IsReadOnly => false;
+
+            private readonly TransitionCollection transitions;
+
+            public AcceptingCollection(TransitionCollection transitions)
+            {
+                this.transitions = transitions;
+            }
+
+            public void Add(TState item)
+            {
+                this.transitions.AcceptingStates.Add(item);
+                this.transitions.Add(item);
+            }
+
+            public void Clear() => this.transitions.AcceptingStates.Clear();
+
+            public bool Contains(TState item) => this.transitions.AcceptingStates.Contains(item);
+
+            public void CopyTo(TState[] array, int arrayIndex) => this.transitions.AcceptingStates.CopyTo(array, arrayIndex);
+
+            public bool Remove(TState item) => this.transitions.AcceptingStates.Remove(item);
+
+            public IEnumerator<TState> GetEnumerator() => this.transitions.AcceptingStates.GetEnumerator();
+
+            IEnumerator IEnumerable.GetEnumerator() => (this.transitions.AcceptingStates as IEnumerable).GetEnumerator();
         }
 
         /// <inheritdoc/>
-        public TState InitialState { get; set; } = default!;
+        public TState InitialState
+        {
+            get => this.transitions.InitialState;
+            set => this.transitions.InitialState = value;
+        }
 
         /// <inheritdoc/>
-        TState IReadOnlyFiniteAutomaton<TState, TSymbol>.InitialState => this.InitialState;
+        TState IReadOnlyDfa<TState, TSymbol>.InitialState => this.InitialState;
 
         /// <inheritdoc/>
-        public ICollection<TState> AcceptingStates => this.acceptingStates;
+        public ICollection<TState> AcceptingStates => this.accepting;
 
         /// <inheritdoc/>
-        IReadOnlyCollection<TState> IReadOnlyFiniteAutomaton<TState, TSymbol>.AcceptingStates => this.acceptingStates;
+        IReadOnlyCollection<TState> IReadOnlyFiniteAutomaton<TState, TSymbol>.AcceptingStates => this.accepting;
 
         /// <inheritdoc/>
         public ICollection<Transition<TState, TSymbol>> Transitions => this.transitions;
@@ -106,11 +220,10 @@ namespace Yoakke.Automata.Sparse
         IReadOnlyCollection<Transition<TState, TSymbol>> IReadOnlySparseFiniteAutomaton<TState, TSymbol>.Transitions => this.transitions;
 
         /// <inheritdoc/>
-        public IEnumerable<TState> States => this.transitions
-            .SelectMany(t => new[] { t.Source, t.Destination })
-            .Concat(this.AcceptingStates)
-            .Append(this.InitialState)
-            .Distinct(this.StateComparer);
+        public ICollection<TState> States => this.transitions;
+
+        /// <inheritdoc/>
+        IReadOnlyCollection<TState> IReadOnlyFiniteAutomaton<TState, TSymbol>.States => this.transitions;
 
         /// <inheritdoc/>
         public IEqualityComparer<TState> StateComparer => this.transitions.StateComparer;
@@ -120,8 +233,8 @@ namespace Yoakke.Automata.Sparse
         /// </summary>
         public IEqualityComparer<TSymbol> SymbolComparer => this.transitions.SymbolComparer;
 
-        private readonly HashSet<TState> acceptingStates;
         private readonly TransitionCollection transitions;
+        private readonly AcceptingCollection accepting;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Dfa{TState, TSymbol}"/> class.
@@ -138,32 +251,40 @@ namespace Yoakke.Automata.Sparse
         /// <param name="symbolComparer">The symbol comparer to use.</param>
         public Dfa(IEqualityComparer<TState> stateComparer, IEqualityComparer<TSymbol> symbolComparer)
         {
-            this.acceptingStates = new(stateComparer);
             this.transitions = new(stateComparer, symbolComparer);
+            this.accepting = new(this.transitions);
         }
 
         /// <inheritdoc/>
         public string ToDot()
         {
-            var helper = new DotWriter<TState, TSymbol>(this);
-            helper.WriteStart();
+            var writer = new DotWriter<TState, TSymbol>(this.StateComparer);
+            writer.WriteStart("DFA");
 
-            // Go through each transition
-            foreach (var (from, onMap) in this.transitions.Underlying)
+            // Accepting states
+            writer.WriteAcceptingStates(this.AcceptingStates);
+            // Non-accepting states
+            writer.WriteStates(this.States.Except(this.AcceptingStates, this.StateComparer));
+            // Initial states
+            writer.WriteInitialStates(new[] { this.InitialState });
+
+            // Transitions
+            var tupleComparer = new TupleEqualityComparer<TState, TState>(this.StateComparer, this.StateComparer);
+            var transitions = this.Transitions.GroupBy(t => (t.Source, t.Destination), tupleComparer);
+            foreach (var group in transitions)
             {
-                // For a bit more dense repr, we group by to states so we can draw a single arrow between 2 states
-                var toOnGroup = onMap.GroupBy(kv => kv.Value, this.StateComparer);
-                foreach (var group in toOnGroup)
-                {
-                    var to = group.Key;
-                    var ons = string.Join(", ", group.Select(kv => kv.Key));
-                    helper.WriteTransition(from, ons, to);
-                }
+                var from = group.Key.Item1;
+                var to = group.Key.Item2;
+                var on = string.Join(", ", group.Select(g => g.Symbol));
+                writer.WriteTransition(from, on, to);
             }
 
-            helper.WriteEnd();
-            return helper.Code;
+            writer.WriteEnd();
+            return writer.Code.ToString();
         }
+
+        /// <inheritdoc/>
+        public bool Accepts(IEnumerable<TSymbol> input) => this.Accepts(this.InitialState, input);
 
         /// <inheritdoc/>
         public bool Accepts(TState initial, IEnumerable<TSymbol> input)
@@ -174,22 +295,18 @@ namespace Yoakke.Automata.Sparse
                 if (!this.TryGetTransition(currentState, symbol, out var destinationState)) return false;
                 currentState = destinationState;
             }
-            return this.acceptingStates.Contains(currentState);
+            return this.AcceptingStates.Contains(currentState);
         }
 
         /// <inheritdoc/>
         public bool IsComplete(IEnumerable<TSymbol> alphabet) =>
                !alphabet.Any()
-            || this.States.All(state =>
-               {
-                   if (!this.transitions.Underlying.TryGetValue(state, out var onMap)) return false;
-                   return alphabet.All(symbol => onMap.ContainsKey(symbol));
-               });
+            || this.States.All(state => alphabet.All(symbol => this.TryGetTransition(state, symbol, out _)));
 
         /// <inheritdoc/>
         public bool TryGetTransition(TState from, TSymbol on, [MaybeNullWhen(false)] out TState to)
         {
-            if (!this.transitions.Underlying.TryGetValue(from, out var fromMap))
+            if (!this.transitions.TransitionMap.TryGetValue(from, out var fromMap))
             {
                 to = default;
                 return false;
@@ -198,32 +315,29 @@ namespace Yoakke.Automata.Sparse
         }
 
         /// <inheritdoc/>
-        public bool AddTransition(TState from, TSymbol on, TState to)
-        {
-            var onMap = this.GetTransitionsFrom(from);
-            if (onMap.ContainsKey(on)) return false;
-            onMap.Add(on, to);
-            return true;
-        }
+        public bool AddTransition(TState from, TSymbol on, TState to) => this.transitions.AddBool(new(from, on, to));
 
         /// <inheritdoc/>
         public bool RemoveTransition(TState from, TSymbol on, TState to) =>
-            this.transitions.Remove(new(from, on, to));
+            this.transitions.Remove(new Transition<TState, TSymbol>(from, on, to));
+
+        /// <inheritdoc/>
+        public bool RemoveUnreachable() => this.RemoveUnreachable(this.InitialState);
 
         /// <inheritdoc/>
         public bool RemoveUnreachable(TState from)
         {
-            var touched = this.ReachableStates(from);
-
-            // Prune transitions that are not in this set
+            var unreachable = this.transitions.AllStates.Except(this.ReachableStates(from), this.StateComparer);
             var result = false;
-            var untouchedStates = this.transitions.Underlying.Keys.Except(touched, this.StateComparer);
-            foreach (var untouched in untouchedStates)
+            foreach (var state in unreachable)
             {
-                if (this.transitions.Underlying.Remove(untouched)) result = true;
+                if (this.transitions.Remove(state)) result = true;
             }
             return result;
         }
+
+        /// <inheritdoc/>
+        public IEnumerable<TState> ReachableStates() => this.ReachableStates(this.InitialState);
 
         /// <inheritdoc/>
         public IEnumerable<TState> ReachableStates(TState initial)
@@ -235,7 +349,8 @@ namespace Yoakke.Automata.Sparse
             while (stk.TryPop(out var top))
             {
                 yield return top;
-                if (!this.transitions.Underlying.TryGetValue(top, out var onMap)) continue;
+
+                if (!this.transitions.TransitionMap.TryGetValue(top, out var onMap)) continue;
                 foreach (var to in onMap.Values)
                 {
                     if (touched.Add(to)) stk.Push(to);
@@ -246,22 +361,23 @@ namespace Yoakke.Automata.Sparse
         /// <inheritdoc/>
         public bool Complete(IEnumerable<TSymbol> alphabet, TState trap)
         {
-            if (!alphabet.Any()) return false;
+            if (!alphabet.Any()) return true;
 
             var result = false;
             foreach (var state in this.States.ToList())
             {
-                var onMap = this.GetTransitionsFrom(state);
+                var onMap = this.transitions.GetTransitionsFrom(state);
                 foreach (var symbol in alphabet)
                 {
-                    if (TryAdd(onMap, symbol, trap)) result = true;
+                    if (onMap.ContainsKey(symbol)) continue;
+                    this.AddTransition(state, symbol, trap);
+                    result = true;
                 }
             }
             // If we added any transitions to trap, we also need to wire trap into itself
             if (result)
             {
-                var onTrap = this.GetTransitionsFrom(trap);
-                foreach (var symbol in alphabet) TryAdd(onTrap, symbol, trap);
+                foreach (var symbol in alphabet) this.AddTransition(trap, symbol, trap);
             }
             return result;
         }
@@ -311,8 +427,8 @@ namespace Yoakke.Automata.Sparse
                         var s2 = states[j];
 
                         if (table.Contains((s1, s2))) continue;
-                        if (!this.transitions.Underlying.TryGetValue(s1, out var s1on)
-                         || !this.transitions.Underlying.TryGetValue(s2, out var s2on)) continue;
+                        if (!this.transitions.TransitionMap.TryGetValue(s1, out var s1on)
+                         || !this.transitions.TransitionMap.TryGetValue(s2, out var s2on)) continue;
 
                         foreach (var (on, to1) in s1on)
                         {
@@ -346,38 +462,16 @@ namespace Yoakke.Automata.Sparse
             }
 
             // Now build the new transitions with the state equivalences
-            foreach (var (from, on, to) in this.transitions)
+            foreach (var (from, on, to) in this.Transitions)
             {
                 result.AddTransition(stateMap[from], on, stateMap[to]);
             }
 
             // Introduce the initial state and all the accepting states
             result.InitialState = stateMap[this.InitialState];
-            foreach (var s in this.acceptingStates) result.AcceptingStates.Add(stateMap[s]);
+            foreach (var s in this.transitions.AcceptingStates) result.AcceptingStates.Add(stateMap[s]);
 
             return result;
-        }
-
-        /// <inheritdoc/>
-        IReadOnlyDfa<TResultState, TSymbol> IReadOnlyDfa<TState, TSymbol>.Minimize<TResultState>(
-            IStateCombiner<TState, TResultState> combiner,
-            IEnumerable<(TState, TState)> differentiatePairs) => this.Minimize(combiner, differentiatePairs);
-
-        private Dictionary<TSymbol, TState> GetTransitionsFrom(TState state)
-        {
-            if (!this.transitions.Underlying.TryGetValue(state, out var onState))
-            {
-                onState = new(this.SymbolComparer);
-                this.transitions.Underlying.Add(state, onState);
-            }
-            return onState;
-        }
-
-        private static bool TryAdd<TKey, TValue>(Dictionary<TKey, TValue> dict, TKey key, TValue value)
-        {
-            if (dict.ContainsKey(key)) return false;
-            dict.Add(key, value);
-            return true;
         }
     }
 }

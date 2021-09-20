@@ -29,10 +29,23 @@ namespace Yoakke.Automata
         /// <summary>
         /// Checks if this automaton results in an accepting state for the given input.
         /// </summary>
+        /// <param name="input">The sequence of input to feed in for the automaton.</param>
+        /// <returns>True, if the automaton accepts the input, false otherwise.</returns>
+        public bool Accepts(IEnumerable<TSymbol> input);
+
+        /// <summary>
+        /// Checks if this automaton results in an accepting state for the given input.
+        /// </summary>
         /// <param name="initial">The initial state to start from.</param>
         /// <param name="input">The sequence of input to feed in for the automaton.</param>
         /// <returns>True, if the automaton accepts the input, false otherwise.</returns>
         public bool Accepts(TState initial, IEnumerable<TSymbol> input);
+
+        /// <summary>
+        /// Finds all the reachable states from the initial state.
+        /// </summary>
+        /// <returns>The sequence of reachable states.</returns>
+        public IEnumerable<TState> ReachableStates();
 
         /// <summary>
         /// Finds all the reachable states from a given initial state.

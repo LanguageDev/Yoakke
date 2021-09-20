@@ -34,7 +34,7 @@ namespace Yoakke.Automata.Tests
 
             var transitions = transitionTexts.Select(ParseTransition).ToList();
 
-            var state = new StateSet<string>(new[] { nfa.InitialState });
+            var state = new StateSet<string>(nfa.InitialStates);
             foreach (var (inputChar, expectedNextText) in transitions)
             {
                 var expectedNext = ParseStateSet(expectedNextText).ToHashSet();
@@ -107,7 +107,7 @@ namespace Yoakke.Automata.Tests
         private static Nfa<string, char> BuildHas101Nfa()
         {
             var nfa = new Nfa<string, char>();
-            nfa.InitialState = "A";
+            nfa.InitialStates.Add("A");
             nfa.AcceptingStates.Add("D");
             nfa.AddTransition("A", '0', "A");
             nfa.AddTransition("A", '1', "A");

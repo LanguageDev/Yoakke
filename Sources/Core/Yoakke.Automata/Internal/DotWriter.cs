@@ -16,65 +16,82 @@ namespace Yoakke.Automata.Internal
     /// <typeparam name="TSymbol">The symbol type.</typeparam>
     internal sealed class DotWriter<TState, TSymbol>
     {
-        private readonly IFiniteAutomaton<TState, TSymbol> automaton;
-        private readonly Dictionary<TState, string> stateNames;
-        private readonly StringBuilder stringBuilder = new();
-
         /// <summary>
-        /// The written code.
+        /// The builder that writes the DOT code.
         /// </summary>
-        public string Code => this.stringBuilder.ToString();
+        public StringBuilder Code { get; } = new();
+
+        private readonly Dictionary<TState, string> stateNames;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DotWriter{TState, TSymbol}"/> class.
         /// </summary>
-        /// <param name="automaton">The automaton to generate the code for.</param>
-        public DotWriter(IFiniteAutomaton<TState, TSymbol> automaton)
+        /// <param name="stateComparer">The state comparer to use.</param>
+        public DotWriter(IEqualityComparer<TState> stateComparer)
         {
-            this.automaton = automaton;
-            this.stateNames = new(automaton.StateComparer);
+            this.stateNames = new(stateComparer);
         }
 
         /// <summary>
         /// Writes the start of the DOT code.
         /// </summary>
-        public void WriteStart()
+        /// <param name="name">The name to give the graph.</param>
+        public void WriteStart(string name)
         {
-            this.stringBuilder
-                .AppendLine("digraph automaton {")
-                // Left-to-right layout
-                .AppendLine("    rankdir=LR;");
-            // Double-circle accepting states
-            if (this.automaton.AcceptingStates.Count > 0)
-            {
-                var acceptingStates = string.Join(" ", this.automaton.AcceptingStates.Select(s => $"\"{this.GetStateName(s)}\""));
-                this.stringBuilder.AppendLine($"    node [shape=doublecircle]; {acceptingStates};");
-            }
-            // Rest are simple circle
-            this.stringBuilder.AppendLine($"    node [shape=circle];");
+            this.Code.AppendLine($"digraph {name} {{");
+            // Notate left-to-right layout
+            this.Code.AppendLine("    rankdir=LR;");
         }
 
         /// <summary>
         /// Writes the end of the DOT code.
         /// </summary>
-        public void WriteEnd()
+        public void WriteEnd() => this.Code.Append('}');
+
+        /// <summary>
+        /// Writes a sequence of non-accepting states to the graph.
+        /// </summary>
+        /// <param name="states">The sequence of accepting states.</param>
+        public void WriteStates(IEnumerable<TState> states)
         {
-            // Initial state
-            this.stringBuilder
-                .AppendLine("    init [label=\"\", shape=point]")
-                .AppendLine($"    init -> \"{this.GetStateName(this.automaton.InitialState)}\"")
-                .Append('}');
+            this.Code.AppendLine("    node [shape=circle];");
+            this.Code.AppendLine($"    {string.Join(" ", states.Select(this.GetStateName))};");
         }
 
         /// <summary>
-        /// Writes a transition to the DOT code.
+        /// Writes a sequence of initial states to the graph.
+        /// </summary>
+        /// <param name="states">The sequence of initial states.</param>
+        public void WriteInitialStates(IEnumerable<TState> states)
+        {
+            this.Code.AppendLine("    node [shape=point, label=\"\"];");
+            var i = 0;
+            foreach (var state in states)
+            {
+                this.Code.AppendLine($"    init_{i} -> {this.GetStateName(state)};");
+                ++i;
+            }
+        }
+
+        /// <summary>
+        /// Writes a sequence of accepting states to the graph.
+        /// </summary>
+        /// <param name="states">The sequence of accepting states.</param>
+        public void WriteAcceptingStates(IEnumerable<TState> states)
+        {
+            this.Code.AppendLine("    node [shape=doublecircle];");
+            this.Code.AppendLine($"    {string.Join(" ", states.Select(this.GetStateName))};");
+        }
+
+        /// <summary>
+        /// Writes a transition to the graph.
         /// </summary>
         /// <param name="from">The source state.</param>
         /// <param name="on">The string representation of the transition symbol(s).</param>
         /// <param name="to">The destination state.</param>
         public void WriteTransition(TState from, string on, TState to)
         {
-            this.stringBuilder.AppendLine($"    \"{this.GetStateName(from)}\" -> \"{this.GetStateName(to)}\" [label = \"{on}\"];");
+            this.Code.AppendLine($"    \"{this.GetStateName(from)}\" -> \"{this.GetStateName(to)}\" [label=\"{on}\"];");
         }
 
         private string GetStateName(TState state)

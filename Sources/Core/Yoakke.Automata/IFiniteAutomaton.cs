@@ -44,6 +44,12 @@ namespace Yoakke.Automata
         public bool RemoveTransition(TState from, TSymbol on, TState to);
 
         /// <summary>
+        /// Removes states and transitions from the automaton that are not reachable from the initial state.
+        /// </summary>
+        /// <returns>True, if there were unreachable states, false otherwise.</returns>
+        public bool RemoveUnreachable();
+
+        /// <summary>
         /// Removes states and transitions from the automaton that are not reachable from a given state.
         /// </summary>
         /// <param name="from">The state to check reachability from.</param>
