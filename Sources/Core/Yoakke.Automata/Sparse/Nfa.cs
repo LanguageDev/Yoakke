@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using Yoakke.Automata.Internal;
 
-namespace Yoakke.Automata.Discrete
+namespace Yoakke.Automata.Sparse
 {
     /// <summary>
     /// A generic NFA implementation.

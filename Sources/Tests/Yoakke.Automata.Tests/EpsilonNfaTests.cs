@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
-using Yoakke.Automata.Discrete;
+using Yoakke.Automata.Sparse;
 
 namespace Yoakke.Automata.Tests
 {

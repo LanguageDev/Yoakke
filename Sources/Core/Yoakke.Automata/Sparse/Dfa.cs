@@ -3,6 +3,7 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Generic.Polyfill;
 using System.Diagnostics.CodeAnalysis;
@@ -11,15 +12,83 @@ using System.Text;
 using Yoakke.Automata.Internal;
 using Yoakke.Collections;
 
-namespace Yoakke.Automata.Discrete
+namespace Yoakke.Automata.Sparse
 {
     /// <summary>
     /// A generic DFA implementation.
     /// </summary>
     /// <typeparam name="TState">The state type.</typeparam>
     /// <typeparam name="TSymbol">The symbol type.</typeparam>
-    public sealed class Dfa<TState, TSymbol> : IDfa<TState, TSymbol>
+    public sealed class Dfa<TState, TSymbol>
+        : IDfa<TState, TSymbol>,
+          ISparseFiniteAutomaton<TState, TSymbol>
     {
+        private class TransitionCollection
+            : IReadOnlyCollection<Transition<TState, TSymbol>>,
+              ICollection<Transition<TState, TSymbol>>
+        {
+            public IEqualityComparer<TState> StateComparer { get; }
+
+            public IEqualityComparer<TSymbol> SymbolComparer { get; }
+
+            public Dictionary<TState, Dictionary<TSymbol, TState>> Underlying { get; }
+
+            public int Count => this.Underlying.Values.Sum(v => v.Count);
+
+            public bool IsReadOnly => false;
+
+            public TransitionCollection(
+                IEqualityComparer<TState> stateComparer,
+                IEqualityComparer<TSymbol> symbolComparer)
+            {
+                this.StateComparer = stateComparer;
+                this.SymbolComparer = symbolComparer;
+                this.Underlying = new(stateComparer);
+            }
+
+            public void Clear() => this.Underlying.Clear();
+
+            public void Add(Transition<TState, TSymbol> item)
+            {
+                if (!this.Underlying.TryGetValue(item.Source, out var onMap))
+                {
+                    onMap = new(this.SymbolComparer);
+                    this.Underlying.Add(item.Source, onMap);
+                }
+                onMap.Add(item.Symbol, item.Destination);
+            }
+
+            public bool Remove(Transition<TState, TSymbol> item)
+            {
+                if (!this.Underlying.TryGetValue(item.Source, out var onMap)) return false;
+                if (!onMap.TryGetValue(item.Symbol, out var gotTo)) return false;
+                if (!this.StateComparer.Equals(item.Destination, gotTo)) return false;
+                return onMap.Remove(item.Symbol);
+            }
+
+            public bool Contains(Transition<TState, TSymbol> item)
+            {
+                if (!this.Underlying.TryGetValue(item.Source, out var onMap)) return false;
+                if (!onMap.TryGetValue(item.Symbol, out var gotTo)) return false;
+                return this.StateComparer.Equals(item.Destination, gotTo);
+            }
+
+            public void CopyTo(Transition<TState, TSymbol>[] array, int arrayIndex)
+            {
+                foreach (var t in this) array[arrayIndex++] = t;
+            }
+
+            public IEnumerator<Transition<TState, TSymbol>> GetEnumerator()
+            {
+                foreach (var (from, onMap) in this.Underlying)
+                {
+                    foreach (var (on, to) in onMap) yield return new(from, on, to);
+                }
+            }
+
+            IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
+        }
+
         /// <inheritdoc/>
         public TState InitialState { get; set; } = default!;
 
@@ -33,22 +102,28 @@ namespace Yoakke.Automata.Discrete
         IReadOnlyCollection<TState> IReadOnlyFiniteAutomaton<TState, TSymbol>.AcceptingStates => this.acceptingStates;
 
         /// <inheritdoc/>
-        public IEnumerable<TState> States => this.transitions.Keys
-            .Concat(this.transitions.Values.SelectMany(t => t.Select(v => v.Value)))
+        public ICollection<Transition<TState, TSymbol>> Transitions => this.transitions;
+
+        /// <inheritdoc/>
+        IReadOnlyCollection<Transition<TState, TSymbol>> IReadOnlySparseFiniteAutomaton<TState, TSymbol>.Transitions => this.transitions;
+
+        /// <inheritdoc/>
+        public IEnumerable<TState> States => this.transitions
+            .SelectMany(t => new[] { t.Source, t.Destination })
             .Concat(this.AcceptingStates)
             .Append(this.InitialState)
             .Distinct(this.StateComparer);
 
         /// <inheritdoc/>
-        public IEqualityComparer<TState> StateComparer { get; }
+        public IEqualityComparer<TState> StateComparer => this.transitions.StateComparer;
 
         /// <summary>
         /// The comparer used for alphabet symbols.
         /// </summary>
-        public IEqualityComparer<TSymbol> SymbolComparer { get; }
+        public IEqualityComparer<TSymbol> SymbolComparer => this.transitions.SymbolComparer;
 
         private readonly HashSet<TState> acceptingStates;
-        private readonly Dictionary<TState, Dictionary<TSymbol, TState>> transitions;
+        private readonly TransitionCollection transitions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Dfa{TState, TSymbol}"/> class.
@@ -65,11 +140,8 @@ namespace Yoakke.Automata.Discrete
         /// <param name="symbolComparer">The symbol comparer to use.</param>
         public Dfa(IEqualityComparer<TState> stateComparer, IEqualityComparer<TSymbol> symbolComparer)
         {
-            this.StateComparer = stateComparer;
-            this.SymbolComparer = symbolComparer;
-
             this.acceptingStates = new(stateComparer);
-            this.transitions = new(stateComparer);
+            this.transitions = new(stateComparer, symbolComparer);
         }
 
         /// <inheritdoc/>
@@ -79,7 +151,7 @@ namespace Yoakke.Automata.Discrete
             helper.WriteStart();
 
             // Go through each transition
-            foreach (var (from, onMap) in this.transitions)
+            foreach (var (from, onMap) in this.transitions.Underlying)
             {
                 // For a bit more dense repr, we group by to states so we can draw a single arrow between 2 states
                 var toOnGroup = onMap.GroupBy(kv => kv.Value, this.StateComparer);
@@ -112,14 +184,14 @@ namespace Yoakke.Automata.Discrete
                !alphabet.Any()
             || this.States.All(state =>
                {
-                   if (!this.transitions.TryGetValue(state, out var onMap)) return false;
+                   if (!this.transitions.Underlying.TryGetValue(state, out var onMap)) return false;
                    return alphabet.All(symbol => onMap.ContainsKey(symbol));
                });
 
         /// <inheritdoc/>
         public bool TryGetTransition(TState from, TSymbol on, [MaybeNullWhen(false)] out TState to)
         {
-            if (!this.transitions.TryGetValue(from, out var fromMap))
+            if (!this.transitions.Underlying.TryGetValue(from, out var fromMap))
             {
                 to = default;
                 return false;
@@ -137,13 +209,8 @@ namespace Yoakke.Automata.Discrete
         }
 
         /// <inheritdoc/>
-        public bool RemoveTransition(TState from, TSymbol on, TState to)
-        {
-            if (!this.transitions.TryGetValue(from, out var onMap)) return false;
-            if (!onMap.TryGetValue(on, out var existingTo)) return false;
-            if (!this.StateComparer.Equals(to, existingTo)) return false;
-            return onMap.Remove(on);
-        }
+        public bool RemoveTransition(TState from, TSymbol on, TState to) =>
+            this.transitions.Remove(new(from, on, to));
 
         /// <inheritdoc/>
         public bool RemoveUnreachable(TState from)
@@ -152,10 +219,10 @@ namespace Yoakke.Automata.Discrete
 
             // Prune transitions that are not in this set
             var result = false;
-            var untouchedStates = this.transitions.Keys.Except(touched, this.StateComparer);
+            var untouchedStates = this.transitions.Underlying.Keys.Except(touched, this.StateComparer);
             foreach (var untouched in untouchedStates)
             {
-                if (this.transitions.Remove(untouched)) result = true;
+                if (this.transitions.Underlying.Remove(untouched)) result = true;
             }
             return result;
         }
@@ -170,7 +237,7 @@ namespace Yoakke.Automata.Discrete
             while (stk.TryPop(out var top))
             {
                 yield return top;
-                if (!this.transitions.TryGetValue(top, out var onMap)) continue;
+                if (!this.transitions.Underlying.TryGetValue(top, out var onMap)) continue;
                 foreach (var to in onMap.Values)
                 {
                     if (touched.Add(to)) stk.Push(to);
@@ -246,8 +313,8 @@ namespace Yoakke.Automata.Discrete
                         var s2 = states[j];
 
                         if (table.Contains((s1, s2))) continue;
-                        if (!this.transitions.TryGetValue(s1, out var s1on)
-                         || !this.transitions.TryGetValue(s2, out var s2on)) continue;
+                        if (!this.transitions.Underlying.TryGetValue(s1, out var s1on)
+                         || !this.transitions.Underlying.TryGetValue(s2, out var s2on)) continue;
 
                         foreach (var (on, to1) in s1on)
                         {
@@ -281,9 +348,9 @@ namespace Yoakke.Automata.Discrete
             }
 
             // Now build the new transitions with the state equivalences
-            foreach (var (from, onMap) in this.transitions)
+            foreach (var (from, on, to) in this.transitions)
             {
-                foreach (var (on, to) in onMap) result.AddTransition(stateMap[from], on, stateMap[to]);
+                result.AddTransition(stateMap[from], on, stateMap[to]);
             }
 
             // Introduce the initial state and all the accepting states
@@ -300,10 +367,10 @@ namespace Yoakke.Automata.Discrete
 
         private Dictionary<TSymbol, TState> GetTransitionsFrom(TState state)
         {
-            if (!this.transitions.TryGetValue(state, out var onState))
+            if (!this.transitions.Underlying.TryGetValue(state, out var onState))
             {
                 onState = new(this.SymbolComparer);
-                this.transitions.Add(state, onState);
+                this.transitions.Underlying.Add(state, onState);
             }
             return onState;
         }

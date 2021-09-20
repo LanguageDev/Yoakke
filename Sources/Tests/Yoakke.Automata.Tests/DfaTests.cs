@@ -1,6 +1,6 @@
 using System.Linq;
 using Xunit;
-using Yoakke.Automata.Discrete;
+using Yoakke.Automata.Sparse;
 
 namespace Yoakke.Automata.Tests
 {
