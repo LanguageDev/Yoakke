@@ -17,5 +17,16 @@ namespace Yoakke.Automata.Sparse
         : IReadOnlyDfa<TState, TSymbol>,
           IReadOnlySparseFiniteAutomaton<TState, TSymbol>
     {
+        /// <summary>
+        /// Minimizes this DFA into an equivalent one with the least amount of states possible.
+        /// </summary>
+        /// <typeparam name="TResultState">The state type of the resulting DFA.</typeparam>
+        /// <param name="combiner">The state combiner to use.</param>
+        /// <param name="differentiatePairs">The pairs of states that must not be merged in the minimization process.
+        /// This can be useful if some states have associated values to them that we want to keep.</param>
+        /// <returns>The minimized DFA.</returns>
+        public new ISparseDfa<TResultState, TSymbol> Minimize<TResultState>(
+            IStateCombiner<TState, TResultState> combiner,
+            IEnumerable<(TState, TState)> differentiatePairs);
     }
 }

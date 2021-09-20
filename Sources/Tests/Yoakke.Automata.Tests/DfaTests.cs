@@ -79,6 +79,7 @@ namespace Yoakke.Automata.Tests
             Assert.True(gotStates.SetEquals(expectedStates));
             Assert.True(gotAcceptingStates.SetEquals(expectedAcceptingStates));
 
+            Assert.Equal(10, dfa.Transitions.Count);
             AssertTransition(dfa, "S", 'a', "A, AA");
             AssertTransition(dfa, "S", 'b', "B, BB");
             AssertTransition(dfa, "A, AA", 'a', "A, AA");
@@ -104,6 +105,7 @@ namespace Yoakke.Automata.Tests
             Assert.True(dfa.Complete("ab", 't'));
             var expectedStates = new[] { 'q', 't' }.ToHashSet();
             Assert.True(expectedStates.SetEquals(dfa.States));
+            Assert.Equal(4, dfa.Transitions.Count);
             AssertTransition(dfa, 'q', 'a', 'q');
             AssertTransition(dfa, 'q', 'b', 't');
             AssertTransition(dfa, 't', 'a', 't');

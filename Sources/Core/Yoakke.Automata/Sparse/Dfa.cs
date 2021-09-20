@@ -383,7 +383,12 @@ namespace Yoakke.Automata.Sparse
         }
 
         /// <inheritdoc/>
-        public IDfa<TResultState, TSymbol> Minimize<TResultState>(
+        IDfa<TResultState, TSymbol> IReadOnlyDfa<TState, TSymbol>.Minimize<TResultState>(
+            IStateCombiner<TState, TResultState> combiner,
+            IEnumerable<(TState, TState)> differentiatePairs) => this.Minimize(combiner, differentiatePairs);
+
+        /// <inheritdoc/>
+        public ISparseDfa<TResultState, TSymbol> Minimize<TResultState>(
             IStateCombiner<TState, TResultState> combiner,
             IEnumerable<(TState, TState)> differentiatePairs)
         {
