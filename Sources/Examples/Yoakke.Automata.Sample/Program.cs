@@ -14,7 +14,9 @@ namespace Yoakke.Automata.Sample
           - Move initial state to the NFA and DFA interfaces, to allow NFA to have multiple initial states
           - Implement the sparse automata interface for the NFA too
           - Implement dense automata representations
-          - Move symbol comparer to be required in the interfaces too
+          - Move symbol comparer to be required in the interfaces too (NO, BAD)
+          - Make the States property an IReadOnlyCollection
+            It can stay read-only as we don't really store states
          */
 
         static void Main(string[] args)
