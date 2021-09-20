@@ -16,23 +16,16 @@ namespace Yoakke.Automata
     public interface IDfa<TState, TSymbol> : IReadOnlyDfa<TState, TSymbol>, IFiniteAutomaton<TState, TSymbol>
     {
         /// <summary>
+        /// The initial state of the automaton.
+        /// </summary>
+        public new TState InitialState { get; set; }
+
+        /// <summary>
         /// Completes this DFA over the given alphabet.
         /// </summary>
         /// <param name="alphabet">The alphabet to complete over.</param>
         /// <param name="trap">A default trap state to transition to.</param>
         /// <returns>True, if this DFA was not completed and needed completion, false otherwise.</returns>
         public bool Complete(IEnumerable<TSymbol> alphabet, TState trap);
-
-        /// <summary>
-        /// Minimizes this DFA into an equivalent one with the least amount of states possible.
-        /// </summary>
-        /// <typeparam name="TResultState">The state type of the resulting DFA.</typeparam>
-        /// <param name="combiner">The state combiner to use.</param>
-        /// <param name="differentiatePairs">The pairs of states that must not be merged in the minimization process.
-        /// This can be useful if some states have associated values to them that we want to keep.</param>
-        /// <returns>The minimized DFA.</returns>
-        public new IDfa<TResultState, TSymbol> Minimize<TResultState>(
-            IStateCombiner<TState, TResultState> combiner,
-            IEnumerable<(TState, TState)> differentiatePairs);
     }
 }

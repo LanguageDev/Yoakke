@@ -1,0 +1,22 @@
+// Copyright (c) 2021 Yoakke.
+// Licensed under the Apache License, Version 2.0.
+// Source repository: https://github.com/LanguageDev/Yoakke
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Yoakke.Automata.Sparse
+{
+    /// <summary>
+    /// Represents a sparse DFA.
+    /// </summary>
+    /// <typeparam name="TState">The state type.</typeparam>
+    /// <typeparam name="TSymbol">The symbol type.</typeparam>
+    public interface ISparseDfa<TState, TSymbol>
+        : IDfa<TState, TSymbol>,
+          IReadOnlySparseDfa<TState, TSymbol>,
+          ISparseFiniteAutomaton<TState, TSymbol>
+    {
+    }
+}

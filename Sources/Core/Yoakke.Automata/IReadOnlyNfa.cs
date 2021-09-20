@@ -16,6 +16,11 @@ namespace Yoakke.Automata
     public interface IReadOnlyNfa<TState, TSymbol> : IReadOnlyFiniteAutomaton<TState, TSymbol>
     {
         /// <summary>
+        /// The initial states of the automaton.
+        /// </summary>
+        public IReadOnlyCollection<TState> InitialStates { get; }
+
+        /// <summary>
         /// Gets all transitions that are valid from a set of states on an input.
         /// </summary>
         /// <param name="from">The set of states to transition from.</param>
@@ -31,23 +36,12 @@ namespace Yoakke.Automata
         /// <returns>The states of the epsilon-closure.</returns>
         public StateSet<TState> EpsilonClosure(TState state);
 
-        // TODO: Reconsider feature, it's a bit too expensive, almost determinization
-#if false
-        /// <summary>
-        /// Constructs an equivalent NFA that has no epsilon-transitions.
-        /// </summary>
-        /// <typeparam name="TResultState">The result state type.</typeparam>
-        /// <param name="combiner">The state combiner to use.</param>
-        /// <returns>The equivalent epsilon transition-less NFA.</returns>
-        public IReadOnlyNfa<TResultState, TSymbol> EliminateEpsilonTransitions<TResultState>(IStateCombiner<TState, TResultState> combiner);
-#endif
-
         /// <summary>
         /// Constructs an equivalent DFA from this NFA.
         /// </summary>
         /// <typeparam name="TResultState">The result state type.</typeparam>
         /// <param name="combiner">The state combiner to use.</param>
         /// <returns>The constructed DFA.</returns>
-        public IReadOnlyDfa<TResultState, TSymbol> Determinize<TResultState>(IStateCombiner<TState, TResultState> combiner);
+        public IDfa<TResultState, TSymbol> Determinize<TResultState>(IStateCombiner<TState, TResultState> combiner);
     }
 }

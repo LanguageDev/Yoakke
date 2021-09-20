@@ -19,9 +19,7 @@ namespace Yoakke.Automata.Sparse
     /// </summary>
     /// <typeparam name="TState">The state type.</typeparam>
     /// <typeparam name="TSymbol">The symbol type.</typeparam>
-    public sealed class Dfa<TState, TSymbol>
-        : IDfa<TState, TSymbol>,
-          ISparseFiniteAutomaton<TState, TSymbol>
+    public sealed class Dfa<TState, TSymbol> : ISparseDfa<TState, TSymbol>
     {
         private class TransitionCollection
             : IReadOnlyCollection<Transition<TState, TSymbol>>,

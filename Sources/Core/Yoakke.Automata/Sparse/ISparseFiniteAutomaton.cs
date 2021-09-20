@@ -14,8 +14,8 @@ namespace Yoakke.Automata.Sparse
     /// <typeparam name="TState">The state type.</typeparam>
     /// <typeparam name="TSymbol">The symbol type.</typeparam>
     public interface ISparseFiniteAutomaton<TState, TSymbol>
-        : IFiniteAutomaton<TState, TSymbol>,
-          IReadOnlySparseFiniteAutomaton<TState, TSymbol>
+        : IReadOnlySparseFiniteAutomaton<TState, TSymbol>,
+          IFiniteAutomaton<TState, TSymbol>
     {
         /// <summary>
         /// The transitions of this automaton.

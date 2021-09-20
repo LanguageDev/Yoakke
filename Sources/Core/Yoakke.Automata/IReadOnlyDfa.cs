@@ -17,6 +17,11 @@ namespace Yoakke.Automata
     public interface IReadOnlyDfa<TState, TSymbol> : IReadOnlyFiniteAutomaton<TState, TSymbol>
     {
         /// <summary>
+        /// The initial state of the automaton.
+        /// </summary>
+        public TState InitialState { get; }
+
+        /// <summary>
         /// Retrieves a transition from a given state on a given input.
         /// </summary>
         /// <param name="from">The transition to get the transition from.</param>
@@ -40,7 +45,7 @@ namespace Yoakke.Automata
         /// <param name="differentiatePairs">The pairs of states that must not be merged in the minimization process.
         /// This can be useful if some states have associated values to them that we want to keep.</param>
         /// <returns>The minimized DFA.</returns>
-        public IReadOnlyDfa<TResultState, TSymbol> Minimize<TResultState>(
+        public IDfa<TResultState, TSymbol> Minimize<TResultState>(
             IStateCombiner<TState, TResultState> combiner,
             IEnumerable<(TState, TState)> differentiatePairs);
     }

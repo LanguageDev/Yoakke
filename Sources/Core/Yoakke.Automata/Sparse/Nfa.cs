@@ -16,7 +16,7 @@ namespace Yoakke.Automata.Sparse
     /// </summary>
     /// <typeparam name="TState">The state type.</typeparam>
     /// <typeparam name="TSymbol">The symbol type.</typeparam>
-    public sealed class Nfa<TState, TSymbol> : INfa<TState, TSymbol>
+    public sealed class Nfa<TState, TSymbol> : ISparseNfa<TState, TSymbol>
     {
         /// <inheritdoc/>
         public TState InitialState { get; set; } = default!;

@@ -16,9 +16,9 @@ namespace Yoakke.Automata
     public interface IFiniteAutomaton<TState, TSymbol> : IReadOnlyFiniteAutomaton<TState, TSymbol>
     {
         /// <summary>
-        /// The initial state of the automaton.
+        /// All states of the automaton.
         /// </summary>
-        public new TState InitialState { get; set; }
+        public new ICollection<TState> States { get; }
 
         /// <summary>
         /// The accepting states of the automaton.

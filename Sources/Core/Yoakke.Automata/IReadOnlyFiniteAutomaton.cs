@@ -12,19 +12,14 @@ namespace Yoakke.Automata
     public interface IReadOnlyFiniteAutomaton<TState, TSymbol>
     {
         /// <summary>
-        /// The initial state of the automaton.
+        /// All states of the automaton.
         /// </summary>
-        public TState InitialState { get; }
+        public IReadOnlyCollection<TState> States { get; }
 
         /// <summary>
         /// The accepting states of the automaton.
         /// </summary>
         public IReadOnlyCollection<TState> AcceptingStates { get; }
-
-        /// <summary>
-        /// All states of the automaton.
-        /// </summary>
-        public IEnumerable<TState> States { get; }
 
         /// <summary>
         /// The state comparer used by the automaton.

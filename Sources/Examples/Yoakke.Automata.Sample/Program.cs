@@ -17,6 +17,8 @@ namespace Yoakke.Automata.Sample
           - Move symbol comparer to be required in the interfaces too (NO, BAD)
           - Make the States property an IReadOnlyCollection
             It can stay read-only as we don't really store states
+          - Make the minimization algo take an IStateDifferentiator or something instead of state pairs
+          - Remove the read-only versions of the transformations, just make them return the non-read only version
          */
 
         static void Main(string[] args)
