@@ -15,7 +15,7 @@ using Yoakke.Collections;
 namespace Yoakke.Automata.Sparse
 {
     /// <summary>
-    /// A generic DFA implementation.
+    /// A generic sparse DFA implementation.
     /// </summary>
     /// <typeparam name="TState">The state type.</typeparam>
     /// <typeparam name="TSymbol">The symbol type.</typeparam>

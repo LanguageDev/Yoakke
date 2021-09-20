@@ -12,7 +12,7 @@ using Yoakke.Automata.Internal;
 namespace Yoakke.Automata.Sparse
 {
     /// <summary>
-    /// A generic NFA implementation.
+    /// A generic sparse NFA implementation.
     /// </summary>
     /// <typeparam name="TState">The state type.</typeparam>
     /// <typeparam name="TSymbol">The symbol type.</typeparam>
