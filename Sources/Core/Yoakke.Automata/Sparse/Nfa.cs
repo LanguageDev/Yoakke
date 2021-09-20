@@ -282,42 +282,110 @@ namespace Yoakke.Automata.Sparse
             }
         }
 #endif
-        public ICollection<EpsilonTransition<TState>> EpsilonTransitions => throw new NotImplementedException();
 
+        /// <inheritdoc/>
         public ICollection<TState> InitialStates => throw new NotImplementedException();
 
-        public ICollection<Transition<TState, TSymbol>> Transitions => throw new NotImplementedException();
-
-        public ICollection<TState> States => throw new NotImplementedException();
-
-        public ICollection<TState> AcceptingStates => throw new NotImplementedException();
-
-        public IEqualityComparer<TState> StateComparer => throw new NotImplementedException();
-
-        IReadOnlyCollection<EpsilonTransition<TState>> IReadOnlySparseNfa<TState, TSymbol>.EpsilonTransitions => throw new NotImplementedException();
-
+        /// <inheritdoc/>
         IReadOnlyCollection<TState> IReadOnlyNfa<TState, TSymbol>.InitialStates => throw new NotImplementedException();
 
-        IReadOnlyCollection<Transition<TState, TSymbol>> IReadOnlySparseFiniteAutomaton<TState, TSymbol>.Transitions => throw new NotImplementedException();
+        /// <inheritdoc/>
+        public ICollection<TState> AcceptingStates => throw new NotImplementedException();
 
-        IReadOnlyCollection<TState> IReadOnlyFiniteAutomaton<TState, TSymbol>.States => throw new NotImplementedException();
-
+        /// <inheritdoc/>
         IReadOnlyCollection<TState> IReadOnlyFiniteAutomaton<TState, TSymbol>.AcceptingStates => throw new NotImplementedException();
 
-        public bool Accepts(TState initial, IEnumerable<TSymbol> input) => throw new NotImplementedException();
-        public bool Accepts(IEnumerable<TSymbol> input) => throw new NotImplementedException();
-        public bool AddEpsilonTransition(TState from, TState to) => throw new NotImplementedException();
-        public bool AddTransition(TState from, TSymbol on, TState to) => throw new NotImplementedException();
-        public IDfa<TResultState, TSymbol> Determinize<TResultState>(IStateCombiner<TState, TResultState> combiner) => throw new NotImplementedException();
-        public bool EliminateEpsilonTransitions() => throw new NotImplementedException();
-        public StateSet<TState> EpsilonClosure(TState state) => throw new NotImplementedException();
-        public StateSet<TState> GetTransitions(StateSet<TState> from, TSymbol on) => throw new NotImplementedException();
-        public IEnumerable<TState> ReachableStates(TState initial) => throw new NotImplementedException();
-        public IEnumerable<TState> ReachableStates() => throw new NotImplementedException();
-        public bool RemoveEpsilonTransition(TState from, TState to) => throw new NotImplementedException();
-        public bool RemoveTransition(TState from, TSymbol on, TState to) => throw new NotImplementedException();
-        public bool RemoveUnreachable(TState from) => throw new NotImplementedException();
-        public bool RemoveUnreachable() => throw new NotImplementedException();
+        /// <inheritdoc/>
+        public ICollection<Transition<TState, TSymbol>> Transitions => throw new NotImplementedException();
+
+        /// <inheritdoc/>
+        IReadOnlyCollection<Transition<TState, TSymbol>> IReadOnlySparseFiniteAutomaton<TState, TSymbol>.Transitions => throw new NotImplementedException();
+
+        /// <inheritdoc/>
+        public ICollection<EpsilonTransition<TState>> EpsilonTransitions => throw new NotImplementedException();
+
+        /// <inheritdoc/>
+        IReadOnlyCollection<EpsilonTransition<TState>> IReadOnlySparseNfa<TState, TSymbol>.EpsilonTransitions => throw new NotImplementedException();
+
+        /// <inheritdoc/>
+        public ICollection<TState> States => throw new NotImplementedException();
+
+        /// <inheritdoc/>
+        IReadOnlyCollection<TState> IReadOnlyFiniteAutomaton<TState, TSymbol>.States => throw new NotImplementedException();
+
+        /// <inheritdoc/>
+        public IEqualityComparer<TState> StateComparer => throw new NotImplementedException();
+
+        /// <summary>
+        /// The comparer used for alphabet symbols.
+        /// </summary>
+        public IEqualityComparer<TSymbol> SymbolComparer => throw new NotImplementedException();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Nfa{TState, TSymbol}"/> class.
+        /// </summary>
+        public Nfa()
+            : this(EqualityComparer<TState>.Default, EqualityComparer<TSymbol>.Default)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Nfa{TState, TSymbol}"/> class.
+        /// </summary>
+        /// <param name="stateComparer">The state comparer to use.</param>
+        /// <param name="symbolComparer">The symbol comparer to use.</param>
+        public Nfa(IEqualityComparer<TState> stateComparer, IEqualityComparer<TSymbol> symbolComparer)
+        {
+            // TODO
+        }
+
+        /// <inheritdoc/>
         public string ToDot() => throw new NotImplementedException();
+
+        /// <inheritdoc/>
+        public bool Accepts(IEnumerable<TSymbol> input) => throw new NotImplementedException();
+
+        /// <inheritdoc/>
+        public bool Accepts(TState initial, IEnumerable<TSymbol> input) => throw new NotImplementedException();
+
+        /// <inheritdoc/>
+        public StateSet<TState> GetTransitions(StateSet<TState> from, TSymbol on) => throw new NotImplementedException();
+
+        /// <inheritdoc/>
+        public bool AddTransition(TState from, TSymbol on, TState to) => throw new NotImplementedException();
+
+        /// <inheritdoc/>
+        public bool RemoveTransition(TState from, TSymbol on, TState to) => throw new NotImplementedException();
+
+        /// <inheritdoc/>
+        public StateSet<TState> EpsilonClosure(TState state) => throw new NotImplementedException();
+
+        /// <inheritdoc/>
+        public bool AddEpsilonTransition(TState from, TState to) => throw new NotImplementedException();
+
+        /// <inheritdoc/>
+        public bool RemoveEpsilonTransition(TState from, TState to) => throw new NotImplementedException();
+
+        /// <inheritdoc/>
+        public bool RemoveUnreachable() => throw new NotImplementedException();
+
+        /// <inheritdoc/>
+        public bool RemoveUnreachable(TState from) => throw new NotImplementedException();
+
+        /// <inheritdoc/>
+        public IEnumerable<TState> ReachableStates() => throw new NotImplementedException();
+
+        /// <inheritdoc/>
+        public IEnumerable<TState> ReachableStates(TState initial) => throw new NotImplementedException();
+
+        /// <inheritdoc/>
+        public bool EliminateEpsilonTransitions() => throw new NotImplementedException();
+
+        /// <inheritdoc/>
+        IDfa<TResultState, TSymbol> IReadOnlyNfa<TState, TSymbol>.Determinize<TResultState>(IStateCombiner<TState, TResultState> combiner) =>
+            this.Determinize(combiner);
+
+        /// <inheritdoc/>
+        public ISparseDfa<TResultState, TSymbol> Determinize<TResultState>(IStateCombiner<TState, TResultState> combiner) => throw new NotImplementedException();
     }
 }

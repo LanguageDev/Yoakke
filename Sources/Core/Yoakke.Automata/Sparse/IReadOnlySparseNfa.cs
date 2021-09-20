@@ -21,5 +21,13 @@ namespace Yoakke.Automata.Sparse
         /// The epsilon transitions of this automaton.
         /// </summary>
         public IReadOnlyCollection<EpsilonTransition<TState>> EpsilonTransitions { get; }
+
+        /// <summary>
+        /// Constructs an equivalent DFA from this NFA.
+        /// </summary>
+        /// <typeparam name="TResultState">The result state type.</typeparam>
+        /// <param name="combiner">The state combiner to use.</param>
+        /// <returns>The constructed DFA.</returns>
+        public new ISparseDfa<TResultState, TSymbol> Determinize<TResultState>(IStateCombiner<TState, TResultState> combiner);
     }
 }
