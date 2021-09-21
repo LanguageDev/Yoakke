@@ -345,11 +345,12 @@ namespace Yoakke.Automata.Sparse
         }
 
         /// <inheritdoc/>
-        public bool Accepts(IEnumerable<TSymbol> input) => this.Accepts(new StateSet<TState>(this.InitialStates), input);
+        public bool Accepts(IEnumerable<TSymbol> input) =>
+            this.Accepts(new StateSet<TState>(this.InitialStates, this.StateComparer), input);
 
         /// <inheritdoc/>
         public bool Accepts(TState initial, IEnumerable<TSymbol> input) =>
-            this.Accepts(new StateSet<TState>(new[] { initial }), input);
+            this.Accepts(new StateSet<TState>(initial, this.StateComparer), input);
 
         /// <inheritdoc/>
         public bool Accepts(StateSet<TState> initial, IEnumerable<TSymbol> input)
@@ -362,6 +363,10 @@ namespace Yoakke.Automata.Sparse
             }
             return currentState.Any(s => this.AcceptingStates.Contains(s));
         }
+
+        /// <inheritdoc/>
+        public StateSet<TState> GetTransitions(TState from, TSymbol on) =>
+            this.GetTransitions(new StateSet<TState>(from, this.StateComparer), on);
 
         /// <inheritdoc/>
         public StateSet<TState> GetTransitions(StateSet<TState> from, TSymbol on)
@@ -397,10 +402,10 @@ namespace Yoakke.Automata.Sparse
         public StateSet<TState> EpsilonClosure(TState state) => new(this.EpsilonClosureAsSet(state));
 
         /// <inheritdoc/>
-        public bool RemoveUnreachable() => this.RemoveUnreachable(new StateSet<TState>(this.InitialStates));
+        public bool RemoveUnreachable() => this.RemoveUnreachable(new StateSet<TState>(this.InitialStates, this.StateComparer));
 
         /// <inheritdoc/>
-        public bool RemoveUnreachable(TState from) => this.RemoveUnreachable(new StateSet<TState>(new[] { from }));
+        public bool RemoveUnreachable(TState from) => this.RemoveUnreachable(new StateSet<TState>(from, this.StateComparer));
 
         /// <inheritdoc/>
         public bool RemoveUnreachable(StateSet<TState> from)
@@ -415,10 +420,12 @@ namespace Yoakke.Automata.Sparse
         }
 
         /// <inheritdoc/>
-        public IEnumerable<TState> ReachableStates() => this.ReachableStates(new StateSet<TState>(this.InitialStates));
+        public IEnumerable<TState> ReachableStates() =>
+            this.ReachableStates(new StateSet<TState>(this.InitialStates, this.StateComparer));
 
         /// <inheritdoc/>
-        public IEnumerable<TState> ReachableStates(TState initial) => this.ReachableStates(new StateSet<TState>(new[] { initial }));
+        public IEnumerable<TState> ReachableStates(TState initial) =>
+            this.ReachableStates(new StateSet<TState>(initial, this.StateComparer));
 
         /// <inheritdoc/>
         public IEnumerable<TState> ReachableStates(StateSet<TState> initial)
@@ -461,7 +468,7 @@ namespace Yoakke.Automata.Sparse
         public ISparseDfa<TResultState, TSymbol> Determinize<TResultState>(IStateCombiner<TState, TResultState> combiner)
         {
             var result = new Dfa<TResultState, TSymbol>(combiner.ResultComparer, this.SymbolComparer);
-            var visited = new HashSet<StateSet<TState>>(new StateSetEqualityComparer<TState>(this.StateComparer));
+            var visited = new HashSet<StateSet<TState>>();
             var stk = new Stack<StateSet<TState>>();
             var first = new StateSet<TState>(this.InitialStates.SelectMany(this.EpsilonClosure).ToHashSet(this.StateComparer));
             result.InitialState = combiner.Combine(first);

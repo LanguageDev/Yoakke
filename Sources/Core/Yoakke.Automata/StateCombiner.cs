@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Generic.Polyfill;
 using System.Linq;
 using System.Text;
 
@@ -17,29 +18,31 @@ namespace Yoakke.Automata
     {
         private class StateSetStateCombiner : IStateCombiner<TState, StateSet<TState>>
         {
-            public IEqualityComparer<StateSet<TState>> ResultComparer { get; }
+            public IEqualityComparer<StateSet<TState>> ResultComparer => EqualityComparer<StateSet<TState>>.Default;
 
-            public StateSetStateCombiner(StateSetEqualityComparer<TState> comparer)
+            private readonly IEqualityComparer<TState> comparer;
+
+            public StateSetStateCombiner(IEqualityComparer<TState> comparer)
             {
-                this.ResultComparer = comparer;
+                this.comparer = comparer;
             }
 
-            public StateSet<TState> Combine(IEnumerable<TState> states) => new(states);
+            public StateSet<TState> Combine(IEnumerable<TState> states) => new(states, this.comparer);
         }
 
         private class StateSetStateSetCombiner : IStateCombiner<StateSet<TState>, StateSet<TState>>
         {
-            public IEqualityComparer<StateSet<TState>> ResultComparer => this.comparer;
+            public IEqualityComparer<StateSet<TState>> ResultComparer => EqualityComparer<StateSet<TState>>.Default;
 
-            private readonly StateSetEqualityComparer<TState> comparer;
+            private readonly IEqualityComparer<TState> comparer;
 
-            public StateSetStateSetCombiner(StateSetEqualityComparer<TState> comparer)
+            public StateSetStateSetCombiner(IEqualityComparer<TState> comparer)
             {
                 this.comparer = comparer;
             }
 
             public StateSet<TState> Combine(IEnumerable<StateSet<TState>> states) =>
-                new(states.SelectMany(s => s).Distinct(this.comparer.Comparer));
+                new(states.SelectMany(s => s).ToHashSet(this.comparer));
         }
 
         /// <summary>
@@ -60,7 +63,7 @@ namespace Yoakke.Automata
         /// <param name="comparer">The state comparer to use.</param>
         /// <returns>The combiner that takes the states and creates a set from them.</returns>
         public static IStateCombiner<TState, StateSet<TState>> ToSetCombiner(IEqualityComparer<TState> comparer) =>
-            new StateSetStateCombiner(new(comparer));
+            new StateSetStateCombiner(comparer);
 
         /// <summary>
         /// Retrieves a combiner that combines state sets.
@@ -68,6 +71,6 @@ namespace Yoakke.Automata
         /// <param name="comparer">The state comparer to use.</param>
         /// <returns>The combiner that takes state sets and merges them into one.</returns>
         public static IStateCombiner<StateSet<TState>, StateSet<TState>> SetCombiner(IEqualityComparer<TState> comparer) =>
-            new StateSetStateSetCombiner(new(comparer));
+            new StateSetStateSetCombiner(comparer);
     }
 }

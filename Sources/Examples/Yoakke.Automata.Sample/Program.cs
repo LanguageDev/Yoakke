@@ -3,7 +3,7 @@ using Yoakke.Automata.Sparse;
 
 namespace Yoakke.Automata.Sample
 {
-    class Program
+    internal class Program
     {
         /*
          TODO: what we could do still
@@ -13,7 +13,7 @@ namespace Yoakke.Automata.Sample
           - Implement epsilon elimination
          */
 
-        static void Main(string[] args)
+        internal static void Main(string[] args)
         {
             var dfa = new Dfa<string, char>();
             dfa.InitialState = "A";

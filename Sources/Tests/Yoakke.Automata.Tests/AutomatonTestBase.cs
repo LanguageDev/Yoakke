@@ -24,7 +24,7 @@ namespace Yoakke.Automata.Tests
             var fromSet = ParseStateSet(from);
             var toSet = tos.Select(ParseStateSet).ToHashSet();
 
-            var gotTos = nfa.GetTransitions(new(new[] { fromSet }), on);
+            var gotTos = nfa.GetTransitions(fromSet, on);
 
             Assert.True(toSet.SetEquals(gotTos));
         }
@@ -46,7 +46,7 @@ namespace Yoakke.Automata.Tests
         }
 
         protected static StateSet<string> ParseStateSet(string text) =>
-            new(text.Split(',').Select(t => t.Trim()).ToList());
+            new(text.Split(',').Select(t => t.Trim()), EqualityComparer<string>.Default);
 
         protected static (char, string) ParseTransition(string text)
         {

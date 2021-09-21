@@ -34,7 +34,7 @@ namespace Yoakke.Automata.Tests
 
             var transitions = transitionTexts.Select(ParseTransition).ToList();
 
-            var state = new StateSet<string>(nfa.InitialStates);
+            var state = new StateSet<string>(nfa.InitialStates, EqualityComparer<string>.Default);
             foreach (var (inputChar, expectedNextText) in transitions)
             {
                 var expectedNext = ParseStateSet(expectedNextText).ToHashSet();
