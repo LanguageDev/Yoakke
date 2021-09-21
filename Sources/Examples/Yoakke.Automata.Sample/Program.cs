@@ -10,6 +10,7 @@ namespace Yoakke.Automata.Sample
           - Improve the StateSet interface (see the note there)
           - Implement dense automata representations
           - Make the minimization algo take an IStateDifferentiator or something instead of state pairs
+          - Implement epsilon elimination
          */
 
         static void Main(string[] args)
