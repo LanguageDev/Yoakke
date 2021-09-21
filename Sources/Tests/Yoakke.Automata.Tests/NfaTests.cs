@@ -66,6 +66,7 @@ namespace Yoakke.Automata.Tests
             Assert.True(gotStates.SetEquals(expectedStates));
             Assert.True(gotAcceptingStates.SetEquals(expectedAcceptingStates));
 
+            Assert.Equal(12, dfa.Transitions.Count);
             AssertTransition(dfa, "A", '0', "A");
             AssertTransition(dfa, "A", '1', "A, B");
             AssertTransition(dfa, "A, B", '0', "A, C");
@@ -94,6 +95,7 @@ namespace Yoakke.Automata.Tests
             Assert.True(gotStates.SetEquals(expectedStates));
             Assert.True(gotAcceptingStates.SetEquals(expectedAcceptingStates));
 
+            Assert.Equal(8, dfa.Transitions.Count);
             AssertTransition(dfa, "A", '0', "A");
             AssertTransition(dfa, "A", '1', "A, B");
             AssertTransition(dfa, "A, B", '0', "A, C");
