@@ -18,5 +18,12 @@ namespace Yoakke.Automata.Sparse
           IReadOnlySparseDfa<TState, TSymbol>,
           ISparseFiniteAutomaton<TState, TSymbol>
     {
+        /// <summary>
+        /// Completes this DFA over the given alphabet.
+        /// </summary>
+        /// <param name="alphabet">The alphabet to complete over.</param>
+        /// <param name="trap">A default trap state to transition to.</param>
+        /// <returns>True, if this DFA was not completed and needed completion, false otherwise.</returns>
+        public bool Complete(IEnumerable<TSymbol> alphabet, TState trap);
     }
 }

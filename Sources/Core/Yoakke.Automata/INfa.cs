@@ -25,8 +25,7 @@ namespace Yoakke.Automata
         /// </summary>
         /// <param name="from">The state to transition from.</param>
         /// <param name="to">The state to transition to.</param>
-        /// <returns>True, if the transition was new and successfully added.</returns>
-        public bool AddEpsilonTransition(TState from, TState to);
+        public void AddEpsilonTransition(TState from, TState to);
 
         /// <summary>
         /// Removes an epsilon transition from this automaton.
@@ -35,13 +34,6 @@ namespace Yoakke.Automata
         /// <param name="to">The state to transition to.</param>
         /// <returns>True, if the transition was found and successfully removed.</returns>
         public bool RemoveEpsilonTransition(TState from, TState to);
-
-        /// <summary>
-        /// Removes states and transitions from the automaton that are not reachable from a given state.
-        /// </summary>
-        /// <param name="from">The set of states to check reachability from.</param>
-        /// <returns>True, if there were unreachable states, false otherwise.</returns>
-        public bool RemoveUnreachable(StateSet<TState> from);
 
         /// <summary>
         /// Eliminates the epsilon-transitions from this NFA, keeping it equivalent.

@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using Yoakke.Automata.Internal;
 using Yoakke.Collections;
+using Yoakke.Collections.Graphs;
 
 namespace Yoakke.Automata.Sparse
 {
@@ -87,16 +88,12 @@ namespace Yoakke.Automata.Sparse
 
             public void Add(TState item) => this.AllStates.Add(item);
 
-            public void Add(Transition<TState, TSymbol> item) => this.AddBool(item);
-
-            public bool AddBool(Transition<TState, TSymbol> item)
+            public void Add(Transition<TState, TSymbol> item)
             {
                 var onMap = this.GetTransitionsFrom(item.Source);
-                if (onMap.TryGetValue(item.Symbol, out var existing) && this.StateComparer.Equals(item.Destination, existing)) return false;
                 onMap[item.Symbol] = item.Destination;
                 this.AllStates.Add(item.Source);
                 this.AllStates.Add(item.Destination);
-                return true;
             }
 
             public bool Remove(TState item)
@@ -284,12 +281,9 @@ namespace Yoakke.Automata.Sparse
         }
 
         /// <inheritdoc/>
-        public bool Accepts(IEnumerable<TSymbol> input) => this.Accepts(this.InitialState, input);
-
-        /// <inheritdoc/>
-        public bool Accepts(TState initial, IEnumerable<TSymbol> input)
+        public bool Accepts(IEnumerable<TSymbol> input)
         {
-            var currentState = initial;
+            var currentState = this.InitialState;
             foreach (var symbol in input)
             {
                 if (!this.TryGetTransition(currentState, symbol, out var destinationState)) return false;
@@ -297,11 +291,6 @@ namespace Yoakke.Automata.Sparse
             }
             return this.AcceptingStates.Contains(currentState);
         }
-
-        /// <inheritdoc/>
-        public bool IsComplete(IEnumerable<TSymbol> alphabet) =>
-               !alphabet.Any()
-            || this.States.All(state => alphabet.All(symbol => this.TryGetTransition(state, symbol, out _)));
 
         /// <inheritdoc/>
         public bool TryGetTransition(TState from, TSymbol on, [MaybeNullWhen(false)] out TState to)
@@ -315,48 +304,32 @@ namespace Yoakke.Automata.Sparse
         }
 
         /// <inheritdoc/>
-        public bool AddTransition(TState from, TSymbol on, TState to) => this.transitions.AddBool(new(from, on, to));
+        public void AddTransition(TState from, TSymbol on, TState to) =>
+            this.transitions.Add(new Transition<TState, TSymbol>(from, on, to));
 
         /// <inheritdoc/>
         public bool RemoveTransition(TState from, TSymbol on, TState to) =>
             this.transitions.Remove(new Transition<TState, TSymbol>(from, on, to));
 
         /// <inheritdoc/>
-        public bool RemoveUnreachable() => this.RemoveUnreachable(this.InitialState);
-
-        /// <inheritdoc/>
-        public bool RemoveUnreachable(TState from)
+        public bool RemoveUnreachable()
         {
-            var unreachable = this.transitions.AllStates.Except(this.ReachableStates(from), this.StateComparer);
+            var unreachable = this.States.Except(this.ReachableStates(), this.StateComparer);
             var result = false;
             foreach (var state in unreachable)
             {
-                if (this.transitions.Remove(state)) result = true;
+                if (this.States.Remove(state)) result = true;
             }
             return result;
         }
 
         /// <inheritdoc/>
-        public IEnumerable<TState> ReachableStates() => this.ReachableStates(this.InitialState);
-
-        /// <inheritdoc/>
-        public IEnumerable<TState> ReachableStates(TState initial)
-        {
-            var touched = new HashSet<TState>(this.StateComparer);
-            var stk = new Stack<TState>();
-            stk.Push(initial);
-            touched.Add(initial);
-            while (stk.TryPop(out var top))
-            {
-                yield return top;
-
-                if (!this.transitions.TransitionMap.TryGetValue(top, out var onMap)) continue;
-                foreach (var to in onMap.Values)
-                {
-                    if (touched.Add(to)) stk.Push(to);
-                }
-            }
-        }
+        public IEnumerable<TState> ReachableStates() => BreadthFirst.Search(
+            this.InitialState,
+            state => this.transitions.TransitionMap.TryGetValue(state, out var transitions)
+                ? transitions.Values
+                : Enumerable.Empty<TState>(),
+            this.StateComparer);
 
         /// <inheritdoc/>
         public bool Complete(IEnumerable<TSymbol> alphabet, TState trap)
@@ -364,19 +337,22 @@ namespace Yoakke.Automata.Sparse
             if (!alphabet.Any()) return true;
 
             var result = false;
-            foreach (var state in this.States.ToList())
+            foreach (var state in this.States)
             {
                 var onMap = this.transitions.GetTransitionsFrom(state);
                 foreach (var symbol in alphabet)
                 {
                     if (onMap.ContainsKey(symbol)) continue;
-                    this.AddTransition(state, symbol, trap);
+                    // NOTE: We get away with modification as this does not add a state directly
+                    onMap.Add(symbol, trap);
                     result = true;
                 }
             }
+
             // If we added any transitions to trap, we also need to wire trap into itself
             if (result)
             {
+                this.States.Add(trap);
                 foreach (var symbol in alphabet) this.AddTransition(trap, symbol, trap);
             }
             return result;
@@ -467,10 +443,7 @@ namespace Yoakke.Automata.Sparse
             }
 
             // Now build the new transitions with the state equivalences
-            foreach (var (from, on, to) in this.Transitions)
-            {
-                result.AddTransition(stateMap[from], on, stateMap[to]);
-            }
+            foreach (var (from, on, to) in this.Transitions) result.AddTransition(stateMap[from], on, stateMap[to]);
 
             // Introduce the initial state and all the accepting states
             result.InitialState = stateMap[this.InitialState];

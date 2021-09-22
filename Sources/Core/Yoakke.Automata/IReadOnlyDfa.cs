@@ -31,13 +31,6 @@ namespace Yoakke.Automata
         public bool TryGetTransition(TState from, TSymbol on, [MaybeNullWhen(false)] out TState to);
 
         /// <summary>
-        /// Checks, if this DFA is complete over a given alphabet.
-        /// </summary>
-        /// <param name="alphabet">The alphabet to check completeness over.</param>
-        /// <returns>True, if this DFA is complete over <paramref name="alphabet"/>, otherwise false.</returns>
-        public bool IsComplete(IEnumerable<TSymbol> alphabet);
-
-        /// <summary>
         /// Minimizes this DFA into an equivalent one with the least amount of states possible.
         /// </summary>
         /// <typeparam name="TResultState">The state type of the resulting DFA.</typeparam>

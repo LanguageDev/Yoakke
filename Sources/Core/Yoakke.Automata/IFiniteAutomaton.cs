@@ -31,8 +31,7 @@ namespace Yoakke.Automata
         /// <param name="from">The state to transition from.</param>
         /// <param name="on">The symbol that triggers this transition.</param>
         /// <param name="to">The state to transition to.</param>
-        /// <returns>True, if the transition was new and successfully added.</returns>
-        public bool AddTransition(TState from, TSymbol on, TState to);
+        public void AddTransition(TState from, TSymbol on, TState to);
 
         /// <summary>
         /// Removes a transition from this automaton.
@@ -48,12 +47,5 @@ namespace Yoakke.Automata
         /// </summary>
         /// <returns>True, if there were unreachable states, false otherwise.</returns>
         public bool RemoveUnreachable();
-
-        /// <summary>
-        /// Removes states and transitions from the automaton that are not reachable from a given state.
-        /// </summary>
-        /// <param name="from">The state to check reachability from.</param>
-        /// <returns>True, if there were unreachable states, false otherwise.</returns>
-        public bool RemoveUnreachable(TState from);
     }
 }

@@ -26,30 +26,7 @@ namespace Yoakke.Automata
         /// <param name="from">The set of states to transition from.</param>
         /// <param name="on">The symbol to transition on.</param>
         /// <returns>The set of states that are valid from the starting set on the input.</returns>
-        public StateSet<TState> GetTransitions(TState from, TSymbol on);
-
-        /// <summary>
-        /// Gets all transitions that are valid from a set of states on an input.
-        /// </summary>
-        /// <param name="from">The set of states to transition from.</param>
-        /// <param name="on">The symbol to transition on.</param>
-        /// <returns>The set of states that are valid from the starting set on the input.</returns>
-        public StateSet<TState> GetTransitions(StateSet<TState> from, TSymbol on);
-
-        /// <summary>
-        /// Checks if this automaton results in an accepting state for the given input.
-        /// </summary>
-        /// <param name="initial">The initial set of states to start from.</param>
-        /// <param name="input">The sequence of input to feed in for the automaton.</param>
-        /// <returns>True, if the automaton accepts the input, false otherwise.</returns>
-        public bool Accepts(StateSet<TState> initial, IEnumerable<TSymbol> input);
-
-        /// <summary>
-        /// Finds all the reachable states from a given initial state.
-        /// </summary>
-        /// <param name="initial">The initial set of states to start from.</param>
-        /// <returns>The sequence of reachable states.</returns>
-        public IEnumerable<TState> ReachableStates(StateSet<TState> initial);
+        public IEnumerable<TState> GetTransitions(TState from, TSymbol on);
 
         /// <summary>
         /// Retrieves the epsilon-closure of a given state, which is all the states reachable with only
@@ -57,7 +34,7 @@ namespace Yoakke.Automata
         /// </summary>
         /// <param name="state">The state to calculate the epsilon-closure for.</param>
         /// <returns>The states of the epsilon-closure.</returns>
-        public StateSet<TState> EpsilonClosure(TState state);
+        public IEnumerable<TState> EpsilonClosure(TState state);
 
         /// <summary>
         /// Constructs an equivalent DFA from this NFA.
