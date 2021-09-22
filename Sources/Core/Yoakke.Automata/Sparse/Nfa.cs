@@ -388,11 +388,11 @@ namespace Yoakke.Automata.Sparse
 
         /// <inheritdoc/>
         public IEnumerable<TState> EpsilonClosure(TState state) => BreadthFirst.Search(
-                state,
-                state => this.transitions.EpsilonTransitionMap.TryGetValue(state, out var eps)
-                    ? eps
-                    : Enumerable.Empty<TState>(),
-                this.StateComparer);
+            state,
+            state => this.transitions.EpsilonTransitionMap.TryGetValue(state, out var eps)
+                ? eps
+                : Enumerable.Empty<TState>(),
+            this.StateComparer);
 
         /// <inheritdoc/>
         public bool RemoveUnreachable()

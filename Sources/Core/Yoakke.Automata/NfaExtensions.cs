@@ -16,6 +16,20 @@ namespace Yoakke.Automata
     public static class NfaExtensions
     {
         /// <summary>
+        /// Gets all transitions that are valid from a set of states on an input.
+        /// </summary>
+        /// <typeparam name="TState">The state type.</typeparam>
+        /// <typeparam name="TSymbol">The symbol type.</typeparam>
+        /// <param name="nfa">The NFA to get the transitions for.</param>
+        /// <param name="from">The set of states to transition from.</param>
+        /// <param name="on">The symbol to transition on.</param>
+        /// <returns>The set of states that are valid from the starting set on the input.</returns>
+        public static StateSet<TState> GetTransitions<TState, TSymbol>(
+            this IReadOnlyNfa<TState, TSymbol> nfa,
+            StateSet<TState> from,
+            TSymbol on) => new(from.SelectMany(s => nfa.GetTransitions(s, on)), nfa.StateComparer);
+
+        /// <summary>
         /// Constructs an equivalent DFA from this NFA.
         /// </summary>
         /// <typeparam name="TState">The state type.</typeparam>

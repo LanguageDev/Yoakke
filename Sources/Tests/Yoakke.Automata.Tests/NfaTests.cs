@@ -39,7 +39,7 @@ namespace Yoakke.Automata.Tests
             {
                 var expectedNext = ParseStateSet(expectedNextText).ToHashSet();
                 // NFA
-                var nextNfState = new StateSet<string>(state.SelectMany(state => nfa.GetTransitions(state, inputChar)), EqualityComparer<string>.Default);
+                var nextNfState = nfa.GetTransitions(state, inputChar);
                 Assert.True(expectedNext.SetEquals(nextNfState));
                 // DFA
                 Assert.True(dfa.TryGetTransition(state, inputChar, out var nextDfState));

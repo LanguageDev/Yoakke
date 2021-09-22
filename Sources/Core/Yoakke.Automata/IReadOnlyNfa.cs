@@ -23,7 +23,7 @@ namespace Yoakke.Automata
         /// <summary>
         /// Gets all transitions that are valid from a state on an input.
         /// </summary>
-        /// <param name="from">The set of states to transition from.</param>
+        /// <param name="from">The state to transition from.</param>
         /// <param name="on">The symbol to transition on.</param>
         /// <returns>The set of states that are valid from the starting set on the input.</returns>
         public IEnumerable<TState> GetTransitions(TState from, TSymbol on);
