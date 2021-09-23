@@ -406,7 +406,5 @@ namespace Yoakke.Collections.Dense
             var resultCmp = this.BoundComparer.Compare(searchedKey, resultKey);
             return start + (resultCmp > 0 ? 1 : 0);
         }
-
-        private static Interval<TKey> ToInterval(TKey value) => Interval<TKey>.Singleton(value);
     }
 }
