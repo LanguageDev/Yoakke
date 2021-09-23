@@ -3,12 +3,16 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Generic.Polyfill;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
+using Yoakke.Automata.Internal;
+using Yoakke.Collections;
 using Yoakke.Collections.Dense;
+using Yoakke.Collections.Graphs;
 using Yoakke.Collections.Intervals;
 
 namespace Yoakke.Automata.Dense
@@ -200,61 +204,161 @@ namespace Yoakke.Automata.Dense
         }
 
         /// <inheritdoc/>
-        public TState InitialState { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public TState InitialState
+        {
+            get => this.transitions.InitialState;
+            set => this.transitions.InitialState = value;
+        }
 
         /// <inheritdoc/>
         TState IReadOnlyDfa<TState, TSymbol>.InitialState => this.InitialState;
 
         /// <inheritdoc/>
-        public ICollection<TState> AcceptingStates => throw new NotImplementedException();
+        public ICollection<TState> AcceptingStates => this.accepting;
 
         /// <inheritdoc/>
-        IReadOnlyCollection<TState> IReadOnlyFiniteAutomaton<TState, TSymbol>.AcceptingStates => throw new NotImplementedException();
+        IReadOnlyCollection<TState> IReadOnlyFiniteAutomaton<TState, TSymbol>.AcceptingStates => this.accepting;
 
         /// <inheritdoc/>
-        public ICollection<Transition<TState, Interval<TSymbol>>> Transitions => throw new NotImplementedException();
+        public ICollection<Transition<TState, Interval<TSymbol>>> Transitions => this.transitions;
 
         /// <inheritdoc/>
-        IReadOnlyCollection<Transition<TState, Interval<TSymbol>>> IReadOnlyDenseFiniteAutomaton<TState, TSymbol>.Transitions => throw new NotImplementedException();
+        IReadOnlyCollection<Transition<TState, Interval<TSymbol>>> IReadOnlyDenseFiniteAutomaton<TState, TSymbol>.Transitions => this.transitions;
 
         /// <inheritdoc/>
-        public ICollection<TState> States => throw new NotImplementedException();
+        public ICollection<TState> States => this.transitions;
 
         /// <inheritdoc/>
-        IReadOnlyCollection<TState> IReadOnlyFiniteAutomaton<TState, TSymbol>.States => throw new NotImplementedException();
+        IReadOnlyCollection<TState> IReadOnlyFiniteAutomaton<TState, TSymbol>.States => this.transitions;
 
         /// <inheritdoc/>
-        public IEqualityComparer<TState> StateComparer => throw new NotImplementedException();
+        public IEqualityComparer<TState> StateComparer => this.transitions.StateComparer;
+
+        /// <summary>
+        /// The comparer used for alphabet symbol intervals.
+        /// </summary>
+        public IntervalComparer<TSymbol> SymbolIntervalComparer => this.transitions.SymbolIntervalComparer;
+
+        private readonly TransitionCollection transitions;
+        private readonly AcceptingCollection accepting;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DenseDfa{TState, TSymbol}"/> class.
+        /// </summary>
+        public DenseDfa()
+            : this(EqualityComparer<TState>.Default, IntervalComparer<TSymbol>.Default)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DenseDfa{TState, TSymbol}"/> class.
+        /// </summary>
+        /// <param name="stateComparer">The state comparer to use.</param>
+        /// <param name="symbolIntervalComparer">The symbol interval comparer to use.</param>
+        public DenseDfa(IEqualityComparer<TState> stateComparer, IntervalComparer<TSymbol> symbolIntervalComparer)
+        {
+            this.transitions = new(stateComparer, symbolIntervalComparer);
+            this.accepting = new(this.transitions);
+        }
 
         /// <inheritdoc/>
-        public string ToDot() => throw new NotImplementedException();
+        public string ToDot()
+        {
+            var writer = new DotWriter<TState, TSymbol>(this.StateComparer);
+            writer.WriteStart("DFA");
+
+            // Accepting states
+            writer.WriteAcceptingStates(this.AcceptingStates);
+            // Non-accepting states
+            writer.WriteStates(this.States.Except(this.AcceptingStates, this.StateComparer));
+            // Initial states
+            writer.WriteInitialStates(new[] { this.InitialState });
+
+            // Transitions
+            var tupleComparer = new TupleEqualityComparer<TState, TState>(this.StateComparer, this.StateComparer);
+            var transitions = this.Transitions.GroupBy(t => (t.Source, t.Destination), tupleComparer);
+            foreach (var group in transitions)
+            {
+                var from = group.Key.Item1;
+                var to = group.Key.Item2;
+                var on = string.Join(" U ", group.Select(g => g.Symbol));
+                writer.WriteTransition(from, on, to);
+            }
+
+            writer.WriteEnd();
+            return writer.Code.ToString();
+        }
 
         /// <inheritdoc/>
-        public bool Accepts(IEnumerable<TSymbol> input) => throw new NotImplementedException();
+        public bool Accepts(IEnumerable<TSymbol> input)
+        {
+            var currentState = this.InitialState;
+            foreach (var symbol in input)
+            {
+                if (!this.TryGetTransition(currentState, symbol, out var destinationState)) return false;
+                currentState = destinationState;
+            }
+            return this.AcceptingStates.Contains(currentState);
+        }
 
         /// <inheritdoc/>
-        public bool TryGetTransition(TState from, TSymbol on, [MaybeNullWhen(false)] out TState to) => throw new NotImplementedException();
+        public bool TryGetTransition(TState from, TSymbol on, [MaybeNullWhen(false)] out TState to)
+        {
+            if (!this.transitions.TransitionMap.TryGetValue(from, out var fromMap))
+            {
+                to = default;
+                return false;
+            }
+            var values = fromMap.GetValues(on).GetEnumerator();
+            if (values.MoveNext())
+            {
+                to = values.Current;
+                return true;
+            }
+            else
+            {
+                to = default;
+                return false;
+            }
+        }
 
         /// <inheritdoc/>
-        public void AddTransition(TState from, TSymbol on, TState to) => throw new NotImplementedException();
+        public void AddTransition(TState from, TSymbol on, TState to) => this.Transitions.Add(new(from, on, to));
 
         /// <inheritdoc/>
-        public void AddTransition(TState from, Interval<TSymbol> on, TState to) => throw new NotImplementedException();
+        public void AddTransition(TState from, Interval<TSymbol> on, TState to) => this.Transitions.Add(new(from, on, to));
 
         /// <inheritdoc/>
-        public bool RemoveTransition(TState from, TSymbol on, TState to) => throw new NotImplementedException();
+        public bool RemoveTransition(TState from, TSymbol on, TState to) => this.Transitions.Remove(new(from, on, to));
 
         /// <inheritdoc/>
-        public bool RemoveTransition(TState from, Interval<TSymbol> on, TState to) => throw new NotImplementedException();
+        public bool RemoveTransition(TState from, Interval<TSymbol> on, TState to) => this.Transitions.Remove(new(from, on, to));
 
         /// <inheritdoc/>
-        public IEnumerable<TState> ReachableStates() => throw new NotImplementedException();
+        public IEnumerable<TState> ReachableStates() => BreadthFirst.Search(
+            this.InitialState,
+            state => this.transitions.TransitionMap.TryGetValue(state, out var transitions)
+                ? transitions.Values
+                : Enumerable.Empty<TState>(),
+            this.StateComparer);
 
         /// <inheritdoc/>
-        public bool RemoveUnreachable() => throw new NotImplementedException();
+        public bool RemoveUnreachable()
+        {
+            var unreachable = this.States.Except(this.ReachableStates(), this.StateComparer).ToList();
+            var result = false;
+            foreach (var state in unreachable)
+            {
+                if (this.States.Remove(state)) result = true;
+            }
+            return result;
+        }
 
         /// <inheritdoc/>
-        public bool IsComplete(IEnumerable<Interval<TSymbol>> alphabet) => throw new NotImplementedException();
+        public bool IsComplete(IEnumerable<Interval<TSymbol>> alphabet) =>
+               !alphabet.Any()
+            || this.States.All(state => this.transitions.TransitionMap.TryGetValue(state, out var onMap)
+                                     && alphabet.All(symbolIv => onMap.ContainsKeys(symbolIv)));
 
         /// <inheritdoc/>
         public bool Complete(IEnumerable<Interval<TSymbol>> alphabet, TState trap) => throw new NotImplementedException();

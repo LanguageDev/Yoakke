@@ -27,6 +27,12 @@ namespace Yoakke.Collections.Dense
         /// <inheritdoc/>
         public bool IsReadOnly => false;
 
+        /// <inheritdoc/>
+        public IEnumerable<Interval<TKey>> Keys => this.intervals.Select(kv => kv.Key);
+
+        /// <inheritdoc/>
+        public IEnumerable<TValue> Values => this.intervals.Select(kv => kv.Value);
+
         /// <summary>
         /// The comparer used.
         /// </summary>
