@@ -15,14 +15,21 @@ namespace Yoakke.Automata.Sample
 
         internal static void Main(string[] args)
         {
-            var dfa = new Dfa<string, char>();
-            dfa.InitialState = "A";
-            dfa.AddTransition("A", 'a', "B");
-            dfa.AddTransition("B", 'a', "C");
-            dfa.AcceptingStates.Add("C");
-            dfa.States.Remove("B");
+            var nfa = new Nfa<string, char>();
+            nfa.InitialStates.Add("q0");
+            nfa.AcceptingStates.Add("q2");
+            nfa.AddTransition("q0", '1', "q1");
+            nfa.AddTransition("q1", '1', "q0");
+            nfa.AddEpsilonTransition("q0", "q2");
+            nfa.AddTransition("q2", '0', "q3");
+            nfa.AddTransition("q3", '0', "q2");
+            nfa.AddTransition("q2", '1', "q4");
+            nfa.AddTransition("q4", '0', "q2");
 
-            Console.WriteLine(dfa.ToDot());
+            Console.WriteLine(nfa.ToDot());
+
+            nfa.EliminateEpsilonTransitions();
+            Console.WriteLine(nfa.ToDot());
         }
     }
 }
