@@ -260,7 +260,7 @@ namespace Yoakke.Automata.Sparse
         public ICollection<EpsilonTransition<TState>> EpsilonTransitions => this.transitions;
 
         /// <inheritdoc/>
-        IReadOnlyCollection<EpsilonTransition<TState>> IReadOnlySparseNfa<TState, TSymbol>.EpsilonTransitions => this.transitions;
+        IReadOnlyCollection<EpsilonTransition<TState>> IReadOnlyNfa<TState, TSymbol>.EpsilonTransitions => this.transitions;
 
         /// <inheritdoc/>
         public ICollection<TState> States => this.transitions;
@@ -425,7 +425,38 @@ namespace Yoakke.Automata.Sparse
         }
 
         /// <inheritdoc/>
-        public bool EliminateEpsilonTransitions() => throw new NotImplementedException();
+        public bool EliminateEpsilonTransitions()
+        {
+            if (this.EpsilonTransitions.Count == 0) return false;
+
+            foreach (var (v1, v2) in this.EpsilonTransitions)
+            {
+                // For each v1 --[Epsilon]--> v2, we look at the outgoing transitions from v2
+                // and add them to v1
+                // So for each v2 --[x]--> vx we add a v1 --[x]--> vx
+                if (this.transitions.TransitionMap.TryGetValue(v2, out var fromV2Map))
+                {
+                    var fromV1Map = this.transitions.GetTransitionsFrom(v1);
+                    foreach (var (on, toV2Set) in fromV2Map)
+                    {
+                        if (!fromV1Map.TryGetValue(on, out var toV1Set))
+                        {
+                            toV1Set = new(this.StateComparer);
+                            fromV1Map.Add(on, toV1Set);
+                        }
+                        foreach (var s in toV2Set) toV1Set.Add(s);
+                    }
+                }
+                // If v1 is a starting state, we need to make v2 one aswell
+                if (this.InitialStates.Contains(v1)) this.InitialStates.Add(v2);
+                // If v2 is a final state, v1 needs to be aswell
+                if (this.AcceptingStates.Contains(v2)) this.AcceptingStates.Add(v1);
+            }
+
+            this.EpsilonTransitions.Clear();
+
+            return true;
+        }
 
         /// <inheritdoc/>
         IDfa<TResultState, TSymbol> IReadOnlyNfa<TState, TSymbol>.Determinize<TResultState>(IStateCombiner<TState, TResultState> combiner) =>

@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Yoakke.Automata.Sparse;
 
 namespace Yoakke.Automata
 {
@@ -19,6 +20,11 @@ namespace Yoakke.Automata
         /// The initial states of the automaton.
         /// </summary>
         public new ICollection<TState> InitialStates { get; }
+
+        /// <summary>
+        /// The epsilon transitions of this automaton.
+        /// </summary>
+        public new ICollection<EpsilonTransition<TState>> EpsilonTransitions { get; }
 
         /// <summary>
         /// Adds an epsilon transition to this automaton.

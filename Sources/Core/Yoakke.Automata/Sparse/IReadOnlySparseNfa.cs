@@ -18,11 +18,6 @@ namespace Yoakke.Automata.Sparse
           IReadOnlySparseFiniteAutomaton<TState, TSymbol>
     {
         /// <summary>
-        /// The epsilon transitions of this automaton.
-        /// </summary>
-        public IReadOnlyCollection<EpsilonTransition<TState>> EpsilonTransitions { get; }
-
-        /// <summary>
         /// Constructs an equivalent DFA from this NFA.
         /// </summary>
         /// <typeparam name="TResultState">The result state type.</typeparam>

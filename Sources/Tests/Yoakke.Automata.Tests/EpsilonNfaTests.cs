@@ -62,23 +62,36 @@ namespace Yoakke.Automata.Tests
             Assert.Equal(accepts, dfa.Accepts(input));
         }
 
-        /*[Fact]
-        public void Has101Or11NfaEpsilonElimination()
+        [Fact]
+        public void SampleEpsilonElimination()
         {
-            var nfa = BuildHas101Or11Nfa().EliminateEpsilonTransitions();
+            var nfa = BuildEpsilonEliminationSampleNfa();
 
-            var expectedStates = new[] { "A", "B, C", "C", "D" }.Select(ParseStateSet);
+            Assert.True(nfa.EliminateEpsilonTransitions());
+
+            var expectedStates = new[] { "q0", "q1", "q2", "q3", "q4" };
             var gotStates = nfa.States.ToHashSet();
 
-            var expectedAcceptingStates = new[] { "D" }.Select(ParseStateSet);
+            var expectedAcceptingStates = new[] { "q0", "q2" };
             var gotAcceptingStates = nfa.AcceptingStates.ToHashSet();
+
+            var expectedInitialStates = new[] { "q0", "q2" };
+            var gotInitialStates = nfa.InitialStates.ToHashSet();
 
             Assert.True(gotStates.SetEquals(expectedStates));
             Assert.True(gotAcceptingStates.SetEquals(expectedAcceptingStates));
+            Assert.True(gotInitialStates.SetEquals(expectedInitialStates));
 
-            AssertTransitions(nfa, "A", '0', new[] { "A" });
-            AssertTransitions(nfa, "A", '1', new[] { "A", "B" });
-        }*/
+            Assert.Equal(8, nfa.Transitions.Count);
+            Assert.Equal(0, nfa.EpsilonTransitions.Count);
+            AssertTransitions(nfa, "q0", '1', new[] { "q1", "q4" });
+            AssertTransitions(nfa, "q1", '1', new[] { "q0" });
+            AssertTransitions(nfa, "q0", '0', new[] { "q3" });
+            AssertTransitions(nfa, "q2", '0', new[] { "q3" });
+            AssertTransitions(nfa, "q3", '0', new[] { "q2" });
+            AssertTransitions(nfa, "q2", '1', new[] { "q4" });
+            AssertTransitions(nfa, "q4", '0', new[] { "q2" });
+        }
 
         [Fact]
         public void Has101Or11Determinization()
@@ -147,6 +160,21 @@ namespace Yoakke.Automata.Tests
             nfa.AddTransition("C", '1', "D");
             nfa.AddTransition("D", '0', "D");
             nfa.AddTransition("D", '1', "D");
+            return nfa;
+        }
+
+        private static Nfa<string, char> BuildEpsilonEliminationSampleNfa()
+        {
+            var nfa = new Nfa<string, char>();
+            nfa.InitialStates.Add("q0");
+            nfa.AcceptingStates.Add("q2");
+            nfa.AddTransition("q0", '1', "q1");
+            nfa.AddTransition("q1", '1', "q0");
+            nfa.AddEpsilonTransition("q0", "q2");
+            nfa.AddTransition("q2", '0', "q3");
+            nfa.AddTransition("q3", '0', "q2");
+            nfa.AddTransition("q2", '1', "q4");
+            nfa.AddTransition("q4", '0', "q2");
             return nfa;
         }
     }

@@ -18,9 +18,5 @@ namespace Yoakke.Automata.Sparse
           IReadOnlySparseNfa<TState, TSymbol>,
           ISparseFiniteAutomaton<TState, TSymbol>
     {
-        /// <summary>
-        /// The epsilon transitions of this automaton.
-        /// </summary>
-        public new ICollection<EpsilonTransition<TState>> EpsilonTransitions { get; }
     }
 }
