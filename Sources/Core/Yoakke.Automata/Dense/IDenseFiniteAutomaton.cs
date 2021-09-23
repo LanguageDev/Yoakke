@@ -22,5 +22,22 @@ namespace Yoakke.Automata.Dense
         /// The transitions of this automaton.
         /// </summary>
         public new ICollection<Transition<TState, Interval<TSymbol>>> Transitions { get; }
+
+        /// <summary>
+        /// Adds a transition to this automaton.
+        /// </summary>
+        /// <param name="from">The state to transition from.</param>
+        /// <param name="on">The interval of symbols that triggers this transition.</param>
+        /// <param name="to">The state to transition to.</param>
+        public void AddTransition(TState from, Interval<TSymbol> on, TState to);
+
+        /// <summary>
+        /// Removes a transition from this automaton.
+        /// </summary>
+        /// <param name="from">The state to transition from.</param>
+        /// <param name="on">The interval of symbols that triggers this transition.</param>
+        /// <param name="to">The state to transition to.</param>
+        /// <returns>True, if the transition was found and removed, false otherwise.</returns>
+        public bool RemoveTransition(TState from, Interval<TSymbol> on, TState to);
     }
 }
