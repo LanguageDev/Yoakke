@@ -12,7 +12,7 @@ namespace Yoakke.Collections.Intervals
     /// Represents a finite or infinite interval.
     /// </summary>
     /// <typeparam name="T">The type of the endpoint value.</typeparam>
-    public sealed class Interval<T> : IEquatable<Interval<T>>
+    public readonly struct Interval<T> : IEquatable<Interval<T>>
     {
         /// <summary>
         /// A value parser function.
@@ -70,7 +70,7 @@ namespace Yoakke.Collections.Intervals
         public bool IsEmpty => IntervalComparer<T>.Default.IsEmpty(this);
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Interval{T}"/> class.
+        /// Initializes a new instance of the <see cref="Interval{T}"/> struct.
         /// </summary>
         /// <param name="lower">The lower-bound of the interval.</param>
         /// <param name="upper">The upper-bound of the interval.</param>
@@ -86,6 +86,12 @@ namespace Yoakke.Collections.Intervals
         /// <param name="value">The element that is contained by the interval.</param>
         /// <returns>A new interval, that only contains <paramref name="value"/>.</returns>
         public static Interval<T> Singleton(T value) => new(new LowerBound<T>.Inclusive(value), new UpperBound<T>.Inclusive(value));
+
+        /// <summary>
+        /// Implicitly converts a value to an interval that only contains the value.
+        /// </summary>
+        /// <param name="value">The value to make into a singleton interval.</param>
+        public static implicit operator Interval<T>(T value) => Singleton(value);
 
         /// <inheritdoc/>
         public override bool Equals(object obj) => obj is Interval<T> other && this.Equals(other);

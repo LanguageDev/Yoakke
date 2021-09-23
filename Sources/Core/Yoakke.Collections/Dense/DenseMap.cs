@@ -5,6 +5,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Generic.Polyfill;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -21,32 +22,10 @@ namespace Yoakke.Collections.Dense
     public sealed class DenseMap<TKey, TValue> : IDenseMap<TKey, TValue>
     {
         /// <inheritdoc/>
-        public bool IsEmpty => this.intervals.Count == 0;
-
-        // NOTE: We can implement these later
-        // For that we need some domain information with some IDomain<T> interface
+        public int Count => this.intervals.Count;
 
         /// <inheritdoc/>
-        public int? Count => null;
-
-        // NOTE: See above note
-
-        /// <inheritdoc/>
-        public IEnumerable<KeyValuePair<TKey, TValue>>? Values => null;
-
-        /// <inheritdoc/>
-        TValue IReadOnlyMathMap<TKey, TValue>.this[TKey key] => this[key];
-
-        /// <inheritdoc/>
-        public TValue this[TKey key]
-        {
-            get
-            {
-                if (!this.TryGetValue(key, out var value)) throw new KeyNotFoundException();
-                return value;
-            }
-            set => this.Add(key, value);
-        }
+        public bool IsReadOnly => false;
 
         /// <summary>
         /// The comparer used.
@@ -103,7 +82,7 @@ namespace Yoakke.Collections.Dense
         public void Clear() => this.intervals.Clear();
 
         /// <inheritdoc/>
-        public void Add(TKey key, TValue value) => this.Add(ToInterval(key), value);
+        public void Add(KeyValuePair<Interval<TKey>, TValue> item) => this.Add(item.Key, item.Value);
 
         /// <inheritdoc/>
         public void Add(Interval<TKey> keys, TValue value)
@@ -238,9 +217,6 @@ namespace Yoakke.Collections.Dense
         }
 
         /// <inheritdoc/>
-        public bool Remove(TKey key) => this.Remove(ToInterval(key));
-
-        /// <inheritdoc/>
         public bool Remove(Interval<TKey> keys)
         {
             if (this.Comparer.IsEmpty(keys)) return false;
@@ -318,11 +294,34 @@ namespace Yoakke.Collections.Dense
         }
 
         /// <inheritdoc/>
-        public bool ContainsKey(TKey key) => this.ContainsKeys(ToInterval(key));
+        public bool Remove(KeyValuePair<Interval<TKey>, TValue> item)
+        {
+            // NOTE: Kinda ineffective but will work for now
+            var intersecting = this.GetIntervalsAndValues(item.Key).ToList();
+            var anyRemoved = false;
+            foreach (var (iv, value) in intersecting)
+            {
+                if (!EqualityComparer<TValue>.Default.Equals(item.Value, value)) continue;
+                var commonIv = this.Comparer.Intersection(iv, item.Key);
+                this.Remove(commonIv);
+                anyRemoved = true;
+            }
+            return anyRemoved;
+        }
 
         /// <inheritdoc/>
-        public bool ContainsKeys(Interval<TKey> keys)
+        bool ICollection<KeyValuePair<Interval<TKey>, TValue>>.Contains(KeyValuePair<Interval<TKey>, TValue> item)
         {
+            if (!this.TryGetContained(item.Key, out var values)) return false;
+            return values.All(v => EqualityComparer<TValue>.Default.Equals(v.Value, item.Value));
+        }
+
+        /// <inheritdoc/>
+        public bool ContainsKeys(Interval<TKey> keys) => this.TryGetContained(keys, out _);
+
+        private bool TryGetContained(Interval<TKey> keys, out IEnumerable<KeyValuePair<Interval<TKey>, TValue>> values)
+        {
+            values = Enumerable.Empty<KeyValuePair<Interval<TKey>, TValue>>();
             if (this.Comparer.IsEmpty(keys)) return true;
 
             // Get all intersecting ranges
@@ -347,29 +346,20 @@ namespace Yoakke.Collections.Dense
                 if (!this.BoundComparer.IsTouching(a.Upper, b.Lower)) return false;
             }
 
+            IEnumerable<KeyValuePair<Interval<TKey>, TValue>> YieldValues()
+            {
+                for (var i = from; i < to; ++i) yield return this.intervals[i];
+            }
+
+            values = YieldValues();
             return true;
         }
 
         /// <inheritdoc/>
-        public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
-        {
-            var seq = this.GetValues(ToInterval(key));
-            var enumerator = seq.GetEnumerator();
-            if (enumerator.MoveNext())
-            {
-                value = enumerator.Current;
-                Debug.Assert(!enumerator.MoveNext(), "The singleton element should have only intersected at most one interval.");
-                return true;
-            }
-            else
-            {
-                value = default;
-                return false;
-            }
-        }
+        public IEnumerable<TValue> GetValues(Interval<TKey> keys) => this.GetIntervalsAndValues(keys).Select(kv => kv.Value);
 
         /// <inheritdoc/>
-        public IEnumerable<TValue> GetValues(Interval<TKey> keys) => this.GetIntervalsAndValues(keys).Select(kv => kv.Value);
+        public void CopyTo(KeyValuePair<Interval<TKey>, TValue>[] array, int arrayIndex) => this.intervals.CopyTo(array, arrayIndex);
 
         /// <inheritdoc/>
         public IEnumerable<KeyValuePair<Interval<TKey>, TValue>> GetIntervalsAndValues(Interval<TKey> keys)

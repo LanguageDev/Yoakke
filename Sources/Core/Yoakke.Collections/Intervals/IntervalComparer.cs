@@ -133,6 +133,20 @@ namespace Yoakke.Collections.Intervals
             this.IsBefore(x, y) || this.IsBefore(y, x) || (this.IsEmpty(x) && this.IsEmpty(y));
 
         /// <summary>
+        /// Returns the intersection of two intervals.
+        /// </summary>
+        /// <param name="x">The first interval.</param>
+        /// <param name="y">The second interval.</param>
+        /// <returns>The intersection of <paramref name="x"/> and <paramref name="y"/>.</returns>
+        public Interval<T> Intersection(Interval<T> x, Interval<T> y)
+        {
+            if (this.IsDisjunct(x, y)) return Interval<T>.Empty;
+            var loCmp = this.BoundComparer.Compare(x.Lower, y.Lower);
+            var hiCmp = this.BoundComparer.Compare(x.Upper, y.Upper);
+            return new(loCmp < 0 ? y.Lower : x.Lower, hiCmp < 0 ? x.Upper : y.Upper);
+        }
+
+        /// <summary>
         /// Calculates the relation of two intervals.
         /// </summary>
         /// <param name="x">The first interval.</param>

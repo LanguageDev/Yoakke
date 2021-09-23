@@ -19,21 +19,10 @@ namespace Yoakke.Collections.Dense
     public sealed class DenseSet<T> : IDenseSet<T>
     {
         /// <inheritdoc/>
-        public bool IsEmpty => this.intervals.Count == 0;
-
-        // NOTE: We can implement these later
-        // For that we need some domain information with some IDomain<T> interface
+        public int Count => this.intervals.Count;
 
         /// <inheritdoc/>
-        public int? Count => null;
-
-        // NOTE: See above note
-
-        /// <inheritdoc/>
-        public IEnumerable<T>? Values => null;
-
-        /// <inheritdoc/>
-        public int IntervalCount => this.intervals.Count;
+        public bool IsReadOnly => false;
 
         /// <summary>
         /// The comparer used.
@@ -65,9 +54,6 @@ namespace Yoakke.Collections.Dense
 
         /// <inheritdoc/>
         public void Clear() => this.intervals.Clear();
-
-        /// <inheritdoc/>
-        public bool Add(T item) => this.Add(ToInterval(item));
 
         /// <inheritdoc/>
         public bool Add(Interval<T> interval)
@@ -116,7 +102,7 @@ namespace Yoakke.Collections.Dense
         }
 
         /// <inheritdoc/>
-        public bool Remove(T item) => this.Remove(ToInterval(item));
+        void ICollection<Interval<T>>.Add(Interval<T> item) => this.Add(item);
 
         /// <inheritdoc/>
         public bool Remove(Interval<T> interval)
@@ -315,9 +301,6 @@ namespace Yoakke.Collections.Dense
         }
 
         /// <inheritdoc/>
-        public bool Contains(T item) => this.Contains(ToInterval(item));
-
-        /// <inheritdoc/>
         public bool Contains(Interval<T> interval)
         {
             if (this.Comparer.IsEmpty(interval)) return true;
@@ -332,25 +315,13 @@ namespace Yoakke.Collections.Dense
         #region Set Relation
 
         /// <inheritdoc/>
-        public bool IsProperSubsetOf(IEnumerable<T> other) => this.IsProperSubsetOf(ToInterval(other));
-
-        /// <inheritdoc/>
         public bool IsProperSubsetOf(IEnumerable<Interval<T>> other) => this.IsSubsetOf(other, out var proper) && proper;
-
-        /// <inheritdoc/>
-        public bool IsProperSupersetOf(IEnumerable<T> other) => this.IsProperSupersetOf(ToInterval(other));
 
         /// <inheritdoc/>
         public bool IsProperSupersetOf(IEnumerable<Interval<T>> other) => this.IsSupersetOf(other, out var proper) && proper;
 
         /// <inheritdoc/>
-        public bool IsSubsetOf(IEnumerable<T> other) => this.IsSubsetOf(ToInterval(other));
-
-        /// <inheritdoc/>
         public bool IsSubsetOf(IEnumerable<Interval<T>> other) => this.IsSubsetOf(other, out _);
-
-        /// <inheritdoc/>
-        public bool IsSubsetOf(IEnumerable<T> other, out bool proper) => this.IsSubsetOf(ToInterval(other), out proper);
 
         /// <inheritdoc/>
         public bool IsSubsetOf(IEnumerable<Interval<T>> other, out bool proper)
@@ -361,19 +332,13 @@ namespace Yoakke.Collections.Dense
         }
 
         /// <inheritdoc/>
-        public bool IsSupersetOf(IEnumerable<T> other) => this.IsSupersetOf(ToInterval(other));
-
-        /// <inheritdoc/>
         public bool IsSupersetOf(IEnumerable<Interval<T>> other) => this.IsSupersetOf(other, out _);
-
-        /// <inheritdoc/>
-        public bool IsSupersetOf(IEnumerable<T> other, out bool proper) => this.IsSupersetOf(ToInterval(other), out proper);
 
         /// <inheritdoc/>
         public bool IsSupersetOf(IEnumerable<Interval<T>> other, out bool proper)
         {
             var otherSet = this.AsReadOnlyDenseSet(other);
-            proper = this.intervals.Count > otherSet.IntervalCount;
+            proper = this.intervals.Count > otherSet.Count;
             foreach (var iv in otherSet)
             {
                 var (from, to) = this.IntersectingRange(iv);
@@ -387,9 +352,6 @@ namespace Yoakke.Collections.Dense
             }
             return true;
         }
-
-        /// <inheritdoc/>
-        public bool Overlaps(IEnumerable<T> other) => this.Overlaps(ToInterval(other));
 
         /// <inheritdoc/>
         public bool Overlaps(IEnumerable<Interval<T>> other)
@@ -410,9 +372,6 @@ namespace Yoakke.Collections.Dense
         }
 
         /// <inheritdoc/>
-        public bool SetEquals(IEnumerable<T> other) => this.SetEquals(ToInterval(other));
-
-        /// <inheritdoc/>
         public bool SetEquals(IEnumerable<Interval<T>> other) => this.IsSubsetOf(other) && this.IsSupersetOf(other);
 
         #endregion
@@ -420,16 +379,10 @@ namespace Yoakke.Collections.Dense
         #region Set Operations
 
         /// <inheritdoc/>
-        public void ExceptWith(IEnumerable<T> other) => this.ExceptWith(ToInterval(other));
-
-        /// <inheritdoc/>
         public void ExceptWith(IEnumerable<Interval<T>> other)
         {
             foreach (var iv in other) this.Remove(iv);
         }
-
-        /// <inheritdoc/>
-        public void IntersectWith(IEnumerable<T> other) => this.IntersectWith(ToInterval(other));
 
         /// <inheritdoc/>
         public void IntersectWith(IEnumerable<Interval<T>> other)
@@ -445,9 +398,6 @@ namespace Yoakke.Collections.Dense
         }
 
         /// <inheritdoc/>
-        public void SymmetricExceptWith(IEnumerable<T> other) => this.SymmetricExceptWith(ToInterval(other));
-
-        /// <inheritdoc/>
         public void SymmetricExceptWith(IEnumerable<Interval<T>> other)
         {
             // Use the identity A xor B = (A \ B) U (B \ A)
@@ -459,15 +409,15 @@ namespace Yoakke.Collections.Dense
         }
 
         /// <inheritdoc/>
-        public void UnionWith(IEnumerable<T> other) => this.UnionWith(ToInterval(other));
-
-        /// <inheritdoc/>
         public void UnionWith(IEnumerable<Interval<T>> other)
         {
             foreach (var iv in other) this.Add(iv);
         }
 
         #endregion
+
+        /// <inheritdoc/>
+        public void CopyTo(Interval<T>[] array, int arrayIndex) => this.intervals.CopyTo(array, arrayIndex);
 
         /// <inheritdoc/>
         public IEnumerator<Interval<T>> GetEnumerator() => this.intervals.GetEnumerator();
@@ -524,9 +474,5 @@ namespace Yoakke.Collections.Dense
             foreach (var iv in intervals) result.Add(iv);
             return result;
         }
-
-        private static IEnumerable<Interval<T>> ToInterval(IEnumerable<T> values) => values.Select(ToInterval);
-
-        private static Interval<T> ToInterval(T value) => Interval<T>.Singleton(value);
     }
 }
