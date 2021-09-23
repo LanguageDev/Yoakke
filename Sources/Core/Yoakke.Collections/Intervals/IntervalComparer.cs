@@ -146,7 +146,7 @@ namespace Yoakke.Collections.Intervals
         /// Checks, if a sequence of intervals are all touching in the specified order.
         /// </summary>
         /// <param name="intervals">The sequence of intervals to check.</param>
-        /// <returns>True, if all of <paramref name="intervals"/> are touching in the specified</returns>
+        /// <returns>True, if all of <paramref name="intervals"/> are touching in the specified.</returns>
         public bool AreTouching(IEnumerable<Interval<T>> intervals)
         {
             Interval<T>? prev = null;
