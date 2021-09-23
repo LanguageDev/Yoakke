@@ -127,6 +127,20 @@ namespace Yoakke.Collections.Intervals
         public bool IsDisjunct(Interval<T> other) => IntervalComparer<T>.Default.IsDisjunct(this, other);
 
         /// <summary>
+        /// Checks if an interval is touching another one.
+        /// </summary>
+        /// <param name="other">The other interval to check.</param>
+        /// <returns>True, if this and <paramref name="other"/> are touching on an endpoint.</returns>
+        public bool IsTouching(Interval<T> other) => IntervalComparer<T>.Default.IsTouching(this, other);
+
+        /// <summary>
+        /// Returns the intersection of this interval with another.
+        /// </summary>
+        /// <param name="other">The other interval to get the intersection with.</param>
+        /// <returns>The intersection of this and <paramref name="other"/>.</returns>
+        public Interval<T> Intersection(Interval<T> other) => IntervalComparer<T>.Default.Intersection(this, other);
+
+        /// <summary>
         /// Calculates the relation to another interval.
         /// </summary>
         /// <param name="other">The interval to calculate the relation to.</param>

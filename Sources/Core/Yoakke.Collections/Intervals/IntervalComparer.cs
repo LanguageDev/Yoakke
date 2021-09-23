@@ -43,7 +43,7 @@ namespace Yoakke.Collections.Intervals
         /// <param name="equalityComparer">The <see cref="IEqualityComparer{T}"/> to use.</param>
         /// <param name="comparer">The <see cref="IComparer{T}"/> to use.</param>
         public IntervalComparer(IEqualityComparer<T> equalityComparer, IComparer<T> comparer)
-            : this(new BoundComparer<T>(equalityComparer, comparer))
+            : this(new(equalityComparer, comparer))
         {
         }
 
@@ -131,6 +131,35 @@ namespace Yoakke.Collections.Intervals
         /// <returns>True, if <paramref name="x"/> and <paramref name="y"/> are completely disjunct.</returns>
         public bool IsDisjunct(Interval<T> x, Interval<T> y) =>
             this.IsBefore(x, y) || this.IsBefore(y, x) || (this.IsEmpty(x) && this.IsEmpty(y));
+
+        /// <summary>
+        /// Checks if an interval is touching another.
+        /// </summary>
+        /// <param name="x">The first interval to check.</param>
+        /// <param name="y">The second interval to check.</param>
+        /// <returns>True, if <paramref name="x"/> and <paramref name="y"/> are touching on one of their endpoints.</returns>
+        public bool IsTouching(Interval<T> x, Interval<T> y) =>
+               !this.IsEmpty(x) && !this.IsEmpty(y)
+            && (this.BoundComparer.IsTouching(x.Upper, y.Lower) || this.BoundComparer.IsTouching(x.Lower, y.Upper));
+
+        /// <summary>
+        /// Checks, if a sequence of intervals are all touching in the specified order.
+        /// </summary>
+        /// <param name="intervals">The sequence of intervals to check.</param>
+        /// <returns>True, if all of <paramref name="intervals"/> are touching in the specified</returns>
+        public bool AreTouching(IEnumerable<Interval<T>> intervals)
+        {
+            Interval<T>? prev = null;
+            foreach (var iv in intervals)
+            {
+                if (prev is not null)
+                {
+                    if (!this.IsTouching(prev.Value, iv)) return false;
+                }
+                prev = iv;
+            }
+            return true;
+        }
 
         /// <summary>
         /// Returns the intersection of two intervals.
