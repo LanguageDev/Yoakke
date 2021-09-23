@@ -347,8 +347,7 @@ namespace Yoakke.Automata.Sparse
             var currentState = new StateSet<TState>(this.InitialStates, this.StateComparer);
             foreach (var symbol in input)
             {
-                var nextStates = currentState.SelectMany(s => this.GetTransitions(s, symbol));
-                currentState = new(nextStates, this.StateComparer);
+                currentState = this.GetTransitions(currentState, symbol);
                 if (currentState.Count == 0) return false;
             }
             return currentState.Overlaps(this.AcceptingStates);
@@ -371,20 +370,16 @@ namespace Yoakke.Automata.Sparse
         }
 
         /// <inheritdoc/>
-        public void AddTransition(TState from, TSymbol on, TState to) =>
-            this.transitions.Add(new Transition<TState, TSymbol>(from, on, to));
+        public void AddTransition(TState from, TSymbol on, TState to) => this.Transitions.Add(new(from, on, to));
 
         /// <inheritdoc/>
-        public bool RemoveTransition(TState from, TSymbol on, TState to) =>
-            this.transitions.Remove(new Transition<TState, TSymbol>(from, on, to));
+        public bool RemoveTransition(TState from, TSymbol on, TState to) => this.Transitions.Remove(new(from, on, to));
 
         /// <inheritdoc/>
-        public void AddEpsilonTransition(TState from, TState to) =>
-            this.transitions.Add(new EpsilonTransition<TState>(from, to));
+        public void AddEpsilonTransition(TState from, TState to) => this.EpsilonTransitions.Add(new(from, to));
 
         /// <inheritdoc/>
-        public bool RemoveEpsilonTransition(TState from, TState to) =>
-            this.transitions.Remove(new EpsilonTransition<TState>(from, to));
+        public bool RemoveEpsilonTransition(TState from, TState to) => this.EpsilonTransitions.Remove(new(from, to));
 
         /// <inheritdoc/>
         public IEnumerable<TState> EpsilonClosure(TState state) => BreadthFirst.Search(

@@ -304,17 +304,15 @@ namespace Yoakke.Automata.Sparse
         }
 
         /// <inheritdoc/>
-        public void AddTransition(TState from, TSymbol on, TState to) =>
-            this.transitions.Add(new Transition<TState, TSymbol>(from, on, to));
+        public void AddTransition(TState from, TSymbol on, TState to) => this.Transitions.Add(new(from, on, to));
 
         /// <inheritdoc/>
-        public bool RemoveTransition(TState from, TSymbol on, TState to) =>
-            this.transitions.Remove(new Transition<TState, TSymbol>(from, on, to));
+        public bool RemoveTransition(TState from, TSymbol on, TState to) => this.Transitions.Remove(new(from, on, to));
 
         /// <inheritdoc/>
         public bool RemoveUnreachable()
         {
-            var unreachable = this.States.Except(this.ReachableStates(), this.StateComparer);
+            var unreachable = this.States.Except(this.ReachableStates(), this.StateComparer).ToList();
             var result = false;
             foreach (var state in unreachable)
             {
@@ -330,6 +328,11 @@ namespace Yoakke.Automata.Sparse
                 ? transitions.Values
                 : Enumerable.Empty<TState>(),
             this.StateComparer);
+
+        /// <inheritdoc/>
+        public bool IsComplete(IEnumerable<TSymbol> alphabet) =>
+               !alphabet.Any()
+            || this.States.All(state => alphabet.All(symbol => this.TryGetTransition(state, symbol, out _)));
 
         /// <inheritdoc/>
         public bool Complete(IEnumerable<TSymbol> alphabet, TState trap)
@@ -353,7 +356,8 @@ namespace Yoakke.Automata.Sparse
             if (result)
             {
                 this.States.Add(trap);
-                foreach (var symbol in alphabet) this.AddTransition(trap, symbol, trap);
+                var trapMap = this.transitions.GetTransitionsFrom(trap);
+                foreach (var symbol in alphabet) trapMap.Add(symbol, trap);
             }
             return result;
         }
@@ -432,14 +436,14 @@ namespace Yoakke.Automata.Sparse
             for (var i = 0; i < states.Count; ++i)
             {
                 var s1 = states[i];
-                var equivalentLists = new List<TState> { s1 };
+                var equivalentSet = new HashSet<TState>(this.StateComparer) { s1 };
                 for (var j = 0; j < states.Count; ++j)
                 {
                     if (i == j) continue;
                     var s2 = states[j];
-                    if (!table.Contains((s1, s2))) equivalentLists.Add(s2);
+                    if (!table.Contains((s1, s2))) equivalentSet.Add(s2);
                 }
-                stateMap.Add(s1, combiner.Combine(equivalentLists));
+                stateMap.Add(s1, combiner.Combine(equivalentSet));
             }
 
             // Now build the new transitions with the state equivalences
