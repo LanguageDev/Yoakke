@@ -412,12 +412,17 @@ namespace Yoakke.Automata.Sparse
                         var s2 = states[j];
 
                         if (table.Contains((s1, s2))) continue;
+
+                        // TODO: Is this correct? If one can but the other can't transition, they are probably not equivalent, as the DFA would fail for one?
                         if (!this.transitions.TransitionMap.TryGetValue(s1, out var s1on)
                          || !this.transitions.TransitionMap.TryGetValue(s2, out var s2on)) continue;
 
-                        foreach (var (on, to1) in s1on)
+                        var onSet = s1on.Keys.Concat(s2on.Keys).ToHashSet(this.SymbolComparer);
+
+                        foreach (var on in onSet)
                         {
-                            if (!s2on.TryGetValue(on, out var to2)) continue;
+                            // TODO: Same as above, correctness
+                            if (!s1on.TryGetValue(on, out var to1) || !s2on.TryGetValue(on, out var to2)) continue;
                             if (table.Contains((to1, to2)))
                             {
                                 changed = true;
