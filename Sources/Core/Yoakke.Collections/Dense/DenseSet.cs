@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
+using Yoakke.Collections.Internal;
 using Yoakke.Collections.Intervals;
 
 namespace Yoakke.Collections.Dense
@@ -19,7 +20,7 @@ namespace Yoakke.Collections.Dense
     public sealed class DenseSet<T> : IDenseSet<T>
     {
         /// <inheritdoc/>
-        public int Count => this.intervals.Count;
+        public int Count => this.intervals.Values.Count;
 
         /// <inheritdoc/>
         public bool IsReadOnly => false;
@@ -27,11 +28,11 @@ namespace Yoakke.Collections.Dense
         /// <summary>
         /// The comparer used.
         /// </summary>
-        public IntervalComparer<T> Comparer { get; }
+        public IntervalComparer<T> Comparer => this.intervals.Comparer;
 
         private BoundComparer<T> BoundComparer => this.Comparer.BoundComparer;
 
-        private readonly List<Interval<T>> intervals = new();
+        private readonly SortedIntervalList<T, Interval<T>> intervals;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DenseSet{T}"/> class.
@@ -47,13 +48,13 @@ namespace Yoakke.Collections.Dense
         /// <param name="comparer">The comparer to use.</param>
         public DenseSet(IntervalComparer<T> comparer)
         {
-            this.Comparer = comparer;
+            this.intervals = new(comparer, iv => iv, (o, n) => n);
         }
 
         #region Elemental Operations
 
         /// <inheritdoc/>
-        public void Clear() => this.intervals.Clear();
+        public void Clear() => this.intervals.Values.Clear();
 
         /// <inheritdoc/>
         public bool Add(Interval<T> interval)
@@ -61,19 +62,19 @@ namespace Yoakke.Collections.Dense
             if (this.Comparer.IsEmpty(interval)) return false;
 
             // For an empty set, it's trivial, we just add it
-            if (this.intervals.Count == 0)
+            if (this.intervals.Values.Count == 0)
             {
-                this.intervals.Add(interval);
+                this.intervals.Values.Add(interval);
                 return true;
             }
 
             // Not empty, find all the intervals that are touched
-            var (from, to) = this.TouchingRange(interval);
+            var (from, to) = this.intervals.TouchingRange(interval);
 
             if (from == to)
             {
                 // Just insert, touches nothing
-                this.intervals.Insert(from, interval);
+                this.intervals.Values.Insert(from, interval);
                 return true;
             }
             else
@@ -81,8 +82,8 @@ namespace Yoakke.Collections.Dense
                 // We need to remove all touched intervals
                 // First we need to modify the inserted interval, because the touched intervals might extend beyond
                 // the inserted one
-                var firstLower = this.intervals[from].Lower;
-                var lastUpper = this.intervals[to - 1].Upper;
+                var firstLower = this.intervals.Values[from].Lower;
+                var lastUpper = this.intervals.Values[to - 1].Upper;
                 var lowerCmp = this.BoundComparer.Compare(firstLower, interval.Lower);
                 var upperCmp = this.BoundComparer.Compare(lastUpper, interval.Upper);
                 // There are 3 ways we can cover a new value
@@ -94,9 +95,9 @@ namespace Yoakke.Collections.Dense
                 // It covers something new, we need to do the insertion
                 interval = new(lowerCmp > 0 ? interval.Lower : firstLower, upperCmp < 0 ? interval.Upper : lastUpper);
                 // Remove all touched ranges, except the first one
-                this.intervals.RemoveRange(from + 1, to - from - 1);
+                this.intervals.Values.RemoveRange(from + 1, to - from - 1);
                 // We modify the first, not removed touched range to save on memory juggling a bit
-                this.intervals[from] = interval;
+                this.intervals.Values[from] = interval;
                 return true;
             }
         }
@@ -105,96 +106,24 @@ namespace Yoakke.Collections.Dense
         void ICollection<Interval<T>>.Add(Interval<T> item) => this.Add(item);
 
         /// <inheritdoc/>
-        public bool Remove(Interval<T> interval)
-        {
-            // An empty set or an empty removal is trivial
-            if (this.intervals.Count == 0 || this.Comparer.IsEmpty(interval)) return false;
-
-            // Not empty, find all the intervals that are intersecting
-            var (from, to) = this.IntersectingRange(interval);
-
-            // If the removed interval intersects nothing, we are done
-            if (from == to) return false;
-
-            if (to - from == 1)
-            {
-                // Intersects a single interval
-                var existing = this.intervals[from];
-                var lowerCompare = this.BoundComparer.Compare(existing.Lower, interval.Lower);
-                var upperCompare = this.BoundComparer.Compare(existing.Upper, interval.Upper);
-                if (lowerCompare >= 0 && upperCompare <= 0)
-                {
-                    // Simplest case, we just remove the entry, as the interval completelx covers this one
-                    this.intervals.RemoveAt(from);
-                }
-                else if (lowerCompare >= 0)
-                {
-                    // The upper bound does not match, we need to modify
-                    var newInterval = new Interval<T>(interval.Upper.Touching!, existing.Upper);
-                    this.intervals[from] = newInterval;
-                }
-                else if (upperCompare <= 0)
-                {
-                    // The lower bound does not match, we need to modify
-                    var newInterval = new Interval<T>(existing.Lower, interval.Lower.Touching!);
-                    this.intervals[from] = newInterval;
-                }
-                else
-                {
-                    // The interval is being split into 2
-                    var newInterval1 = new Interval<T>(existing.Lower, interval.Lower.Touching!);
-                    var newInterval2 = new Interval<T>(interval.Upper.Touching!, existing.Upper);
-                    this.intervals[from] = newInterval1;
-                    this.intervals.Insert(from + 1, newInterval2);
-                }
-            }
-            else
-            {
-                // Intersects multiple intervals
-                // Let's look at the edge relations
-                var lowerExisting = this.intervals[from];
-                var upperExisting = this.intervals[to - 1];
-                var lowerCompare = this.BoundComparer.Compare(lowerExisting.Lower, interval.Lower);
-                var upperCompare = this.BoundComparer.Compare(upperExisting.Upper, interval.Upper);
-                // Split edges if needed, track indices for deletion
-                var deleteFrom = from;
-                var deleteTo = to;
-                if (lowerCompare < 0)
-                {
-                    // Need to split lower
-                    var newLower = new Interval<T>(lowerExisting.Lower, interval.Lower.Touching!);
-                    this.intervals[from] = newLower;
-                    ++deleteFrom;
-                }
-                if (upperCompare > 0)
-                {
-                    // Need to split upper
-                    var newUpper = new Interval<T>(interval.Upper.Touching!, upperExisting.Upper);
-                    this.intervals[to - 1] = newUpper;
-                    --deleteTo;
-                }
-                // Remove all fully removed intervals
-                this.intervals.RemoveRange(deleteFrom, deleteTo - deleteFrom);
-            }
-            return true;
-        }
+        public bool Remove(Interval<T> interval) => this.intervals.Remove(interval);
 
         /// <inheritdoc/>
         public void Complement()
         {
-            if (this.intervals.Count == 0)
+            if (this.intervals.Values.Count == 0)
             {
                 // Inverse of the empty set is the full interval
-                this.intervals.Add(Interval<T>.Full);
+                this.intervals.Values.Add(Interval<T>.Full);
                 return;
             }
 
-            if (this.intervals.Count == 1
-             && this.intervals[0].Lower is LowerBound<T>.Unbounded
-             && this.intervals[0].Upper is UpperBound<T>.Unbounded)
+            if (this.intervals.Values.Count == 1
+             && this.intervals.Values[0].Lower is LowerBound<T>.Unbounded
+             && this.intervals.Values[0].Upper is UpperBound<T>.Unbounded)
             {
                 // Inverse of full interval is the empty one
-                this.intervals.Clear();
+                this.intervals.Values.Clear();
                 return;
             }
 
@@ -202,100 +131,100 @@ namespace Yoakke.Collections.Dense
             //  - Both ends are unbounded: for N intervals this creates N - 1 intervals when inverted
             //  - One end is unbounded: for N intervals this creates N intervals when inverted
             //  - Both ends are bounded: for N intervals this creates N + 1 intervals when inverted
-            var lowerUnbounded = this.intervals[0].Lower is LowerBound<T>.Unbounded;
-            var upperUnbounded = this.intervals[^1].Upper is UpperBound<T>.Unbounded;
+            var lowerUnbounded = this.intervals.Values[0].Lower is LowerBound<T>.Unbounded;
+            var upperUnbounded = this.intervals.Values[^1].Upper is UpperBound<T>.Unbounded;
 
             if (lowerUnbounded && upperUnbounded)
             {
-                var nIntervals = this.intervals.Count - 1;
+                var nIntervals = this.intervals.Values.Count - 1;
                 for (var i = 0; i < nIntervals; ++i)
                 {
-                    var lower = this.intervals[i].Upper.Touching!;
-                    var upper = this.intervals[i + 1].Lower.Touching!;
-                    this.intervals[i] = new(lower, upper);
+                    var lower = this.intervals.Values[i].Upper.Touching!;
+                    var upper = this.intervals.Values[i + 1].Lower.Touching!;
+                    this.intervals.Values[i] = new(lower, upper);
                 }
-                this.intervals.RemoveAt(this.intervals.Count - 1);
+                this.intervals.Values.RemoveAt(this.intervals.Values.Count - 1);
             }
             else if (lowerUnbounded)
             {
-                var nIntervals = this.intervals.Count;
+                var nIntervals = this.intervals.Values.Count;
                 if (nIntervals > 1)
                 {
-                    var prevTouch = this.intervals[nIntervals - 1].Lower.Touching!;
+                    var prevTouch = this.intervals.Values[nIntervals - 1].Lower.Touching!;
 
                     // Modify the last one
-                    var lastLower = this.intervals[nIntervals - 1].Upper.Touching!;
-                    this.intervals[nIntervals - 1] = new(lastLower, UpperBound<T>.Unbounded.Instance);
+                    var lastLower = this.intervals.Values[nIntervals - 1].Upper.Touching!;
+                    this.intervals.Values[nIntervals - 1] = new(lastLower, UpperBound<T>.Unbounded.Instance);
 
                     for (var i = nIntervals - 2; i > 0; --i)
                     {
                         var loTouch = prevTouch;
-                        var hiTouch = this.intervals[i].Upper.Touching!;
-                        prevTouch = this.intervals[i].Lower.Touching!;
-                        this.intervals[i] = new(hiTouch, loTouch);
+                        var hiTouch = this.intervals.Values[i].Upper.Touching!;
+                        prevTouch = this.intervals.Values[i].Lower.Touching!;
+                        this.intervals.Values[i] = new(hiTouch, loTouch);
                     }
 
                     // First one
-                    var hTouch = this.intervals[0].Upper.Touching!;
-                    this.intervals[0] = new(hTouch, prevTouch);
+                    var hTouch = this.intervals.Values[0].Upper.Touching!;
+                    this.intervals.Values[0] = new(hTouch, prevTouch);
                 }
                 else
                 {
                     // Modify the only one
-                    var lower = this.intervals[0].Upper.Touching!;
-                    this.intervals[0] = new(lower, UpperBound<T>.Unbounded.Instance);
+                    var lower = this.intervals.Values[0].Upper.Touching!;
+                    this.intervals.Values[0] = new(lower, UpperBound<T>.Unbounded.Instance);
                 }
             }
             else if (upperUnbounded)
             {
-                var nIntervals = this.intervals.Count;
+                var nIntervals = this.intervals.Values.Count;
                 if (nIntervals > 1)
                 {
-                    var prevTouch = this.intervals[0].Upper.Touching!;
+                    var prevTouch = this.intervals.Values[0].Upper.Touching!;
 
                     // Modify the first one
-                    var firstUpper = this.intervals[0].Lower.Touching!;
-                    this.intervals[0] = new(LowerBound<T>.Unbounded.Instance, firstUpper);
+                    var firstUpper = this.intervals.Values[0].Lower.Touching!;
+                    this.intervals.Values[0] = new(LowerBound<T>.Unbounded.Instance, firstUpper);
 
                     for (var i = 1; i < nIntervals - 1; ++i)
                     {
-                        var loTouch = this.intervals[i].Lower.Touching!;
+                        var loTouch = this.intervals.Values[i].Lower.Touching!;
                         var hiTouch = prevTouch;
-                        prevTouch = this.intervals[i].Upper.Touching!;
-                        this.intervals[i] = new(hiTouch, loTouch);
+                        prevTouch = this.intervals.Values[i].Upper.Touching!;
+                        this.intervals.Values[i] = new(hiTouch, loTouch);
                     }
 
                     // Last one
-                    var lTouch = this.intervals[nIntervals - 1].Lower.Touching!;
-                    this.intervals[nIntervals - 1] = new(prevTouch, lTouch);
+                    var lTouch = this.intervals.Values[nIntervals - 1].Lower.Touching!;
+                    this.intervals.Values[nIntervals - 1] = new(prevTouch, lTouch);
                 }
                 else
                 {
                     // Modify the only one
-                    var upper = this.intervals[0].Lower.Touching!;
-                    this.intervals[0] = new(LowerBound<T>.Unbounded.Instance, upper);
+                    var upper = this.intervals.Values[0].Lower.Touching!;
+                    this.intervals.Values[0] = new(LowerBound<T>.Unbounded.Instance, upper);
                 }
             }
             else
             {
                 // Bounded, meaning N + 1 entries
-                var nIntervals = this.intervals.Count;
+                var nIntervals = this.intervals.Values.Count;
 
                 // Add a last entry
-                this.intervals.Add(new(this.intervals[^1].Upper.Touching!, UpperBound<T>.Unbounded.Instance));
+                this.intervals.Values.Add(new(this.intervals.Values[^1].Upper.Touching!, UpperBound<T>.Unbounded.Instance));
 
-                var prevTouch = this.intervals[0].Upper.Touching!;
+                var prevTouch = this.intervals.Values[0].Upper.Touching!;
 
                 // Modify first one
-                var firstUpper = this.intervals[0].Lower.Touching!;
-                this.intervals[0] = new(LowerBound<T>.Unbounded.Instance, firstUpper);
+                var firstUpper = this.intervals.Values[0].Lower.Touching!;
+                this.intervals.Values[0] = new(LowerBound<T>.Unbounded.Instance, firstUpper);
 
                 for (var i = 1; i < nIntervals; ++i)
                 {
-                    var loTouch = this.intervals[i].Lower.Touching!;
+                    var loTouch = this.intervals.Values[i].Lower.Touching!;
                     var upper = prevTouch;
-                    prevTouch = this.intervals[i].Upper.Touching!;
-                    this.intervals[i] = new(upper, loTouch);
+                    prevTouch = this.intervals.Values[i].Upper.Touching!;
+                    this.intervals.Values[i] = new(upper, loTouch);
                 }
             }
         }
@@ -304,9 +233,9 @@ namespace Yoakke.Collections.Dense
         public bool Contains(Interval<T> interval)
         {
             if (this.Comparer.IsEmpty(interval)) return true;
-            var (from, to) = this.IntersectingRange(interval);
+            var (from, to) = this.intervals.IntersectingRange(interval);
             if (to - from != 1) return false;
-            var existing = this.intervals[from];
+            var existing = this.intervals.Values[from];
             return this.Comparer.Contains(existing, interval);
         }
 
@@ -338,12 +267,12 @@ namespace Yoakke.Collections.Dense
         public bool IsSupersetOf(IEnumerable<Interval<T>> other, out bool proper)
         {
             var otherSet = this.AsReadOnlyDenseSet(other);
-            proper = this.intervals.Count > otherSet.Count;
+            proper = this.intervals.Values.Count > otherSet.Count;
             foreach (var iv in otherSet)
             {
-                var (from, to) = this.IntersectingRange(iv);
+                var (from, to) = this.intervals.IntersectingRange(iv);
                 if (to - from != 1) return false;
-                var existing = this.intervals[from];
+                var existing = this.intervals.Values[from];
                 // Some efficiency on the comparisons
                 var lowerCmp = this.BoundComparer.Compare(existing.Lower, iv.Lower);
                 var upperCmp = this.BoundComparer.Compare(existing.Upper, iv.Upper);
@@ -354,20 +283,13 @@ namespace Yoakke.Collections.Dense
         }
 
         /// <inheritdoc/>
-        public bool Overlaps(IEnumerable<Interval<T>> other)
-        {
-            foreach (var iv in other)
-            {
-                if (this.Overlaps(iv)) return true;
-            }
-            return false;
-        }
+        public bool Overlaps(IEnumerable<Interval<T>> other) => other.Any(this.Overlaps);
 
         /// <inheritdoc/>
         public bool Overlaps(Interval<T> interval)
         {
             if (this.Comparer.IsEmpty(interval)) return false;
-            var (from, to) = this.IntersectingRange(interval);
+            var (from, to) = this.intervals.IntersectingRange(interval);
             return from != to;
         }
 
@@ -393,15 +315,15 @@ namespace Yoakke.Collections.Dense
             otherSet.ExceptWith(this);
 
             // Copy back
-            this.intervals.Clear();
-            this.intervals.AddRange(otherSet);
+            this.intervals.Values.Clear();
+            this.intervals.Values.AddRange(otherSet);
         }
 
         /// <inheritdoc/>
         public void SymmetricExceptWith(IEnumerable<Interval<T>> other)
         {
             // Use the identity A xor B = (A \ B) U (B \ A)
-            var thisSet = this.intervals.ToArray();
+            var thisSet = this.intervals.Values.ToList();
             var otherSet = this.ToDenseSet(other);
             this.ExceptWith(otherSet);
             otherSet.ExceptWith(thisSet);
@@ -417,48 +339,13 @@ namespace Yoakke.Collections.Dense
         #endregion
 
         /// <inheritdoc/>
-        public void CopyTo(Interval<T>[] array, int arrayIndex) => this.intervals.CopyTo(array, arrayIndex);
+        public void CopyTo(Interval<T>[] array, int arrayIndex) => this.intervals.Values.CopyTo(array, arrayIndex);
 
         /// <inheritdoc/>
-        public IEnumerator<Interval<T>> GetEnumerator() => this.intervals.GetEnumerator();
+        public IEnumerator<Interval<T>> GetEnumerator() => this.intervals.Values.GetEnumerator();
 
         /// <inheritdoc/>
-        IEnumerator IEnumerable.GetEnumerator() => (this.intervals as IEnumerable).GetEnumerator();
-
-        private (int From, int To) TouchingRange(Interval<T> interval)
-        {
-            var (from, to) = this.IntersectingRange(interval);
-            if (from != 0 && this.BoundComparer.IsTouching(interval.Lower, this.intervals[from - 1].Upper)) from -= 1;
-            if (to != this.intervals.Count && this.BoundComparer.IsTouching(interval.Upper, this.intervals[to].Lower)) to += 1;
-            return (from, to);
-        }
-
-        private (int From, int To) IntersectingRange(Interval<T> interval)
-        {
-            var from = this.BinarySearch(0, interval.Lower, iv => iv.Upper);
-            var to = this.BinarySearch(from, interval.Upper, iv => iv.Lower);
-            return (from, to);
-        }
-
-        private int BinarySearch(int start, Bound<T> searchedKey, Func<Interval<T>, Bound<T>> keySelector)
-        {
-            var size = this.intervals.Count - start;
-            if (size == 0) return start;
-
-            while (size > 1)
-            {
-                var half = size / 2;
-                var mid = start + half;
-                var key = keySelector(this.intervals[mid]);
-                var cmp = this.BoundComparer.Compare(searchedKey, key);
-                start = cmp > 0 ? mid : start;
-                size -= half;
-            }
-
-            var resultKey = keySelector(this.intervals[start]);
-            var resultCmp = this.BoundComparer.Compare(searchedKey, resultKey);
-            return start + (resultCmp > 0 ? 1 : 0);
-        }
+        IEnumerator IEnumerable.GetEnumerator() => (this.intervals.Values as IEnumerable).GetEnumerator();
 
         private IDenseSet<T> ToDenseSet(IEnumerable<Interval<T>> intervals)
         {

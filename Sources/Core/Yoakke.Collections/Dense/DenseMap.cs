@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
+using Yoakke.Collections.Internal;
 using Yoakke.Collections.Intervals;
 
 namespace Yoakke.Collections.Dense
@@ -22,21 +23,21 @@ namespace Yoakke.Collections.Dense
     public sealed class DenseMap<TKey, TValue> : IDenseMap<TKey, TValue>
     {
         /// <inheritdoc/>
-        public int Count => this.intervals.Count;
+        public int Count => this.intervals.Values.Count;
 
         /// <inheritdoc/>
         public bool IsReadOnly => false;
 
         /// <inheritdoc/>
-        public IEnumerable<Interval<TKey>> Keys => this.intervals.Select(kv => kv.Key);
+        public IEnumerable<Interval<TKey>> Keys => this.intervals.Values.Select(kv => kv.Key);
 
         /// <inheritdoc/>
-        public IEnumerable<TValue> Values => this.intervals.Select(kv => kv.Value);
+        public IEnumerable<TValue> Values => this.intervals.Values.Select(kv => kv.Value);
 
         /// <summary>
         /// The comparer used.
         /// </summary>
-        public IntervalComparer<TKey> Comparer { get; }
+        public IntervalComparer<TKey> Comparer => this.intervals.Comparer;
 
         /// <summary>
         /// The combiner used.
@@ -45,7 +46,7 @@ namespace Yoakke.Collections.Dense
 
         private BoundComparer<TKey> BoundComparer => this.Comparer.BoundComparer;
 
-        private readonly List<KeyValuePair<Interval<TKey>, TValue>> intervals = new();
+        private readonly SortedIntervalList<TKey, KeyValuePair<Interval<TKey>, TValue>> intervals;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DenseMap{TKey, TValue}"/> class.
@@ -62,8 +63,8 @@ namespace Yoakke.Collections.Dense
         /// <param name="combiner">The combiner to use.</param>
         public DenseMap(IntervalComparer<TKey> comparer, ICombiner<TValue> combiner)
         {
-            this.Comparer = comparer;
             this.Combiner = combiner;
+            this.intervals = new(comparer, kv => kv.Key, (kv, newIv) => new(newIv, kv.Value));
         }
 
         /// <summary>
@@ -85,7 +86,7 @@ namespace Yoakke.Collections.Dense
         }
 
         /// <inheritdoc/>
-        public void Clear() => this.intervals.Clear();
+        public void Clear() => this.intervals.Values.Clear();
 
         /// <inheritdoc/>
         public void Add(KeyValuePair<Interval<TKey>, TValue> item) => this.Add(item.Key, item.Value);
@@ -96,25 +97,25 @@ namespace Yoakke.Collections.Dense
             if (this.Comparer.IsEmpty(keys)) return;
 
             // For an empty set, it's trivial, we just add it
-            if (this.intervals.Count == 0)
+            if (this.intervals.Values.Count == 0)
             {
-                this.intervals.Add(new(keys, value));
+                this.intervals.Values.Add(new(keys, value));
                 return;
             }
 
             // Mapping is not empty, find the intersecting intervals
-            var (from, to) = this.IntersectingRange(keys);
+            var (from, to) = this.intervals.IntersectingRange(keys);
             if (from == to)
             {
                 // Intersects nothing, we can just insert
-                this.intervals.Insert(from, new(keys, value));
+                this.intervals.Values.Insert(from, new(keys, value));
             }
             else if (to - from == 1)
             {
                 // Intersects a single interval
                 // This can either not split the interval, or split it once or twice
                 // First, compare the bounds
-                var existing = this.intervals[from];
+                var existing = this.intervals.Values[from];
                 var existingValue = existing.Value;
                 var lowerCmp = this.BoundComparer.Compare(existing.Key.Lower, keys.Lower);
                 var upperCmp = this.BoundComparer.Compare(existing.Key.Upper, keys.Upper);
@@ -123,32 +124,32 @@ namespace Yoakke.Collections.Dense
                 if (upperCmp < 0)
                 {
                     // We overextend past the end, completely cover and need to add extra
-                    this.intervals[from] = new(existing.Key, combinedValue);
-                    this.intervals.Insert(from + 1, new(new(existing.Key.Upper.Touching!, keys.Upper), value));
+                    this.intervals.Values[from] = new(existing.Key, combinedValue);
+                    this.intervals.Values.Insert(from + 1, new(new(existing.Key.Upper.Touching!, keys.Upper), value));
                 }
                 else if (upperCmp > 0)
                 {
                     // We don't reach the end, need to split that off
-                    this.intervals.Insert(from + 1, new(new(keys.Upper.Touching!, existing.Key.Upper), existingValue));
-                    this.intervals[from] = new(new(existing.Key.Lower, keys.Upper), combinedValue);
+                    this.intervals.Values.Insert(from + 1, new(new(keys.Upper.Touching!, existing.Key.Upper), existingValue));
+                    this.intervals.Values[from] = new(new(existing.Key.Lower, keys.Upper), combinedValue);
                 }
                 // Update the existing value
-                existing = this.intervals[from];
+                existing = this.intervals.Values[from];
                 // Lastly we observe the lower bound
                 if (lowerCmp > 0)
                 {
                     // We overextend before the start, completely cover and need to add extra
-                    this.intervals[from] = new(existing.Key, combinedValue);
-                    this.intervals.Insert(from, new(new(keys.Lower, existing.Key.Lower.Touching!), value));
+                    this.intervals.Values[from] = new(existing.Key, combinedValue);
+                    this.intervals.Values.Insert(from, new(new(keys.Lower, existing.Key.Lower.Touching!), value));
                 }
                 else if (lowerCmp < 0)
                 {
                     // We don't reach the start, need to split that off
-                    this.intervals.Insert(from, new(new(existing.Key.Lower, keys.Lower.Touching!), existingValue));
-                    this.intervals[from + 1] = new(new(keys.Lower, existing.Key.Upper), combinedValue);
+                    this.intervals.Values.Insert(from, new(new(existing.Key.Lower, keys.Lower.Touching!), existingValue));
+                    this.intervals.Values[from + 1] = new(new(keys.Lower, existing.Key.Upper), combinedValue);
                 }
                 // If both bounds match, just update with the combined value
-                if (lowerCmp == 0 && upperCmp == 0) this.intervals[from] = new(existing.Key, combinedValue);
+                if (lowerCmp == 0 && upperCmp == 0) this.intervals.Values[from] = new(existing.Key, combinedValue);
             }
             else
             {
@@ -156,8 +157,8 @@ namespace Yoakke.Collections.Dense
                 // The first and last intervals potentially have to be split
                 // The rest between are unified and spaces inbetween are filled in
                 // First comper the bottom and top intersecting intervals
-                var lowerExisting = this.intervals[from];
-                var upperExisting = this.intervals[to - 1];
+                var lowerExisting = this.intervals.Values[from];
+                var upperExisting = this.intervals.Values[to - 1];
                 var lowerCmp = this.BoundComparer.Compare(lowerExisting.Key.Lower, keys.Lower);
                 var upperCmp = this.BoundComparer.Compare(upperExisting.Key.Upper, keys.Upper);
                 var lowerCombinedValue = this.Combiner.Combine(lowerExisting.Value, value);
@@ -167,137 +168,63 @@ namespace Yoakke.Collections.Dense
                 if (upperCmp < 0)
                 {
                     // We overextend past the end, completely cover and need to add extra
-                    this.intervals[to - 1] = new(upperExisting.Key, upperCombinedValue);
-                    this.intervals.Insert(to, new(new(upperExisting.Key.Upper.Touching!, keys.Upper), value));
+                    this.intervals.Values[to - 1] = new(upperExisting.Key, upperCombinedValue);
+                    this.intervals.Values.Insert(to, new(new(upperExisting.Key.Upper.Touching!, keys.Upper), value));
                 }
                 else if (upperCmp > 0)
                 {
                     // We don't reach the end, need to split that off
-                    this.intervals.Insert(to, new(new(keys.Upper.Touching!, upperExisting.Key.Upper), upperExisting.Value));
-                    this.intervals[to - 1] = new(new(upperExisting.Key.Lower, keys.Upper), upperCombinedValue);
+                    this.intervals.Values.Insert(to, new(new(keys.Upper.Touching!, upperExisting.Key.Upper), upperExisting.Value));
+                    this.intervals.Values[to - 1] = new(new(upperExisting.Key.Lower, keys.Upper), upperCombinedValue);
                 }
                 else
                 {
                     // We just update with the combined value
-                    this.intervals[to - 1] = new(upperExisting.Key, upperCombinedValue);
+                    this.intervals.Values[to - 1] = new(upperExisting.Key, upperCombinedValue);
                 }
                 // Second, we fill up the gap in between lower and upper intersected intervals
                 for (var offset = to - 2; offset > from; --offset)
                 {
-                    var current = this.intervals[offset];
-                    var next = this.intervals[offset + 1];
+                    var current = this.intervals.Values[offset];
+                    var next = this.intervals.Values[offset + 1];
                     // Fill the gap after
                     var gapInterval = new Interval<TKey>(current.Key.Upper.Touching!, next.Key.Lower.Touching!);
                     // If not empty gap, fill it
-                    if (!this.Comparer.IsEmpty(gapInterval)) this.intervals.Insert(offset + 1, new(gapInterval, value));
+                    if (!this.Comparer.IsEmpty(gapInterval)) this.intervals.Values.Insert(offset + 1, new(gapInterval, value));
                     // Unify this intervals value with the added one and update
                     var combinedValue = this.Combiner.Combine(current.Value, value);
-                    this.intervals[offset] = new(current.Key, combinedValue);
+                    this.intervals.Values[offset] = new(current.Key, combinedValue);
                 }
                 // There is one more gap right after the lower intersecting
                 {
-                    var next = this.intervals[from + 1];
+                    var next = this.intervals.Values[from + 1];
                     var gapInterval = new Interval<TKey>(lowerExisting.Key.Upper.Touching!, next.Key.Lower.Touching!);
                     // If not empty gap, fill it
-                    if (!this.Comparer.IsEmpty(gapInterval)) this.intervals.Insert(from + 1, new(gapInterval, value));
+                    if (!this.Comparer.IsEmpty(gapInterval)) this.intervals.Values.Insert(from + 1, new(gapInterval, value));
                 }
                 // Lastly we observe the lower intersecting interval
                 if (lowerCmp > 0)
                 {
                     // We overextend before the start, completely cover and need to add extra
-                    this.intervals[from] = new(lowerExisting.Key, lowerCombinedValue);
-                    this.intervals.Insert(from, new(new(keys.Lower, lowerExisting.Key.Lower.Touching!), value));
+                    this.intervals.Values[from] = new(lowerExisting.Key, lowerCombinedValue);
+                    this.intervals.Values.Insert(from, new(new(keys.Lower, lowerExisting.Key.Lower.Touching!), value));
                 }
                 else if (lowerCmp < 0)
                 {
                     // We don't reach the start, need to split that off
-                    this.intervals.Insert(from, new(new(lowerExisting.Key.Lower, keys.Lower.Touching!), lowerExisting.Value));
-                    this.intervals[from + 1] = new(new(keys.Lower, lowerExisting.Key.Upper), lowerCombinedValue);
+                    this.intervals.Values.Insert(from, new(new(lowerExisting.Key.Lower, keys.Lower.Touching!), lowerExisting.Value));
+                    this.intervals.Values[from + 1] = new(new(keys.Lower, lowerExisting.Key.Upper), lowerCombinedValue);
                 }
                 else
                 {
                     // We just update with the combined value
-                    this.intervals[from] = new(lowerExisting.Key, lowerCombinedValue);
+                    this.intervals.Values[from] = new(lowerExisting.Key, lowerCombinedValue);
                 }
             }
         }
 
         /// <inheritdoc/>
-        public bool Remove(Interval<TKey> keys)
-        {
-            if (this.Comparer.IsEmpty(keys)) return false;
-
-            // Find the range that this interval intersects
-            var (from, to) = this.IntersectingRange(keys);
-
-            // If intersects nothing, return
-            if (from == to) return false;
-
-            if (to - from == 1)
-            {
-                // It intersects a single interval
-                var existing = this.intervals[from];
-                var lowerCmp = this.BoundComparer.Compare(existing.Key.Lower, keys.Lower);
-                var upperCmp = this.BoundComparer.Compare(existing.Key.Upper, keys.Upper);
-                // Split edges if needed, track indices for deletion
-                if (lowerCmp < 0 && upperCmp > 0)
-                {
-                    // Split into two
-                    // First the lower
-                    var newLowerInterval = new Interval<TKey>(existing.Key.Lower, keys.Lower.Touching!);
-                    this.intervals[from] = new(newLowerInterval, existing.Value);
-                    // Then the upper
-                    var newUpperInterval = new Interval<TKey>(keys.Upper.Touching!, existing.Key.Upper);
-                    this.intervals.Insert(from + 1, new(newUpperInterval, existing.Value));
-                }
-                else if (lowerCmp < 0)
-                {
-                    // Split lower
-                    var newInterval = new Interval<TKey>(existing.Key.Lower, keys.Lower.Touching!);
-                    this.intervals[from] = new(newInterval, existing.Value);
-                }
-                else if (upperCmp > 0)
-                {
-                    // Split upper
-                    var newInterval = new Interval<TKey>(keys.Upper.Touching!, existing.Key.Upper);
-                    this.intervals[from] = new(newInterval, existing.Value);
-                }
-                else
-                {
-                    // Totally covered, just remove
-                    this.intervals.RemoveAt(from);
-                }
-            }
-            else
-            {
-                // It intersects multiple intervals
-                var lowerExisting = this.intervals[from];
-                var upperExisting = this.intervals[to - 1];
-                var lowerCmp = this.BoundComparer.Compare(lowerExisting.Key.Lower, keys.Lower);
-                var upperCmp = this.BoundComparer.Compare(upperExisting.Key.Upper, keys.Upper);
-                // Split edges if needed, track indices for deletion
-                var deleteFrom = from;
-                var deleteTo = to;
-                if (lowerCmp < 0)
-                {
-                    // Split lower
-                    var newInterval = new Interval<TKey>(lowerExisting.Key.Lower, keys.Lower.Touching!);
-                    this.intervals[from] = new(newInterval, lowerExisting.Value);
-                    ++deleteFrom;
-                }
-                if (upperCmp > 0)
-                {
-                    // Split upper
-                    var newInterval = new Interval<TKey>(keys.Upper.Touching!, upperExisting.Key.Upper);
-                    this.intervals[to - 1] = new(newInterval, upperExisting.Value);
-                    --deleteTo;
-                }
-                // Delete everything in between that is completely covered
-                this.intervals.RemoveRange(deleteFrom, deleteTo - deleteFrom);
-            }
-
-            return true;
-        }
+        public bool Remove(Interval<TKey> keys) => this.intervals.Remove(keys);
 
         /// <inheritdoc/>
         public bool Remove(KeyValuePair<Interval<TKey>, TValue> item)
@@ -331,13 +258,13 @@ namespace Yoakke.Collections.Dense
             if (this.Comparer.IsEmpty(keys)) return true;
 
             // Get all intersecting ranges
-            var (from, to) = this.IntersectingRange(keys);
+            var (from, to) = this.intervals.IntersectingRange(keys);
             // No intersecting intervals, certainly does not contain
             if (to - from == 0) return false;
 
             // Intersects one or more intervals
-            var lowerExisting = this.intervals[from];
-            var upperExisting = this.intervals[to - 1];
+            var lowerExisting = this.intervals.Values[from];
+            var upperExisting = this.intervals.Values[to - 1];
             var lowerCmp = this.BoundComparer.Compare(lowerExisting.Key.Lower, keys.Lower);
             var upperCmp = this.BoundComparer.Compare(upperExisting.Key.Upper, keys.Upper);
 
@@ -347,14 +274,14 @@ namespace Yoakke.Collections.Dense
             // All the in-between intervals must touch
             for (var i = from; i < to - 1; ++i)
             {
-                var a = this.intervals[i].Key;
-                var b = this.intervals[i + 1].Key;
+                var a = this.intervals.Values[i].Key;
+                var b = this.intervals.Values[i + 1].Key;
                 if (!this.BoundComparer.IsTouching(a.Upper, b.Lower)) return false;
             }
 
             IEnumerable<KeyValuePair<Interval<TKey>, TValue>> YieldValues()
             {
-                for (var i = from; i < to; ++i) yield return this.intervals[i];
+                for (var i = from; i < to; ++i) yield return this.intervals.Values[i];
             }
 
             values = YieldValues();
@@ -365,46 +292,19 @@ namespace Yoakke.Collections.Dense
         public IEnumerable<TValue> GetValues(Interval<TKey> keys) => this.GetIntervalsAndValues(keys).Select(kv => kv.Value);
 
         /// <inheritdoc/>
-        public void CopyTo(KeyValuePair<Interval<TKey>, TValue>[] array, int arrayIndex) => this.intervals.CopyTo(array, arrayIndex);
+        public void CopyTo(KeyValuePair<Interval<TKey>, TValue>[] array, int arrayIndex) => this.intervals.Values.CopyTo(array, arrayIndex);
 
         /// <inheritdoc/>
         public IEnumerable<KeyValuePair<Interval<TKey>, TValue>> GetIntervalsAndValues(Interval<TKey> keys)
         {
-            var (from, to) = this.IntersectingRange(keys);
-            for (; from != to; ++from) yield return this.intervals[from];
+            var (from, to) = this.intervals.IntersectingRange(keys);
+            for (; from != to; ++from) yield return this.intervals.Values[from];
         }
 
         /// <inheritdoc/>
-        public IEnumerator<KeyValuePair<Interval<TKey>, TValue>> GetEnumerator() => this.intervals.GetEnumerator();
+        public IEnumerator<KeyValuePair<Interval<TKey>, TValue>> GetEnumerator() => this.intervals.Values.GetEnumerator();
 
         /// <inheritdoc/>
-        IEnumerator IEnumerable.GetEnumerator() => (this.intervals as IEnumerable).GetEnumerator();
-
-        private (int From, int To) IntersectingRange(Interval<TKey> interval)
-        {
-            var from = this.BinarySearch(0, interval.Lower, iv => iv.Upper);
-            var to = this.BinarySearch(from, interval.Upper, iv => iv.Lower);
-            return (from, to);
-        }
-
-        private int BinarySearch(int start, Bound<TKey> searchedKey, Func<Interval<TKey>, Bound<TKey>> keySelector)
-        {
-            var size = this.intervals.Count - start;
-            if (size == 0) return start;
-
-            while (size > 1)
-            {
-                var half = size / 2;
-                var mid = start + half;
-                var key = keySelector(this.intervals[mid].Key);
-                var cmp = this.BoundComparer.Compare(searchedKey, key);
-                start = cmp > 0 ? mid : start;
-                size -= half;
-            }
-
-            var resultKey = keySelector(this.intervals[start].Key);
-            var resultCmp = this.BoundComparer.Compare(searchedKey, resultKey);
-            return start + (resultCmp > 0 ? 1 : 0);
-        }
+        IEnumerator IEnumerable.GetEnumerator() => (this.intervals.Values as IEnumerable).GetEnumerator();
     }
 }

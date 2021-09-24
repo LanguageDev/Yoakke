@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using Yoakke.Collections.Intervals;
 
-namespace Yoakke.Collections.Dense
+namespace Yoakke.Collections.Internal
 {
     /// <summary>
     /// Represents a sorted list of intervals associated to some other value to help the interval set and map
@@ -171,10 +171,10 @@ namespace Yoakke.Collections.Dense
         public (int From, int To) TouchingRange(Interval<TKey> interval)
         {
             var (from, to) = this.IntersectingRange(interval);
-            var fromUpper = this.intervalSelector(this.Values[from - 1]).Upper;
-            var toLower = this.intervalSelector(this.Values[to]).Lower;
-            if (from != 0 && this.BoundComparer.IsTouching(interval.Lower, fromUpper)) from -= 1;
-            if (to != this.Values.Count && this.BoundComparer.IsTouching(interval.Upper, toLower)) to += 1;
+            if (from != 0
+             && this.BoundComparer.IsTouching(interval.Lower, this.intervalSelector(this.Values[from - 1]).Upper)) from -= 1;
+            if (to != this.Values.Count
+             && this.BoundComparer.IsTouching(interval.Upper, this.intervalSelector(this.Values[to]).Lower)) to += 1;
             return (from, to);
         }
 
