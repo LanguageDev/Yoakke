@@ -132,6 +132,38 @@ namespace Yoakke.Collections.Dense
         }
 
         /// <summary>
+        /// Retrieves the range that is contained by a given interval.
+        /// </summary>
+        /// <param name="interval">The interval to check containment with.</param>
+        /// <returns>The index range to index <see cref="Values"/> with.</returns>
+        public (int From, int To) ContainedRange(Interval<TKey> interval)
+        {
+            var (from, to) = this.IntersectingRange(interval);
+            if (from == to)
+            {
+                // No intersection
+                return (from, to);
+            }
+            else if (to - from == 1)
+            {
+                // Intersects one
+                var existing = this.intervalSelector(this.Values[from]);
+                var loCmp = this.BoundComparer.Compare(existing.Lower, interval.Lower);
+                var hiCmp = this.BoundComparer.Compare(existing.Upper, interval.Upper);
+                return (loCmp >= 0 && hiCmp <= 0) ? (from, to) : (from, from);
+            }
+            else
+            {
+                // Intersects multiple
+                var fromLower = this.intervalSelector(this.Values[from]).Lower;
+                var toUpper = this.intervalSelector(this.Values[to - 1]).Upper;
+                var loCmp = this.BoundComparer.Compare(fromLower, interval.Lower);
+                var hiCmp = this.BoundComparer.Compare(toUpper, interval.Upper);
+                return (loCmp >= 0 ? from : from + 1, hiCmp <= 0 ? to : to - 1);
+            }
+        }
+
+        /// <summary>
         /// Retrieves the range that is intersecting or at least touching a given interval.
         /// </summary>
         /// <param name="interval">The interval to check touch with.</param>
