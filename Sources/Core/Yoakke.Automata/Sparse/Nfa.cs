@@ -269,6 +269,12 @@ namespace Yoakke.Automata.Sparse
         IReadOnlyCollection<TState> IReadOnlyFiniteAutomaton<TState, TSymbol>.States => this.transitions;
 
         /// <inheritdoc/>
+        public ICollection<TSymbol> Alphabet => throw new NotImplementedException();
+
+        /// <inheritdoc/>
+        IReadOnlyCollection<TSymbol> IReadOnlySparseFiniteAutomaton<TState, TSymbol>.Alphabet => throw new NotImplementedException();
+
+        /// <inheritdoc/>
         public IEqualityComparer<TState> StateComparer => this.transitions.StateComparer;
 
         /// <summary>

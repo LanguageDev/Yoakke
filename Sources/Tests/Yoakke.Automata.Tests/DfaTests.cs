@@ -101,8 +101,9 @@ namespace Yoakke.Automata.Tests
             dfa.InitialState = 'q';
             dfa.AcceptingStates.Add('q');
             dfa.AddTransition('q', 'a', 'q');
+            dfa.Alphabet.Add('b');
 
-            Assert.True(dfa.Complete("ab", 't'));
+            Assert.True(dfa.Complete('t'));
             var expectedStates = new[] { 'q', 't' }.ToHashSet();
             Assert.True(expectedStates.SetEquals(dfa.States));
             Assert.Equal(4, dfa.Transitions.Count);
