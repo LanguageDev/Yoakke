@@ -18,11 +18,9 @@ namespace Yoakke.Automata.Sparse
           IReadOnlySparseFiniteAutomaton<TState, TSymbol>
     {
         /// <summary>
-        /// Checks, if this DFA is complete over a given alphabet.
+        /// True, if the DFA is complete over its alphabet.
         /// </summary>
-        /// <param name="alphabet">The alphabet to check completeness over.</param>
-        /// <returns>True, if the DFA is complete over <paramref name="alphabet"/>.</returns>
-        public bool IsComplete(IEnumerable<TSymbol> alphabet);
+        public bool IsComplete { get; }
 
         /// <summary>
         /// Minimizes this DFA into an equivalent one with the least amount of states possible.

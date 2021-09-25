@@ -18,6 +18,11 @@ namespace Yoakke.Automata.Sparse
           IFiniteAutomaton<TState, TSymbol>
     {
         /// <summary>
+        /// The alphabed of this automaton.
+        /// </summary>
+        public new ICollection<TSymbol> Alphabet { get; }
+
+        /// <summary>
         /// The transitions of this automaton.
         /// </summary>
         public new ICollection<Transition<TState, TSymbol>> Transitions { get; }

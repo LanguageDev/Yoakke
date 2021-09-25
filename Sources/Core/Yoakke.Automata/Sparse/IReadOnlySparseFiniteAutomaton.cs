@@ -16,6 +16,11 @@ namespace Yoakke.Automata.Sparse
     public interface IReadOnlySparseFiniteAutomaton<TState, TSymbol> : IReadOnlyFiniteAutomaton<TState, TSymbol>
     {
         /// <summary>
+        /// The alphabed of this automaton.
+        /// </summary>
+        public IReadOnlyCollection<TSymbol> Alphabet { get; }
+
+        /// <summary>
         /// The transitions of this automaton.
         /// </summary>
         public IReadOnlyCollection<Transition<TState, TSymbol>> Transitions { get; }
