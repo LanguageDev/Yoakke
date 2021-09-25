@@ -37,9 +37,7 @@ namespace Yoakke.Automata.Sparse
 
             public event EventHandler<Transition<TState, TSymbol>>? Added;
 
-            public TransitionCollection(
-                IEqualityComparer<TState> stateComparer,
-                IEqualityComparer<TSymbol> symbolComparer)
+            public TransitionCollection(IEqualityComparer<TState> stateComparer, IEqualityComparer<TSymbol> symbolComparer)
             {
                 this.TransitionMap = new(stateComparer);
                 this.StateComparer = stateComparer;
@@ -72,7 +70,7 @@ namespace Yoakke.Automata.Sparse
 
             public void CopyTo(Transition<TState, TSymbol>[] array, int arrayIndex)
             {
-                foreach (var t in this as IEnumerable<Transition<TState, TSymbol>>) array[arrayIndex++] = t;
+                foreach (var t in this) array[arrayIndex++] = t;
             }
 
             public IEnumerator<Transition<TState, TSymbol>> GetEnumerator()
