@@ -242,16 +242,7 @@ namespace Yoakke.Automata.Dense
         }
 
         /// <inheritdoc/>
-        public bool Accepts(IEnumerable<TSymbol> input)
-        {
-            var currentState = this.InitialState;
-            foreach (var symbol in input)
-            {
-                if (!this.TryGetTransition(currentState, symbol, out var destinationState)) return false;
-                currentState = destinationState;
-            }
-            return this.AcceptingStates.Contains(currentState);
-        }
+        public bool Accepts(IEnumerable<TSymbol> input) => TrivialImpl.Accepts(this, input);
 
         /// <inheritdoc/>
         public bool TryGetTransition(TState from, TSymbol on, [MaybeNullWhen(false)] out TState to)
@@ -287,16 +278,7 @@ namespace Yoakke.Automata.Dense
         public bool RemoveTransition(TState from, Interval<TSymbol> on, TState to) => this.Transitions.Remove(new(from, on, to));
 
         /// <inheritdoc/>
-        public bool RemoveUnreachable()
-        {
-            var unreachable = this.States.Except(this.ReachableStates, this.StateComparer).ToList();
-            var result = false;
-            foreach (var state in unreachable)
-            {
-                if (this.States.Remove(state)) result = true;
-            }
-            return result;
-        }
+        public bool RemoveUnreachable() => TrivialImpl.RemoveUnreachable(this);
 
         /// <inheritdoc/>
         public bool IsComplete(IEnumerable<Interval<TSymbol>> alphabet) =>

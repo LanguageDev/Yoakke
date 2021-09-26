@@ -236,16 +236,7 @@ namespace Yoakke.Automata.Sparse
         }
 
         /// <inheritdoc/>
-        public bool Accepts(IEnumerable<TSymbol> input)
-        {
-            var currentState = this.InitialState;
-            foreach (var symbol in input)
-            {
-                if (!this.TryGetTransition(currentState, symbol, out var destinationState)) return false;
-                currentState = destinationState;
-            }
-            return this.AcceptingStates.Contains(currentState);
-        }
+        public bool Accepts(IEnumerable<TSymbol> input) => TrivialImpl.Accepts(this, input);
 
         /// <inheritdoc/>
         public bool TryGetTransition(TState from, TSymbol on, [MaybeNullWhen(false)] out TState to)
@@ -265,16 +256,7 @@ namespace Yoakke.Automata.Sparse
         public bool RemoveTransition(TState from, TSymbol on, TState to) => this.Transitions.Remove(new(from, on, to));
 
         /// <inheritdoc/>
-        public bool RemoveUnreachable()
-        {
-            var unreachable = this.States.Except(this.ReachableStates, this.StateComparer).ToList();
-            var result = false;
-            foreach (var state in unreachable)
-            {
-                if (this.States.Remove(state)) result = true;
-            }
-            return result;
-        }
+        public bool RemoveUnreachable() => TrivialImpl.RemoveUnreachable(this);
 
         /// <inheritdoc/>
         public bool Complete(TState trap)

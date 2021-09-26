@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Yoakke.Automata.Dense;
 using Yoakke.Automata.Sparse;
+using Yoakke.Collections.Dense;
 using Yoakke.Collections.Intervals;
 
 namespace Yoakke.Automata.Sample
@@ -9,25 +12,28 @@ namespace Yoakke.Automata.Sample
     {
         internal static void Main(string[] args)
         {
-            var dfa = new DenseDfa<string, char>();
-            dfa.InitialState = "A";
-            dfa.AcceptingStates.Add("F");
-            dfa.AcceptingStates.Add("G");
+            var nfa = new DenseNfa<string, char>();
+            nfa.InitialStates.Add("A");
+            nfa.AcceptingStates.Add("E");
+            nfa.AcceptingStates.Add("F");
 
             void AddTransition(string from, string on, string to) =>
-                dfa!.AddTransition(from, Interval<char>.Parse(on, t => t[0]), to);
+                nfa!.AddTransition(from, Interval<char>.Parse(on, t => t[0]), to);
 
-            AddTransition("A", "[a; z]", "B");
-            AddTransition("A", "[0; 9]", "C");
-            AddTransition("B", "[a; f]", "D");
-            AddTransition("C", "[a; f]", "D");
-            AddTransition("B", "[0; 5]", "E");
-            AddTransition("C", "[0; 5]", "E");
-            AddTransition("D", "[A; J]", "F");
-            AddTransition("E", "[A; L)", "G");
+            StateSet<string> ToStateSet(string s) => new(s.Split(",").Select(s => s.Trim()), EqualityComparer<string>.Default);
 
-            var minDfa = dfa.Minimize();
+            nfa.AddEpsilonTransition("A", "B");
+            nfa.AddEpsilonTransition("A", "C");
+            AddTransition("B", "[i; i]", "D");
+            AddTransition("D", "[f; f]", "F");
+            AddTransition("C", "[a; z]", "E");
+            AddTransition("E", "[a; z]", "E");
 
+            var dfa = nfa.Determinize();
+            var minDfa = dfa.Minimize(StateCombiner<string>.DefaultSetCombiner, new[] { (ToStateSet("E, F"), ToStateSet("E")) });
+
+            Console.WriteLine(nfa.ToDot());
+            Console.WriteLine(dfa.ToDot());
             Console.WriteLine(minDfa.ToDot());
         }
     }

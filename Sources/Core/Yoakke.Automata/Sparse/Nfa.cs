@@ -340,16 +340,7 @@ namespace Yoakke.Automata.Sparse
         }
 
         /// <inheritdoc/>
-        public bool Accepts(IEnumerable<TSymbol> input)
-        {
-            var currentState = new StateSet<TState>(this.InitialStates, this.StateComparer);
-            foreach (var symbol in input)
-            {
-                currentState = this.GetTransitions(currentState, symbol);
-                if (currentState.Count == 0) return false;
-            }
-            return currentState.Overlaps(this.AcceptingStates);
-        }
+        public bool Accepts(IEnumerable<TSymbol> input) => TrivialImpl.Accepts(this, input);
 
         /// <inheritdoc/>
         public IEnumerable<TState> GetTransitions(TState from, TSymbol on)
@@ -388,16 +379,7 @@ namespace Yoakke.Automata.Sparse
             this.StateComparer);
 
         /// <inheritdoc/>
-        public bool RemoveUnreachable()
-        {
-            var unreachable = this.allStates.Except(this.ReachableStates, this.StateComparer);
-            var result = false;
-            foreach (var state in unreachable)
-            {
-                if (this.allStates.Remove(state)) result = true;
-            }
-            return result;
-        }
+        public bool RemoveUnreachable() => TrivialImpl.RemoveUnreachable(this);
 
         /// <inheritdoc/>
         public bool EliminateEpsilonTransitions()
