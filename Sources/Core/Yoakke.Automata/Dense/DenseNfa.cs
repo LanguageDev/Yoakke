@@ -215,6 +215,32 @@ namespace Yoakke.Automata.Dense
         /// </summary>
         public IntervalComparer<TSymbol> SymbolIntervalComparer => this.transitions.SymbolIntervalComparer;
 
+        /// <inheritdoc/>
+        public IEnumerable<TState> ReachableStates
+        {
+            get
+            {
+                IEnumerable<TState> GetNeighbors(TState from) =>
+                    (this.transitions.TransitionMap.TryGetValue(from, out var onMap)
+                        ? onMap.Values.SelectMany(x => x)
+                        : Enumerable.Empty<TState>()).Concat(
+                        this.epsilonTransitions.EpsilonTransitionMap.TryGetValue(from, out var toSet)
+                            ? toSet
+                            : Enumerable.Empty<TState>());
+
+                var touched = new HashSet<TState>(this.StateComparer);
+                foreach (var initial in this.InitialStates)
+                {
+                    if (!touched.Add(initial)) continue;
+                    foreach (var s in BreadthFirst.Search(initial, GetNeighbors, this.StateComparer))
+                    {
+                        touched.Add(s);
+                        yield return s;
+                    }
+                }
+            }
+        }
+
         private readonly TransitionCollection transitions;
         private readonly EpsilonTransitionCollection epsilonTransitions;
         private readonly ObservableCollection<TState> allStates;
@@ -382,36 +408,13 @@ namespace Yoakke.Automata.Dense
         /// <inheritdoc/>
         public bool RemoveUnreachable()
         {
-            var unreachable = this.allStates.Except(this.ReachableStates(), this.StateComparer);
+            var unreachable = this.allStates.Except(this.ReachableStates, this.StateComparer);
             var result = false;
             foreach (var state in unreachable)
             {
                 if (this.allStates.Remove(state)) result = true;
             }
             return result;
-        }
-
-        /// <inheritdoc/>
-        public IEnumerable<TState> ReachableStates()
-        {
-            IEnumerable<TState> GetNeighbors(TState from) =>
-                (this.transitions.TransitionMap.TryGetValue(from, out var onMap)
-                    ? onMap.Values.SelectMany(x => x)
-                    : Enumerable.Empty<TState>()).Concat(
-                    this.epsilonTransitions.EpsilonTransitionMap.TryGetValue(from, out var toSet)
-                        ? toSet
-                        : Enumerable.Empty<TState>());
-
-            var touched = new HashSet<TState>(this.StateComparer);
-            foreach (var initial in this.InitialStates)
-            {
-                if (!touched.Add(initial)) continue;
-                foreach (var s in BreadthFirst.Search(initial, GetNeighbors, this.StateComparer))
-                {
-                    touched.Add(s);
-                    yield return s;
-                }
-            }
         }
 
         /// <inheritdoc/>

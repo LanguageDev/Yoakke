@@ -147,6 +147,14 @@ namespace Yoakke.Automata.Dense
         /// </summary>
         public IntervalComparer<TSymbol> SymbolIntervalComparer => this.transitions.SymbolIntervalComparer;
 
+        /// <inheritdoc/>
+        public IEnumerable<TState> ReachableStates => BreadthFirst.Search(
+            this.InitialState,
+            state => this.transitions.TransitionMap.TryGetValue(state, out var transitions)
+                ? transitions.Values
+                : Enumerable.Empty<TState>(),
+            this.StateComparer);
+
         private readonly TransitionCollection transitions;
         private readonly ObservableCollection<TState> allStates;
         private readonly ObservableCollection<TState> acceptingStates;
@@ -279,17 +287,9 @@ namespace Yoakke.Automata.Dense
         public bool RemoveTransition(TState from, Interval<TSymbol> on, TState to) => this.Transitions.Remove(new(from, on, to));
 
         /// <inheritdoc/>
-        public IEnumerable<TState> ReachableStates() => BreadthFirst.Search(
-            this.InitialState,
-            state => this.transitions.TransitionMap.TryGetValue(state, out var transitions)
-                ? transitions.Values
-                : Enumerable.Empty<TState>(),
-            this.StateComparer);
-
-        /// <inheritdoc/>
         public bool RemoveUnreachable()
         {
-            var unreachable = this.States.Except(this.ReachableStates(), this.StateComparer).ToList();
+            var unreachable = this.States.Except(this.ReachableStates, this.StateComparer).ToList();
             var result = false;
             foreach (var state in unreachable)
             {

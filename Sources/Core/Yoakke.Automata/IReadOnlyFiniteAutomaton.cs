@@ -22,6 +22,11 @@ namespace Yoakke.Automata
         public IReadOnlyCollection<TState> AcceptingStates { get; }
 
         /// <summary>
+        /// Finds all the reachable states from the initial state.
+        /// </summary>
+        public IEnumerable<TState> ReachableStates { get; }
+
+        /// <summary>
         /// The state comparer used by the automaton.
         /// </summary>
         public IEqualityComparer<TState> StateComparer { get; }
@@ -32,12 +37,6 @@ namespace Yoakke.Automata
         /// <param name="input">The sequence of input to feed in for the automaton.</param>
         /// <returns>True, if the automaton accepts the input, false otherwise.</returns>
         public bool Accepts(IEnumerable<TSymbol> input);
-
-        /// <summary>
-        /// Finds all the reachable states from the initial state.
-        /// </summary>
-        /// <returns>The sequence of reachable states.</returns>
-        public IEnumerable<TState> ReachableStates();
 
         /// <summary>
         /// Creates a Graphviz DOT code representation of this automaton for visualization.

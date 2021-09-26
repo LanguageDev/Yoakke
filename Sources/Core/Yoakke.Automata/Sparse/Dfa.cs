@@ -142,6 +142,14 @@ namespace Yoakke.Automata.Sparse
                this.alphabet.Count == 0
             || this.States.All(state => this.alphabet.All(symbol => this.TryGetTransition(state, symbol, out _)));
 
+        /// <inheritdoc/>
+        public IEnumerable<TState> ReachableStates => BreadthFirst.Search(
+            this.InitialState,
+            state => this.transitions.TransitionMap.TryGetValue(state, out var transitions)
+                ? transitions.Values
+                : Enumerable.Empty<TState>(),
+            this.StateComparer);
+
         private readonly TransitionCollection transitions;
         private readonly ObservableCollection<TState> allStates;
         private readonly ObservableCollection<TState> acceptingStates;
@@ -257,17 +265,9 @@ namespace Yoakke.Automata.Sparse
         public bool RemoveTransition(TState from, TSymbol on, TState to) => this.Transitions.Remove(new(from, on, to));
 
         /// <inheritdoc/>
-        public IEnumerable<TState> ReachableStates() => BreadthFirst.Search(
-            this.InitialState,
-            state => this.transitions.TransitionMap.TryGetValue(state, out var transitions)
-                ? transitions.Values
-                : Enumerable.Empty<TState>(),
-            this.StateComparer);
-
-        /// <inheritdoc/>
         public bool RemoveUnreachable()
         {
-            var unreachable = this.States.Except(this.ReachableStates(), this.StateComparer).ToList();
+            var unreachable = this.States.Except(this.ReachableStates, this.StateComparer).ToList();
             var result = false;
             foreach (var state in unreachable)
             {
