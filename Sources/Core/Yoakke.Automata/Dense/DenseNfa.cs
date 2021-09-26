@@ -104,7 +104,9 @@ namespace Yoakke.Automata.Dense
             {
                 if (!this.TransitionMap.TryGetValue(from, out var onMap))
                 {
-                    onMap = new(this.SymbolIntervalComparer);
+                    onMap = new(
+                        this.SymbolIntervalComparer,
+                        Combiner<HashSet<TState>>.Create((a, b) => a.Concat(b).ToHashSet(this.StateComparer)));
                     this.TransitionMap.Add(from, onMap);
                 }
                 return onMap;
@@ -418,13 +420,75 @@ namespace Yoakke.Automata.Dense
         }
 
         /// <inheritdoc/>
-        public bool EliminateEpsilonTransitions() => throw new NotImplementedException();
+        public bool EliminateEpsilonTransitions()
+        {
+            if (this.EpsilonTransitions.Count == 0) return false;
+
+            foreach (var (v1, v2) in this.EpsilonTransitions)
+            {
+                // For each v1 --[Epsilon]--> v2, we look at the outgoing transitions from v2
+                // and add them to v1
+                // So for each v2 --[x]--> vx we add a v1 --[x]--> vx
+                if (this.transitions.TransitionMap.TryGetValue(v2, out var fromV2Map))
+                {
+                    var fromV1Map = this.transitions.GetTransitionsFrom(v1);
+                    foreach (var (on, toV2Set) in fromV2Map) fromV1Map.Add(on, toV2Set);
+                }
+                // If v1 is a starting state, we need to make v2 one aswell
+                if (this.InitialStates.Contains(v1)) this.InitialStates.Add(v2);
+                // If v2 is a final state, v1 needs to be aswell
+                if (this.AcceptingStates.Contains(v2)) this.AcceptingStates.Add(v1);
+            }
+
+            this.EpsilonTransitions.Clear();
+
+            return true;
+        }
 
         /// <inheritdoc/>
         IDfa<TResultState, TSymbol> IReadOnlyNfa<TState, TSymbol>.Determinize<TResultState>(IStateCombiner<TState, TResultState> combiner) =>
             this.Determinize(combiner);
 
         /// <inheritdoc/>
-        public IDenseDfa<TResultState, TSymbol> Determinize<TResultState>(IStateCombiner<TState, TResultState> combiner) => throw new NotImplementedException();
+        public IDenseDfa<TResultState, TSymbol> Determinize<TResultState>(IStateCombiner<TState, TResultState> combiner)
+        {
+            var result = new DenseDfa<TResultState, TSymbol>(combiner.ResultComparer, this.SymbolIntervalComparer);
+            var visited = new HashSet<StateSet<TState>>();
+            var stk = new Stack<StateSet<TState>>();
+            var first = new StateSet<TState>(this.InitialStates.SelectMany(this.EpsilonClosure).ToHashSet(this.StateComparer));
+            result.InitialState = combiner.Combine(first);
+            stk.Push(first);
+            while (stk.TryPop(out var top))
+            {
+                // Construct a transition map
+                // Essentially from the current set of states we calculate what set of states we arrive at for a given symbol
+                var resultTransitions = new DenseMap<TSymbol, HashSet<TState>>(
+                    this.SymbolIntervalComparer,
+                    Combiner<HashSet<TState>>.Create((a, b) => a.Concat(b).ToHashSet(this.StateComparer)));
+                foreach (var primState in top)
+                {
+                    if (!this.transitions.TransitionMap.TryGetValue(primState, out var onMap)) continue;
+                    foreach (var (on, toSet) in onMap)
+                    {
+                        foreach (var to in toSet.SelectMany(this.EpsilonClosure))
+                        {
+                            resultTransitions.Add(on, new HashSet<TState>(this.StateComparer) { to });
+                        }
+                    }
+                }
+                // Add the transitions
+                var from = combiner.Combine(top);
+                foreach (var (on, toHashSet) in resultTransitions)
+                {
+                    var toSet = new StateSet<TState>(toHashSet);
+                    if (visited.Add(toSet)) stk.Push(toSet);
+                    var to = combiner.Combine(toSet);
+                    result.AddTransition(from, on, to);
+                }
+                // Register as accepting, if any
+                if (top.Any(s => this.AcceptingStates.Contains(s))) result.AcceptingStates.Add(from);
+            }
+            return result;
+        }
     }
 }
