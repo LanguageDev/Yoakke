@@ -21,7 +21,7 @@ namespace Yoakke.Automata.Dense
     /// </summary>
     /// <typeparam name="TState">The state type.</typeparam>
     /// <typeparam name="TSymbol">The symbol type.</typeparam>
-    public class DenseNfa<TState, TSymbol> : IDenseNfa<TState, TSymbol>
+    public sealed class DenseNfa<TState, TSymbol> : IDenseNfa<TState, TSymbol>
     {
         private class TransitionCollection
             : IReadOnlyCollection<Transition<TState, Interval<TSymbol>>>, ICollection<Transition<TState, Interval<TSymbol>>>
