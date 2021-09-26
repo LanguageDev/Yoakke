@@ -9,7 +9,9 @@ using System.Collections.Generic.Polyfill;
 using System.Linq;
 using System.Text;
 using Yoakke.Automata.Internal;
+using Yoakke.Collections;
 using Yoakke.Collections.Dense;
+using Yoakke.Collections.Graphs;
 using Yoakke.Collections.Intervals;
 
 namespace Yoakke.Automata.Dense
@@ -282,40 +284,135 @@ namespace Yoakke.Automata.Dense
         }
 
         /// <inheritdoc/>
-        public string ToDot() => throw new NotImplementedException();
+        public string ToDot()
+        {
+            var writer = new DotWriter<TState, TSymbol>(this.StateComparer);
+            writer.WriteStart("NFA");
+
+            // Accepting states
+            writer.WriteAcceptingStates(this.AcceptingStates);
+            // Non-accepting states
+            writer.WriteStates(this.States.Except(this.AcceptingStates, this.StateComparer));
+            // Initial states
+            writer.WriteInitialStates(this.InitialStates);
+
+            // Transitions
+            var tupleComparer = new TupleEqualityComparer<TState, TState>(this.StateComparer, this.StateComparer);
+            var transitions = this.Transitions.GroupBy(t => (t.Source, t.Destination), tupleComparer);
+            var remainingEpsilon = this.epsilonTransitions.EpsilonTransitionMap
+                .ToDictionary(kv => kv.Key, kv => kv.Value.ToHashSet(this.StateComparer), this.StateComparer);
+            foreach (var group in transitions)
+            {
+                var from = group.Key.Item1;
+                var to = group.Key.Item2;
+                var on = string.Join(" U ", group.Select(g => g.Symbol));
+                if (this.EpsilonTransitions.Contains(new(from, to)))
+                {
+                    remainingEpsilon[from].Remove(to);
+                    on = $"{on}, ε";
+                }
+                writer.WriteTransition(from, on, to);
+            }
+
+            // Epsilon-transitions
+            foreach (var (from, toSet) in remainingEpsilon)
+            {
+                foreach (var to in toSet) writer.WriteTransition(from, "ε", to);
+            }
+
+            writer.WriteEnd();
+            return writer.Code.ToString();
+        }
 
         /// <inheritdoc/>
-        public bool Accepts(IEnumerable<TSymbol> input) => throw new NotImplementedException();
+        public bool Accepts(IEnumerable<TSymbol> input)
+        {
+            var currentState = new StateSet<TState>(this.InitialStates, this.StateComparer);
+            foreach (var symbol in input)
+            {
+                currentState = this.GetTransitions(currentState, symbol);
+                if (currentState.Count == 0) return false;
+            }
+            return currentState.Overlaps(this.AcceptingStates);
+        }
 
         /// <inheritdoc/>
-        public IEnumerable<TState> GetTransitions(TState from, TSymbol on) => throw new NotImplementedException();
+        public IEnumerable<TState> GetTransitions(TState from, TSymbol on)
+        {
+            var touched = new HashSet<TState>(this.StateComparer);
+            foreach (var fromState in this.EpsilonClosure(from))
+            {
+                if (!this.transitions.TransitionMap.TryGetValue(fromState, out var onMap)) continue;
+                var values = onMap.GetValues(on).GetEnumerator();
+                if (!values.MoveNext()) continue;
+
+                foreach (var s in values.Current.SelectMany(this.EpsilonClosure))
+                {
+                    if (touched.Add(s)) yield return s;
+                }
+            }
+        }
 
         /// <inheritdoc/>
-        public void AddTransition(TState from, TSymbol on, TState to) => throw new NotImplementedException();
+        public void AddTransition(TState from, TSymbol on, TState to) => this.Transitions.Add(new(from, on, to));
 
         /// <inheritdoc/>
-        public void AddTransition(TState from, Interval<TSymbol> on, TState to) => throw new NotImplementedException();
+        public void AddTransition(TState from, Interval<TSymbol> on, TState to) => this.Transitions.Add(new(from, on, to));
 
         /// <inheritdoc/>
-        public bool RemoveTransition(TState from, TSymbol on, TState to) => throw new NotImplementedException();
+        public bool RemoveTransition(TState from, TSymbol on, TState to) => this.Transitions.Remove(new(from, on, to));
 
         /// <inheritdoc/>
-        public bool RemoveTransition(TState from, Interval<TSymbol> on, TState to) => throw new NotImplementedException();
+        public bool RemoveTransition(TState from, Interval<TSymbol> on, TState to) => this.Transitions.Remove(new(from, on, to));
 
         /// <inheritdoc/>
-        public void AddEpsilonTransition(TState from, TState to) => throw new NotImplementedException();
+        public void AddEpsilonTransition(TState from, TState to) => this.EpsilonTransitions.Add(new(from, to));
 
         /// <inheritdoc/>
-        public bool RemoveEpsilonTransition(TState from, TState to) => throw new NotImplementedException();
+        public bool RemoveEpsilonTransition(TState from, TState to) => this.EpsilonTransitions.Remove(new(from, to));
 
         /// <inheritdoc/>
-        public IEnumerable<TState> EpsilonClosure(TState state) => throw new NotImplementedException();
+        public IEnumerable<TState> EpsilonClosure(TState state) => BreadthFirst.Search(
+            state,
+            state => this.epsilonTransitions.EpsilonTransitionMap.TryGetValue(state, out var eps)
+                ? eps
+                : Enumerable.Empty<TState>(),
+            this.StateComparer);
 
         /// <inheritdoc/>
-        public bool RemoveUnreachable() => throw new NotImplementedException();
+        public bool RemoveUnreachable()
+        {
+            var unreachable = this.allStates.Except(this.ReachableStates(), this.StateComparer);
+            var result = false;
+            foreach (var state in unreachable)
+            {
+                if (this.allStates.Remove(state)) result = true;
+            }
+            return result;
+        }
 
         /// <inheritdoc/>
-        public IEnumerable<TState> ReachableStates() => throw new NotImplementedException();
+        public IEnumerable<TState> ReachableStates()
+        {
+            IEnumerable<TState> GetNeighbors(TState from) =>
+                (this.transitions.TransitionMap.TryGetValue(from, out var onMap)
+                    ? onMap.Values.SelectMany(x => x)
+                    : Enumerable.Empty<TState>()).Concat(
+                    this.epsilonTransitions.EpsilonTransitionMap.TryGetValue(from, out var toSet)
+                        ? toSet
+                        : Enumerable.Empty<TState>());
+
+            var touched = new HashSet<TState>(this.StateComparer);
+            foreach (var initial in this.InitialStates)
+            {
+                if (!touched.Add(initial)) continue;
+                foreach (var s in BreadthFirst.Search(initial, GetNeighbors, this.StateComparer))
+                {
+                    touched.Add(s);
+                    yield return s;
+                }
+            }
+        }
 
         /// <inheritdoc/>
         public bool EliminateEpsilonTransitions() => throw new NotImplementedException();
