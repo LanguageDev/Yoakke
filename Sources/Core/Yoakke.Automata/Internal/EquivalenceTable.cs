@@ -17,7 +17,7 @@ namespace Yoakke.Automata.Internal
     /// <typeparam name="TSymbol">The symbol type.</typeparam>
     internal class EquivalenceTable<TState, TSymbol>
     {
-        private readonly IReadOnlyFiniteAutomaton<TState, TSymbol> automaton;
+        private readonly IReadOnlyDfa<TState, TSymbol> automaton;
         private readonly HashSet<(TState, TState)> table;
         private readonly List<TState> states;
 
@@ -25,7 +25,7 @@ namespace Yoakke.Automata.Internal
         /// Initializes a new instance of the <see cref="EquivalenceTable{TState, TSymbol}"/> class.
         /// </summary>
         /// <param name="automaton">The automaton to generate the equivalence table for.</param>
-        public EquivalenceTable(IReadOnlyFiniteAutomaton<TState, TSymbol> automaton)
+        public EquivalenceTable(IReadOnlyDfa<TState, TSymbol> automaton)
         {
             this.automaton = automaton;
             var tupleComparer = new TupleEqualityComparer<TState, TState>(automaton.StateComparer, automaton.StateComparer);
