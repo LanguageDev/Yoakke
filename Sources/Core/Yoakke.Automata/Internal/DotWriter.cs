@@ -55,7 +55,7 @@ namespace Yoakke.Automata.Internal
         public void WriteStates(IEnumerable<TState> states)
         {
             this.Code.AppendLine("    node [shape=circle];");
-            this.Code.AppendLine($"    {string.Join(" ", states.Select(this.GetStateName))};");
+            this.Code.AppendLine($"    {string.Join(" ", states.Select(s => $"\"{this.GetStateName(s)}\""))};");
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace Yoakke.Automata.Internal
             var i = 0;
             foreach (var state in states)
             {
-                this.Code.AppendLine($"    init_{i} -> {this.GetStateName(state)};");
+                this.Code.AppendLine($"    init_{i} -> \"{this.GetStateName(state)}\";");
                 ++i;
             }
         }
@@ -80,7 +80,7 @@ namespace Yoakke.Automata.Internal
         public void WriteAcceptingStates(IEnumerable<TState> states)
         {
             this.Code.AppendLine("    node [shape=doublecircle];");
-            this.Code.AppendLine($"    {string.Join(" ", states.Select(this.GetStateName))};");
+            this.Code.AppendLine($"    {string.Join(" ", states.Select(s => $"\"{this.GetStateName(s)}\""))};");
         }
 
         /// <summary>
