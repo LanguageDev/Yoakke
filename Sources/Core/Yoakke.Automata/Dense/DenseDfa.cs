@@ -6,6 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Generic.Polyfill;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
@@ -316,62 +317,50 @@ namespace Yoakke.Automata.Dense
             IStateCombiner<TState, TResultState> combiner,
             IEnumerable<(TState, TState)> differentiatePairs)
         {
+            var equivalenceTable = new EquivalenceTable<TState, TSymbol>(this);
+
+            // Initially fill the table
+            equivalenceTable.Initialize(differentiatePairs);
+
+            // Fill until no change
+            equivalenceTable.Fill((s1, s2) =>
+            {
+                // We need to cut up the transition symbols into sections
+                // For that we build a transition map of (interval -> destination[1..2])
+                var onMap = new DenseMap<TSymbol, TState[]>(
+                    this.SymbolIntervalComparer,
+                    Combiner<TState[]>.Create((existing, added) => existing.Concat(added).ToArray()));
+                if (this.transitions.TransitionMap.TryGetValue(s1, out var s1on))
+                {
+                    foreach (var (iv, to) in s1on) onMap.Add(iv, new[] { to });
+                }
+                if (this.transitions.TransitionMap.TryGetValue(s2, out var s2on))
+                {
+                    foreach (var (iv, to) in s2on) onMap.Add(iv, new[] { to });
+                }
+
+                foreach (var (iv, to) in onMap)
+                {
+                    Debug.Assert(to.Length == 1 || to.Length == 2, "At least one state has to map from the specified intervals.");
+                    if (to.Length == 1 && this.AcceptingStates.Contains(to[0])) return true;
+                    if (to.Length == 1) continue;
+                    if (equivalenceTable.AreDifferent(to[0], to[1])) return true;
+                }
+                return false;
+            });
+
+            // Create a state mapping of old-state -> equivalent-state
+            var stateMap = equivalenceTable.BuildStateMap(combiner);
+
+            // Create the result
             var result = new DenseDfa<TResultState, TSymbol>(combiner.ResultComparer, this.SymbolIntervalComparer);
-            var tupleComparer = new TupleEqualityComparer<TState, TState>(this.StateComparer, this.StateComparer);
-            var table = new HashSet<(TState, TState)>(tupleComparer);
 
-            void Plot(TState s1, TState s2)
-            {
-                table!.Add((s1, s2));
-                table!.Add((s2, s1));
-            }
+            // Now build the new transitions with the state equivalences
+            foreach (var (from, on, to) in this.Transitions) result.AddTransition(stateMap[from], on, stateMap[to]);
 
-            // First, all (accepting, non-accepting) pairs get plotted in the table
-            var states = this.States.ToList();
-            for (var i = 0; i < states.Count; ++i)
-            {
-                var s1 = states[i];
-                for (var j = 0; j < i; ++j)
-                {
-                    var s2 = states[j];
-                    if (this.AcceptingStates.Contains(s1) != this.AcceptingStates.Contains(s2)) Plot(s1, s2);
-                }
-            }
-
-            // Then we plot the custom pairs too
-            foreach (var (s1, s2) in differentiatePairs) Plot(s1, s2);
-
-            // Now for each (p, q) pair of states
-            //   If (p, q) is unplotted and exists a symbol X, so that (delta(p, X), delta(q, X)) is not empty
-            //     plot (p, q)
-            // Repeat until there is no change
-            while (true)
-            {
-                var changed = false;
-                for (var i = 0; i < states.Count; ++i)
-                {
-                    var s1 = states[i];
-                    for (var j = 0; j < i; ++j)
-                    {
-                        var s2 = states[j];
-
-                        if (table.Contains((s1, s2))) continue;
-
-                        // TODO: Look in sparse DFA for correctness alert
-                        if (!this.transitions.TransitionMap.TryGetValue(s1, out var s1on)
-                         || !this.transitions.TransitionMap.TryGetValue(s2, out var s2on)) continue;
-
-                        var onSet = new DenseSet<TSymbol>(this.SymbolIntervalComparer);
-                        foreach (var iv in s1on.Keys) onSet.Add(iv);
-                        foreach (var iv in s2on.Keys) onSet.Add(iv);
-
-                        // TODO: Finish
-                    }
-                }
-                if (!changed) break;
-            }
-
-            // TODO: Finish
+            // Introduce the initial state and all the accepting states
+            result.InitialState = stateMap[this.InitialState];
+            foreach (var s in this.acceptingStates) result.AcceptingStates.Add(stateMap[s]);
 
             return result;
         }
