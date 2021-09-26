@@ -143,9 +143,9 @@ namespace Yoakke.Automata.Sparse
             || this.States.All(state => this.alphabet.All(symbol => this.TryGetTransition(state, symbol, out _)));
 
         private readonly TransitionCollection transitions;
-        private readonly ObservableSet<TState> allStates;
-        private readonly ObservableSet<TState> acceptingStates;
-        private readonly ObservableSet<TSymbol> alphabet;
+        private readonly ObservableCollection<TState> allStates;
+        private readonly ObservableCollection<TState> acceptingStates;
+        private readonly ObservableCollection<TSymbol> alphabet;
         private TState initialState = default!;
 
         /// <summary>
@@ -163,10 +163,10 @@ namespace Yoakke.Automata.Sparse
         /// <param name="symbolComparer">The symbol comparer to use.</param>
         public Dfa(IEqualityComparer<TState> stateComparer, IEqualityComparer<TSymbol> symbolComparer)
         {
-            var (all, accepting) = ObservableSet<TState>.StateWithAccepting(stateComparer);
+            var (all, accepting) = ObservableCollection<TState>.StateWithAccepting(() => new HashSet<TState>(stateComparer));
             this.allStates = all;
             this.acceptingStates = accepting;
-            this.alphabet = new(symbolComparer);
+            this.alphabet = new(new HashSet<TSymbol>(symbolComparer));
             this.transitions = new(stateComparer, symbolComparer);
 
             this.allStates.Removed += (sender, item) =>

@@ -17,6 +17,11 @@ namespace Yoakke.Automata.Dense
     public interface IReadOnlyDenseFiniteAutomaton<TState, TSymbol> : IReadOnlyFiniteAutomaton<TState, TSymbol>
     {
         /// <summary>
+        /// The alphabet of this automaton.
+        /// </summary>
+        public IReadOnlyCollection<Interval<TSymbol>> Alphabet { get; }
+
+        /// <summary>
         /// The transitions of this automaton.
         /// </summary>
         public IReadOnlyCollection<Transition<TState, Interval<TSymbol>>> Transitions { get; }

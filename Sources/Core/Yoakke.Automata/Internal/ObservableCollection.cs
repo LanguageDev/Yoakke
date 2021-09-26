@@ -10,21 +10,21 @@ using System.Text;
 namespace Yoakke.Automata.Internal
 {
     /// <summary>
-    /// Represents an observable collection backed by a set.
+    /// Represents an observable collection that wraps an existing collection to publish modification events.
     /// </summary>
     /// <typeparam name="T">The item type.</typeparam>
-    internal class ObservableSet<T> : IReadOnlyCollection<T>, ICollection<T>
+    internal class ObservableCollection<T> : IReadOnlyCollection<T>, ICollection<T>
     {
         /// <summary>
         /// Creates 'all' and 'accepting' state collections that are connected.
         /// </summary>
-        /// <param name="comparer">The comparer used.</param>
+        /// <param name="makeCollection">A factory to create an underlying collection.</param>
         /// <returns>The created state collections.</returns>
-        public static (ObservableSet<T> All, ObservableSet<T> Accepting)
-            StateWithAccepting(IEqualityComparer<T> comparer)
+        public static (ObservableCollection<T> All, ObservableCollection<T> Accepting)
+            StateWithAccepting(Func<ICollection<T>> makeCollection)
         {
-            var all = new ObservableSet<T>(comparer);
-            var accepting = new ObservableSet<T>(comparer);
+            var all = new ObservableCollection<T>(makeCollection());
+            var accepting = new ObservableCollection<T>(makeCollection());
 
             all.Removed += (sender, item) => accepting.Remove(item);
             all.Cleared += (sender, eventArgs) => accepting.Clear();
@@ -37,13 +37,13 @@ namespace Yoakke.Automata.Internal
         /// <summary>
         /// Creates 'all', 'accepting' and 'initial' state collections that are connected.
         /// </summary>
-        /// <param name="comparer">The comparer used.</param>
+        /// <param name="makeCollection">A factory to create an underlying collection.</param>
         /// <returns>The created state collections.</returns>
-        public static (ObservableSet<T> All, ObservableSet<T> Accepting, ObservableSet<T> Initial)
-            StateWithAcceptingAndInitial(IEqualityComparer<T> comparer)
+        public static (ObservableCollection<T> All, ObservableCollection<T> Accepting, ObservableCollection<T> Initial)
+            StateWithAcceptingAndInitial(Func<ICollection<T>> makeCollection)
         {
-            var (all, accepting) = StateWithAccepting(comparer);
-            var initial = new ObservableSet<T>(comparer);
+            var (all, accepting) = StateWithAccepting(makeCollection);
+            var initial = new ObservableCollection<T>(makeCollection());
 
             all.Removed += (sender, item) => initial.Remove(item);
             all.Cleared += (sender, eventArgs) => initial.Clear();
@@ -74,15 +74,15 @@ namespace Yoakke.Automata.Internal
         /// </summary>
         public event EventHandler? Cleared;
 
-        private readonly HashSet<T> items;
+        private readonly ICollection<T> items;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ObservableSet{T}"/> class.
+        /// Initializes a new instance of the <see cref="ObservableCollection{T}"/> class.
         /// </summary>
-        /// <param name="comparer">The comparer to use.</param>
-        public ObservableSet(IEqualityComparer<T> comparer)
+        /// <param name="collection">The collection wrap.</param>
+        public ObservableCollection(ICollection<T> collection)
         {
-            this.items = new(comparer);
+            this.items = collection;
         }
 
         /// <inheritdoc/>
@@ -95,7 +95,8 @@ namespace Yoakke.Automata.Internal
         /// <inheritdoc/>
         public void Add(T item)
         {
-            if (this.items.Add(item)) this.Added?.Invoke(this, item);
+            this.items.Add(item);
+            this.Added?.Invoke(this, item);
         }
 
         /// <inheritdoc/>

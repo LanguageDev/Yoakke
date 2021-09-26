@@ -19,6 +19,11 @@ namespace Yoakke.Automata.Dense
           IFiniteAutomaton<TState, TSymbol>
     {
         /// <summary>
+        /// The alphabet of this automaton.
+        /// </summary>
+        public new ICollection<Interval<TSymbol>> Alphabet { get; }
+
+        /// <summary>
         /// The transitions of this automaton.
         /// </summary>
         public new ICollection<Transition<TState, Interval<TSymbol>>> Transitions { get; }

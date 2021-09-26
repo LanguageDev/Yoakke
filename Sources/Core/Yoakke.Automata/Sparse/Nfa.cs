@@ -206,10 +206,10 @@ namespace Yoakke.Automata.Sparse
 
         private readonly TransitionCollection transitions;
         private readonly EpsilonTransitionCollection epsilonTransitions;
-        private readonly ObservableSet<TState> allStates;
-        private readonly ObservableSet<TState> acceptingStates;
-        private readonly ObservableSet<TState> initialStates;
-        private readonly ObservableSet<TSymbol> alphabet;
+        private readonly ObservableCollection<TState> allStates;
+        private readonly ObservableCollection<TState> acceptingStates;
+        private readonly ObservableCollection<TState> initialStates;
+        private readonly ObservableCollection<TSymbol> alphabet;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Nfa{TState, TSymbol}"/> class.
@@ -226,11 +226,11 @@ namespace Yoakke.Automata.Sparse
         /// <param name="symbolComparer">The symbol comparer to use.</param>
         public Nfa(IEqualityComparer<TState> stateComparer, IEqualityComparer<TSymbol> symbolComparer)
         {
-            var (all, accepting, initial) = ObservableSet<TState>.StateWithAcceptingAndInitial(stateComparer);
+            var (all, accepting, initial) = ObservableCollection<TState>.StateWithAcceptingAndInitial(() => new HashSet<TState>(stateComparer));
             this.allStates = all;
             this.initialStates = initial;
             this.acceptingStates = accepting;
-            this.alphabet = new(symbolComparer);
+            this.alphabet = new(new HashSet<TSymbol>(symbolComparer));
             this.transitions = new(stateComparer, symbolComparer);
             this.epsilonTransitions = new(stateComparer);
 

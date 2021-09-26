@@ -18,7 +18,7 @@ namespace Yoakke.Automata.Sparse
           IFiniteAutomaton<TState, TSymbol>
     {
         /// <summary>
-        /// The alphabed of this automaton.
+        /// The alphabet of this automaton.
         /// </summary>
         public new ICollection<TSymbol> Alphabet { get; }
 
