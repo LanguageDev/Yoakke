@@ -210,7 +210,7 @@ namespace Yoakke.Automata.Sparse
         /// <inheritdoc/>
         public string ToDot()
         {
-            var writer = new DotWriter<TState, TSymbol>(this.StateComparer);
+            var writer = new DotWriter<TState>(this.StateComparer);
             writer.WriteStart("DFA");
 
             // Accepting states

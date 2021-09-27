@@ -12,7 +12,7 @@ namespace System.Collections.Generic.Polyfill
     /// Provides a readonly abstraction of a set.
     /// </summary>
     /// <typeparam name="T">The type of elements in the set.</typeparam>
-    public interface IReadOnlySet<T> : IEnumerable<T>, IReadOnlyCollection<T>
+    public interface IReadOnlySet<T> : IReadOnlyCollection<T>
     {
         /// <summary>
         /// Determines if the set contains a specific item.

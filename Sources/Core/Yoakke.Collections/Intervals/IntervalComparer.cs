@@ -152,10 +152,7 @@ namespace Yoakke.Collections.Intervals
             Interval<T>? prev = null;
             foreach (var iv in intervals)
             {
-                if (prev is not null)
-                {
-                    if (!this.IsTouching(prev.Value, iv)) return false;
-                }
+                if (prev is not null && !this.IsTouching(prev.Value, iv)) return false;
                 prev = iv;
             }
             return true;

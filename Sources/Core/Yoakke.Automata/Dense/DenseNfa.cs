@@ -312,7 +312,7 @@ namespace Yoakke.Automata.Dense
         /// <inheritdoc/>
         public string ToDot()
         {
-            var writer = new DotWriter<TState, TSymbol>(this.StateComparer);
+            var writer = new DotWriter<TState>(this.StateComparer);
             writer.WriteStart("NFA");
 
             // Accepting states
@@ -324,10 +324,10 @@ namespace Yoakke.Automata.Dense
 
             // Transitions
             var tupleComparer = new TupleEqualityComparer<TState, TState>(this.StateComparer, this.StateComparer);
-            var transitions = this.Transitions.GroupBy(t => (t.Source, t.Destination), tupleComparer);
+            var transitionsByState = this.Transitions.GroupBy(t => (t.Source, t.Destination), tupleComparer);
             var remainingEpsilon = this.epsilonTransitions.EpsilonTransitionMap
                 .ToDictionary(kv => kv.Key, kv => kv.Value.ToHashSet(this.StateComparer), this.StateComparer);
-            foreach (var group in transitions)
+            foreach (var group in transitionsByState)
             {
                 var from = group.Key.Item1;
                 var to = group.Key.Item2;

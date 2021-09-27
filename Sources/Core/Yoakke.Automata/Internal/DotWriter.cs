@@ -13,8 +13,7 @@ namespace Yoakke.Automata.Internal
     /// Helper class for producing the DOT code.
     /// </summary>
     /// <typeparam name="TState">The state type.</typeparam>
-    /// <typeparam name="TSymbol">The symbol type.</typeparam>
-    internal sealed class DotWriter<TState, TSymbol>
+    internal sealed class DotWriter<TState>
     {
         /// <summary>
         /// The builder that writes the DOT code.
@@ -24,7 +23,7 @@ namespace Yoakke.Automata.Internal
         private readonly Dictionary<TState, string> stateNames;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DotWriter{TState, TSymbol}"/> class.
+        /// Initializes a new instance of the <see cref="DotWriter{TState}"/> class.
         /// </summary>
         /// <param name="stateComparer">The state comparer to use.</param>
         public DotWriter(IEqualityComparer<TState> stateComparer)

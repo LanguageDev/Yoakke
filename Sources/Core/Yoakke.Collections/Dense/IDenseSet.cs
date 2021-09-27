@@ -16,6 +16,14 @@ namespace Yoakke.Collections.Dense
     public interface IDenseSet<T> : IReadOnlyDenseSet<T>, ICollection<Interval<T>>
     {
         /// <summary>
+        /// Determines if the set contains a full interval of items.
+        /// </summary>
+        /// <param name="interval">The interval to check if the set contains.</param>
+        /// <returns>True if all elements of <paramref name="interval"/> are contained in the set,
+        /// otherwise false.</returns>
+        public new bool Contains(Interval<T> interval);
+
+        /// <summary>
         /// Adds an interval of elements to this set.
         /// </summary>
         /// <param name="interval">The interval of elements to add.</param>
