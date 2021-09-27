@@ -110,45 +110,35 @@ namespace Yoakke.Lexer.Generator
             var dfaStateIdents = new Dictionary<StateSet<int>, int>();
             foreach (var state in dfa.States) dfaStateIdents.Add(state, dfaStateIdents.Count);
 
-            // Group the transitions by source states
+            // Group the transitions by source and destination states
             var transitionsByState = dfa.Transitions
                 .GroupBy(t => t.Source)
-                .ToDictionary(group => group.Key, group => group.ToList());
-            // We add blanks to the states not present
-            foreach (var state in dfa.States.Except(transitionsByState.Keys)) transitionsByState.Add(state, new());
+                .ToDictionary(
+                    group => group.Key,
+                    group => group
+                        .GroupBy(t => t.Destination)
+                        .ToDictionary(
+                            group => group.Key,
+                            group => group.Select(t => t.Symbol).ToList()));
 
             // For each state we need to build the transition table
             var transitionTable = new StringBuilder();
             transitionTable.AppendLine("switch (currentState) {");
-            foreach (var (state, transitions) in transitionsByState)
+            foreach (var (state, toMap) in transitionsByState)
             {
                 transitionTable.AppendLine($"case {dfaStateIdents[state]}:");
-                if (transitions.Count == 0)
-                {
-                    // There's no way to continue from here
-                    transitionTable.AppendLine("goto end_loop;");
-                    continue;
-                }
                 // For the current state we need transitions to a new state based on the current character
                 transitionTable.AppendLine("switch (currentChar) {");
-                foreach (var (_, interval, destState) in transitions)
+                foreach (var (destState, intervals) in toMap)
                 {
-                    var (lower, upper) = ToInclusive(interval);
-
                     // In the library it is rational to have an interval like ('a'; 'b'), but in practice
                     // this means that this transition might as well not exist, as these are discrete values,
                     // there can't be anything in between
-                    if (lower != null && upper != null && lower.Value > upper.Value) continue;
+                    var caseLabels = intervals.Select(MakeCase).OfType<string>();
+                    if (!caseLabels.Any()) continue;
 
-                    var matchCondition = (lower, upper) switch
-                    {
-                        (char l, char h) when l == h => $"case '{Escape(l)}':",
-                        (char l, char h) => $"case >= '{Escape(l)}' and <= '{Escape(h)}':",
-                        (char l, null) => $"case >= '{Escape(l)}':",
-                        (null, char h) => $"case <= '{Escape(h)}':",
-                        (null, null) => "case char ch:",
-                    };
-                    transitionTable.AppendLine(matchCondition);
+                    foreach (var caseLabel in caseLabels) transitionTable.AppendLine($"case {caseLabel}:");
+
                     transitionTable.AppendLine($"currentState = {dfaStateIdents[destState]};");
                     if (dfaStateToToken.TryGetValue(destState, out var token))
                     {
@@ -165,6 +155,7 @@ namespace Yoakke.Lexer.Generator
                             transitionTable.AppendLine($"lastTokenType = {enumName}.{token.Symbol!.Name};");
                         }
                     }
+
                     transitionTable.AppendLine("break;");
                 }
                 // Add a default arm to break out of the loop on non-matching character
@@ -172,6 +163,16 @@ namespace Yoakke.Lexer.Generator
                 transitionTable.AppendLine("}");
                 transitionTable.AppendLine("break;");
             }
+
+            // We add blanks to the states not present that simply go to the end state
+            var anyBlank = false;
+            foreach (var state in dfa.States.Except(transitionsByState.Keys))
+            {
+                transitionTable.AppendLine($"case {dfaStateIdents[state]}:");
+                anyBlank = true;
+            }
+            if (anyBlank) transitionTable.AppendLine("goto end_loop;");
+
             // Add a default arm to panic on illegal state
             transitionTable.AppendLine($"default: throw new {TypeNames.InvalidOperationException}();");
             transitionTable.AppendLine("}");
@@ -380,6 +381,22 @@ end_loop:
             }
 
             return result;
+        }
+
+        private static string? MakeCase(Interval<char> interval)
+        {
+            var (lower, upper) = ToInclusive(interval);
+
+            if (lower != null && upper != null && lower.Value > upper.Value) return null;
+
+            return (lower, upper) switch
+            {
+                (char l, char h) when l == h => $"'{Escape(l)}'",
+                (char l, char h) => $">= '{Escape(l)}' and <= '{Escape(h)}'",
+                (char l, null) => $">= '{Escape(l)}'",
+                (null, char h) => $"<= '{Escape(h)}'",
+                (null, null) => "char ch",
+            };
         }
 
         private static (char? Lower, char? Upper) ToInclusive(Interval<char> interval)
