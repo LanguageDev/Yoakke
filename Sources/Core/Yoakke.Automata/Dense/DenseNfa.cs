@@ -212,9 +212,7 @@ namespace Yoakke.Automata.Dense
         /// <inheritdoc/>
         public IEqualityComparer<TState> StateComparer => this.transitions.StateComparer;
 
-        /// <summary>
-        /// The comparer used for alphabet symbol intervals.
-        /// </summary>
+        /// <inheritdoc/>
         public IntervalComparer<TSymbol> SymbolIntervalComparer => this.transitions.SymbolIntervalComparer;
 
         /// <inheritdoc/>

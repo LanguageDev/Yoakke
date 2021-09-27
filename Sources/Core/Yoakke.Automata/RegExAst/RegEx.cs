@@ -4,7 +4,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using Yoakke.Collections.Intervals;
 
 namespace Yoakke.Automata.RegExAst
 {
@@ -18,8 +20,67 @@ namespace Yoakke.Automata.RegExAst
         /// </summary>
         /// <typeparam name="TSymbol">The symbol type.</typeparam>
         /// <param name="symbol">The symbol to match.</param>
-        /// <returns>The repetition node constructed.</returns>
+        /// <returns>The literal node constructed.</returns>
         public static IRegExNode<TSymbol> Lit<TSymbol>(TSymbol symbol) => new RegExLitNode<TSymbol>(symbol);
+
+        /// <summary>
+        /// Constructs an any literal match (wildcard) node.
+        /// </summary>
+        /// <typeparam name="TSymbol">The symbol type.</typeparam>
+        /// <returns>The literal node constructed.</returns>
+        public static IRegExNode<TSymbol> Any<TSymbol>() => RegExAnyNode<TSymbol>.Instance;
+
+        /// <summary>
+        /// Constructs a literal range match node.
+        /// </summary>
+        /// <typeparam name="TSymbol">The symbol type.</typeparam>
+        /// <param name="negate">True, if the range should be negated.</param>
+        /// <param name="ranges">The ranges of literals.</param>
+        /// <returns>The literal range node constructed.</returns>
+        public static IRegExNode<TSymbol> Range<TSymbol>(bool negate, params Interval<TSymbol>[] ranges) =>
+            Range(negate, ranges as IEnumerable<Interval<TSymbol>>);
+
+        /// <summary>
+        /// Constructs a literal range match node.
+        /// </summary>
+        /// <typeparam name="TSymbol">The symbol type.</typeparam>
+        /// <param name="negate">True, if the range should be negated.</param>
+        /// <param name="ranges">The ranges of literals.</param>
+        /// <returns>The literal range node constructed.</returns>
+        public static IRegExNode<TSymbol> Range<TSymbol>(bool negate, IEnumerable<Interval<TSymbol>> ranges) =>
+            new RegExRangeNode<TSymbol>(negate, ranges.ToList());
+
+        /// <summary>
+        /// Constructs a literal range match node.
+        /// </summary>
+        /// <typeparam name="TSymbol">The symbol type.</typeparam>
+        /// <param name="ranges">The ranges of literals.</param>
+        /// <returns>The literal range node constructed.</returns>
+        public static IRegExNode<TSymbol> Range<TSymbol>(params Interval<TSymbol>[] ranges) => Range(false, ranges);
+
+        /// <summary>
+        /// Constructs a literal range match node.
+        /// </summary>
+        /// <typeparam name="TSymbol">The symbol type.</typeparam>
+        /// <param name="ranges">The ranges of literals.</param>
+        /// <returns>The literal range node constructed.</returns>
+        public static IRegExNode<TSymbol> Range<TSymbol>(IEnumerable<Interval<TSymbol>> ranges) => Range(false, ranges);
+
+        /// <summary>
+        /// Constructs a literal range match node.
+        /// </summary>
+        /// <typeparam name="TSymbol">The symbol type.</typeparam>
+        /// <param name="ranges">The ranges of literals.</param>
+        /// <returns>The literal range node constructed.</returns>
+        public static IRegExNode<TSymbol> NotRange<TSymbol>(params Interval<TSymbol>[] ranges) => Range(true, ranges);
+
+        /// <summary>
+        /// Constructs a literal range match node.
+        /// </summary>
+        /// <typeparam name="TSymbol">The symbol type.</typeparam>
+        /// <param name="ranges">The ranges of literals.</param>
+        /// <returns>The literal range node constructed.</returns>
+        public static IRegExNode<TSymbol> NotRange<TSymbol>(IEnumerable<Interval<TSymbol>> ranges) => Range(true, ranges);
 
         /// <summary>
         /// Constructs an alternative of regex constructs.
@@ -28,7 +89,17 @@ namespace Yoakke.Automata.RegExAst
         /// <param name="first">The first alternative.</param>
         /// <param name="rest">The remaining alternatives.</param>
         /// <returns>The alternative node constructed.</returns>
-        public static IRegExNode<TSymbol> Or<TSymbol>(IRegExNode<TSymbol> first, params IRegExNode<TSymbol>[] rest)
+        public static IRegExNode<TSymbol> Or<TSymbol>(IRegExNode<TSymbol> first, params IRegExNode<TSymbol>[] rest) =>
+            Or(first, rest as IEnumerable<IRegExNode<TSymbol>>);
+
+        /// <summary>
+        /// Constructs an alternative of regex constructs.
+        /// </summary>
+        /// <typeparam name="TSymbol">The symbol type.</typeparam>
+        /// <param name="first">The first alternative.</param>
+        /// <param name="rest">The remaining alternatives.</param>
+        /// <returns>The alternative node constructed.</returns>
+        public static IRegExNode<TSymbol> Or<TSymbol>(IRegExNode<TSymbol> first, IEnumerable<IRegExNode<TSymbol>> rest)
         {
             var result = first;
             foreach (var second in rest) result = new RegExOrNode<TSymbol>(result, second);
@@ -42,7 +113,17 @@ namespace Yoakke.Automata.RegExAst
         /// <param name="first">The first element in the sequence.</param>
         /// <param name="rest">The remaining sequence elements.</param>
         /// <returns>The sequence node constructed.</returns>
-        public static IRegExNode<TSymbol> Seq<TSymbol>(IRegExNode<TSymbol> first, params IRegExNode<TSymbol>[] rest)
+        public static IRegExNode<TSymbol> Seq<TSymbol>(IRegExNode<TSymbol> first, params IRegExNode<TSymbol>[] rest) =>
+            Seq(first, rest as IEnumerable<IRegExNode<TSymbol>>);
+
+        /// <summary>
+        /// Constructs a sequence of regex constructs.
+        /// </summary>
+        /// <typeparam name="TSymbol">The symbol type.</typeparam>
+        /// <param name="first">The first element in the sequence.</param>
+        /// <param name="rest">The remaining sequence elements.</param>
+        /// <returns>The sequence node constructed.</returns>
+        public static IRegExNode<TSymbol> Seq<TSymbol>(IRegExNode<TSymbol> first, IEnumerable<IRegExNode<TSymbol>> rest)
         {
             var result = first;
             foreach (var second in rest) result = new RegExSeqNode<TSymbol>(result, second);

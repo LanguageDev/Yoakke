@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Yoakke.Collections.Intervals;
 
 namespace Yoakke.Automata.Dense
 {
@@ -17,6 +18,11 @@ namespace Yoakke.Automata.Dense
         : IReadOnlyNfa<TState, TSymbol>,
           IReadOnlyDenseFiniteAutomaton<TState, TSymbol>
     {
+        /// <summary>
+        /// The comparer for symbol intervals.
+        /// </summary>
+        public IntervalComparer<TSymbol> SymbolIntervalComparer { get; }
+
         /// <summary>
         /// Constructs an equivalent DFA from this NFA.
         /// </summary>
