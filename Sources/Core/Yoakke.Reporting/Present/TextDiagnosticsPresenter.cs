@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Generic.Polyfill;
 using System.IO;
 using System.Linq;
 using Yoakke.Text;

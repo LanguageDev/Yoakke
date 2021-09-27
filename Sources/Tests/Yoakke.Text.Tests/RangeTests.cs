@@ -4,14 +4,13 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Yoakke.Text.Tests
 {
-    [TestClass]
     public class RangeTests
     {
-        private static IReadOnlyList<object[]> InvalidPositionPairs { get; } = new object[][]
+        public static IReadOnlyList<object[]> InvalidPositionPairsData { get; } = new object[][]
         {
             new object[] { new Position(0, 1), new Position(0, 0) },
             new object[] { new Position(0, 3), new Position(0, 0) },
@@ -21,7 +20,7 @@ namespace Yoakke.Text.Tests
             new object[] { new Position(4, 3), new Position(4, 1) },
         };
 
-        private static IReadOnlyList<object[]> EqualRanges { get; } = new object[][]
+        public static IReadOnlyList<object[]> EqualRangesData { get; } = new object[][]
         {
             new object[] { new Range(new Position(0, 0), 3), new Range(new Position(0, 0), new Position(0, 3)) },
             new object[] { new Range(new Position(0, 2), 3), new Range(new Position(0, 2), new Position(0, 5)) },
@@ -29,7 +28,7 @@ namespace Yoakke.Text.Tests
             new object[] { new Range(new Position(1, 3), 5), new Range(new Position(1, 3), new Position(1, 8)) },
         };
 
-        private static IReadOnlyList<object[]> UnequalRanges { get; } = new object[][]
+        public static IReadOnlyList<object[]> UnequalRangesData { get; } = new object[][]
         {
             new object[] { new Range(new Position(0, 0), 3), new Range(new Position(0, 0), new Position(0, 4)) },
             new object[] { new Range(new Position(0, 1), 3), new Range(new Position(0, 2), new Position(0, 5)) },
@@ -37,7 +36,7 @@ namespace Yoakke.Text.Tests
             new object[] { new Range(new Position(1, 4), 4), new Range(new Position(1, 3), new Position(1, 8)) },
         };
 
-        private static IReadOnlyList<object[]> ContainedPoints { get; } = new object[][]
+        public static IReadOnlyList<object[]> ContainedPointsData { get; } = new object[][]
         {
             new object[] { new Range(new Position(0, 0), 3), new Position(0, 0) },
             new object[] { new Range(new Position(0, 0), 3), new Position(0, 1) },
@@ -48,7 +47,7 @@ namespace Yoakke.Text.Tests
             new object[] { new Range(new Position(1, 3), 5), new Position(1, 7) },
         };
 
-        private static IReadOnlyList<object[]> NotContainedPoints { get; } = new object[][]
+        public static IReadOnlyList<object[]> NotContainedPointsData { get; } = new object[][]
         {
             new object[] { new Range(new Position(0, 0), 3), new Position(0, 3) },
             new object[] { new Range(new Position(0, 0), 3), new Position(0, 4) },
@@ -64,7 +63,7 @@ namespace Yoakke.Text.Tests
             new object[] { new Range(new Position(1, 3), 5), new Position(1, 10) },
         };
 
-        private static IReadOnlyList<object[]> IntersectingRanges { get; } = new object[][]
+        public static IReadOnlyList<object[]> IntersectingRangesData { get; } = new object[][]
         {
             new object[] { new Range(new Position(0, 0), 3), new Range(new Position(0, 0), new Position(0, 3)) },
             new object[] { new Range(new Position(0, 0), 3), new Range(new Position(0, 1), new Position(0, 1)) },
@@ -76,7 +75,7 @@ namespace Yoakke.Text.Tests
             new object[] { new Range(new Position(0, 0), 5), new Range(new Position(0, 2), new Position(0, 8)) },
         };
 
-        private static IReadOnlyList<object[]> NotIntersectingRanges { get; } = new object[][]
+        public static IReadOnlyList<object[]> NotIntersectingRangesData { get; } = new object[][]
         {
             new object[] { new Range(new Position(0, 0), 3), new Range(new Position(0, 0), new Position(0, 0)) },
             new object[] { new Range(new Position(0, 2), 3), new Range(new Position(0, 1), new Position(0, 2)) },
@@ -84,54 +83,54 @@ namespace Yoakke.Text.Tests
             new object[] { new Range(new Position(0, 0), 3), new Range(new Position(1, 0), new Position(1, 3)) },
         };
 
-        [DataTestMethod]
-        [DynamicData(nameof(InvalidPositionPairs))]
+        [Theory]
+        [MemberData(nameof(InvalidPositionPairsData))]
         public void InvalidConstruction(Position start, Position end) =>
-            Assert.ThrowsException<ArgumentException>(() => new Range(start, end));
+            Assert.Throws<ArgumentException>(() => new Range(start, end));
 
-        [DataTestMethod]
-        [DynamicData(nameof(EqualRanges))]
-        public void Equals(Range r1, Range r2)
+        [Theory]
+        [MemberData(nameof(EqualRangesData))]
+        public void EqualRanges(Range r1, Range r2)
         {
-            Assert.AreEqual(r1, r2);
-            Assert.AreEqual(r1, (object)r2);
-            Assert.IsTrue(r1 == r2);
-            Assert.IsFalse(r1 != r2);
-            Assert.AreEqual(r1.GetHashCode(), r2.GetHashCode());
+            Assert.Equal(r1, r2);
+            Assert.Equal(r1, (object)r2);
+            Assert.True(r1 == r2);
+            Assert.False(r1 != r2);
+            Assert.Equal(r1.GetHashCode(), r2.GetHashCode());
         }
 
-        [DataTestMethod]
-        [DynamicData(nameof(UnequalRanges))]
-        public void NotEquals(Range r1, Range r2)
+        [Theory]
+        [MemberData(nameof(UnequalRangesData))]
+        public void NotEqualRanges(Range r1, Range r2)
         {
-            Assert.AreNotEqual(r1, r2);
-            Assert.AreNotEqual(r1, (object)r2);
-            Assert.IsTrue(r1 != r2);
-            Assert.IsFalse(r1 == r2);
+            Assert.NotEqual(r1, r2);
+            Assert.NotEqual(r1, (object)r2);
+            Assert.True(r1 != r2);
+            Assert.False(r1 == r2);
         }
 
-        [DataTestMethod]
-        [DynamicData(nameof(ContainedPoints))]
-        public void Contains(Range r, Position p) => Assert.IsTrue(r.Contains(p));
+        [Theory]
+        [MemberData(nameof(ContainedPointsData))]
+        public void Contains(Range r, Position p) => Assert.True(r.Contains(p));
 
-        [DataTestMethod]
-        [DynamicData(nameof(NotContainedPoints))]
-        public void NotContains(Range r, Position p) => Assert.IsFalse(r.Contains(p));
+        [Theory]
+        [MemberData(nameof(NotContainedPointsData))]
+        public void NotContains(Range r, Position p) => Assert.False(r.Contains(p));
 
-        [DataTestMethod]
-        [DynamicData(nameof(IntersectingRanges))]
+        [Theory]
+        [MemberData(nameof(IntersectingRangesData))]
         public void Intersects(Range r1, Range r2)
         {
-            Assert.IsTrue(r1.Intersects(r2));
-            Assert.IsTrue(r2.Intersects(r1));
+            Assert.True(r1.Intersects(r2));
+            Assert.True(r2.Intersects(r1));
         }
 
-        [DataTestMethod]
-        [DynamicData(nameof(NotIntersectingRanges))]
+        [Theory]
+        [MemberData(nameof(NotIntersectingRangesData))]
         public void NotIntersects(Range r1, Range r2)
         {
-            Assert.IsFalse(r1.Intersects(r2));
-            Assert.IsFalse(r2.Intersects(r1));
+            Assert.False(r1.Intersects(r2));
+            Assert.False(r2.Intersects(r1));
         }
     }
 }

@@ -13,13 +13,8 @@ namespace Yoakke.Collections.Dense
     /// A read-only set interface that stores the contained elements as intervals.
     /// </summary>
     /// <typeparam name="T">The set element type.</typeparam>
-    public interface IReadOnlyDenseSet<T> : IReadOnlyMathSet<T>, IEnumerable<Interval<T>>
+    public interface IReadOnlyDenseSet<T> : IReadOnlyCollection<Interval<T>>
     {
-        /// <summary>
-        /// The number of disjunct intervals in this set.
-        /// </summary>
-        public int IntervalCount { get; }
-
         /// <summary>
         /// Determines if the set contains a full interval of items.
         /// </summary>

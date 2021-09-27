@@ -1,159 +1,12 @@
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using Yoakke.Text;
 using Kind = Yoakke.C.Syntax.CTokenType;
 
 namespace Yoakke.C.Syntax.Tests
 {
-    [TestClass]
     public class CLexerTests
     {
-        private static IEnumerable<object[]> AllTokensInput { get; } = new object[][]
-        {
-            Case(Kind.KeywordAuto, "auto"),
-            Case(Kind.KeywordBreak, "break"),
-            Case(Kind.KeywordCase, "case"),
-            Case(Kind.KeywordChar, "char"),
-            Case(Kind.KeywordConst, "const"),
-            Case(Kind.KeywordContinue, "continue"),
-            Case(Kind.KeywordDefault, "default"),
-            Case(Kind.KeywordDo, "do"),
-            Case(Kind.KeywordDouble, "double"),
-            Case(Kind.KeywordElse, "else"),
-            Case(Kind.KeywordEnum, "enum"),
-            Case(Kind.KeywordExtern, "extern"),
-            Case(Kind.KeywordFloat, "float"),
-            Case(Kind.KeywordFor, "for"),
-            Case(Kind.KeywordGoto, "goto"),
-            Case(Kind.KeywordIf, "if"),
-            Case(Kind.KeywordInt, "int"),
-            Case(Kind.KeywordLong, "long"),
-            Case(Kind.KeywordRegister, "register"),
-            Case(Kind.KeywordReturn, "return"),
-            Case(Kind.KeywordShort, "short"),
-            Case(Kind.KeywordSigned, "signed"),
-            Case(Kind.KeywordSizeof, "sizeof"),
-            Case(Kind.KeywordStatic, "static"),
-            Case(Kind.KeywordStruct, "struct"),
-            Case(Kind.KeywordSwitch, "switch"),
-            Case(Kind.KeywordTypedef, "typedef"),
-            Case(Kind.KeywordUnion, "union"),
-            Case(Kind.KeywordUnsigned, "unsigned"),
-            Case(Kind.KeywordVoid, "void"),
-            Case(Kind.KeywordVolatile, "volatile"),
-            Case(Kind.KeywordWhile, "while"),
-
-            Case(Kind.Identifier, "hello"),
-            Case(Kind.Identifier, "ifa"),
-            Case(Kind.Identifier, "Hello_123_abc"),
-
-            Case(Kind.IntLiteral, "0x1fb"),
-            Case(Kind.IntLiteral, "0X1Fb"),
-            Case(Kind.IntLiteral, "0x1fbU"),
-            Case(Kind.IntLiteral, "0x1fbL"),
-            Case(Kind.IntLiteral, "0XABCU"),
-
-            Case(Kind.IntLiteral, "123"),
-            Case(Kind.IntLiteral, "0123"),
-            Case(Kind.IntLiteral, "0123l"),
-            Case(Kind.IntLiteral, "0123u"),
-            Case(Kind.IntLiteral, "0123L"),
-            Case(Kind.IntLiteral, "0123U"),
-
-            Case(Kind.CharLiteral, "'a'"),
-            Case(Kind.CharLiteral, @"'\''"),
-            Case(Kind.CharLiteral, @"'\\'"),
-            Case(Kind.CharLiteral, @"'\n'"),
-            Case(Kind.CharLiteral, "L'a'"),
-            Case(Kind.CharLiteral, @"x'\''"),
-            Case(Kind.CharLiteral, @"_'\n'"),
-            Case(Kind.CharLiteral, "'abc'"),
-            Case(Kind.CharLiteral, "L'abc'"),
-
-            Case(Kind.FloatLiteral, "123e2"),
-            Case(Kind.FloatLiteral, "123e+2"),
-            Case(Kind.FloatLiteral, "123E-245"),
-
-            Case(Kind.FloatLiteral, "356.123E-245"),
-            Case(Kind.FloatLiteral, ".123E-245"),
-            Case(Kind.FloatLiteral, "123.E-245"),
-            Case(Kind.FloatLiteral, ".123"),
-            Case(Kind.FloatLiteral, "123."),
-            Case(Kind.FloatLiteral, "123e2f"),
-            Case(Kind.FloatLiteral, "123e+2l"),
-            Case(Kind.FloatLiteral, "123E-245fL"),
-            Case(Kind.FloatLiteral, "356.123E-245lF"),
-            Case(Kind.FloatLiteral, ".123E-245LF"),
-            Case(Kind.FloatLiteral, "123.E-245lLF"),
-            Case(Kind.FloatLiteral, ".123llf"),
-            Case(Kind.FloatLiteral, "123.lf"),
-
-            Case(Kind.StringLiteral, @""""""),
-            Case(Kind.StringLiteral, @"""abc"""),
-            Case(Kind.StringLiteral, @"""\"""""),
-            Case(Kind.StringLiteral, @"""abc\""abc"""),
-            Case(Kind.StringLiteral, @"""abc\r\nc"""),
-            Case(Kind.StringLiteral, @"""'a'"""),
-            Case(Kind.StringLiteral, @"A"""""),
-            Case(Kind.StringLiteral, @"u""abc"""),
-            Case(Kind.StringLiteral, @"_""\"""""),
-            Case(Kind.StringLiteral, @"L""abc\""abc"""),
-            Case(Kind.StringLiteral, @"G""abc\r\nc"""),
-            Case(Kind.StringLiteral, @"R""'a'"""),
-            Case(Kind.Ellipsis, "..."),
-            Case(Kind.ShiftRightAssign, ">>="),
-            Case(Kind.ShiftLeftAssign, "<<="),
-            Case(Kind.AddAssign, "+="),
-            Case(Kind.SubtractAssign, "-="),
-            Case(Kind.MultiplyAssign, "*="),
-            Case(Kind.DivideAssign, "/="),
-            Case(Kind.ModuloAssign, "%="),
-            Case(Kind.BitAndAssign, "&="),
-            Case(Kind.BitXorAssign, "^="),
-            Case(Kind.BitOrAssign, "|="),
-            Case(Kind.ShiftRight, ">>"),
-            Case(Kind.ShiftLeft, "<<"),
-            Case(Kind.Increment, "++"),
-            Case(Kind.Decrement, "--"),
-            Case(Kind.Arrow, "->"),
-            Case(Kind.LogicalAnd, "&&"),
-            Case(Kind.LogicalOr, "||"),
-            Case(Kind.LessEqual, "<="),
-            Case(Kind.GreaterEqual, ">="),
-            Case(Kind.Equal, "=="),
-            Case(Kind.NotEqual, "!="),
-            Case(Kind.Semicolon, ";"),
-            Case(Kind.OpenBrace, "{"),
-            Case(Kind.OpenBrace, "<%"),
-            Case(Kind.CloseBrace, "}"),
-            Case(Kind.CloseBrace, "%>"),
-            Case(Kind.Comma, ","),
-            Case(Kind.Colon, ":"),
-            Case(Kind.Assign, "="),
-            Case(Kind.OpenParen, "("),
-            Case(Kind.CloseParen, ")"),
-            Case(Kind.OpenBracket, "["),
-            Case(Kind.OpenBracket, "<:"),
-            Case(Kind.CloseBracket, "]"),
-            Case(Kind.CloseBracket, ":>"),
-            Case(Kind.Dot, "."),
-            Case(Kind.BitAnd, "&"),
-            Case(Kind.LogicalNot, "!"),
-            Case(Kind.BitNot, "~"),
-            Case(Kind.Subtract, "-"),
-            Case(Kind.Add, "+"),
-            Case(Kind.Multiply, "*"),
-            Case(Kind.Divide, "/"),
-            Case(Kind.Modulo, "%"),
-            Case(Kind.Less, "<"),
-            Case(Kind.Greater, ">"),
-            Case(Kind.BitXor, "^"),
-            Case(Kind.BitOr, "|"),
-            Case(Kind.QuestionMark, "?"),
-        };
-
-        private static object[] Case(Kind kind, string text) => new object[] { Tok(kind, text), text };
-
         private static Range Rn(int line, int column, int length) => new(new(line, column), length);
 
         private static Range Rn(Position from, Position to) => new(from, to);
@@ -166,60 +19,201 @@ namespace Yoakke.C.Syntax.Tests
 
         private static CToken Tok(Kind ty, Range r, string t, Range logicalR, string logicalT) => new(r, t, logicalR, logicalT, ty);
 
-        [DynamicData(nameof(AllTokensInput))]
-        [DataTestMethod]
-        public void LexSingleToken(CToken expected, string text)
+        [Theory]
+
+        [InlineData(Kind.KeywordAuto, "auto")]
+        [InlineData(Kind.KeywordBreak, "break")]
+        [InlineData(Kind.KeywordCase, "case")]
+        [InlineData(Kind.KeywordChar, "char")]
+        [InlineData(Kind.KeywordConst, "const")]
+        [InlineData(Kind.KeywordContinue, "continue")]
+        [InlineData(Kind.KeywordDefault, "default")]
+        [InlineData(Kind.KeywordDo, "do")]
+        [InlineData(Kind.KeywordDouble, "double")]
+        [InlineData(Kind.KeywordElse, "else")]
+        [InlineData(Kind.KeywordEnum, "enum")]
+        [InlineData(Kind.KeywordExtern, "extern")]
+        [InlineData(Kind.KeywordFloat, "float")]
+        [InlineData(Kind.KeywordFor, "for")]
+        [InlineData(Kind.KeywordGoto, "goto")]
+        [InlineData(Kind.KeywordIf, "if")]
+        [InlineData(Kind.KeywordInt, "int")]
+        [InlineData(Kind.KeywordLong, "long")]
+        [InlineData(Kind.KeywordRegister, "register")]
+        [InlineData(Kind.KeywordReturn, "return")]
+        [InlineData(Kind.KeywordShort, "short")]
+        [InlineData(Kind.KeywordSigned, "signed")]
+        [InlineData(Kind.KeywordSizeof, "sizeof")]
+        [InlineData(Kind.KeywordStatic, "static")]
+        [InlineData(Kind.KeywordStruct, "struct")]
+        [InlineData(Kind.KeywordSwitch, "switch")]
+        [InlineData(Kind.KeywordTypedef, "typedef")]
+        [InlineData(Kind.KeywordUnion, "union")]
+        [InlineData(Kind.KeywordUnsigned, "unsigned")]
+        [InlineData(Kind.KeywordVoid, "void")]
+        [InlineData(Kind.KeywordVolatile, "volatile")]
+        [InlineData(Kind.KeywordWhile, "while")]
+
+        [InlineData(Kind.Identifier, "hello")]
+        [InlineData(Kind.Identifier, "ifa")]
+        [InlineData(Kind.Identifier, "Hello_123_abc")]
+
+        [InlineData(Kind.IntLiteral, "0x1fb")]
+        [InlineData(Kind.IntLiteral, "0X1Fb")]
+        [InlineData(Kind.IntLiteral, "0x1fbU")]
+        [InlineData(Kind.IntLiteral, "0x1fbL")]
+        [InlineData(Kind.IntLiteral, "0XABCU")]
+
+        [InlineData(Kind.IntLiteral, "123")]
+        [InlineData(Kind.IntLiteral, "0123")]
+        [InlineData(Kind.IntLiteral, "0123l")]
+        [InlineData(Kind.IntLiteral, "0123u")]
+        [InlineData(Kind.IntLiteral, "0123L")]
+        [InlineData(Kind.IntLiteral, "0123U")]
+
+        [InlineData(Kind.CharLiteral, "'a'")]
+        [InlineData(Kind.CharLiteral, @"'\''")]
+        [InlineData(Kind.CharLiteral, @"'\\'")]
+        [InlineData(Kind.CharLiteral, @"'\n'")]
+        [InlineData(Kind.CharLiteral, "L'a'")]
+        [InlineData(Kind.CharLiteral, @"x'\''")]
+        [InlineData(Kind.CharLiteral, @"_'\n'")]
+        [InlineData(Kind.CharLiteral, "'abc'")]
+        [InlineData(Kind.CharLiteral, "L'abc'")]
+
+        [InlineData(Kind.FloatLiteral, "123e2")]
+        [InlineData(Kind.FloatLiteral, "123e+2")]
+        [InlineData(Kind.FloatLiteral, "123E-245")]
+
+        [InlineData(Kind.FloatLiteral, "356.123E-245")]
+        [InlineData(Kind.FloatLiteral, ".123E-245")]
+        [InlineData(Kind.FloatLiteral, "123.E-245")]
+        [InlineData(Kind.FloatLiteral, ".123")]
+        [InlineData(Kind.FloatLiteral, "123.")]
+        [InlineData(Kind.FloatLiteral, "123e2f")]
+        [InlineData(Kind.FloatLiteral, "123e+2l")]
+        [InlineData(Kind.FloatLiteral, "123E-245fL")]
+        [InlineData(Kind.FloatLiteral, "356.123E-245lF")]
+        [InlineData(Kind.FloatLiteral, ".123E-245LF")]
+        [InlineData(Kind.FloatLiteral, "123.E-245lLF")]
+        [InlineData(Kind.FloatLiteral, ".123llf")]
+        [InlineData(Kind.FloatLiteral, "123.lf")]
+
+        [InlineData(Kind.StringLiteral, @"""""")]
+        [InlineData(Kind.StringLiteral, @"""abc""")]
+        [InlineData(Kind.StringLiteral, @"""\""""")]
+        [InlineData(Kind.StringLiteral, @"""abc\""abc""")]
+        [InlineData(Kind.StringLiteral, @"""abc\r\nc""")]
+        [InlineData(Kind.StringLiteral, @"""'a'""")]
+        [InlineData(Kind.StringLiteral, @"A""""")]
+        [InlineData(Kind.StringLiteral, @"u""abc""")]
+        [InlineData(Kind.StringLiteral, @"_""\""""")]
+        [InlineData(Kind.StringLiteral, @"L""abc\""abc""")]
+        [InlineData(Kind.StringLiteral, @"G""abc\r\nc""")]
+        [InlineData(Kind.StringLiteral, @"R""'a'""")]
+        [InlineData(Kind.Ellipsis, "...")]
+        [InlineData(Kind.ShiftRightAssign, ">>=")]
+        [InlineData(Kind.ShiftLeftAssign, "<<=")]
+        [InlineData(Kind.AddAssign, "+=")]
+        [InlineData(Kind.SubtractAssign, "-=")]
+        [InlineData(Kind.MultiplyAssign, "*=")]
+        [InlineData(Kind.DivideAssign, "/=")]
+        [InlineData(Kind.ModuloAssign, "%=")]
+        [InlineData(Kind.BitAndAssign, "&=")]
+        [InlineData(Kind.BitXorAssign, "^=")]
+        [InlineData(Kind.BitOrAssign, "|=")]
+        [InlineData(Kind.ShiftRight, ">>")]
+        [InlineData(Kind.ShiftLeft, "<<")]
+        [InlineData(Kind.Increment, "++")]
+        [InlineData(Kind.Decrement, "--")]
+        [InlineData(Kind.Arrow, "->")]
+        [InlineData(Kind.LogicalAnd, "&&")]
+        [InlineData(Kind.LogicalOr, "||")]
+        [InlineData(Kind.LessEqual, "<=")]
+        [InlineData(Kind.GreaterEqual, ">=")]
+        [InlineData(Kind.Equal, "==")]
+        [InlineData(Kind.NotEqual, "!=")]
+        [InlineData(Kind.Semicolon, ";")]
+        [InlineData(Kind.OpenBrace, "{")]
+        [InlineData(Kind.OpenBrace, "<%")]
+        [InlineData(Kind.CloseBrace, "}")]
+        [InlineData(Kind.CloseBrace, "%>")]
+        [InlineData(Kind.Comma, ",")]
+        [InlineData(Kind.Colon, ":")]
+        [InlineData(Kind.Assign, "=")]
+        [InlineData(Kind.OpenParen, "(")]
+        [InlineData(Kind.CloseParen, ")")]
+        [InlineData(Kind.OpenBracket, "[")]
+        [InlineData(Kind.OpenBracket, "<:")]
+        [InlineData(Kind.CloseBracket, "]")]
+        [InlineData(Kind.CloseBracket, ":>")]
+        [InlineData(Kind.Dot, ".")]
+        [InlineData(Kind.BitAnd, "&")]
+        [InlineData(Kind.LogicalNot, "!")]
+        [InlineData(Kind.BitNot, "~")]
+        [InlineData(Kind.Subtract, "-")]
+        [InlineData(Kind.Add, "+")]
+        [InlineData(Kind.Multiply, "*")]
+        [InlineData(Kind.Divide, "/")]
+        [InlineData(Kind.Modulo, "%")]
+        [InlineData(Kind.Less, "<")]
+        [InlineData(Kind.Greater, ">")]
+        [InlineData(Kind.BitXor, "^")]
+        [InlineData(Kind.BitOr, "|")]
+        [InlineData(Kind.QuestionMark, "?")]
+        public void LexSingleToken(Kind kind, string text)
         {
+            var expected = Tok(kind, text);
             var lexer = new CLexer(text);
             var token = lexer.Next();
             var end = Tok(Kind.End, Rn(0, token.Text.Length, 0), string.Empty);
-            Assert.AreEqual(expected, token);
-            Assert.AreEqual(end, lexer.Next());
+            Assert.Equal(expected, token);
+            Assert.Equal(end, lexer.Next());
         }
 
-        [TestMethod]
+        [Fact]
         public void SimpleSequence()
         {
             var sourceCode = "int x = 2;";
             var lexer = new CLexer(sourceCode);
-            Assert.AreEqual(Tok(Kind.KeywordInt, Rn(0, 0, 3), "int"), lexer.Next());
-            Assert.AreEqual(Tok(Kind.Identifier, Rn(0, 4, 1), "x"), lexer.Next());
-            Assert.AreEqual(Tok(Kind.Assign, Rn(0, 6, 1), "="), lexer.Next());
-            Assert.AreEqual(Tok(Kind.IntLiteral, Rn(0, 8, 1), "2"), lexer.Next());
-            Assert.AreEqual(Tok(Kind.Semicolon, Rn(0, 9, 1), ";"), lexer.Next());
-            Assert.AreEqual(Tok(Kind.End, Rn(0, 10, 0), string.Empty), lexer.Next());
+            Assert.Equal(Tok(Kind.KeywordInt, Rn(0, 0, 3), "int"), lexer.Next());
+            Assert.Equal(Tok(Kind.Identifier, Rn(0, 4, 1), "x"), lexer.Next());
+            Assert.Equal(Tok(Kind.Assign, Rn(0, 6, 1), "="), lexer.Next());
+            Assert.Equal(Tok(Kind.IntLiteral, Rn(0, 8, 1), "2"), lexer.Next());
+            Assert.Equal(Tok(Kind.Semicolon, Rn(0, 9, 1), ";"), lexer.Next());
+            Assert.Equal(Tok(Kind.End, Rn(0, 10, 0), string.Empty), lexer.Next());
         }
 
-        [TestMethod]
+        [Fact]
         public void LineContinuatedSequence()
         {
             var sourceCode = @"char* x = ""ab\
 cd"";";
             var lexer = new CLexer(sourceCode);
-            Assert.AreEqual(Tok(Kind.KeywordChar, Rn(0, 0, 4), "char", Rn(0, 0, 4), "char"), lexer.Next());
-            Assert.AreEqual(Tok(Kind.Multiply, Rn(0, 4, 1), "*", Rn(0, 4, 1), "*"), lexer.Next());
-            Assert.AreEqual(Tok(Kind.Identifier, Rn(0, 6, 1), "x", Rn(0, 6, 1), "x"), lexer.Next());
-            Assert.AreEqual(Tok(Kind.Assign, Rn(0, 8, 1), "=", Rn(0, 8, 1), "="), lexer.Next());
-            Assert.AreEqual(Tok(Kind.StringLiteral, Rn(Pos(0, 10), Pos(1, 3)), @"""ab\
+            Assert.Equal(Tok(Kind.KeywordChar, Rn(0, 0, 4), "char", Rn(0, 0, 4), "char"), lexer.Next());
+            Assert.Equal(Tok(Kind.Multiply, Rn(0, 4, 1), "*", Rn(0, 4, 1), "*"), lexer.Next());
+            Assert.Equal(Tok(Kind.Identifier, Rn(0, 6, 1), "x", Rn(0, 6, 1), "x"), lexer.Next());
+            Assert.Equal(Tok(Kind.Assign, Rn(0, 8, 1), "=", Rn(0, 8, 1), "="), lexer.Next());
+            Assert.Equal(Tok(Kind.StringLiteral, Rn(Pos(0, 10), Pos(1, 3)), @"""ab\
 cd""", Rn(0, 10, 6), @"""abcd"""), lexer.Next());
-            Assert.AreEqual(Tok(Kind.Semicolon, Rn(1, 3, 1), ";", Rn(0, 16, 1), ";"), lexer.Next());
-            Assert.AreEqual(Tok(Kind.End, Rn(1, 4, 0), string.Empty, Rn(0, 17, 0), string.Empty), lexer.Next());
+            Assert.Equal(Tok(Kind.Semicolon, Rn(1, 3, 1), ";", Rn(0, 16, 1), ";"), lexer.Next());
+            Assert.Equal(Tok(Kind.End, Rn(1, 4, 0), string.Empty, Rn(0, 17, 0), string.Empty), lexer.Next());
         }
 
-        [TestMethod]
+        [Fact]
         public void TrigraphLineContinuatedSequence()
         {
             var sourceCode = @"char* x = ""ab??/
 cd"";";
             var lexer = new CLexer(sourceCode);
-            Assert.AreEqual(Tok(Kind.KeywordChar, Rn(0, 0, 4), "char", Rn(0, 0, 4), "char"), lexer.Next());
-            Assert.AreEqual(Tok(Kind.Multiply, Rn(0, 4, 1), "*", Rn(0, 4, 1), "*"), lexer.Next());
-            Assert.AreEqual(Tok(Kind.Identifier, Rn(0, 6, 1), "x", Rn(0, 6, 1), "x"), lexer.Next());
-            Assert.AreEqual(Tok(Kind.Assign, Rn(0, 8, 1), "=", Rn(0, 8, 1), "="), lexer.Next());
-            Assert.AreEqual(Tok(Kind.StringLiteral, Rn(Pos(0, 10), Pos(1, 3)), @"""ab??/
+            Assert.Equal(Tok(Kind.KeywordChar, Rn(0, 0, 4), "char", Rn(0, 0, 4), "char"), lexer.Next());
+            Assert.Equal(Tok(Kind.Multiply, Rn(0, 4, 1), "*", Rn(0, 4, 1), "*"), lexer.Next());
+            Assert.Equal(Tok(Kind.Identifier, Rn(0, 6, 1), "x", Rn(0, 6, 1), "x"), lexer.Next());
+            Assert.Equal(Tok(Kind.Assign, Rn(0, 8, 1), "=", Rn(0, 8, 1), "="), lexer.Next());
+            Assert.Equal(Tok(Kind.StringLiteral, Rn(Pos(0, 10), Pos(1, 3)), @"""ab??/
 cd""", Rn(0, 10, 6), @"""abcd"""), lexer.Next());
-            Assert.AreEqual(Tok(Kind.Semicolon, Rn(1, 3, 1), ";", Rn(0, 16, 1), ";"), lexer.Next());
-            Assert.AreEqual(Tok(Kind.End, Rn(1, 4, 0), string.Empty, Rn(0, 17, 0), string.Empty), lexer.Next());
+            Assert.Equal(Tok(Kind.Semicolon, Rn(1, 3, 1), ";", Rn(0, 16, 1), ";"), lexer.Next());
+            Assert.Equal(Tok(Kind.End, Rn(1, 4, 0), string.Empty, Rn(0, 17, 0), string.Empty), lexer.Next());
         }
     }
 }

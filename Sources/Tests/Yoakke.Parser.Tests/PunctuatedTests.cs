@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using Yoakke.Lexer;
 using Yoakke.Lexer.Attributes;
 using Yoakke.Parser.Attributes;
@@ -14,7 +14,6 @@ using Token = Yoakke.Lexer.IToken<Yoakke.Parser.Tests.PunctuatedTests.TokenType>
 
 namespace Yoakke.Parser.Tests
 {
-    [TestClass]
     public partial class PunctuatedTests
     {
         internal enum TokenType
@@ -50,25 +49,25 @@ namespace Yoakke.Parser.Tests
 
         private static List<string> Any1NoTrailing(string source) => new Parser(new Lexer(source)).ParseAny1NoTrailing().Ok.Value;
 
-        [TestMethod]
-        public void Empty0NoTrailing() => Assert.IsTrue(Any0NoTrailing("()").SequenceEqual(Array.Empty<string>()));
+        [Fact]
+        public void Empty0NoTrailing() => Assert.True(Any0NoTrailing("()").SequenceEqual(Array.Empty<string>()));
 
-        [TestMethod]
-        public void One0NoTrailing() => Assert.IsTrue(Any0NoTrailing("(a)").SequenceEqual(new string[] { "a" }));
+        [Fact]
+        public void One0NoTrailing() => Assert.True(Any0NoTrailing("(a)").SequenceEqual(new string[] { "a" }));
 
-        [TestMethod]
-        public void Two0NoTrailing() => Assert.IsTrue(Any0NoTrailing("(a, b)").SequenceEqual(new string[] { "a", "b" }));
+        [Fact]
+        public void Two0NoTrailing() => Assert.True(Any0NoTrailing("(a, b)").SequenceEqual(new string[] { "a", "b" }));
 
-        [TestMethod]
-        public void Many0NoTrailing() => Assert.IsTrue(Any0NoTrailing("(a, b, c, d, e)").SequenceEqual(new string[] { "a", "b", "c", "d", "e" }));
+        [Fact]
+        public void Many0NoTrailing() => Assert.True(Any0NoTrailing("(a, b, c, d, e)").SequenceEqual(new string[] { "a", "b", "c", "d", "e" }));
 
-        [TestMethod]
-        public void One1NoTrailing() => Assert.IsTrue(Any1NoTrailing("(a)").SequenceEqual(new string[] { "a" }));
+        [Fact]
+        public void One1NoTrailing() => Assert.True(Any1NoTrailing("(a)").SequenceEqual(new string[] { "a" }));
 
-        [TestMethod]
-        public void Two1NoTrailing() => Assert.IsTrue(Any1NoTrailing("(a, b)").SequenceEqual(new string[] { "a", "b" }));
+        [Fact]
+        public void Two1NoTrailing() => Assert.True(Any1NoTrailing("(a, b)").SequenceEqual(new string[] { "a", "b" }));
 
-        [TestMethod]
-        public void Many1NoTrailing() => Assert.IsTrue(Any1NoTrailing("(a, b, c, d, e)").SequenceEqual(new string[] { "a", "b", "c", "d", "e" }));
+        [Fact]
+        public void Many1NoTrailing() => Assert.True(Any1NoTrailing("(a, b, c, d, e)").SequenceEqual(new string[] { "a", "b", "c", "d", "e" }));
     }
 }

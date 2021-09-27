@@ -4,7 +4,7 @@
 
 using System.Runtime.CompilerServices;
 
-namespace System.Collections.Generic
+namespace System.Collections.Generic.Polyfill
 {
     /// <summary>
     /// An <see cref="IEqualityComparer{T}"/> that uses reference equality (<see cref="object.ReferenceEquals(object, object)"/>)

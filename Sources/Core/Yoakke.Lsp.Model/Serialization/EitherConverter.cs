@@ -3,6 +3,7 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System;
+using System.Polyfill;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

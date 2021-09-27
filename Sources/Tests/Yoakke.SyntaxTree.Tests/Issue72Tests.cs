@@ -2,14 +2,13 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using Yoakke.SyntaxTree.Attributes;
 using Yoakke.SyntaxTree.Tests.Tree;
 
 namespace Yoakke.SyntaxTree.Tests
 {
     // https://github.com/LanguageDev/Yoakke/issues/72
-    [TestClass]
     public partial class Issue72Tests
     {
         [Visitor(typeof(ExternalAst), ReturnType = typeof(string))]
@@ -28,28 +27,28 @@ namespace Yoakke.SyntaxTree.Tests
             protected override string Visit(ExternalAst.Baz baz) => "got a baz";
         }
 
-        [TestMethod]
+        [Fact]
         public void TestVisitingFoo()
         {
             var visitor = new ExternalVisitor();
             ExternalAst ast = new ExternalAst.Foo();
-            Assert.AreEqual("got a foo", visitor.Stringify(ast));
+            Assert.Equal("got a foo", visitor.Stringify(ast));
         }
 
-        [TestMethod]
+        [Fact]
         public void TestVisitingBar()
         {
             var visitor = new ExternalVisitor();
             ExternalAst ast = new ExternalAst.Bar();
-            Assert.AreEqual("got a bar", visitor.Stringify(ast));
+            Assert.Equal("got a bar", visitor.Stringify(ast));
         }
 
-        [TestMethod]
+        [Fact]
         public void TestVisitingBaz()
         {
             var visitor = new ExternalVisitor();
             ExternalAst ast = new ExternalAst.Baz();
-            Assert.AreEqual("got a baz", visitor.Stringify(ast));
+            Assert.Equal("got a baz", visitor.Stringify(ast));
         }
     }
 }

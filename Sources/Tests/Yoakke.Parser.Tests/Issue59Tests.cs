@@ -2,7 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using Yoakke.Lexer;
 using Yoakke.Lexer.Attributes;
 using Yoakke.Parser.Attributes;
@@ -12,7 +12,6 @@ using Token = Yoakke.Lexer.IToken<Yoakke.Parser.Tests.Issue59Tests.TokenType>;
 namespace Yoakke.Parser.Tests
 {
     // https://github.com/LanguageDev/Yoakke/issues/59
-    [TestClass]
     public partial class Issue59Tests
     {
         internal enum TokenType
@@ -53,16 +52,11 @@ namespace Yoakke.Parser.Tests
         private static string Parse(string source) =>
            new Parser(new Lexer(source)).ParseCall().Ok.Value;
 
-        [TestMethod]
-        public void TestPrimary() => Assert.AreEqual("x", Parse("x"));
-
-        [TestMethod]
-        public void TestCall() => Assert.AreEqual("(x())", Parse("x()"));
-
-        [TestMethod]
-        public void TestMemberAccess() => Assert.AreEqual("(x.y)", Parse("x.y"));
-
-        [TestMethod]
-        public void TestLongChain() => Assert.AreEqual("(((((((x.y)())()).z).w)()).q)", Parse("x.y()().z.w().q"));
+        [Theory]
+        [InlineData("x", "x")]
+        [InlineData("(x())", "x()")]
+        [InlineData("(x.y)", "x.y")]
+        [InlineData("(((((((x.y)())()).z).w)()).q)", "x.y()().z.w().q")]
+        public void Tests(string expected, string input) => Assert.Equal(expected, Parse(input));
     }
 }

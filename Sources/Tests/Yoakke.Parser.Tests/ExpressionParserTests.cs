@@ -3,7 +3,7 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using Yoakke.Lexer;
 using Yoakke.Lexer.Attributes;
 using Yoakke.Parser.Attributes;
@@ -11,7 +11,6 @@ using IgnoreAttribute = Yoakke.Lexer.Attributes.IgnoreAttribute;
 
 namespace Yoakke.Parser.Tests
 {
-    [TestClass]
     public partial class ExpressionParserTests
     {
         internal enum TokenType
@@ -64,16 +63,14 @@ namespace Yoakke.Parser.Tests
 
         private static int Eval(string s) => new Parser(new Lexer(s)).ParseTopExpression().Ok.Value;
 
-        [TestMethod]
-        public void Tests()
-        {
-            Assert.AreEqual(3, Eval("1+2"));
-            Assert.AreEqual(7, Eval("1+2*3"));
-            Assert.AreEqual(9, Eval("(1+2)*3"));
-            Assert.AreEqual(0, Eval("3-2-1"));
-            Assert.AreEqual(2, Eval("3-(2-1)"));
-            Assert.AreEqual(6561, Eval("3^2^3"));
-            Assert.AreEqual(729, Eval("(3^2)^3"));
-        }
+        [Theory]
+        [InlineData(3, "1+2")]
+        [InlineData(7, "1+2*3")]
+        [InlineData(9, "(1+2)*3")]
+        [InlineData(0, "3-2-1")]
+        [InlineData(2, "3-(2-1)")]
+        [InlineData(6561, "3^2^3")]
+        [InlineData(729, "(3^2)^3")]
+        public void Tests(int value, string text) => Assert.Equal(value, Eval(text));
     }
 }

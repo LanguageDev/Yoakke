@@ -3,7 +3,7 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using Yoakke.Lexer;
 using Yoakke.Lexer.Attributes;
 using Yoakke.Parser.Attributes;
@@ -12,7 +12,6 @@ using IgnoreAttribute = Yoakke.Lexer.Attributes.IgnoreAttribute;
 namespace Yoakke.Parser.Tests
 {
     // https://github.com/LanguageDev/Yoakke/issues/62
-    [TestClass]
     public partial class Issue62Tests
     {
         internal enum TokenType
@@ -43,13 +42,10 @@ namespace Yoakke.Parser.Tests
         private static string Parse(string source) =>
            new Parser(new Lexer(source)).ParseProgram().Ok.Value;
 
-        [TestMethod]
-        public void TestSampleInput() => Assert.AreEqual(string.Empty, Parse("; ^"));
-
-        [TestMethod]
-        public void TestSingleton() => Assert.AreEqual("x", Parse("x ;"));
-
-        [TestMethod]
-        public void TestPair() => Assert.AreEqual("x, y", Parse("x; y;"));
+        [Theory]
+        [InlineData("", "; ^")]
+        [InlineData("x", "x ;")]
+        [InlineData("x, y", "x; y;")]
+        public void Tests(string expected, string input) => Assert.Equal(expected, Parse(input));
     }
 }

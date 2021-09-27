@@ -3,12 +3,11 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using Yoakke.Lexer.Attributes;
 
 namespace Yoakke.Lexer.Tests
 {
-    [TestClass]
     public partial class RegexesTests
     {
         public enum Identifier
@@ -119,86 +118,85 @@ namespace Yoakke.Lexer.Tests
         {
         }
 
-        [DataTestMethod]
+        [Theory]
 
-        [DataRow("foo", typeof(Identifier), true, typeof(IdentifierLexer))]
-        [DataRow("Foo7", typeof(Identifier), true, typeof(IdentifierLexer))]
-        [DataRow("2foo", typeof(Identifier), false, typeof(IdentifierLexer))]
-        [DataRow("\"hello\"", typeof(Identifier), false, typeof(IdentifierLexer))]
+        [InlineData("foo", typeof(Identifier), true, typeof(IdentifierLexer))]
+        [InlineData("Foo7", typeof(Identifier), true, typeof(IdentifierLexer))]
+        [InlineData("2foo", typeof(Identifier), false, typeof(IdentifierLexer))]
+        [InlineData("\"hello\"", typeof(Identifier), false, typeof(IdentifierLexer))]
 
-        [DataRow("\"hello\"", typeof(StringLiteral), true, typeof(StringLiteralLexer))]
-        [DataRow("\"\"", typeof(StringLiteral), true, typeof(StringLiteralLexer))]
-        [DataRow("\"1\"", typeof(StringLiteral), true, typeof(StringLiteralLexer))]
-        [DataRow("\"escaped\t\0test\a\"", typeof(StringLiteral), true, typeof(StringLiteralLexer))]
-        [DataRow("\"\\\"internal\\\"\"", typeof(StringLiteral), true, typeof(StringLiteralLexer))]
-        [DataRow("unopened\"", typeof(StringLiteral), false, typeof(StringLiteralLexer))]
-        [DataRow("\"unclosed", typeof(StringLiteral), false, typeof(StringLiteralLexer))]
-        [DataRow("\"hello\r\nworld!\"", typeof(StringLiteral), false, typeof(StringLiteralLexer))]
+        [InlineData("\"hello\"", typeof(StringLiteral), true, typeof(StringLiteralLexer))]
+        [InlineData("\"\"", typeof(StringLiteral), true, typeof(StringLiteralLexer))]
+        [InlineData("\"1\"", typeof(StringLiteral), true, typeof(StringLiteralLexer))]
+        [InlineData("\"escaped\t\0test\a\"", typeof(StringLiteral), true, typeof(StringLiteralLexer))]
+        [InlineData("\"\\\"internal\\\"\"", typeof(StringLiteral), true, typeof(StringLiteralLexer))]
+        [InlineData("unopened\"", typeof(StringLiteral), false, typeof(StringLiteralLexer))]
+        [InlineData("\"unclosed", typeof(StringLiteral), false, typeof(StringLiteralLexer))]
+        [InlineData("\"hello\r\nworld!\"", typeof(StringLiteral), false, typeof(StringLiteralLexer))]
 
-        [DataRow("0123456789", typeof(IntLiteral), true, typeof(IntLiteralLexer))]
-        [DataRow("0a12", typeof(IntLiteral), false, typeof(IntLiteralLexer))]
-        [DataRow("+1", typeof(IntLiteral), false, typeof(IntLiteralLexer))]
-        [DataRow("-1", typeof(IntLiteral), false, typeof(IntLiteralLexer))]
+        [InlineData("0123456789", typeof(IntLiteral), true, typeof(IntLiteralLexer))]
+        [InlineData("0a12", typeof(IntLiteral), false, typeof(IntLiteralLexer))]
+        [InlineData("+1", typeof(IntLiteral), false, typeof(IntLiteralLexer))]
+        [InlineData("-1", typeof(IntLiteral), false, typeof(IntLiteralLexer))]
 
-        [DataRow("0x0123456789ABCDEF", typeof(HexLiteral), true, typeof(HexLiteralLexer))]
-        [DataRow("0x0123456789ABCDEFG", typeof(HexLiteral), false, typeof(HexLiteralLexer))]
-        [DataRow("x0123456789ABCDEF", typeof(HexLiteral), false, typeof(HexLiteralLexer))]
-        [DataRow("1x0123456789ABCDEF", typeof(HexLiteral), false, typeof(HexLiteralLexer))]
+        [InlineData("0x0123456789ABCDEF", typeof(HexLiteral), true, typeof(HexLiteralLexer))]
+        [InlineData("0x0123456789ABCDEFG", typeof(HexLiteral), false, typeof(HexLiteralLexer))]
+        [InlineData("x0123456789ABCDEF", typeof(HexLiteral), false, typeof(HexLiteralLexer))]
+        [InlineData("1x0123456789ABCDEF", typeof(HexLiteral), false, typeof(HexLiteralLexer))]
 
-        [DataRow("0.2", typeof(RealNumberLiteral), true, typeof(RealNumberLiteralLexer))]
-        [DataRow("01", typeof(RealNumberLiteral), true, typeof(RealNumberLiteralLexer))]
-        [DataRow(".2", typeof(RealNumberLiteral), true, typeof(RealNumberLiteralLexer))]
-        [DataRow("0.2e3", typeof(RealNumberLiteral), true, typeof(RealNumberLiteralLexer))]
-        [DataRow("0.2e+3", typeof(RealNumberLiteral), true, typeof(RealNumberLiteralLexer))]
-        [DataRow("0.2e-3", typeof(RealNumberLiteral), true, typeof(RealNumberLiteralLexer))]
-        [DataRow("01_23.45_6", typeof(RealNumberLiteral), true, typeof(RealNumberLiteralLexer))]
-        [DataRow("foo", typeof(RealNumberLiteral), false, typeof(RealNumberLiteralLexer))]
-        [DataRow("_.2", typeof(RealNumberLiteral), false, typeof(RealNumberLiteralLexer))]
-        [DataRow("1._2", typeof(RealNumberLiteral), false, typeof(RealNumberLiteralLexer))]
-        [DataRow("0.e3", typeof(RealNumberLiteral), false, typeof(RealNumberLiteralLexer))]
-        [DataRow("+1.2", typeof(RealNumberLiteral), false, typeof(RealNumberLiteralLexer))]
-        [DataRow("-1.2", typeof(RealNumberLiteral), false, typeof(RealNumberLiteralLexer))]
+        [InlineData("0.2", typeof(RealNumberLiteral), true, typeof(RealNumberLiteralLexer))]
+        [InlineData("01", typeof(RealNumberLiteral), true, typeof(RealNumberLiteralLexer))]
+        [InlineData(".2", typeof(RealNumberLiteral), true, typeof(RealNumberLiteralLexer))]
+        [InlineData("0.2e3", typeof(RealNumberLiteral), true, typeof(RealNumberLiteralLexer))]
+        [InlineData("0.2e+3", typeof(RealNumberLiteral), true, typeof(RealNumberLiteralLexer))]
+        [InlineData("0.2e-3", typeof(RealNumberLiteral), true, typeof(RealNumberLiteralLexer))]
+        [InlineData("01_23.45_6", typeof(RealNumberLiteral), true, typeof(RealNumberLiteralLexer))]
+        [InlineData("foo", typeof(RealNumberLiteral), false, typeof(RealNumberLiteralLexer))]
+        [InlineData("_.2", typeof(RealNumberLiteral), false, typeof(RealNumberLiteralLexer))]
+        [InlineData("1._2", typeof(RealNumberLiteral), false, typeof(RealNumberLiteralLexer))]
+        [InlineData("0.e3", typeof(RealNumberLiteral), false, typeof(RealNumberLiteralLexer))]
+        [InlineData("+1.2", typeof(RealNumberLiteral), false, typeof(RealNumberLiteralLexer))]
+        [InlineData("-1.2", typeof(RealNumberLiteral), false, typeof(RealNumberLiteralLexer))]
 
-        [DataRow("0.2", typeof(IeeeFloatLiteral), true, typeof(IeeeFloatLiteralLexer))]
-        [DataRow("01", typeof(IeeeFloatLiteral), true, typeof(IeeeFloatLiteralLexer))]
-        [DataRow(".2", typeof(IeeeFloatLiteral), true, typeof(IeeeFloatLiteralLexer))]
-        [DataRow("0.2e3", typeof(IeeeFloatLiteral), true, typeof(IeeeFloatLiteralLexer))]
-        [DataRow("0.2e+3", typeof(IeeeFloatLiteral), true, typeof(IeeeFloatLiteralLexer))]
-        [DataRow("0.2e-3", typeof(IeeeFloatLiteral), true, typeof(IeeeFloatLiteralLexer))]
-        [DataRow("01_23.45_6", typeof(IeeeFloatLiteral), true, typeof(IeeeFloatLiteralLexer))]
-        [DataRow("+1.2", typeof(IeeeFloatLiteral), true, typeof(IeeeFloatLiteralLexer))]
-        [DataRow("-1.2", typeof(IeeeFloatLiteral), true, typeof(IeeeFloatLiteralLexer))]
-        [DataRow("infinity", typeof(IeeeFloatLiteral), true, typeof(IeeeFloatLiteralLexer))]
-        [DataRow("+infinity", typeof(IeeeFloatLiteral), true, typeof(IeeeFloatLiteralLexer))]
-        [DataRow("-infinity", typeof(IeeeFloatLiteral), true, typeof(IeeeFloatLiteralLexer))]
-        [DataRow("NaN", typeof(IeeeFloatLiteral), true, typeof(IeeeFloatLiteralLexer))]
-        [DataRow("+NaN", typeof(IeeeFloatLiteral), false, typeof(IeeeFloatLiteralLexer))]
-        [DataRow("-NaN", typeof(IeeeFloatLiteral), false, typeof(IeeeFloatLiteralLexer))]
-        [DataRow("foo", typeof(IeeeFloatLiteral), false, typeof(IeeeFloatLiteralLexer))]
-        [DataRow("_.2", typeof(IeeeFloatLiteral), false, typeof(IeeeFloatLiteralLexer))]
-        [DataRow("1._2", typeof(IeeeFloatLiteral), false, typeof(IeeeFloatLiteralLexer))]
-        [DataRow("0.e3", typeof(IeeeFloatLiteral), false, typeof(IeeeFloatLiteralLexer))]
+        [InlineData("0.2", typeof(IeeeFloatLiteral), true, typeof(IeeeFloatLiteralLexer))]
+        [InlineData("01", typeof(IeeeFloatLiteral), true, typeof(IeeeFloatLiteralLexer))]
+        [InlineData(".2", typeof(IeeeFloatLiteral), true, typeof(IeeeFloatLiteralLexer))]
+        [InlineData("0.2e3", typeof(IeeeFloatLiteral), true, typeof(IeeeFloatLiteralLexer))]
+        [InlineData("0.2e+3", typeof(IeeeFloatLiteral), true, typeof(IeeeFloatLiteralLexer))]
+        [InlineData("0.2e-3", typeof(IeeeFloatLiteral), true, typeof(IeeeFloatLiteralLexer))]
+        [InlineData("01_23.45_6", typeof(IeeeFloatLiteral), true, typeof(IeeeFloatLiteralLexer))]
+        [InlineData("+1.2", typeof(IeeeFloatLiteral), true, typeof(IeeeFloatLiteralLexer))]
+        [InlineData("-1.2", typeof(IeeeFloatLiteral), true, typeof(IeeeFloatLiteralLexer))]
+        [InlineData("infinity", typeof(IeeeFloatLiteral), true, typeof(IeeeFloatLiteralLexer))]
+        [InlineData("+infinity", typeof(IeeeFloatLiteral), true, typeof(IeeeFloatLiteralLexer))]
+        [InlineData("-infinity", typeof(IeeeFloatLiteral), true, typeof(IeeeFloatLiteralLexer))]
+        [InlineData("NaN", typeof(IeeeFloatLiteral), true, typeof(IeeeFloatLiteralLexer))]
+        [InlineData("+NaN", typeof(IeeeFloatLiteral), false, typeof(IeeeFloatLiteralLexer))]
+        [InlineData("-NaN", typeof(IeeeFloatLiteral), false, typeof(IeeeFloatLiteralLexer))]
+        [InlineData("foo", typeof(IeeeFloatLiteral), false, typeof(IeeeFloatLiteralLexer))]
+        [InlineData("_.2", typeof(IeeeFloatLiteral), false, typeof(IeeeFloatLiteralLexer))]
+        [InlineData("1._2", typeof(IeeeFloatLiteral), false, typeof(IeeeFloatLiteralLexer))]
+        [InlineData("0.e3", typeof(IeeeFloatLiteral), false, typeof(IeeeFloatLiteralLexer))]
 
-        [DataRow("//hello", typeof(LineComment), true, typeof(LineCommentLexer))]
-        [DataRow("// with spaces ", typeof(LineComment), true, typeof(LineCommentLexer))]
-        [DataRow("///triple", typeof(LineComment), true, typeof(LineCommentLexer))]
-        [DataRow("/single", typeof(LineComment), false, typeof(LineCommentLexer))]
-        [DataRow("//line\nbroken", typeof(LineComment), false, typeof(LineCommentLexer))]
+        [InlineData("//hello", typeof(LineComment), true, typeof(LineCommentLexer))]
+        [InlineData("// with spaces ", typeof(LineComment), true, typeof(LineCommentLexer))]
+        [InlineData("///triple", typeof(LineComment), true, typeof(LineCommentLexer))]
+        [InlineData("/single", typeof(LineComment), false, typeof(LineCommentLexer))]
+        [InlineData("//line\nbroken", typeof(LineComment), false, typeof(LineCommentLexer))]
 
-        [DataRow("/*single line*/", typeof(MultilineComment), true, typeof(MultilineCommentLexer))]
-        [DataRow("/* \n multi \r\n line \r */", typeof(MultilineComment), true, typeof(MultilineCommentLexer))]
-        [DataRow("/*****many asterisks*****/", typeof(MultilineComment), true, typeof(MultilineCommentLexer))]
-        [DataRow("/*****unbalanced*/", typeof(MultilineComment), true, typeof(MultilineCommentLexer))]
-        [DataRow("/*****unbalanced*/", typeof(MultilineComment), true, typeof(MultilineCommentLexer))]
-        [DataRow("/* /** nested **/ comments */", typeof(MultilineComment), false, typeof(MultilineCommentLexer))]
-        [DataRow("//single", typeof(MultilineComment), false, typeof(MultilineCommentLexer))]
-        [DataRow("/* unclosed /", typeof(MultilineComment), false, typeof(MultilineCommentLexer))]
+        [InlineData("/*single line*/", typeof(MultilineComment), true, typeof(MultilineCommentLexer))]
+        [InlineData("/* \n multi \r\n line \r */", typeof(MultilineComment), true, typeof(MultilineCommentLexer))]
+        [InlineData("/*****many asterisks*****/", typeof(MultilineComment), true, typeof(MultilineCommentLexer))]
+        [InlineData("/*****unbalanced*/", typeof(MultilineComment), true, typeof(MultilineCommentLexer))]
+        [InlineData("/* /** nested **/ comments */", typeof(MultilineComment), false, typeof(MultilineCommentLexer))]
+        [InlineData("//single", typeof(MultilineComment), false, typeof(MultilineCommentLexer))]
+        [InlineData("/* unclosed /", typeof(MultilineComment), false, typeof(MultilineCommentLexer))]
 
-        [DataRow(" ", typeof(Whitespace), true, typeof(WhitespaceLexer))]
-        [DataRow("\t", typeof(Whitespace), true, typeof(WhitespaceLexer))]
-        [DataRow("\r", typeof(Whitespace), true, typeof(WhitespaceLexer))]
-        [DataRow("\n", typeof(Whitespace), true, typeof(WhitespaceLexer))]
-        [DataRow("a", typeof(Whitespace), false, typeof(WhitespaceLexer))]
+        [InlineData(" ", typeof(Whitespace), true, typeof(WhitespaceLexer))]
+        [InlineData("\t", typeof(Whitespace), true, typeof(WhitespaceLexer))]
+        [InlineData("\r", typeof(Whitespace), true, typeof(WhitespaceLexer))]
+        [InlineData("\n", typeof(Whitespace), true, typeof(WhitespaceLexer))]
+        [InlineData("a", typeof(Whitespace), false, typeof(WhitespaceLexer))]
         public void SingleTokenAcceptance(string input, Type enumType, bool shouldAccept, Type lexerType)
         {
             dynamic lexer = Activator.CreateInstance(lexerType, input)!;
@@ -209,12 +207,12 @@ namespace Yoakke.Lexer.Tests
             dynamic enumValueUnderTest = enumValues.GetValue(2)!;
             if (shouldAccept)
             {
-                Assert.AreEqual(enumValueUnderTest, token.Kind);
-                Assert.AreEqual(enumEndValue, lexer.Next().Kind);
+                Assert.Equal(enumValueUnderTest, token.Kind);
+                Assert.Equal(enumEndValue, lexer.Next().Kind);
             }
             else
             {
-                Assert.IsFalse(enumValueUnderTest == token.Kind && enumEndValue == lexer.Next().Kind);
+                Assert.False(enumValueUnderTest == token.Kind && enumEndValue == lexer.Next().Kind);
             }
         }
     }

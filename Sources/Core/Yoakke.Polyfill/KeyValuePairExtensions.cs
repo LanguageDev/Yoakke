@@ -1,4 +1,4 @@
-namespace System.Collections.Generic
+namespace System.Collections.Generic.Polyfill
 {
     /// <summary>
     /// Extensions for <see cref="KeyValuePair{TKey, TValue}"/>.

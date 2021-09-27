@@ -6,12 +6,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using Yoakke.SyntaxTree.Attributes;
 
 namespace Yoakke.SyntaxTree.Tests
 {
-    [TestClass]
     public partial class VisitorWithoutBaseTests
     {
         [SyntaxTree]
@@ -60,7 +59,7 @@ namespace Yoakke.SyntaxTree.Tests
             protected string Visit(Ast.Node2 n) => $"N2({string.Join(", ", n.Values.Select(this.Visit))})";
         }
 
-        [TestMethod]
+        [Fact]
         public void VoidVisitorBasic()
         {
             var ast = new Ast.Node2(new Ast[]
@@ -73,20 +72,20 @@ namespace Yoakke.SyntaxTree.Tests
             var visitor = new MyVoidVisitor();
             visitor.Call(ast);
 
-            Assert.AreEqual("N2(N1[1, 2]()N2(N1[3, 4]())N1[5, 6]())", visitor.Text.ToString());
+            Assert.Equal("N2(N1[1, 2]()N2(N1[3, 4]())N1[5, 6]())", visitor.Text.ToString());
         }
 
-        [TestMethod]
+        [Fact]
         public void VoidVisitorNotSupported()
         {
             var ast = new Ast.Node3(1);
 
             var visitor = new MyVoidVisitor();
 
-            Assert.ThrowsException<NotSupportedException>(() => visitor.Call(ast));
+            Assert.Throws<NotSupportedException>(() => visitor.Call(ast));
         }
 
-        [TestMethod]
+        [Fact]
         public void StrVisitorBasic()
         {
             var ast = new Ast.Node2(new Ast[]
@@ -99,17 +98,17 @@ namespace Yoakke.SyntaxTree.Tests
             var visitor = new MyStrVisitor();
             var result = visitor.Call(ast);
 
-            Assert.AreEqual("N2(N1(1, 2), N2(N1(3, 4)), N1(5, 6))", result);
+            Assert.Equal("N2(N1(1, 2), N2(N1(3, 4)), N1(5, 6))", result);
         }
 
-        [TestMethod]
+        [Fact]
         public void StrVisitorNotSupported()
         {
             var ast = new Ast.Node3(1);
 
             var visitor = new MyStrVisitor();
 
-            Assert.ThrowsException<NotSupportedException>(() => visitor.Call(ast));
+            Assert.Throws<NotSupportedException>(() => visitor.Call(ast));
         }
     }
 }

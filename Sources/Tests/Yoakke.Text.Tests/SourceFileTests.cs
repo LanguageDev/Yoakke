@@ -1,16 +1,15 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Yoakke.Text.Tests
 {
-    [TestClass]
     public class SourceFileTests
     {
-        [TestMethod]
+        [Fact]
         public void GetAllLinesOfString()
         {
             var sourceFile = new SourceFile(
@@ -18,15 +17,15 @@ namespace Yoakke.Text.Tests
 @"abc
 xyz
 qwe");
-            Assert.AreEqual(3, sourceFile.AvailableLines);
-            Assert.AreEqual("abc", sourceFile.GetLine(0).TrimEnd());
-            Assert.AreEqual("xyz", sourceFile.GetLine(1).TrimEnd());
-            Assert.AreEqual("qwe", sourceFile.GetLine(2).TrimEnd());
-            Assert.AreEqual("xyz", sourceFile.GetLine(1).TrimEnd());
-            Assert.AreEqual("abc", sourceFile.GetLine(0).TrimEnd());
+            Assert.Equal(3, sourceFile.AvailableLines);
+            Assert.Equal("abc", sourceFile.GetLine(0).TrimEnd());
+            Assert.Equal("xyz", sourceFile.GetLine(1).TrimEnd());
+            Assert.Equal("qwe", sourceFile.GetLine(2).TrimEnd());
+            Assert.Equal("xyz", sourceFile.GetLine(1).TrimEnd());
+            Assert.Equal("abc", sourceFile.GetLine(0).TrimEnd());
         }
 
-        [TestMethod]
+        [Fact]
         public void GetAllLinesOfStringReader()
         {
             var sourceFile = new SourceFile(
@@ -34,20 +33,20 @@ qwe");
 new StringReader(@"abc
 xyz
 qwe"));
-            Assert.AreEqual(0, sourceFile.AvailableLines);
-            Assert.AreEqual("abc", sourceFile.GetLine(0).TrimEnd());
-            Assert.AreEqual(1, sourceFile.AvailableLines);
-            Assert.AreEqual("xyz", sourceFile.GetLine(1).TrimEnd());
-            Assert.AreEqual(2, sourceFile.AvailableLines);
-            Assert.AreEqual("qwe", sourceFile.GetLine(2).TrimEnd());
-            Assert.AreEqual(3, sourceFile.AvailableLines);
-            Assert.AreEqual("xyz", sourceFile.GetLine(1).TrimEnd());
-            Assert.AreEqual(3, sourceFile.AvailableLines);
-            Assert.AreEqual("abc", sourceFile.GetLine(0).TrimEnd());
-            Assert.AreEqual(3, sourceFile.AvailableLines);
+            Assert.Equal(0, sourceFile.AvailableLines);
+            Assert.Equal("abc", sourceFile.GetLine(0).TrimEnd());
+            Assert.Equal(1, sourceFile.AvailableLines);
+            Assert.Equal("xyz", sourceFile.GetLine(1).TrimEnd());
+            Assert.Equal(2, sourceFile.AvailableLines);
+            Assert.Equal("qwe", sourceFile.GetLine(2).TrimEnd());
+            Assert.Equal(3, sourceFile.AvailableLines);
+            Assert.Equal("xyz", sourceFile.GetLine(1).TrimEnd());
+            Assert.Equal(3, sourceFile.AvailableLines);
+            Assert.Equal("abc", sourceFile.GetLine(0).TrimEnd());
+            Assert.Equal(3, sourceFile.AvailableLines);
         }
 
-        [TestMethod]
+        [Fact]
         public void ReaderPositionUnaffectedByGetLine()
         {
             var sourceFile = new SourceFile(
@@ -56,7 +55,7 @@ new StringReader(@"abc
 xyz
 qwe"));
             sourceFile.GetLine(2);
-            Assert.AreEqual("abc", sourceFile.ReadLine()?.TrimEnd());
+            Assert.Equal("abc", sourceFile.ReadLine()?.TrimEnd());
         }
     }
 }

@@ -13,21 +13,22 @@ namespace Yoakke.Collections.Dense
     /// A set interface that stores the contained elements as intervals.
     /// </summary>
     /// <typeparam name="T">The set element type.</typeparam>
-    public interface IDenseSet<T> : IReadOnlyDenseSet<T>, IMathSet<T>
+    public interface IDenseSet<T> : IReadOnlyDenseSet<T>, ICollection<Interval<T>>
     {
         /// <summary>
-        /// Adds an interval of elements to the current set and returns a value to indicate if there was any value newly added.
+        /// Determines if the set contains a full interval of items.
         /// </summary>
-        /// <param name="interval">The interval of elements to add to the set.</param>
-        /// <returns>True if the there were any elements added to the set.</returns>
-        public bool Add(Interval<T> interval);
+        /// <param name="interval">The interval to check if the set contains.</param>
+        /// <returns>True if all elements of <paramref name="interval"/> are contained in the set,
+        /// otherwise false.</returns>
+        public new bool Contains(Interval<T> interval);
 
         /// <summary>
-        /// Removes an interval of elements from the set.
+        /// Adds an interval of elements to this set.
         /// </summary>
-        /// <param name="interval">The interval to remove.</param>
-        /// <returns>True, if there were any elements removed, false otherwise.</returns>
-        public bool Remove(Interval<T> interval);
+        /// <param name="interval">The interval of elements to add.</param>
+        /// <returns>True, if there was at least one new, unique element added.</returns>
+        public new bool Add(Interval<T> interval);
 
         /// <summary>
         /// Inverts this set, meaning that any value that was contained before won't be contained and vice versa.

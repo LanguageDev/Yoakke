@@ -3,13 +3,12 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using Yoakke.Lexer.Attributes;
 
 namespace Yoakke.Lexer.Tests
 {
     // https://github.com/LanguageDev/Yoakke/issues/17
-    [TestClass]
     public partial class Issue17Tests
     {
         internal enum TokenType
@@ -35,21 +34,21 @@ namespace Yoakke.Lexer.Tests
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void ImplicitCtors()
         {
-            Assert.AreEqual(3, typeof(ImplicitCtorLexer).GetConstructors().Length);
-            Assert.IsNotNull(typeof(ImplicitCtorLexer).GetConstructor(new[] { typeof(string) }));
-            Assert.IsNotNull(typeof(ImplicitCtorLexer).GetConstructor(new[] { typeof(TextReader) }));
-            Assert.IsNotNull(typeof(ImplicitCtorLexer).GetConstructor(new[] { typeof(ICharStream) }));
+            Assert.Equal(3, typeof(ImplicitCtorLexer).GetConstructors().Length);
+            Assert.NotNull(typeof(ImplicitCtorLexer).GetConstructor(new[] { typeof(string) }));
+            Assert.NotNull(typeof(ImplicitCtorLexer).GetConstructor(new[] { typeof(TextReader) }));
+            Assert.NotNull(typeof(ImplicitCtorLexer).GetConstructor(new[] { typeof(ICharStream) }));
         }
 
-        [TestMethod]
+        [Fact]
         public void ExplicitCtors()
         {
-            Assert.AreEqual(1, typeof(ExplicitCtorLexer).GetConstructors().Length);
-            Assert.IsNotNull(typeof(ExplicitCtorLexer).GetConstructor(new[] { typeof(string) }));
-            Assert.IsNull(typeof(ExplicitCtorLexer).GetConstructor(new[] { typeof(TextReader) }));
+            Assert.Single(typeof(ExplicitCtorLexer).GetConstructors());
+            Assert.NotNull(typeof(ExplicitCtorLexer).GetConstructor(new[] { typeof(string) }));
+            Assert.Null(typeof(ExplicitCtorLexer).GetConstructor(new[] { typeof(TextReader) }));
         }
     }
 }

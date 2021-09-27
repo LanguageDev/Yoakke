@@ -14,10 +14,18 @@ namespace Yoakke.Collections.Dense
     /// </summary>
     /// <typeparam name="TKey">The key type.</typeparam>
     /// <typeparam name="TValue">The value type.</typeparam>
-    public interface IReadOnlyDenseMap<TKey, TValue>
-        : IReadOnlyMathMap<TKey, TValue>,
-          IEnumerable<KeyValuePair<Interval<TKey>, TValue>>
+    public interface IReadOnlyDenseMap<TKey, TValue> : IReadOnlyCollection<KeyValuePair<Interval<TKey>, TValue>>
     {
+        /// <summary>
+        /// The intervals that are in this mapping.
+        /// </summary>
+        public IEnumerable<Interval<TKey>> Keys { get; }
+
+        /// <summary>
+        /// The values that are in this mapping.
+        /// </summary>
+        public IEnumerable<TValue> Values { get; }
+
         /// <summary>
         /// Determines whether the mapping contains the keys in the specified interval.
         /// </summary>

@@ -3,12 +3,11 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System.Reflection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using Yoakke.SyntaxTree.Attributes;
 
 namespace Yoakke.SyntaxTree.Tests
 {
-    [TestClass]
     public partial class SubtreeVisitorTests
     {
         internal abstract partial record Ast
@@ -36,34 +35,34 @@ namespace Yoakke.SyntaxTree.Tests
 
         private const BindingFlags Flags = BindingFlags.NonPublic | BindingFlags.Instance;
 
-        [TestMethod]
+        [Fact]
         public void FullHierarchyVisitorTests()
         {
             var type = typeof(FullHierarchyVisitor);
 
-            Assert.IsNotNull(type.GetMethod("Visit", Flags, null, new[] { typeof(Ast) }, null));
-            Assert.IsNotNull(type.GetMethod("Visit", Flags, null, new[] { typeof(Ast.Statement) }, null));
-            Assert.IsNotNull(type.GetMethod("Visit", Flags, null, new[] { typeof(Ast.Expression) }, null));
+            Assert.NotNull(type.GetMethod("Visit", Flags, null, new[] { typeof(Ast) }, null));
+            Assert.NotNull(type.GetMethod("Visit", Flags, null, new[] { typeof(Ast.Statement) }, null));
+            Assert.NotNull(type.GetMethod("Visit", Flags, null, new[] { typeof(Ast.Expression) }, null));
         }
 
-        [TestMethod]
+        [Fact]
         public void StatementSubtreeVisitorTests()
         {
             var type = typeof(StatementSubtreeVisitor);
 
-            Assert.IsNull(type.GetMethod("Visit", Flags, null, new[] { typeof(Ast) }, null));
-            Assert.IsNotNull(type.GetMethod("Visit", Flags, null, new[] { typeof(Ast.Statement) }, null));
-            Assert.IsNull(type.GetMethod("Visit", Flags, null, new[] { typeof(Ast.Expression) }, null));
+            Assert.Null(type.GetMethod("Visit", Flags, null, new[] { typeof(Ast) }, null));
+            Assert.NotNull(type.GetMethod("Visit", Flags, null, new[] { typeof(Ast.Statement) }, null));
+            Assert.Null(type.GetMethod("Visit", Flags, null, new[] { typeof(Ast.Expression) }, null));
         }
 
-        [TestMethod]
+        [Fact]
         public void StatementAndExpressionSubtreeVisitorTests()
         {
             var type = typeof(StatementAndExpressionSubtreeVisitor);
 
-            Assert.IsNull(type.GetMethod("Visit", Flags, null, new[] { typeof(Ast) }, null));
-            Assert.IsNotNull(type.GetMethod("Visit", Flags, null, new[] { typeof(Ast.Statement) }, null));
-            Assert.IsNotNull(type.GetMethod("Visit", Flags, null, new[] { typeof(Ast.Expression) }, null));
+            Assert.Null(type.GetMethod("Visit", Flags, null, new[] { typeof(Ast) }, null));
+            Assert.NotNull(type.GetMethod("Visit", Flags, null, new[] { typeof(Ast.Statement) }, null));
+            Assert.NotNull(type.GetMethod("Visit", Flags, null, new[] { typeof(Ast.Expression) }, null));
         }
     }
 }

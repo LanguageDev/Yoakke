@@ -7,59 +7,58 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Yoakke.Collections.Tests
 {
-    [TestClass]
     public class RingBufferTests
     {
-        [TestMethod]
+        [Fact]
         public void EmptyBuffer()
         {
             var rb = new RingBuffer<int>();
 
-            Assert.AreEqual(0, rb.Count);
-            Assert.AreEqual(0, rb.Head);
-            Assert.AreEqual(0, rb.Tail);
+            Assert.Empty(rb);
+            Assert.Equal(0, rb.Head);
+            Assert.Equal(0, rb.Tail);
         }
 
-        [TestMethod]
+        [Fact]
         public void IndexEmptyBuffer()
         {
             var rb = new RingBuffer<int>();
 
-            Assert.ThrowsException<ArgumentOutOfRangeException>(() => rb[0]);
-            Assert.ThrowsException<ArgumentOutOfRangeException>(() => rb[0] = 0);
+            Assert.Throws<ArgumentOutOfRangeException>(() => rb[0]);
+            Assert.Throws<ArgumentOutOfRangeException>(() => rb[0] = 0);
         }
 
-        [TestMethod]
+        [Fact]
         public void AddingElementToBack()
         {
             var rb = new RingBuffer<int>();
 
             rb.AddBack(1);
 
-            Assert.AreEqual(1, rb.Count);
-            Assert.AreEqual(0, rb.Head);
-            Assert.AreEqual(1, rb.Tail);
-            Assert.AreEqual(1, rb[0]);
+            Assert.Single(rb);
+            Assert.Equal(0, rb.Head);
+            Assert.Equal(1, rb.Tail);
+            Assert.Equal(1, rb[0]);
         }
 
-        [TestMethod]
+        [Fact]
         public void AddingElementToFront()
         {
             var rb = new RingBuffer<int>();
 
             rb.AddFront(1);
 
-            Assert.AreEqual(1, rb.Count);
-            Assert.AreEqual(rb.Capacity - 1, rb.Head);
-            Assert.AreEqual(0, rb.Tail);
-            Assert.AreEqual(1, rb[0]);
+            Assert.Single(rb);
+            Assert.Equal(rb.Capacity - 1, rb.Head);
+            Assert.Equal(0, rb.Tail);
+            Assert.Equal(1, rb[0]);
         }
 
-        [TestMethod]
+        [Fact]
         public void AddingElementToFrontAndBack()
         {
             var rb = new RingBuffer<int>();
@@ -67,101 +66,101 @@ namespace Yoakke.Collections.Tests
             rb.AddFront(2);
             rb.AddBack(1);
 
-            Assert.AreEqual(2, rb.Count);
-            Assert.AreEqual(rb.Capacity - 1, rb.Head);
-            Assert.AreEqual(1, rb.Tail);
-            Assert.AreEqual(2, rb[0]);
-            Assert.AreEqual(1, rb[1]);
+            Assert.Equal(2, rb.Count);
+            Assert.Equal(rb.Capacity - 1, rb.Head);
+            Assert.Equal(1, rb.Tail);
+            Assert.Equal(2, rb[0]);
+            Assert.Equal(1, rb[1]);
         }
 
-        [TestMethod]
+        [Fact]
         public void InsteringElementIntoEmpty()
         {
             var rb = new RingBuffer<int>();
 
             rb.Insert(0, 1);
 
-            Assert.AreEqual(1, rb.Count);
-            Assert.AreEqual(1, rb[0]);
+            Assert.Single(rb);
+            Assert.Equal(1, rb[0]);
         }
 
-        [TestMethod]
+        [Fact]
         public void RemovingElementFromBack()
         {
             var rb = new RingBuffer<int> { 1, 2 };
 
             var removed = rb.RemoveBack();
 
-            Assert.AreEqual(1, rb.Count);
-            Assert.AreEqual(0, rb.Head);
-            Assert.AreEqual(1, rb.Tail);
-            Assert.AreEqual(1, rb[0]);
-            Assert.AreEqual(2, removed);
+            Assert.Single(rb);
+            Assert.Equal(0, rb.Head);
+            Assert.Equal(1, rb.Tail);
+            Assert.Equal(1, rb[0]);
+            Assert.Equal(2, removed);
         }
 
-        [TestMethod]
+        [Fact]
         public void RemovingElementFromFront()
         {
             var rb = new RingBuffer<int> { 1, 2 };
 
             var removed = rb.RemoveFront();
 
-            Assert.AreEqual(1, rb.Count);
-            Assert.AreEqual(1, rb.Head);
-            Assert.AreEqual(2, rb.Tail);
-            Assert.AreEqual(2, rb[0]);
-            Assert.AreEqual(1, removed);
+            Assert.Single(rb);
+            Assert.Equal(1, rb.Head);
+            Assert.Equal(2, rb.Tail);
+            Assert.Equal(2, rb[0]);
+            Assert.Equal(1, removed);
         }
 
-        [TestMethod]
+        [Fact]
         public void RemovingElementFromBackEmpty()
         {
             var rb = new RingBuffer<int>();
 
-            Assert.ThrowsException<InvalidOperationException>(() => rb.RemoveBack());
+            Assert.Throws<InvalidOperationException>(() => rb.RemoveBack());
         }
 
-        [TestMethod]
+        [Fact]
         public void RemovingElementFromFrontEmpty()
         {
             var rb = new RingBuffer<int>();
 
-            Assert.ThrowsException<InvalidOperationException>(() => rb.RemoveFront());
+            Assert.Throws<InvalidOperationException>(() => rb.RemoveFront());
         }
 
-        [TestMethod]
+        [Fact]
         public void ChangingContentsWithIndexer()
         {
             var rb = new RingBuffer<int> { 1, 2, 3 };
 
             rb[2] = 4;
 
-            Assert.AreEqual(3, rb.Count);
-            Assert.AreEqual(0, rb.Head);
-            Assert.AreEqual(3, rb.Tail);
-            Assert.AreEqual(1, rb[0]);
-            Assert.AreEqual(2, rb[1]);
-            Assert.AreEqual(4, rb[2]);
+            Assert.Equal(3, rb.Count);
+            Assert.Equal(0, rb.Head);
+            Assert.Equal(3, rb.Tail);
+            Assert.Equal(1, rb[0]);
+            Assert.Equal(2, rb[1]);
+            Assert.Equal(4, rb[2]);
         }
 
-        [TestMethod]
+        [Fact]
         public void InsertingElementInTheMiddle()
         {
             var rb = new RingBuffer<int> { 1, 2, 3, 4, 5, 6 };
 
             rb.Insert(2, 8);
 
-            Assert.AreEqual(7, rb.Count);
-            Assert.AreEqual(1, rb[0]);
-            Assert.AreEqual(2, rb[1]);
-            Assert.AreEqual(8, rb[2]);
-            Assert.AreEqual(3, rb[3]);
-            Assert.AreEqual(4, rb[4]);
-            Assert.AreEqual(5, rb[5]);
-            Assert.AreEqual(6, rb[6]);
+            Assert.Equal(7, rb.Count);
+            Assert.Equal(1, rb[0]);
+            Assert.Equal(2, rb[1]);
+            Assert.Equal(8, rb[2]);
+            Assert.Equal(3, rb[3]);
+            Assert.Equal(4, rb[4]);
+            Assert.Equal(5, rb[5]);
+            Assert.Equal(6, rb[6]);
         }
 
-        [TestMethod]
+        [Fact]
         public void InsertingElementInTheMiddleWhileSplitFirst()
         {
             var rb = new RingBuffer<int>(5) { 1, 2, 3, 4 };
@@ -173,15 +172,15 @@ namespace Yoakke.Collections.Tests
 
             rb.Insert(1, 7);
 
-            Assert.AreEqual(5, rb.Count);
-            Assert.AreEqual(3, rb[0]);
-            Assert.AreEqual(7, rb[1]);
-            Assert.AreEqual(4, rb[2]);
-            Assert.AreEqual(5, rb[3]);
-            Assert.AreEqual(6, rb[4]);
+            Assert.Equal(5, rb.Count);
+            Assert.Equal(3, rb[0]);
+            Assert.Equal(7, rb[1]);
+            Assert.Equal(4, rb[2]);
+            Assert.Equal(5, rb[3]);
+            Assert.Equal(6, rb[4]);
         }
 
-        [TestMethod]
+        [Fact]
         public void InsertingElementInTheMiddleWhileSplitSecond()
         {
             var rb = new RingBuffer<int>(5) { 1, 2, 3, 4 };
@@ -193,30 +192,30 @@ namespace Yoakke.Collections.Tests
 
             rb.Insert(3, 7);
 
-            Assert.AreEqual(5, rb.Count);
-            Assert.AreEqual(3, rb[0]);
-            Assert.AreEqual(4, rb[1]);
-            Assert.AreEqual(5, rb[2]);
-            Assert.AreEqual(7, rb[3]);
-            Assert.AreEqual(6, rb[4]);
+            Assert.Equal(5, rb.Count);
+            Assert.Equal(3, rb[0]);
+            Assert.Equal(4, rb[1]);
+            Assert.Equal(5, rb[2]);
+            Assert.Equal(7, rb[3]);
+            Assert.Equal(6, rb[4]);
         }
 
-        [TestMethod]
+        [Fact]
         public void RemovingElementInTheMiddle()
         {
             var rb = new RingBuffer<int> { 1, 2, 3, 4, 5, 6 };
 
             rb.RemoveAt(2);
 
-            Assert.AreEqual(5, rb.Count);
-            Assert.AreEqual(1, rb[0]);
-            Assert.AreEqual(2, rb[1]);
-            Assert.AreEqual(4, rb[2]);
-            Assert.AreEqual(5, rb[3]);
-            Assert.AreEqual(6, rb[4]);
+            Assert.Equal(5, rb.Count);
+            Assert.Equal(1, rb[0]);
+            Assert.Equal(2, rb[1]);
+            Assert.Equal(4, rb[2]);
+            Assert.Equal(5, rb[3]);
+            Assert.Equal(6, rb[4]);
         }
 
-        [TestMethod]
+        [Fact]
         public void RemovingElementInTheMiddleWhileSplitFirst()
         {
             var rb = new RingBuffer<int>(4) { 1, 2, 3, 4 };
@@ -228,13 +227,13 @@ namespace Yoakke.Collections.Tests
 
             rb.RemoveAt(1);
 
-            Assert.AreEqual(3, rb.Count);
-            Assert.AreEqual(3, rb[0]);
-            Assert.AreEqual(5, rb[1]);
-            Assert.AreEqual(6, rb[2]);
+            Assert.Equal(3, rb.Count);
+            Assert.Equal(3, rb[0]);
+            Assert.Equal(5, rb[1]);
+            Assert.Equal(6, rb[2]);
         }
 
-        [TestMethod]
+        [Fact]
         public void RemovingElementInTheMiddleWhileSplitSecond()
         {
             var rb = new RingBuffer<int>(4) { 1, 2, 3, 4 };
@@ -246,10 +245,10 @@ namespace Yoakke.Collections.Tests
 
             rb.RemoveAt(2);
 
-            Assert.AreEqual(3, rb.Count);
-            Assert.AreEqual(3, rb[0]);
-            Assert.AreEqual(4, rb[1]);
-            Assert.AreEqual(6, rb[2]);
+            Assert.Equal(3, rb.Count);
+            Assert.Equal(3, rb[0]);
+            Assert.Equal(4, rb[1]);
+            Assert.Equal(6, rb[2]);
         }
     }
 }
