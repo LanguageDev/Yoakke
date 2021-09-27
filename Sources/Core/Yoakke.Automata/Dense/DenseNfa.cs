@@ -400,30 +400,14 @@ namespace Yoakke.Automata.Dense
         public bool RemoveUnreachable() => TrivialImpl.RemoveUnreachable(this);
 
         /// <inheritdoc/>
-        public bool EliminateEpsilonTransitions()
-        {
-            if (this.EpsilonTransitions.Count == 0) return false;
-
-            foreach (var (v1, v2) in this.EpsilonTransitions)
+        public bool EliminateEpsilonTransitions() => TrivialImpl.EliminateEpsilonTransitions(
+            this,
+            (v1, v2) =>
             {
-                // For each v1 --[Epsilon]--> v2, we look at the outgoing transitions from v2
-                // and add them to v1
-                // So for each v2 --[x]--> vx we add a v1 --[x]--> vx
-                if (this.transitions.TransitionMap.TryGetValue(v2, out var fromV2Map))
-                {
-                    var fromV1Map = this.transitions.GetTransitionsFrom(v1);
-                    foreach (var (on, toV2Set) in fromV2Map) fromV1Map.Add(on, toV2Set);
-                }
-                // If v1 is a starting state, we need to make v2 one aswell
-                if (this.InitialStates.Contains(v1)) this.InitialStates.Add(v2);
-                // If v2 is a final state, v1 needs to be aswell
-                if (this.AcceptingStates.Contains(v2)) this.AcceptingStates.Add(v1);
-            }
-
-            this.EpsilonTransitions.Clear();
-
-            return true;
-        }
+                if (!this.transitions.TransitionMap.TryGetValue(v2, out var fromV2Map)) return;
+                var fromV1Map = this.transitions.GetTransitionsFrom(v1);
+                foreach (var (on, toV2Set) in fromV2Map) fromV1Map.Add(on, toV2Set);
+            });
 
         /// <inheritdoc/>
         IDfa<TResultState, TSymbol> IReadOnlyNfa<TState, TSymbol>.Determinize<TResultState>(IStateCombiner<TState, TResultState> combiner) =>

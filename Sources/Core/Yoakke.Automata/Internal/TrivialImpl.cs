@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Generic.Polyfill;
 using System.Linq;
 using System.Text;
 
@@ -40,7 +41,7 @@ namespace Yoakke.Automata.Internal
         /// <param name="dfa">The DFA to check acceptance on.</param>
         /// <param name="input">The input to check acceptance for.</param>
         /// <returns>True, if the <paramref name="input"/> is accepted by <paramref name="dfa"/>.</returns>
-        public static bool Accepts<TState, TSymbol>(this IReadOnlyDfa<TState, TSymbol> dfa, IEnumerable<TSymbol> input)
+        public static bool Accepts<TState, TSymbol>(IReadOnlyDfa<TState, TSymbol> dfa, IEnumerable<TSymbol> input)
         {
             var currentState = dfa.InitialState;
             foreach (var symbol in input)
@@ -59,7 +60,7 @@ namespace Yoakke.Automata.Internal
         /// <param name="nfa">The NFA to check acceptance on.</param>
         /// <param name="input">The input to check acceptance for.</param>
         /// <returns>True, if the <paramref name="input"/> is accepted by <paramref name="nfa"/>.</returns>
-        public static bool Accepts<TState, TSymbol>(this IReadOnlyNfa<TState, TSymbol> nfa, IEnumerable<TSymbol> input)
+        public static bool Accepts<TState, TSymbol>(IReadOnlyNfa<TState, TSymbol> nfa, IEnumerable<TSymbol> input)
         {
             var currentState = new StateSet<TState>(nfa.InitialStates, nfa.StateComparer);
             foreach (var symbol in input)
@@ -68,6 +69,44 @@ namespace Yoakke.Automata.Internal
                 if (currentState.Count == 0) return false;
             }
             return currentState.Overlaps(nfa.AcceptingStates);
+        }
+
+        /// <summary>
+        /// Implements <see cref="INfa{TState, TSymbol}.EliminateEpsilonTransitions"/>.
+        /// </summary>
+        /// <typeparam name="TState">The state type.</typeparam>
+        /// <typeparam name="TSymbol">The symbol type.</typeparam>
+        /// <param name="nfa">The NFA to eliminate epsilon-transitions from.</param>
+        /// <param name="copyTransitions">A method to copy transitions from one state to another.</param>
+        /// <returns>True, if there were epsilon-transitions to eliminate.</returns>
+        public static bool EliminateEpsilonTransitions<TState, TSymbol>(
+            INfa<TState, TSymbol> nfa,
+            Action<TState, TState> copyTransitions)
+        {
+            if (nfa.EpsilonTransitions.Count == 0) return false;
+
+            foreach (var state in nfa.States)
+            {
+                // For each state we look at its epsilon closure
+                // For each element in the closure we copy the non-epsilon transitions from state to the others
+                // We can omit the state itself from the copy
+                var epsilonClosure = nfa
+                    .EpsilonClosure(state)
+                    .Where(s => !nfa.StateComparer.Equals(s, state))
+                    .ToHashSet(nfa.StateComparer);
+                foreach (var toState in epsilonClosure)
+                {
+                    copyTransitions(state, toState);
+                    // If v1 is a starting state, we need to make v2 one aswell
+                    if (nfa.InitialStates.Contains(state)) nfa.InitialStates.Add(toState);
+                    // If v2 is a final state, v1 needs to be aswell
+                    if (nfa.AcceptingStates.Contains(toState)) nfa.AcceptingStates.Add(state);
+                }
+            }
+
+            nfa.EpsilonTransitions.Clear();
+
+            return true;
         }
     }
 }
