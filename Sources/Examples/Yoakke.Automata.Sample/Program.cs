@@ -13,26 +13,18 @@ namespace Yoakke.Automata.Sample
     {
         internal static void Main(string[] args)
         {
-            // Construct a regex
-            var regex = RegEx.Seq(RegEx.Or(RegEx.Lit('H'), RegEx.Lit('h')), RegEx.Lit('i'));
-            regex = regex.Desugar();
+            var dfa = new Dfa<int, char>();
+            dfa.InitialState = 0;
+            dfa.AcceptingStates.Add(3);
+            dfa.AcceptingStates.Add(4);
+            dfa.AddTransition(0, '0', 1);
+            dfa.AddTransition(1, 'x', 2);
+            dfa.AddTransition(2, '0', 3);
+            dfa.AddTransition(3, '0', 4);
+            dfa.AddTransition(4, '0', 4);
 
-            int stateCount = 0;
-            int MakeState() => stateCount++;
+            var minDfa = dfa.Minimize();
 
-            var nfa = new DenseNfa<int, char>();
-            var (start, end) = regex.ThompsonsConstruct(nfa, MakeState);
-            nfa.InitialStates.Add(start);
-            nfa.AcceptingStates.Add(end);
-
-            var dfa = nfa.Determinize();
-            var minDfa = dfa.Minimize(StateCombiner<int>.DefaultSetCombiner);
-
-            Console.WriteLine(nfa.ToDot());
-            nfa.EliminateEpsilonTransitions();
-            Console.WriteLine(nfa.ToDot());
-            nfa.RemoveUnreachable();
-            Console.WriteLine(nfa.ToDot());
             Console.WriteLine(dfa.ToDot());
             Console.WriteLine(minDfa.ToDot());
         }

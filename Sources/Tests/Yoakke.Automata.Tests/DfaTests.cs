@@ -146,6 +146,37 @@ namespace Yoakke.Automata.Tests
             AssertTransition(minDfa, "C", '1', "D");
         }
 
+        [Fact]
+        public void MinimizeIncompleteIssue()
+        {
+            var dfa = new Dfa<string, char>();
+            dfa.InitialState = "q0";
+            dfa.AcceptingStates.Add("q3");
+            dfa.AcceptingStates.Add("q4");
+            dfa.AddTransition("q0", '0', "q1");
+            dfa.AddTransition("q1", 'x', "q2");
+            dfa.AddTransition("q2", '0', "q3");
+            dfa.AddTransition("q3", '0', "q4");
+            dfa.AddTransition("q4", '0', "q4");
+
+            var minDfa = dfa.Minimize();
+
+            var expectedStates = new[] { "q0", "q1", "q2", "q3, q4" }.Select(ParseStateSet);
+            var gotStates = minDfa.States.ToHashSet();
+
+            var expectedAcceptingStates = new[] { "q3, q4" }.Select(ParseStateSet);
+            var gotAcceptingStates = minDfa.AcceptingStates.ToHashSet();
+
+            Assert.True(gotStates.SetEquals(expectedStates));
+            Assert.True(gotAcceptingStates.SetEquals(expectedAcceptingStates));
+
+            Assert.Equal(4, minDfa.Transitions.Count);
+            AssertTransition(minDfa, "q0", '0', "q1");
+            AssertTransition(minDfa, "q1", 'x', "q2");
+            AssertTransition(minDfa, "q2", '0', "q3, q4");
+            AssertTransition(minDfa, "q3, q4", '0', "q3, q4");
+        }
+
         private static Dfa<string, char> BuildLast2DifferentCharsDfa()
         {
             var dfa = new Dfa<string, char>();
