@@ -13,7 +13,7 @@ namespace Yoakke.Automata.Sample
     {
         internal static void Main(string[] args)
         {
-            var dfa = new Dfa<int, char>();
+            var dfa = new DenseDfa<int, char>();
             dfa.InitialState = 0;
             dfa.AcceptingStates.Add(3);
             dfa.AcceptingStates.Add(4);

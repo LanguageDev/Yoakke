@@ -302,22 +302,32 @@ namespace Yoakke.Automata.Sparse
             equivalenceTable.Initialize(differentiatePairs);
 
             // Fill until no change
-            equivalenceTable.Fill((s1, s2) =>
-            {
-                var onSet = (this.transitions.TransitionMap.TryGetValue(s1, out var s1on) ? s1on.Keys : Enumerable.Empty<TSymbol>())
-                    .Concat(this.transitions.TransitionMap.TryGetValue(s2, out var s2on) ? s2on.Keys : Enumerable.Empty<TSymbol>())
-                    .ToHashSet(this.SymbolComparer);
-                foreach (var on in onSet)
+            equivalenceTable.Fill(
+                (s1, s2) =>
                 {
-                    var on1has = s1on.TryGetValue(on, out var to1);
-                    var on2has = s2on.TryGetValue(on, out var to2);
-                    if ((on1has && !on2has && this.AcceptingStates.Contains(to1))
-                    || (!on1has && on2has && this.AcceptingStates.Contains(to2))) return true;
-                    if (!on1has || !on2has) continue;
-                    if (equivalenceTable.AreDifferent(to1, to2)) return true;
-                }
-                return false;
-            });
+                    var onSet = (this.transitions.TransitionMap.TryGetValue(s1, out var s1on) ? s1on.Keys : Enumerable.Empty<TSymbol>())
+                        .Concat(this.transitions.TransitionMap.TryGetValue(s2, out var s2on) ? s2on.Keys : Enumerable.Empty<TSymbol>())
+                        .ToHashSet(this.SymbolComparer);
+                    foreach (var on in onSet)
+                    {
+                        var on1has = s1on.TryGetValue(on, out var to1);
+                        var on2has = s2on.TryGetValue(on, out var to2);
+                        if ((on1has && !on2has && equivalenceTable.IsDifferentFromTrap(to1))
+                        || (!on1has && on2has && equivalenceTable.IsDifferentFromTrap(to2))) return true;
+                        if (!on1has || !on2has) continue;
+                        if (equivalenceTable.AreDifferent(to1, to2)) return true;
+                    }
+                    return false;
+                },
+                state =>
+                {
+                    if (!this.transitions.TransitionMap.TryGetValue(state, out var onSet)) return false;
+                    foreach (var (_, to) in onSet)
+                    {
+                        if (equivalenceTable.IsDifferentFromTrap(to)) return true;
+                    }
+                    return false;
+                });
 
             // Create a state mapping of old-state -> equivalent-state
             var stateMap = equivalenceTable.BuildStateMap(combiner);

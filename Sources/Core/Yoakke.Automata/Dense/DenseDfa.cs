@@ -305,31 +305,41 @@ namespace Yoakke.Automata.Dense
             equivalenceTable.Initialize(differentiatePairs);
 
             // Fill until no change
-            equivalenceTable.Fill((s1, s2) =>
-            {
-                // We need to cut up the transition symbols into sections
-                // For that we build a transition map of (interval -> destination[1..2])
-                var onMap = new DenseMap<TSymbol, TState[]>(
-                    this.SymbolIntervalComparer,
-                    Combiner<TState[]>.Create((existing, added) => existing.Concat(added).ToArray()));
-                if (this.transitions.TransitionMap.TryGetValue(s1, out var s1on))
+            equivalenceTable.Fill(
+                (s1, s2) =>
                 {
-                    foreach (var (iv, to) in s1on) onMap.Add(iv, new[] { to });
-                }
-                if (this.transitions.TransitionMap.TryGetValue(s2, out var s2on))
-                {
-                    foreach (var (iv, to) in s2on) onMap.Add(iv, new[] { to });
-                }
+                    // We need to cut up the transition symbols into sections
+                    // For that we build a transition map of (interval -> destination[1..2])
+                    var onMap = new DenseMap<TSymbol, TState[]>(
+                        this.SymbolIntervalComparer,
+                        Combiner<TState[]>.Create((existing, added) => existing.Concat(added).ToArray()));
+                    if (this.transitions.TransitionMap.TryGetValue(s1, out var s1on))
+                    {
+                        foreach (var (iv, to) in s1on) onMap.Add(iv, new[] { to });
+                    }
+                    if (this.transitions.TransitionMap.TryGetValue(s2, out var s2on))
+                    {
+                        foreach (var (iv, to) in s2on) onMap.Add(iv, new[] { to });
+                    }
 
-                foreach (var (iv, to) in onMap)
+                    foreach (var (iv, to) in onMap)
+                    {
+                        Debug.Assert(to.Length == 1 || to.Length == 2, "At least one state has to map from the specified intervals.");
+                        if (to.Length == 1 && equivalenceTable.IsDifferentFromTrap(to[0])) return true;
+                        if (to.Length == 1) continue;
+                        if (equivalenceTable.AreDifferent(to[0], to[1])) return true;
+                    }
+                    return false;
+                },
+                state =>
                 {
-                    Debug.Assert(to.Length == 1 || to.Length == 2, "At least one state has to map from the specified intervals.");
-                    if (to.Length == 1 && this.AcceptingStates.Contains(to[0])) return true;
-                    if (to.Length == 1) continue;
-                    if (equivalenceTable.AreDifferent(to[0], to[1])) return true;
-                }
-                return false;
-            });
+                    if (!this.transitions.TransitionMap.TryGetValue(state, out var onSet)) return false;
+                    foreach (var (_, to) in onSet)
+                    {
+                        if (equivalenceTable.IsDifferentFromTrap(to)) return true;
+                    }
+                    return false;
+                });
 
             // Create a state mapping of old-state -> equivalent-state
             var stateMap = equivalenceTable.BuildStateMap(combiner);

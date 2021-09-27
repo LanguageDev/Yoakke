@@ -19,6 +19,7 @@ namespace Yoakke.Automata.Internal
     {
         private readonly IReadOnlyDfa<TState, TSymbol> automaton;
         private readonly HashSet<(TState, TState)> table;
+        private readonly HashSet<TState> trapTable;
         private readonly List<TState> states;
 
         /// <summary>
@@ -30,6 +31,7 @@ namespace Yoakke.Automata.Internal
             this.automaton = automaton;
             var tupleComparer = new TupleEqualityComparer<TState, TState>(automaton.StateComparer, automaton.StateComparer);
             this.table = new(tupleComparer);
+            this.trapTable = new(automaton.StateComparer);
             this.states = automaton.States.ToList();
         }
 
@@ -40,6 +42,13 @@ namespace Yoakke.Automata.Internal
         /// <param name="s2">The second state.</param>
         /// <returns>True, if <paramref name="s1"/> and <paramref name="s2"/> are considered different.</returns>
         public bool AreDifferent(TState s1, TState s2) => this.table.Contains((s1, s2));
+
+        /// <summary>
+        /// Checks, if a state is differentiated from the trap state.
+        /// </summary>
+        /// <param name="s">The state.</param>
+        /// <returns>True, if <paramref name="s"/> and the implicit trap state are considered different.</returns>
+        public bool IsDifferentFromTrap(TState s) => this.trapTable.Contains(s);
 
         /// <summary>
         /// Plots the initial differentiated states into the equivalence table.
@@ -60,6 +69,9 @@ namespace Yoakke.Automata.Internal
                 }
             }
 
+            // Plot trap vs accepting
+            foreach (var s in this.automaton.AcceptingStates) this.PlotTrap(s);
+
             // Then we plot the custom pairs too
             foreach (var (s1, s2) in differentiatePairs) this.Plot(s1, s2);
         }
@@ -67,9 +79,11 @@ namespace Yoakke.Automata.Internal
         /// <summary>
         /// Fills the equivalence table.
         /// </summary>
-        /// <param name="different">A function, that determines if the two states should be considered different.
+        /// <param name="differentStates">A function, that determines if the two states should be considered different.
         /// It should return true on different states.</param>
-        public void Fill(Func<TState, TState, bool> different)
+        /// <param name="differentTrap">A function, that determines if a state should be considered different from the trap state.
+        /// It should return true if the state is different from the trap.</param>
+        public void Fill(Func<TState, TState, bool> differentStates, Func<TState, bool> differentTrap)
         {
             while (true)
             {
@@ -77,16 +91,23 @@ namespace Yoakke.Automata.Internal
                 for (var i = 0; i < this.states.Count; ++i)
                 {
                     var s1 = this.states[i];
+                    // Compare to other states
                     for (var j = 0; j < i; ++j)
                     {
                         var s2 = this.states[j];
 
                         if (this.AreDifferent(s1, s2)) continue;
-                        if (different(s1, s2))
+                        if (differentStates(s1, s2))
                         {
                             this.Plot(s1, s2);
                             changed = true;
                         }
+                    }
+                    // Compare to trap
+                    if (!this.IsDifferentFromTrap(s1) && differentTrap(s1))
+                    {
+                        this.PlotTrap(s1);
+                        changed = true;
                     }
                 }
                 if (!changed) break;
@@ -122,5 +143,7 @@ namespace Yoakke.Automata.Internal
             this.table.Add((s1, s2));
             this.table.Add((s2, s1));
         }
+
+        private void PlotTrap(TState s) => this.trapTable.Add(s);
     }
 }
