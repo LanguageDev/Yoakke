@@ -288,13 +288,14 @@ end_loop:
 
             // Determinize it
             var dfa = nfa.Determinize();
+            var minDfa = dfa.Minimize(StateCombiner<int>.DefaultSetCombiner, dfa.AcceptingStates);
             // Now we have to figure out which new accepting states correspond to which token
             var dfaStateToToken = new Dictionary<StateSet<int>, TokenDescription>();
             // We go in the order of each token because this ensures the precedence in which order the tokens were declared
             foreach (var token in description.Tokens)
             {
                 var nfaAccepting = tokenToNfaState[token];
-                var dfaAccepting = dfa.AcceptingStates.Where(dfaState => dfaState.Contains(nfaAccepting));
+                var dfaAccepting = minDfa.AcceptingStates.Where(dfaState => dfaState.Contains(nfaAccepting));
                 foreach (var dfaState in dfaAccepting)
                 {
                     // This check ensures the unambiguous accepting states
@@ -302,7 +303,7 @@ end_loop:
                 }
             }
 
-            return (dfa, dfaStateToToken);
+            return (minDfa, dfaStateToToken);
         }
 
         private LexerDescription? ExtractLexerDescription(INamedTypeSymbol lexerClass, INamedTypeSymbol tokenKind)
