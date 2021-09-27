@@ -6,11 +6,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Yoakke.Automata.RegExAst;
+using Yoakke.Collections.Intervals;
 
-namespace Yoakke.LexerUtils.RegEx
+namespace Yoakke.Lexer.Generator
 {
     /// <summary>
-    /// A parser that can parse regular expressions into <see cref="RegExAst"/>s.
+    /// A parser that can parse regular expressions into <see cref="IRegExNode{Char}"/>s.
     /// </summary>
     public class RegExParser
     {
@@ -24,49 +26,58 @@ namespace Yoakke.LexerUtils.RegEx
         /// </summary>
         /// <param name="source">The string to parse.</param>
         /// <returns>The resulting regex AST.</returns>
-        public RegExAst Parse(string source)
+        public IRegExNode<char> Parse(string source)
         {
             this.source = source;
             this.index = 0;
             return this.ParseAlt();
         }
 
-        private RegExAst ParseAlt()
+        private IRegExNode<char> ParseAlt()
         {
             var seq = this.ParseSeq();
-            if (this.Match('|')) return new RegExAst.Alt(seq, this.ParseAlt());
+            if (this.Match('|')) return RegEx.Or(seq, this.ParseAlt());
             return seq;
         }
 
-        private RegExAst ParseSeq()
+        private IRegExNode<char> ParseSeq()
         {
             var postfx = this.ParsePostfix();
-            if (!this.IsEnd && this.Peek() != '|' && this.Peek() != ')') return new RegExAst.Seq(postfx, this.ParseSeq());
+            if (!this.IsEnd && this.Peek() != '|' && this.Peek() != ')') return RegEx.Seq(postfx, this.ParseSeq());
             return postfx;
         }
 
-        private RegExAst ParsePostfix()
+        private IRegExNode<char> ParsePostfix()
         {
             var atom = this.ParseAtom();
-            if (this.Match('?')) return new RegExAst.Opt(atom);
-            if (this.Match('*')) return new RegExAst.Rep0(atom);
-            if (this.Match('+')) return new RegExAst.Rep1(atom);
+            if (this.Match('?')) return RegEx.Opt(atom);
+            if (this.Match('*')) return RegEx.Rep0(atom);
+            if (this.Match('+')) return RegEx.Rep1(atom);
             if (this.Match('{'))
             {
-                var atLeast = this.ParseNumber();
-                if (this.Match('}')) return new RegExAst.Quantified(atom, atLeast, atLeast);
                 if (this.Match(','))
                 {
-                    if (this.Match('}')) return new RegExAst.Quantified(atom, atLeast, null);
                     var atMost = this.ParseNumber();
                     this.Expect('}');
-                    return new RegExAst.Quantified(atom, atLeast, atMost);
+                    return RegEx.AtMost(atMost, atom);
+                }
+                else
+                {
+                    var atLeast = this.ParseNumber();
+                    if (this.Match('}')) return RegEx.Exactly(atLeast, atom);
+                    if (this.Match(','))
+                    {
+                        if (this.Match('}')) return RegEx.AtLeast(atLeast, atom);
+                        var atMost = this.ParseNumber();
+                        this.Expect('}');
+                        return RegEx.Between(atLeast, atMost, atom);
+                    }
                 }
             }
             return atom;
         }
 
-        private RegExAst ParseAtom()
+        private IRegExNode<char> ParseAtom()
         {
             if (this.Match('('))
             {
@@ -78,25 +89,25 @@ namespace Yoakke.LexerUtils.RegEx
             return this.ParseLiteral();
         }
 
-        private RegExAst ParseLiteralRange()
+        private IRegExNode<char> ParseLiteralRange()
         {
             this.Expect('[');
             var negate = this.Match('^');
-            var ranges = new List<(char From, char To)>();
+            var ranges = new List<Interval<char>>();
             ranges.Add(this.ParseSingleLiteralRange());
             while (!this.Match(']')) ranges.Add(this.ParseSingleLiteralRange());
-            return new RegExAst.LiteralRange(negate, ranges);
+            return RegEx.Range(negate, ranges);
         }
 
-        private (char From, char To) ParseSingleLiteralRange()
+        private Interval<char> ParseSingleLiteralRange()
         {
             var from = this.ParseLiteralRangeAtom();
             if (this.Match('-'))
             {
                 var to = this.ParseLiteralRangeAtom();
-                return (from, to);
+                return new Interval<char>(new LowerBound<char>.Inclusive(from), new UpperBound<char>.Inclusive(to));
             }
-            return (from, from);
+            return Interval<char>.Singleton(from);
         }
 
         private char ParseLiteralRangeAtom()
@@ -111,21 +122,21 @@ namespace Yoakke.LexerUtils.RegEx
             return this.Consume();
         }
 
-        private RegExAst ParseLiteral()
+        private IRegExNode<char> ParseLiteral()
         {
             if (this.Match('\\'))
             {
                 var ch = this.Consume();
-                if (IsSpecial(ch)) return new RegExAst.Literal(ch);
+                if (IsSpecial(ch)) return RegEx.Lit(ch);
                 var escaped = Escape(ch);
                 if (escaped == null) throw new FormatException($"invalid escape \\{ch} (position {this.index - 2})");
-                return new RegExAst.Literal(escaped.Value);
+                return RegEx.Lit(escaped.Value);
             }
             else
             {
                 var ch = this.Consume();
                 if (IsSpecial(ch)) throw new FormatException($"special character {ch} must be escaped (position {this.index - 1})");
-                return new RegExAst.Literal(ch);
+                return RegEx.Lit(ch);
             }
         }
 

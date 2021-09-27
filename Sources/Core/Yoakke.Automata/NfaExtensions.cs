@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Yoakke.Automata.Dense;
 using Yoakke.Automata.Sparse;
 
 namespace Yoakke.Automata
@@ -47,6 +48,16 @@ namespace Yoakke.Automata
         /// <param name="nfa">The NFA to determinize.</param>
         /// <returns>The constructed DFA.</returns>
         public static ISparseDfa<StateSet<TState>, TSymbol> Determinize<TState, TSymbol>(this IReadOnlySparseNfa<TState, TSymbol> nfa) =>
+            nfa.Determinize(StateCombiner<TState>.ToSetCombiner(nfa.StateComparer));
+
+        /// <summary>
+        /// Constructs an equivalent DFA from this NFA.
+        /// </summary>
+        /// <typeparam name="TState">The state type.</typeparam>
+        /// <typeparam name="TSymbol">The symbol type.</typeparam>
+        /// <param name="nfa">The NFA to determinize.</param>
+        /// <returns>The constructed DFA.</returns>
+        public static IDenseDfa<StateSet<TState>, TSymbol> Determinize<TState, TSymbol>(this IReadOnlyDenseNfa<TState, TSymbol> nfa) =>
             nfa.Determinize(StateCombiner<TState>.ToSetCombiner(nfa.StateComparer));
     }
 }

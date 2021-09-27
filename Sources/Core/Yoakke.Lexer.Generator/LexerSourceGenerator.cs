@@ -4,13 +4,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Generic.Polyfill;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Yoakke.Automata;
+using Yoakke.Automata.Dense;
 using Yoakke.Collections.Intervals;
-using Yoakke.LexerUtils.FiniteAutomata;
-using Yoakke.LexerUtils.RegEx;
 using Yoakke.SourceGenerator.Common;
 using Yoakke.SourceGenerator.Common.RoslynExtensions;
 
@@ -106,16 +107,23 @@ namespace Yoakke.Lexer.Generator
             var (dfa, dfaStateToToken) = dfaResult.Value;
 
             // Allocate unique numbers for each DFA state as we have the hierarchical numbers from determinization
-            var dfaStateIdents = new Dictionary<State, int>();
+            var dfaStateIdents = new Dictionary<StateSet<int>, int>();
             foreach (var state in dfa.States) dfaStateIdents.Add(state, dfaStateIdents.Count);
+
+            // Group the transitions by source states
+            var transitionsByState = dfa.Transitions
+                .GroupBy(t => t.Source)
+                .ToDictionary(group => group.Key, group => group.ToList());
+            // We add blanks to the states not present
+            foreach (var state in dfa.States.Except(transitionsByState.Keys)) transitionsByState.Add(state, new());
 
             // For each state we need to build the transition table
             var transitionTable = new StringBuilder();
             transitionTable.AppendLine("switch (currentState) {");
-            foreach (var state in dfa.States)
+            foreach (var (state, transitions) in transitionsByState)
             {
                 transitionTable.AppendLine($"case {dfaStateIdents[state]}:");
-                if (!dfa.TryGetTransitionsFrom(state, out var transitions))
+                if (transitions.Count == 0)
                 {
                     // There's no way to continue from here
                     transitionTable.AppendLine("goto end_loop;");
@@ -123,10 +131,8 @@ namespace Yoakke.Lexer.Generator
                 }
                 // For the current state we need transitions to a new state based on the current character
                 transitionTable.AppendLine("switch (currentChar) {");
-                foreach (var kv in transitions)
+                foreach (var (_, interval, destState) in transitions)
                 {
-                    var interval = kv.Key;
-                    var destState = kv.Value;
                     var (lower, upper) = ToInclusive(interval);
 
                     // In the library it is rational to have an interval like ('a'; 'b'), but in practice
@@ -136,6 +142,7 @@ namespace Yoakke.Lexer.Generator
 
                     var matchCondition = (lower, upper) switch
                     {
+                        (char l, char h) when l == h => $"case '{Escape(l)}':",
                         (char l, char h) => $"case >= '{Escape(l)}' and <= '{Escape(h)}':",
                         (char l, null) => $"case >= '{Escape(l)}':",
                         (null, char h) => $"case <= '{Escape(h)}':",
@@ -169,7 +176,7 @@ namespace Yoakke.Lexer.Generator
             transitionTable.AppendLine($"default: throw new {TypeNames.InvalidOperationException}();");
             transitionTable.AppendLine("}");
 
-            // TODO: Consuming a single token on error might not be the best strategy
+            // TODO: Consuming a single character on error might not be the best strategy
             // Also we might want to report if there was a token type that was being matched, while the error occurred
 
             var ctors = string.Empty;
@@ -209,7 +216,7 @@ begin:
             return this.{sourceField}.ConsumeToken({enumName}.{description.EndSymbol!.Name}, 0);
         }}
 
-        var currentState = {dfaStateIdents[dfa.InitalState]};
+        var currentState = {dfaStateIdents[dfa.InitialState]};
         var currentOffset = 0;
 
         {enumName}? lastTokenType = null;
@@ -242,13 +249,18 @@ end_loop:
 ";
         }
 
-        private (DenseDfa<char> Dfa, Dictionary<State, TokenDescription> StateToToken)? BuildDfa(LexerDescription description)
+        private (IDenseDfa<StateSet<int>, char> Dfa, Dictionary<StateSet<int>, TokenDescription> StateToToken)?
+            BuildDfa(LexerDescription description)
         {
+            var stateCount = 0;
+            int MakeState() => stateCount++;
+
             // Store which token corresponds to which end state
-            var tokenToNfaState = new Dictionary<TokenDescription, State>();
+            var tokenToNfaState = new Dictionary<TokenDescription, int>();
             // Construct the NFA from the regexes
-            var nfa = new DenseNfa<char>();
-            nfa.InitalState = nfa.NewState();
+            var nfa = new DenseNfa<int, char>();
+            var initialState = MakeState();
+            nfa.InitialStates.Add(initialState);
             var regexParser = new RegExParser();
             foreach (var token in description.Tokens)
             {
@@ -259,9 +271,9 @@ end_loop:
                     // Desugar it
                     regex = regex.Desugar();
                     // Construct it into the NFA
-                    var (start, end) = regex.ThompsonConstruct(nfa);
+                    var (start, end) = regex.ThompsonsConstruct(nfa, MakeState);
                     // Wire the initial state to the start of the construct
-                    nfa.AddTransition(nfa.InitalState, Epsilon.Instance, start);
+                    nfa.AddEpsilonTransition(initialState, start);
                     // Mark the state as accepting
                     nfa.AcceptingStates.Add(end);
                     // Save the final state as a state that accepts this token
@@ -277,15 +289,15 @@ end_loop:
             // Determinize it
             var dfa = nfa.Determinize();
             // Now we have to figure out which new accepting states correspond to which token
-            var dfaStateToToken = new Dictionary<State, TokenDescription>();
+            var dfaStateToToken = new Dictionary<StateSet<int>, TokenDescription>();
             // We go in the order of each token because this ensures the precedence in which order the tokens were declared
             foreach (var token in description.Tokens)
             {
                 var nfaAccepting = tokenToNfaState[token];
-                var dfaAccepting = dfa.AcceptingStates.Where(dfaState => nfaAccepting.IsSubstateOf(dfaState));
+                var dfaAccepting = dfa.AcceptingStates.Where(dfaState => dfaState.Contains(nfaAccepting));
                 foreach (var dfaState in dfaAccepting)
                 {
-                    // This check ensures the unambiuous accepting states
+                    // This check ensures the unambiguous accepting states
                     if (!dfaStateToToken.ContainsKey(dfaState)) dfaStateToToken.Add(dfaState, token);
                 }
             }

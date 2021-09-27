@@ -3,10 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.LexerUtils", "Core\Yoakke.LexerUtils\Yoakke.LexerUtils.csproj", "{4896B9FB-A0F2-4886-850C-4943BC374EAF}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.LexerUtils.Tests", "Tests\Yoakke.LexerUtils.Tests\Yoakke.LexerUtils.Tests.csproj", "{8251D600-353B-4CDA-853E-51ABCAF94735}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lexer", "Core\Yoakke.Lexer\Yoakke.Lexer.csproj", "{36D85E41-4CB1-4198-8248-05A30082F0F2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lexer.Generator", "Core\Yoakke.Lexer.Generator\Yoakke.Lexer.Generator.csproj", "{CB252735-C1B6-4F6E-8299-A552069FDBE6}"
@@ -125,7 +121,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Automata", "Core\Yoa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Automata.Sample", "Examples\Yoakke.Automata.Sample\Yoakke.Automata.Sample.csproj", "{6E3AC657-9BDE-4C4A-AB35-27C1909C31D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yoakke.Automata.Tests", "Tests\Yoakke.Automata.Tests\Yoakke.Automata.Tests.csproj", "{CCD5F778-B722-414A-A376-B99E0734C3C7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Automata.Tests", "Tests\Yoakke.Automata.Tests\Yoakke.Automata.Tests.csproj", "{CCD5F778-B722-414A-A376-B99E0734C3C7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -133,14 +129,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{4896B9FB-A0F2-4886-850C-4943BC374EAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4896B9FB-A0F2-4886-850C-4943BC374EAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4896B9FB-A0F2-4886-850C-4943BC374EAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4896B9FB-A0F2-4886-850C-4943BC374EAF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8251D600-353B-4CDA-853E-51ABCAF94735}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8251D600-353B-4CDA-853E-51ABCAF94735}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8251D600-353B-4CDA-853E-51ABCAF94735}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8251D600-353B-4CDA-853E-51ABCAF94735}.Release|Any CPU.Build.0 = Release|Any CPU
 		{36D85E41-4CB1-4198-8248-05A30082F0F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{36D85E41-4CB1-4198-8248-05A30082F0F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{36D85E41-4CB1-4198-8248-05A30082F0F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -314,8 +302,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{4896B9FB-A0F2-4886-850C-4943BC374EAF} = {A6B22275-5966-47BB-87EE-22E0DDE44A0E}
-		{8251D600-353B-4CDA-853E-51ABCAF94735} = {A6B22275-5966-47BB-87EE-22E0DDE44A0E}
 		{36D85E41-4CB1-4198-8248-05A30082F0F2} = {A6B22275-5966-47BB-87EE-22E0DDE44A0E}
 		{CB252735-C1B6-4F6E-8299-A552069FDBE6} = {A6B22275-5966-47BB-87EE-22E0DDE44A0E}
 		{A76E877C-B326-4B66-A9CF-53515538773A} = {A6B22275-5966-47BB-87EE-22E0DDE44A0E}
