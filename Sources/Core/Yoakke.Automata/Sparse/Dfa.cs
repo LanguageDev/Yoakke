@@ -222,8 +222,8 @@ namespace Yoakke.Automata.Sparse
 
             // Transitions
             var tupleComparer = new TupleEqualityComparer<TState, TState>(this.StateComparer, this.StateComparer);
-            var transitions = this.Transitions.GroupBy(t => (t.Source, t.Destination), tupleComparer);
-            foreach (var group in transitions)
+            var transitionsByState = this.Transitions.GroupBy(t => (t.Source, t.Destination), tupleComparer);
+            foreach (var group in transitionsByState)
             {
                 var from = group.Key.Item1;
                 var to = group.Key.Item2;
