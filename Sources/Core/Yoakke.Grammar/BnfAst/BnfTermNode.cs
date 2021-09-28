@@ -17,12 +17,15 @@ namespace Yoakke.Grammar.BnfAst
         public override bool IsLeaf => true;
 
         /// <inheritdoc/>
-        public override IEnumerable<KeyValuePair<int, IBnfNode>> TraverseLeaves(bool reverse, int offset)
+        public override IEnumerable<IBnfNode> Traverse()
         {
-            yield return new(offset, this);
+            yield return this;
         }
 
         /// <inheritdoc/>
         protected override IBnfNode ReplaceChildrenByReference(IBnfNode find, IBnfNode replace) => this;
+
+        /// <inheritdoc/>
+        public override string ToString() => this.Value.ToString();
     }
 }

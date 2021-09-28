@@ -17,7 +17,10 @@ namespace Yoakke.Grammar.BnfAst
         public virtual bool IsLeaf => false;
 
         /// <inheritdoc/>
-        public abstract IEnumerable<KeyValuePair<int, IBnfNode>> TraverseLeaves(bool reverse, int offset);
+        public virtual int Precedence => int.MaxValue;
+
+        /// <inheritdoc/>
+        public abstract IEnumerable<IBnfNode> Traverse();
 
         /// <inheritdoc/>
         public IBnfNode ReplaceByReference(IBnfNode find, IBnfNode replace) => ReferenceEquals(this, find)
@@ -31,5 +34,12 @@ namespace Yoakke.Grammar.BnfAst
         /// <param name="replace">The reference to replace with.</param>
         /// <returns>A new instance, where <paramref name="find"/> is rewplaced with <paramref name="replace"/>.</returns>
         protected abstract IBnfNode ReplaceChildrenByReference(IBnfNode find, IBnfNode replace);
+
+        /// <summary>
+        /// Utility to convert a child note to a string. Wraps it in parenthesis, if the precedence requires so.
+        /// </summary>
+        /// <param name="child">The child node to convert.</param>
+        /// <returns>The child as a string.</returns>
+        protected string ChildToString(IBnfNode child) => child.Precedence < this.Precedence ? $"({child})" : child.ToString();
     }
 }

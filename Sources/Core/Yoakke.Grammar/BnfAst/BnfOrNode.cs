@@ -15,12 +15,21 @@ namespace Yoakke.Grammar.BnfAst
     public record BnfOrNode(IBnfNode First, IBnfNode Second) : BnfNodeBase
     {
         /// <inheritdoc/>
-        public override IEnumerable<KeyValuePair<int, IBnfNode>> TraverseLeaves(bool reverse, int offset) => this.First
-            .TraverseLeaves(reverse, offset)
-            .Concat(this.Second.TraverseLeaves(reverse, offset));
+        public override int Precedence => 0;
+
+        /// <inheritdoc/>
+        public override IEnumerable<IBnfNode> Traverse()
+        {
+            yield return this;
+            foreach (var node in this.First.Traverse()) yield return node;
+            foreach (var node in this.Second.Traverse()) yield return node;
+        }
 
         /// <inheritdoc/>
         protected override IBnfNode ReplaceChildrenByReference(IBnfNode find, IBnfNode replace) =>
             new BnfOrNode(this.First.ReplaceByReference(find, replace), this.Second.ReplaceByReference(find, replace));
+
+        /// <inheritdoc/>
+        public override string ToString() => $"{this.ChildToString(this.First)} | {this.ChildToString(this.Second)}";
     }
 }

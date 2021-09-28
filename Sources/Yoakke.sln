@@ -123,7 +123,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Automata.Sample", "E
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Automata.Tests", "Tests\Yoakke.Automata.Tests\Yoakke.Automata.Tests.csproj", "{CCD5F778-B722-414A-A376-B99E0734C3C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yoakke.Grammar", "Core\Yoakke.Grammar\Yoakke.Grammar.csproj", "{0D59590D-6D60-49F7-8E1D-9D47903AB54C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Grammar", "Core\Yoakke.Grammar\Yoakke.Grammar.csproj", "{0D59590D-6D60-49F7-8E1D-9D47903AB54C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yoakke.Grammar.Sample", "Examples\Yoakke.Grammar.Sample\Yoakke.Grammar.Sample.csproj", "{8935381D-0B43-4CED-990B-6760E9173606}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -303,6 +305,10 @@ Global
 		{0D59590D-6D60-49F7-8E1D-9D47903AB54C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0D59590D-6D60-49F7-8E1D-9D47903AB54C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0D59590D-6D60-49F7-8E1D-9D47903AB54C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8935381D-0B43-4CED-990B-6760E9173606}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8935381D-0B43-4CED-990B-6760E9173606}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8935381D-0B43-4CED-990B-6760E9173606}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8935381D-0B43-4CED-990B-6760E9173606}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -348,6 +354,7 @@ Global
 		{6E3AC657-9BDE-4C4A-AB35-27C1909C31D5} = {15367647-E3BC-427C-BE9A-ED9C1F5D938B}
 		{CCD5F778-B722-414A-A376-B99E0734C3C7} = {15367647-E3BC-427C-BE9A-ED9C1F5D938B}
 		{0D59590D-6D60-49F7-8E1D-9D47903AB54C} = {15367647-E3BC-427C-BE9A-ED9C1F5D938B}
+		{8935381D-0B43-4CED-990B-6760E9173606} = {15367647-E3BC-427C-BE9A-ED9C1F5D938B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1EDE8F07-AE3A-4556-AEF0-3AC518F18F92}

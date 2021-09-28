@@ -19,12 +19,15 @@ namespace Yoakke.Grammar.BnfAst
         public bool IsLeaf { get; }
 
         /// <summary>
-        /// Traverses all leaf children of this node.
+        /// The precedence of the represented operation. Used for printing.
         /// </summary>
-        /// <param name="reverse">True, if the traversal should be in reverse order.</param>
-        /// <param name="offset">The offset to start from.</param>
-        /// <returns>The sequence of the elements and their match position to be traversed.</returns>
-        public IEnumerable<KeyValuePair<int, IBnfNode>> TraverseLeaves(bool reverse, int offset);
+        public int Precedence { get; }
+
+        /// <summary>
+        /// Traverses all children of this node in a preorder manner.
+        /// </summary>
+        /// <returns>The traversed sequence of the elements.</returns>
+        public IEnumerable<IBnfNode> Traverse();
 
         /// <summary>
         /// Replaces a node by reference.

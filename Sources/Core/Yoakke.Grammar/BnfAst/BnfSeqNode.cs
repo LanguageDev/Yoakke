@@ -16,39 +16,21 @@ namespace Yoakke.Grammar.BnfAst
     public record BnfSeqNode(IBnfNode First, IBnfNode Second) : BnfNodeBase
     {
         /// <inheritdoc/>
-        public override IEnumerable<KeyValuePair<int, IBnfNode>> TraverseLeaves(bool reverse, int offset)
+        public override int Precedence => 1;
+
+        /// <inheritdoc/>
+        public override IEnumerable<IBnfNode> Traverse()
         {
-            var lastOffset = offset;
-            if (reverse)
-            {
-                foreach (var (nextOffset, node) in this.Second.TraverseLeaves(true, lastOffset))
-                {
-                    lastOffset = nextOffset;
-                    yield return new(nextOffset, node);
-                }
-                foreach (var (nextOffset, node) in this.First.TraverseLeaves(true, lastOffset + 1))
-                {
-                    lastOffset = nextOffset;
-                    yield return new(nextOffset, node);
-                }
-            }
-            else
-            {
-                foreach (var (nextOffset, node) in this.First.TraverseLeaves(false, lastOffset))
-                {
-                    lastOffset = nextOffset;
-                    yield return new(nextOffset, node);
-                }
-                foreach (var (nextOffset, node) in this.Second.TraverseLeaves(false, lastOffset + 1))
-                {
-                    lastOffset = nextOffset;
-                    yield return new(nextOffset, node);
-                }
-            }
+            yield return this;
+            foreach (var node in this.First.Traverse()) yield return node;
+            foreach (var node in this.Second.Traverse()) yield return node;
         }
 
         /// <inheritdoc/>
         protected override IBnfNode ReplaceChildrenByReference(IBnfNode find, IBnfNode replace) =>
             new BnfSeqNode(this.First.ReplaceByReference(find, replace), this.Second.ReplaceByReference(find, replace));
+
+        /// <inheritdoc/>
+        public override string ToString() => $"{this.ChildToString(this.First)} {this.ChildToString(this.Second)}";
     }
 }
