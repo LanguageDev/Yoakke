@@ -9,7 +9,7 @@ using System.Text;
 namespace Yoakke.Grammar.BnfAst
 {
     /// <summary>
-    /// Represents a transtormation
+    /// Represents a transtormation node.
     /// </summary>
     public record BnfTransformNode(IBnfNode Element, object Transformer) : BnfNodeBase
     {

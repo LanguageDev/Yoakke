@@ -69,5 +69,15 @@ namespace Yoakke.Grammar.BnfAst
         /// <param name="transformer">The transformer to use.</param>
         /// <returns>The constructed transform node.</returns>
         public static IBnfNode Transform(IBnfNode element, object transformer) => new BnfTransformNode(element, transformer);
+
+        /// <summary>
+        /// Construct a left-fold BNF node.
+        /// </summary>
+        /// <param name="first">The initial node of the fold.</param>
+        /// <param name="second">The repeated, folded node of the fold.</param>
+        /// <param name="transformer">The transformer to use.</param>
+        /// <returns>The constructed transform node.</returns>
+        public static IBnfNode Foldl(IBnfNode first, IBnfNode second, object transformer) =>
+            new BnfFoldlNode(first, second, transformer);
     }
 }
