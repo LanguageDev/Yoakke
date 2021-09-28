@@ -16,7 +16,7 @@ namespace Yoakke.Grammar.BnfAst
     public record BnfSeqNode(IBnfNode First, IBnfNode Second) : BnfNodeBase
     {
         /// <inheritdoc/>
-        public override int Precedence => 1;
+        public override int Precedence => 2;
 
         /// <inheritdoc/>
         public override IEnumerable<IBnfNode> Traverse()

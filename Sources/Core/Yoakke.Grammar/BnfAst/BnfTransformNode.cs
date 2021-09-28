@@ -14,7 +14,7 @@ namespace Yoakke.Grammar.BnfAst
     public record BnfTransformNode(IBnfNode Element, object Transformer) : BnfNodeBase
     {
         /// <inheritdoc/>
-        public override int Precedence => int.MaxValue - 1;
+        public override int Precedence => 1;
 
         /// <inheritdoc/>
         public override IEnumerable<IBnfNode> Traverse()
@@ -28,6 +28,6 @@ namespace Yoakke.Grammar.BnfAst
             new BnfTransformNode(this.Element.ReplaceByReference(find, replace), this.Transformer);
 
         /// <inheritdoc/>
-        public override string ToString() => $"{this.ChildToString(this.Element)} => {this.Transformer}";
+        public override string ToString() => $"{this.ChildToString(this.Element)} {{ {this.Transformer} }}";
     }
 }

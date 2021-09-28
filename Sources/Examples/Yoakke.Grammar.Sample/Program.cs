@@ -31,7 +31,8 @@ namespace Yoakke.Grammar.Sample
                 stk.Push(secondAlt);
             }
 
-            foreach (var alt in alternatives) Console.WriteLine(alt);
+            var r = new Rule("R", alternatives.Select(a => new RuleAlternative(a)).ToList());
+            Console.WriteLine(r);
         }
     }
 }

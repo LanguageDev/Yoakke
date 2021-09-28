@@ -12,8 +12,8 @@ namespace Yoakke.Grammar
         /// <summary>
         /// The rules in the grammar.
         /// </summary>
-        public IReadOnlyDictionary<string, GrammarRule> Rules => this.rules;
+        public IReadOnlyDictionary<string, Rule> Rules => this.rules;
 
-        private readonly Dictionary<string, GrammarRule> rules = new();
+        private readonly Dictionary<string, Rule> rules = new();
     }
 }
