@@ -79,5 +79,26 @@ namespace Yoakke.Grammar.BnfAst
         /// <returns>The constructed transform node.</returns>
         public static IBnfNode Foldl(IBnfNode first, IBnfNode second, object transformer) =>
             new BnfFoldlNode(first, second, transformer);
+
+        /// <summary>
+        /// Constructs an optional BNF node.
+        /// </summary>
+        /// <param name="element">The element to wrap as optional.</param>
+        /// <returns>The constructed optional BNF node.</returns>
+        public static IBnfNode Opt(IBnfNode element) => new BnfOptNode(element);
+
+        /// <summary>
+        /// Constructs a 0-or-more repetition BNF node.
+        /// </summary>
+        /// <param name="element">The element to wrap as repeated.</param>
+        /// <returns>The constructed repeated BNF node.</returns>
+        public static IBnfNode Rep0(IBnfNode element) => new BnfRep0Node(element);
+
+        /// <summary>
+        /// Constructs a 1-or-more repetition BNF node.
+        /// </summary>
+        /// <param name="element">The element to wrap as repeated.</param>
+        /// <returns>The constructed repeated BNF node.</returns>
+        public static IBnfNode Rep1(IBnfNode element) => new BnfRep1Node(element);
     }
 }
