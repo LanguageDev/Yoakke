@@ -100,5 +100,12 @@ namespace Yoakke.Grammar.BnfAst
         /// <param name="element">The element to wrap as repeated.</param>
         /// <returns>The constructed repeated BNF node.</returns>
         public static IBnfNode Rep1(IBnfNode element) => new BnfRep1Node(element);
+
+        /// <summary>
+        /// Constructs a grouping BNF node.
+        /// </summary>
+        /// <param name="element">The element to wrap as grouped.</param>
+        /// <returns>The constructed grouping BNF node.</returns>
+        public static IBnfNode Group(IBnfNode element) => new BnfGroupNode(element);
     }
 }
