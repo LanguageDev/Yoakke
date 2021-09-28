@@ -14,6 +14,13 @@ namespace Yoakke.Grammar.BnfAst
     public static class Bnf
     {
         /// <summary>
+        /// Constructs a terminal BNF node.
+        /// </summary>
+        /// <param name="value">The object representing the terminal.</param>
+        /// <returns>The terminal BNF nodes constructed.</returns>
+        public static IBnfNode Term(object value) => new BnfTermNode(value);
+
+        /// <summary>
         /// Constructs an alternative of BNF nodes.
         /// </summary>
         /// <param name="first">The first BNF node in the alternative.</param>

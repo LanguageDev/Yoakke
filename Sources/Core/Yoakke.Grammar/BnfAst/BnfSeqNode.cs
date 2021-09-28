@@ -26,7 +26,7 @@ namespace Yoakke.Grammar.BnfAst
                     lastOffset = nextOffset;
                     yield return new(nextOffset, node);
                 }
-                foreach (var (nextOffset, node) in this.First.TraverseLeaves(true, lastOffset))
+                foreach (var (nextOffset, node) in this.First.TraverseLeaves(true, lastOffset + 1))
                 {
                     lastOffset = nextOffset;
                     yield return new(nextOffset, node);
@@ -39,7 +39,7 @@ namespace Yoakke.Grammar.BnfAst
                     lastOffset = nextOffset;
                     yield return new(nextOffset, node);
                 }
-                foreach (var (nextOffset, node) in this.Second.TraverseLeaves(false, lastOffset))
+                foreach (var (nextOffset, node) in this.Second.TraverseLeaves(false, lastOffset + 1))
                 {
                     lastOffset = nextOffset;
                     yield return new(nextOffset, node);
