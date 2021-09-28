@@ -61,5 +61,13 @@ namespace Yoakke.Grammar.BnfAst
             foreach (var right in rest) result = new BnfSeqNode(result, right);
             return result;
         }
+
+        /// <summary>
+        /// Construct a transformer BNF node.
+        /// </summary>
+        /// <param name="element">The BNF node to transform.</param>
+        /// <param name="transformer">The transformer to use.</param>
+        /// <returns>The constructed transform node.</returns>
+        public static IBnfNode Transform(IBnfNode element, object transformer) => new BnfTransformNode(element, transformer);
     }
 }

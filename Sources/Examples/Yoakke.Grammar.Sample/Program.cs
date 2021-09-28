@@ -9,7 +9,7 @@ namespace Yoakke.Grammar.Sample
     {
         static void Main(string[] args)
         {
-            var ast = Bnf.Seq(Bnf.Or(Bnf.Term('a'), Bnf.Term('b')), Bnf.Term('w'), Bnf.Or(Bnf.Seq(Bnf.Term('x'), Bnf.Term('0')), Bnf.Term('y')), Bnf.Term('t'));
+            var ast = Bnf.Transform(Bnf.Seq(Bnf.Or(Bnf.Term('a'), Bnf.Term('b')), Bnf.Term('w'), Bnf.Or(Bnf.Seq(Bnf.Term('x'), Bnf.Term('0')), Bnf.Term('y')), Bnf.Term('t')), "Foo()");
             Console.WriteLine(ast);
             Console.WriteLine();
 
