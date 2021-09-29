@@ -9,30 +9,14 @@ namespace Yoakke.Grammar.Sample
     {
         static void Main(string[] args)
         {
+            var grammar = new Grammar();
             var ast = Bnf.Foldl(Bnf.Term('Q'), Bnf.Seq(Bnf.Or(Bnf.Term('a'), Bnf.Term('b')), Bnf.Term('w'), Bnf.Or(Bnf.Seq(Bnf.Term('x'), Bnf.Term('0')), Bnf.Term('y')), Bnf.Term('t')), "Foo()");
-            Console.WriteLine(ast);
-            Console.WriteLine();
+            grammar.Add("R", new(ast));
 
-            var alternatives = new List<IBnfNode>();
-            var stk = new Stack<IBnfNode>();
-            stk.Push(ast);
-            while (stk.TryPop(out var node))
-            {
-                var alt = node.Traverse().OfType<BnfOrNode>().FirstOrDefault();
-                if (alt is null)
-                {
-                    alternatives.Add(node);
-                    continue;
-                }
-
-                var firstAlt = node.ReplaceByReference(alt, alt.First);
-                var secondAlt = node.ReplaceByReference(alt, alt.Second);
-                stk.Push(firstAlt);
-                stk.Push(secondAlt);
-            }
-
-            var r = new Rule("R", alternatives.Select(a => new RuleAlternative(a)).ToList());
-            Console.WriteLine(r);
+            Console.WriteLine(grammar);
+            Console.WriteLine("======================");
+            grammar.SplitOrAlternatives();
+            Console.WriteLine(grammar);
         }
     }
 }

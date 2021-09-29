@@ -4,6 +4,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Generic.Polyfill;
+using System.Linq;
 using System.Text;
 using Yoakke.Grammar.BnfAst;
 
@@ -16,5 +18,29 @@ namespace Yoakke.Grammar
     {
         /// <inheritdoc/>
         public override string ToString() => this.Ast.ToString();
+
+        /// <summary>
+        /// Splits all or nodes into separate alternatives.
+        /// </summary>
+        /// <returns>The resulting sequence of alternatives, that contain no or nodes.</returns>
+        public IEnumerable<RuleAlternative> SplitOrNodes()
+        {
+            var stk = new Stack<IBnfNode>();
+            stk.Push(this.Ast);
+            while (stk.TryPop(out var node))
+            {
+                var alt = node.Traverse().OfType<BnfOrNode>().FirstOrDefault();
+                if (alt is null)
+                {
+                    yield return new(node);
+                    continue;
+                }
+
+                var firstAlt = node.ReplaceByReference(alt, alt.First);
+                var secondAlt = node.ReplaceByReference(alt, alt.Second);
+                stk.Push(firstAlt);
+                stk.Push(secondAlt);
+            }
+        }
     }
 }

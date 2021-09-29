@@ -17,5 +17,12 @@ namespace Yoakke.Grammar
     {
         /// <inheritdoc/>
         public override string ToString() => string.Join("\n", this.Alternatives.Select(alt => $"{this.Name} -> {alt}"));
+
+        /// <summary>
+        /// Splits all or nodes into separate alternatives.
+        /// </summary>
+        /// <returns>The resulting <see cref="Rule"/> that contains no more or nodes.</returns>
+        public Rule SplitOrAlternatives() =>
+            new(this.Name, this.Alternatives.SelectMany(a => a.SplitOrNodes()).ToList());
     }
 }
