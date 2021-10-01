@@ -40,7 +40,7 @@ namespace Yoakke.Grammar.Cfg
             .Concat(this.productionRules.Keys.Select(n => new Symbol.Nonterminal(n)))
             .Distinct();
 
-        private readonly Dictionary<string, List<ProductionRule>> productionRules = new();
+        private readonly Dictionary<string, HashSet<ProductionRule>> productionRules = new();
 
         /// <inheritdoc/>
         public override string ToString() => string.Join("\n", this.Productions);
@@ -60,23 +60,60 @@ namespace Yoakke.Grammar.Cfg
         }
 
         /// <summary>
-        /// Retrieves the productions associated to a name.
+        /// Retrieves the productions associated to a rule name.
         /// </summary>
         /// <param name="name">The name of the rule to get the productions for.</param>
         /// <returns>The productions belonging to the role with name <paramref name="name"/>.</returns>
-        public IEnumerable<ProductionRule> GetProductions(string name) => this.productionRules.TryGetValue(name, out var rules)
-            ? rules
-            : Enumerable.Empty<ProductionRule>();
+        public IEnumerable<ProductionRule> GetProductions(string name) => this.productionRules[name];
 
         /// <summary>
-        /// Checks, if a production can end in an empty word (epsilon).
+        /// Checks, if a given symbol derives the empty word (epsilon).
         /// </summary>
-        /// <param name="name">The rule to check.</param>
-        /// <returns>True, if the rule with <paramref name="name"/> can result in an emoty word (epsilon).</returns>
-        public bool HasEpsilonProduction(string name)
+        /// <param name="symbol">The symbol to check.</param>
+        /// <returns>True, if <paramref name="symbol"/> derives the empty word.</returns>
+        public bool DerivesEpsilon(Symbol symbol)
         {
-            if (!this.productionRules.TryGetValue(name, out var productions)) return false;
-            return productions.Any(p => p.Symbols.Count == 0);
+            var touched = new HashSet<Symbol>();
+            touched.Add(symbol);
+
+            bool DerivesEpsilonImpl(Symbol symbol)
+            {
+                // A terminal can't derive the empty word
+                if (symbol is Symbol.Terminal) return false;
+
+                var productions = this.GetProductions(((Symbol.Nonterminal)symbol).Rule);
+
+                // If any production derives the empty word, we also do
+                if (productions.Any(p => p.Symbols.Count == 0)) return true;
+
+                // We need to check, if any productions consist of nonterminals that all derive the empty word
+                foreach (var production in productions)
+                {
+                    // Terminals can't derive to the empty word
+                    if (production.Symbols.OfType<Symbol.Terminal>().Any()) continue;
+
+                    // It only consists of nonterminals
+                    var anyNew = false;
+                    foreach (var s in production.Symbols)
+                    {
+                        if (!touched.Add(s)) continue;
+                        // A nonterminal we haven't seen before
+                        anyNew = true;
+                        // If it doesn't derive epsilon, this production can't derive it
+                        if (!DerivesEpsilonImpl(s)) goto retry;
+                    }
+
+                    // We do derive epsilon!
+                    if (anyNew) return true;
+
+                    retry: ;
+                }
+
+                // Haven't found anything deriving epsilon
+                return false;
+            }
+
+            return DerivesEpsilonImpl(symbol);
         }
 
         /// <summary>
@@ -86,50 +123,53 @@ namespace Yoakke.Grammar.Cfg
         /// <returns>The first-set of <paramref name="symbol"/>.</returns>
         public FirstSet First(Symbol symbol)
         {
-            var result = new HashSet<Symbol.Terminal>();
-            var hasEpsilon = false;
-
-            if (symbol is Symbol.Nonterminal nonterm
-             && this.HasEpsilonProduction(nonterm.Rule)) hasEpsilon = true;
-
             var touched = new HashSet<Symbol>();
-            var stk = new Stack<Symbol>();
-
             touched.Add(symbol);
-            stk.Push(symbol);
 
-            while (stk.TryPop(out var top))
+            FirstSet FirstImpl(Symbol symbol)
             {
-                if (top is Symbol.Terminal term)
+                // If X is terminal, then FIRST(X) is { X }
+                if (symbol is Symbol.Terminal term) return new(symbol, false, new[] { term });
+
+                var productions = this.productionRules[((Symbol.Nonterminal)symbol).Rule];
+                var result = new HashSet<Symbol.Terminal>();
+                var hasEpsilon = false;
+
+                // If X -> ε is a prodiction, then add ε to FIRST(X)
+                if (productions.Any(p => p.Symbols.Count == 0)) hasEpsilon = true;
+
+                foreach (var production in productions)
                 {
-                    result.Add(term);
-                }
-                else
-                {
-                    nonterm = (Symbol.Nonterminal)top;
-                    foreach (var prod in this.GetProductions(nonterm.Rule))
+                    // If X is a nonterminal and X -> Y1 Y2 ... Yk is a production then place 'a' in FIRST(X) if for some i,
+                    // 'a' is in FIRST(Yi), and Y1 ... Y(i - 1) => ε
+                    var allEpsilon = true;
+                    foreach (var sym in production.Symbols)
                     {
-                        var allEpsilon = true;
-                        foreach (var sym in prod.Symbols)
+                        if (touched.Add(sym))
                         {
-                            if (sym is Symbol.Terminal t)
-                            {
-                                allEpsilon = false;
-                                result.Add(t);
-                                break;
-                            }
-                            var nt = (Symbol.Nonterminal)sym;
-                            if (touched.Add(nt)) stk.Push(nt);
-                            if (this.HasEpsilonProduction(nt.Rule)) continue;
+                            // It is a new symbol, we can ask its FIRST
+                            var first = FirstImpl(sym);
+                            foreach (var item in first.Terminals) result.Add(item);
+                            // If it contains ε, we can continue
+                            if (first.HasEmpty) continue;
+                            // Otherwise we are done with this production
                             allEpsilon = false;
                             break;
                         }
-                        hasEpsilon = hasEpsilon || allEpsilon;
+                        else if (!this.DerivesEpsilon(sym))
+                        {
+                            // We have already computed it, but we need to stop if it does not derive ε
+                            allEpsilon = false;
+                            break;
+                        }
                     }
+                    hasEpsilon = hasEpsilon || allEpsilon;
                 }
+
+                return new(symbol, hasEpsilon, result);
             }
 
-            return new(symbol, hasEpsilon, result);
+            return FirstImpl(symbol);
         }
 
         /// <summary>
