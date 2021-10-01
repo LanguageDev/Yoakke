@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Generic.Polyfill;
 using System.Linq;
 using System.Text;
 
@@ -66,5 +67,100 @@ namespace Yoakke.Grammar.Cfg
         public IEnumerable<ProductionRule> GetProductions(string name) => this.productionRules.TryGetValue(name, out var rules)
             ? rules
             : Enumerable.Empty<ProductionRule>();
+
+        /// <summary>
+        /// Checks, if a production can end in an empty word (epsilon).
+        /// </summary>
+        /// <param name="name">The rule to check.</param>
+        /// <returns>True, if the rule with <paramref name="name"/> can result in an emoty word (epsilon).</returns>
+        public bool HasEpsilonProduction(string name)
+        {
+            if (!this.productionRules.TryGetValue(name, out var productions)) return false;
+            return productions.Any(p => p.Symbols.Count == 0);
+        }
+
+        /// <summary>
+        /// Calculates the <see cref="FirstSet"/> of some symbol.
+        /// </summary>
+        /// <param name="symbol">The symbol to calculate the first-set of.</param>
+        /// <returns>The first-set of <paramref name="symbol"/>.</returns>
+        public FirstSet First(Symbol symbol)
+        {
+            var result = new HashSet<Symbol.Terminal>();
+            var hasEpsilon = false;
+
+            if (symbol is Symbol.Nonterminal nonterm
+             && this.HasEpsilonProduction(nonterm.Rule)) hasEpsilon = true;
+
+            var touched = new HashSet<Symbol>();
+            var stk = new Stack<Symbol>();
+
+            touched.Add(symbol);
+            stk.Push(symbol);
+
+            while (stk.TryPop(out var top))
+            {
+                if (top is Symbol.Terminal term)
+                {
+                    result.Add(term);
+                }
+                else
+                {
+                    nonterm = (Symbol.Nonterminal)top;
+                    foreach (var prod in this.GetProductions(nonterm.Rule))
+                    {
+                        var allEpsilon = true;
+                        foreach (var sym in prod.Symbols)
+                        {
+                            if (sym is Symbol.Terminal t)
+                            {
+                                allEpsilon = false;
+                                result.Add(t);
+                                break;
+                            }
+                            var nt = (Symbol.Nonterminal)sym;
+                            if (touched.Add(nt)) stk.Push(nt);
+                            if (this.HasEpsilonProduction(nt.Rule)) continue;
+                            allEpsilon = false;
+                            break;
+                        }
+                        hasEpsilon = hasEpsilon || allEpsilon;
+                    }
+                }
+            }
+
+            return new(symbol, hasEpsilon, result);
+        }
+
+        /// <summary>
+        /// Calculates the <see cref="FirstSet"/> of a sequence of symbols.
+        /// </summary>
+        /// <param name="symbols">The sequence of symbols to calculate the first-set of.</param>
+        /// <returns>The first-set of <paramref name="symbols"/>.</returns>
+        public FirstSet First(IEnumerable<Symbol> symbols)
+        {
+            var result = new HashSet<Symbol.Terminal>();
+            var hasEpsilon = true;
+
+            foreach (var sym in symbols)
+            {
+                if (sym is Symbol.Terminal t)
+                {
+                    hasEpsilon = false;
+                    result.Add(t);
+                    break;
+                }
+
+                var first = this.First(sym);
+                foreach (var item in first.Terminals) result.Add(item);
+                if (!first.HasEmpty)
+                {
+                    hasEpsilon = false;
+                    break;
+                }
+            }
+
+            return new(symbols.ToList(), hasEpsilon, result);
+        }
     }
 }

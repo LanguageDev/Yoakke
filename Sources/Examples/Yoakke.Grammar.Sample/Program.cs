@@ -11,12 +11,13 @@ namespace Yoakke.Grammar.Sample
         static void Main(string[] args)
         {
             var cfg = new ContextFreeGrammar();
-            cfg.StartSymbol = "S";
-            cfg.AddProduction(new("S", new[] { (Symbol)new Symbol.Nonterminal("E") }.ToValue()));
-            cfg.AddProduction(new("E", new[] { (Symbol)new Symbol.Nonterminal("E"), new Symbol.Terminal("x"), new Symbol.Nonterminal("E") }.ToValue()));
-            cfg.AddProduction(new("E", new[] { (Symbol)new Symbol.Terminal("z") }.ToValue()));
-            cfg.AddProduction(new("E", new Symbol[] { }.ToValue()));
+            cfg.StartSymbol = "E";
+            cfg.AddProduction(new("E", new[] { (Symbol)new Symbol.Nonterminal("T"), new Symbol.Nonterminal("E'") }.ToValue()));
+            cfg.AddProduction(new("E'", new[] { (Symbol)new Symbol.Nonterminal("T"), new Symbol.Nonterminal("E'") }.ToValue()));
             Console.WriteLine(cfg);
+
+            Console.WriteLine(cfg.First(new Symbol.Nonterminal("S")));
+            Console.WriteLine(cfg.First(new Symbol.Nonterminal("E")));
         }
     }
 }

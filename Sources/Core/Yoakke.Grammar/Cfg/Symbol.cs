@@ -14,6 +14,16 @@ namespace Yoakke.Grammar.Cfg
     public abstract record Symbol
     {
         /// <summary>
+        /// An end-of-input marker.
+        /// </summary>
+        public static Terminal EndOfInput { get; } = new(new EndOfInputMarker());
+
+        private class EndOfInputMarker
+        {
+            public override string ToString() => "$";
+        }
+
+        /// <summary>
         /// Represents some terminal symbol.
         /// </summary>
         public sealed record Terminal(object Value) : Symbol
