@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.Generic.Polyfill;
 using System.Linq;
 using System.Text;
+using Yoakke.Grammar.Lr;
 
 namespace Yoakke.Grammar.Cfg
 {
@@ -23,7 +24,7 @@ namespace Yoakke.Grammar.Cfg
         /// <summary>
         /// All production rules in this grammar.
         /// </summary>
-        public IEnumerable<ProductionRule> Productions => this.productionRules.Values.SelectMany(x => x);
+        public IEnumerable<Production> Productions => this.productionRules.Values.SelectMany(x => x);
 
         /// <summary>
         /// All the terminals in this grammar.
@@ -40,16 +41,16 @@ namespace Yoakke.Grammar.Cfg
             .Concat(this.productionRules.Keys.Select(n => new Symbol.Nonterminal(n)))
             .Distinct();
 
-        private readonly Dictionary<string, HashSet<ProductionRule>> productionRules = new();
+        private readonly Dictionary<string, HashSet<Production>> productionRules = new();
 
         /// <inheritdoc/>
         public override string ToString() => string.Join("\n", this.Productions);
 
         /// <summary>
-        /// Adds a <see cref="ProductionRule"/> to this grammar.
+        /// Adds a <see cref="Production"/> to this grammar.
         /// </summary>
-        /// <param name="productionRule">The <see cref="ProductionRule"/> to add.</param>
-        public void AddProduction(ProductionRule productionRule)
+        /// <param name="productionRule">The <see cref="Production"/> to add.</param>
+        public void AddProduction(Production productionRule)
         {
             if (!this.productionRules.TryGetValue(productionRule.Name, out var existingList))
             {
@@ -64,7 +65,7 @@ namespace Yoakke.Grammar.Cfg
         /// </summary>
         /// <param name="name">The name of the rule to get the productions for.</param>
         /// <returns>The productions belonging to the role with name <paramref name="name"/>.</returns>
-        public IEnumerable<ProductionRule> GetProductions(string name) => this.productionRules[name];
+        public IEnumerable<Production> GetProductions(string name) => this.productionRules[name];
 
         /// <summary>
         /// Checks, if a given symbol derives the empty word (epsilon).
@@ -260,6 +261,38 @@ namespace Yoakke.Grammar.Cfg
             }
 
             return FollowImpl(symbol);
+        }
+
+        /// <summary>
+        /// Calculates the closure of an LR item.
+        /// </summary>
+        /// <param name="item">The LR item to calculate the closure of.</param>
+        /// <returns>The closure of <paramref name="item"/>.</returns>
+        public ISet<LrItem> Closure(LrItem item) => this.Closure(new[] { item }.ToHashSet());
+
+        /// <summary>
+        /// Calculates the closure of an LR item set.
+        /// </summary>
+        /// <param name="itemSet">The LR item set to calculate the closure of.</param>
+        /// <returns>The closure of <paramref name="itemSet"/>.</returns>
+        public ISet<LrItem> Closure(ISet<LrItem> itemSet)
+        {
+            var result = itemSet.ToHashSet();
+            var stk = new Stack<LrItem>();
+            foreach (var item in itemSet) stk.Push(item);
+            while (stk.TryPop(out var item))
+            {
+                var afterCursor = item.AfterCursor;
+                if (afterCursor is not Symbol.Nonterminal nonterm) continue;
+                // It must be a nonterminal
+                var prods = this.productionRules[nonterm.Rule];
+                foreach (var prod in prods)
+                {
+                    var prodToAdd = prod.InitialLrItem;
+                    if (result.Add(prodToAdd)) stk.Push(prodToAdd);
+                }
+            }
+            return result;
         }
     }
 }

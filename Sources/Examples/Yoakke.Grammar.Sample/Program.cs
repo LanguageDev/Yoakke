@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Yoakke.Collections.Values;
 using Yoakke.Grammar.Cfg;
+using Yoakke.Grammar.Lr;
+using Action = Yoakke.Grammar.Lr.Action;
 
 namespace Yoakke.Grammar.Sample
 {
@@ -11,30 +13,58 @@ namespace Yoakke.Grammar.Sample
         static void Main(string[] args)
         {
             var cfg = ParseGrammar(@"
-E -> T E'
-E' -> + T E' | ε
-T -> F T'
-T' -> * F T' | ε
-F -> ( E ) | id
+S' -> S
+S -> E
+E -> E x E | z
 ");
-            cfg.StartSymbol = "E";
-            Console.WriteLine(cfg);
+            cfg.StartSymbol = "S'";
 
-            Console.WriteLine();
+            var table = new LrParserTable();
+            var sTick = cfg.GetProductions("S'").First();
+            var i0 = cfg.Closure(sTick.InitialLrItem);
+            var stk = new Stack<ISet<LrItem>>();
+            stk.Push(i0);
 
-            Console.WriteLine(cfg.First(new Symbol.Nonterminal("E")));
-            Console.WriteLine(cfg.First(new Symbol.Nonterminal("E'")));
-            Console.WriteLine(cfg.First(new Symbol.Nonterminal("T")));
-            Console.WriteLine(cfg.First(new Symbol.Nonterminal("T'")));
-            Console.WriteLine(cfg.First(new Symbol.Nonterminal("F")));
+            while (stk.TryPop(out var itemSet))
+            {
+                table.AllocateState(itemSet, out var state);
 
-            Console.WriteLine();
+                // Terminal advance
+                var itemsWithTerminals = itemSet
+                    .Where(prod => prod.AfterCursor is Symbol.Terminal)
+                    .GroupBy(prod => prod.AfterCursor);
+                foreach (var group in itemsWithTerminals)
+                {
+                    var term = (Symbol.Terminal)group.Key!;
+                    var nextSet = cfg.Closure(group.Select(prod => prod.Next).ToHashSet());
+                    if (table.AllocateState(nextSet, out var nextState)) stk.Push(nextSet);
+                    table.AddAction(state, term, Action.Shift.Instance);
+                    table.AddGoto(state, term, nextState);
+                }
 
-            Console.WriteLine(cfg.Follow(new Symbol.Nonterminal("E")));
-            Console.WriteLine(cfg.Follow(new Symbol.Nonterminal("E'")));
-            Console.WriteLine(cfg.Follow(new Symbol.Nonterminal("T")));
-            Console.WriteLine(cfg.Follow(new Symbol.Nonterminal("T'")));
-            Console.WriteLine(cfg.Follow(new Symbol.Nonterminal("F")));
+                // Nonterminal advance
+                var itemsWithNonterminals = itemSet
+                    .Where(prod => prod.AfterCursor is Symbol.Nonterminal)
+                    .GroupBy(prod => prod.AfterCursor);
+                foreach (var group in itemsWithNonterminals)
+                {
+                    var nonterm = (Symbol.Nonterminal)group.Key!;
+                    var nextSet = cfg.Closure(group.Select(prod => prod.Next).ToHashSet());
+                    if (table.AllocateState(nextSet, out var nextState)) stk.Push(nextSet);
+                    table.AddGoto(state, nonterm, nextState);
+                }
+
+                // Final items
+                var finalItems = itemSet.Where(prod => prod.IsFinal);
+                foreach (var item in finalItems)
+                {
+                    var reduction = new Action.Reduce(item.Production);
+                    var followSet = cfg.Follow(new Symbol.Nonterminal(item.Production.Name));
+                    foreach (var follow in followSet.Terminals) table.AddAction(state, follow, reduction);
+                }
+            }
+
+            Console.WriteLine(table);
         }
 
         static ContextFreeGrammar ParseGrammar(string text)

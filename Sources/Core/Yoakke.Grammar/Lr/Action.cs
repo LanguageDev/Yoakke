@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Yoakke.Grammar.Cfg;
 
 namespace Yoakke.Grammar.Lr
 {
@@ -18,6 +19,15 @@ namespace Yoakke.Grammar.Lr
         /// </summary>
         public sealed record Shift : Action
         {
+            /// <summary>
+            /// A singleton instance to use.
+            /// </summary>
+            public static Shift Instance { get; } = new();
+
+            private Shift()
+            {
+            }
+
             /// <inheritdoc/>
             public override string ToString() => "shift";
         }
@@ -25,10 +35,10 @@ namespace Yoakke.Grammar.Lr
         /// <summary>
         /// Represents that the stack should be reduced using some rule.
         /// </summary>
-        public sealed record Reduce : Action
+        public sealed record Reduce(Production Rule) : Action
         {
             /// <inheritdoc/>
-            public override string ToString() => "reduce";
+            public override string ToString() => $"reduce({this.Rule})";
         }
     }
 }
