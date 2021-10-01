@@ -14,9 +14,9 @@ namespace Yoakke.Grammar.Cfg
     public readonly struct FollowSet
     {
         /// <summary>
-        /// The symbol or symbols that the follow-set was calculated for.
+        /// The nonterminal symbol that the follow-set was calculated for.
         /// </summary>
-        public IReadOnlyList<Symbol> Symbols { get; }
+        public Symbol.Nonterminal Symbol { get; }
 
         /// <summary>
         /// The terminals present in the follow-set.
@@ -26,29 +26,19 @@ namespace Yoakke.Grammar.Cfg
         /// <summary>
         /// Initializes a new instance of the <see cref="FollowSet"/> struct.
         /// </summary>
-        /// <param name="symbols">The symbols that the follow-set was calculated for.</param>
-        /// <param name="terminals">The terminals present in the follow-set.</param>
-        public FollowSet(IReadOnlyList<Symbol> symbols, IReadOnlyCollection<Symbol.Terminal> terminals)
-        {
-            this.Symbols = symbols;
-            this.Terminals = terminals;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FollowSet"/> struct.
-        /// </summary>
         /// <param name="symbol">The symbol that the follow-set was calculated for.</param>
         /// <param name="terminals">The terminals present in the follow-set.</param>
-        public FollowSet(Symbol symbol, IReadOnlyCollection<Symbol.Terminal> terminals)
-            : this(new[] { symbol }, terminals)
+        public FollowSet(Symbol.Nonterminal symbol, IReadOnlyCollection<Symbol.Terminal> terminals)
         {
+            this.Symbol = symbol;
+            this.Terminals = terminals;
         }
 
         /// <inheritdoc/>
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.Append($"FOLLOW({(this.Symbols.Count == 0 ? "ε" : string.Join(" ", this.Symbols))}) = {{ ");
+            sb.Append($"FOLLOW({this.Symbol}) = {{ ");
             sb.Append(string.Join(", ", this.Terminals));
             sb.Append(" }");
             return sb.ToString();

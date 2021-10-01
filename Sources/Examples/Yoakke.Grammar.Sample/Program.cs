@@ -27,6 +27,14 @@ F -> ( E ) | id
             Console.WriteLine(cfg.First(new Symbol.Nonterminal("T")));
             Console.WriteLine(cfg.First(new Symbol.Nonterminal("T'")));
             Console.WriteLine(cfg.First(new Symbol.Nonterminal("F")));
+
+            Console.WriteLine();
+
+            Console.WriteLine(cfg.Follow(new Symbol.Nonterminal("E")));
+            Console.WriteLine(cfg.Follow(new Symbol.Nonterminal("E'")));
+            Console.WriteLine(cfg.Follow(new Symbol.Nonterminal("T")));
+            Console.WriteLine(cfg.Follow(new Symbol.Nonterminal("T'")));
+            Console.WriteLine(cfg.Follow(new Symbol.Nonterminal("F")));
         }
 
         static ContextFreeGrammar ParseGrammar(string text)

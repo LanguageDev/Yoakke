@@ -202,5 +202,64 @@ namespace Yoakke.Grammar.Cfg
 
             return new(symbols.ToList(), hasEpsilon, result);
         }
+
+        /// <summary>
+        /// Calculates the <see cref="FollowSet"/> of some nonterminal symbol.
+        /// </summary>
+        /// <param name="symbol">The nonterminal symbol to calculate the follow-set of.</param>
+        /// <returns>The follow-set of <paramref name="symbol"/>.</returns>
+        public FollowSet Follow(Symbol.Nonterminal symbol)
+        {
+            var touched = new HashSet<Symbol>();
+            touched.Add(symbol);
+
+            FollowSet FollowImpl(Symbol.Nonterminal symbol)
+            {
+                var result = new HashSet<Symbol.Terminal>();
+
+                // Place $ in FOLLOW(S), where S is the start symbol and $ is the input right endmarker
+                if (symbol.Rule == this.StartSymbol) result.Add(Symbol.EndOfInput);
+
+                foreach (var production in this.Productions)
+                {
+                    var nonterm = new Symbol.Nonterminal(production.Name);
+
+                    // If there is a production A -> aBb, then everything in FIRST(b), except for ε, is placed in FOLLOW(B)
+                    // If there is a production A -> aB, or a production A -> aBb where FIRST(b) contains e (i.e., b -> ε),
+                    // then everything in FOLLOW(A) is in FOLLOW(B)
+                    // We search for all occurrences of B in the current production
+                    var bIndices = production.Symbols
+                        .Select((sym, idx) => (Symbol: sym, Index: idx))
+                        .Where(p => p.Symbol == symbol)
+                        .Select(p => p.Index);
+                    foreach (var idx in bIndices)
+                    {
+                        if (idx < production.Symbols.Count - 1)
+                        {
+                            // A -> aBb, add FIRST(b) to FOLLOW(B)
+                            var first = this.First(production.Symbols.Skip(idx + 1));
+                            foreach (var item in first.Terminals) result.Add(item);
+
+                            if (first.HasEmpty && touched.Add(nonterm))
+                            {
+                                // A -> aBb and FIRST(b) contains ε, add FOLLOW(A) to FOLLOW(B)
+                                var follow = FollowImpl(nonterm);
+                                foreach (var item in follow.Terminals) result.Add(item);
+                            }
+                        }
+                        else if (touched.Add(nonterm))
+                        {
+                            // A -> aB, add FOLLOW(A) to FOLLOW(B)
+                            var follow = FollowImpl(nonterm);
+                            foreach (var item in follow.Terminals) result.Add(item);
+                        }
+                    }
+                }
+
+                return new(symbol, result);
+            }
+
+            return FollowImpl(symbol);
+        }
     }
 }
