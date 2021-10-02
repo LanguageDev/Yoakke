@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="$(SolutionDir)\Core\Yoakke.Grammar\Yoakke.Grammar.csproj" />
+  </ItemGroup>
+
+</Project>

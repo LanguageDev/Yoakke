@@ -13,11 +13,12 @@ namespace Yoakke.Grammar.Sample
         static void Main(string[] args)
         {
             var cfg = ParseGrammar(@"
-S' -> S
-S -> E
-E -> E x E | z
+S' -> S S 
+S  -> C C 
+C  -> c C | d
 ");
             cfg.StartSymbol = "S'";
+            Console.WriteLine(cfg);
 
             var table = new LrParserTable();
             var sTick = cfg.GetProductions("S'").First();

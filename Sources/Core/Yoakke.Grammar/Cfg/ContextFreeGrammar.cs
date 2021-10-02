@@ -30,6 +30,7 @@ namespace Yoakke.Grammar.Cfg
         /// All the terminals in this grammar.
         /// </summary>
         public IEnumerable<Symbol.Terminal> Terminals => this.Productions
+            .SelectMany(p => p.Symbols)
             .OfType<Symbol.Terminal>()
             .Distinct();
 
@@ -37,6 +38,7 @@ namespace Yoakke.Grammar.Cfg
         /// All the nonterminals in this grammar.
         /// </summary>
         public IEnumerable<Symbol.Nonterminal> Nonterminals => this.Productions
+            .SelectMany(p => p.Symbols)
             .OfType<Symbol.Nonterminal>()
             .Concat(this.productionRules.Keys.Select(n => new Symbol.Nonterminal(n)))
             .Distinct();
