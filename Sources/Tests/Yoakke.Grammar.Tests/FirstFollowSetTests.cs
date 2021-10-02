@@ -25,6 +25,7 @@ namespace Yoakke.Grammar.Tests
         public void FirstSetTests(string grammarText, string[] firstSets)
         {
             var cfg = TestUtils.ParseGrammar(grammarText);
+            cfg.StartSymbol = "E";
 
             foreach (var term in cfg.Terminals)
             {
@@ -44,12 +45,43 @@ namespace Yoakke.Grammar.Tests
             }
         }
 
+        [Theory]
+        [InlineData(@"
+            E -> T E'
+            E' -> + T E' | ε
+            T -> F T'
+            T' -> * F T' | ε
+            F -> ( E ) | id",
+        new[] {
+            "E : ), $",
+            "E' : ), $",
+            "T : +, ), $",
+            "T' : +, ), $",
+            "F : +, *, ), $",
+        })]
+        public void FollowSetTests(string grammarText, string[] followSets)
+        {
+            var cfg = TestUtils.ParseGrammar(grammarText);
+            cfg.StartSymbol = "E";
+
+            foreach (var followSetText in followSets)
+            {
+                var (rule, expectedTerms, _) = ParseSet(followSetText);
+                var followSet = cfg.Follow(new Symbol.Nonterminal(rule));
+
+                Assert.True(expectedTerms.SetEquals(followSet.Terminals));
+            }
+        }
+
         private static (string Rule, HashSet<Symbol.Terminal> Terminals, bool Epsilon) ParseSet(string text)
         {
             var parts = text.Split(':');
             var terminals = parts[1].Trim().Split(',').Select(t => t.Trim());
             var hasEpsilon = terminals.Any(t => t == "ε");
-            var termSymbols = terminals.Where(t => t != "ε").Select(t => new Symbol.Terminal(t)).ToHashSet();
+            var termSymbols = terminals
+                .Where(t => t != "ε")
+                .Select(t => t == "$" ? Symbol.EndOfInput : new Symbol.Terminal(t))
+                .ToHashSet();
             return (parts[0].Trim(), termSymbols, hasEpsilon);
         }
     }
