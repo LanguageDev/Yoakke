@@ -10,10 +10,10 @@ namespace Yoakke.Grammar.Lr
     /// <summary>
     /// A table that contains the actions and state transitions for an LR parser.
     /// </summary>
-    public sealed class LrParserTable
+    public sealed class LrParsingTable
     {
         private Dictionary<ISet<LrItem>, int> itemSets = new(SetEqualityComparer<LrItem>.Default);
-        private Dictionary<int, Dictionary<Symbol.Terminal, List<Action>>> action = new();
+        private Dictionary<int, Dictionary<Symbol.Terminal, HashSet<Action>>> action = new();
         private Dictionary<int, Dictionary<Symbol, int>> goTo = new();
 
         /// <inheritdoc/>
@@ -59,7 +59,7 @@ namespace Yoakke.Grammar.Lr
                     {
                         if (actions.Count == 1)
                         {
-                            sb.Append(actions[0]);
+                            sb.Append(actions.First());
                         }
                         else
                         {

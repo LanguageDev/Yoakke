@@ -20,7 +20,7 @@ E -> 1
             cfg.StartSymbol = "S";
             Console.WriteLine(cfg);
 
-            var table = new LrParserTable();
+            var table = new LrParsingTable();
             var sTick = cfg.GetProductions("S").First();
             var i0 = cfg.Closure(sTick.InitialLrItem);
             var stk = new Stack<ISet<LrItem>>();
