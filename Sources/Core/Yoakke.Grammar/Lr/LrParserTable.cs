@@ -44,7 +44,9 @@ namespace Yoakke.Grammar.Lr
             sb.Append("  State");
             foreach (var t in allTerminalsInAction) sb.Append($" & {t}");
             foreach (var t in allSymbolsInGoto) sb.Append($" & {t}");
-            sb.AppendLine(@" \\");
+            sb
+                .AppendLine(@" \\")
+                .AppendLine(@"  \hline");
 
             for (var i = 0; i < this.itemSets.Count; ++i)
             {

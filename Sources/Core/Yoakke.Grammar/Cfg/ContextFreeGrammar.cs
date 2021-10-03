@@ -32,6 +32,7 @@ namespace Yoakke.Grammar.Cfg
         public IEnumerable<Symbol.Terminal> Terminals => this.Productions
             .SelectMany(p => p.Symbols)
             .OfType<Symbol.Terminal>()
+            .Append(Symbol.EndOfInput)
             .Distinct();
 
         /// <summary>

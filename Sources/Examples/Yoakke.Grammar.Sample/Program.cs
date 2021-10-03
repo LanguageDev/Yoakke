@@ -13,15 +13,15 @@ namespace Yoakke.Grammar.Sample
         static void Main(string[] args)
         {
             var cfg = ParseGrammar(@"
-S' -> S S 
-S  -> C C 
-C  -> c C | d
+S -> E
+E -> 1 E
+E -> 1
 ");
-            cfg.StartSymbol = "S'";
+            cfg.StartSymbol = "S";
             Console.WriteLine(cfg);
 
             var table = new LrParserTable();
-            var sTick = cfg.GetProductions("S'").First();
+            var sTick = cfg.GetProductions("S").First();
             var i0 = cfg.Closure(sTick.InitialLrItem);
             var stk = new Stack<ISet<LrItem>>();
             stk.Push(i0);
@@ -60,8 +60,18 @@ C  -> c C | d
                 foreach (var item in finalItems)
                 {
                     var reduction = new Action.Reduce(item.Production);
-                    var followSet = cfg.Follow(new Symbol.Nonterminal(item.Production.Name));
-                    foreach (var follow in followSet.Terminals) table.AddAction(state, follow, reduction);
+                    // LR(0)
+                    if (item.Production.Name == cfg.StartSymbol)
+                    {
+                        table.AddAction(state, Symbol.EndOfInput, reduction);
+                    }
+                    else
+                    {
+                        foreach (var term in cfg.Terminals) table.AddAction(state, term, reduction);
+                    }
+                    // SLR
+                    // var followSet = cfg.Follow(new Symbol.Nonterminal(item.Production.Name));
+                    // foreach (var follow in followSet.Terminals) table.AddAction(state, follow, reduction);
                 }
             }
 
