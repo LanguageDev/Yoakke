@@ -26,7 +26,7 @@ namespace Yoakke.Grammar.Cfg
         /// <summary>
         /// The terminals present in the first-set.
         /// </summary>
-        public IReadOnlyCollection<Symbol.Terminal> Terminals { get; }
+        public IReadOnlyCollection<Terminal> Terminals { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FirstSet"/> struct.
@@ -34,7 +34,7 @@ namespace Yoakke.Grammar.Cfg
         /// <param name="symbols">The symbols that the first-set was calculated for.</param>
         /// <param name="hasEmpty">True, if the empty word (usually called epsilon) is part of this set.</param>
         /// <param name="terminals">The terminals present in the first-set.</param>
-        public FirstSet(IReadOnlyList<Symbol> symbols, bool hasEmpty, IReadOnlyCollection<Symbol.Terminal> terminals)
+        public FirstSet(IReadOnlyList<Symbol> symbols, bool hasEmpty, IReadOnlyCollection<Terminal> terminals)
         {
             this.Symbols = symbols;
             this.HasEmpty = hasEmpty;
@@ -47,7 +47,7 @@ namespace Yoakke.Grammar.Cfg
         /// <param name="symbol">The symbol that the first-set was calculated for.</param>
         /// <param name="hasEmpty">True, if the empty word (usually called epsilon) is part of this set.</param>
         /// <param name="terminals">The terminals present in the first-set.</param>
-        public FirstSet(Symbol symbol, bool hasEmpty, IReadOnlyCollection<Symbol.Terminal> terminals)
+        public FirstSet(Symbol symbol, bool hasEmpty, IReadOnlyCollection<Terminal> terminals)
             : this(new[] { symbol }, hasEmpty, terminals)
         {
         }

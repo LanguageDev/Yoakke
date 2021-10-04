@@ -13,7 +13,7 @@ namespace Yoakke.Grammar.Lr
     public sealed class LrParsingTable
     {
         private Dictionary<ISet<LrItem>, int> itemSets = new(SetEqualityComparer<LrItem>.Default);
-        private Dictionary<int, Dictionary<Symbol.Terminal, HashSet<Action>>> action = new();
+        private Dictionary<int, Dictionary<Terminal, HashSet<Action>>> action = new();
         private Dictionary<int, Dictionary<Symbol, int>> goTo = new();
 
         /// <inheritdoc/>
@@ -109,7 +109,7 @@ namespace Yoakke.Grammar.Lr
         /// <param name="state">The state to add the action to.</param>
         /// <param name="term">The terminal to add the action to.</param>
         /// <param name="action">The action to perform.</param>
-        public void AddAction(int state, Symbol.Terminal term, Action action)
+        public void AddAction(int state, Terminal term, Action action)
         {
             if (!this.action.TryGetValue(state, out var termDict))
             {

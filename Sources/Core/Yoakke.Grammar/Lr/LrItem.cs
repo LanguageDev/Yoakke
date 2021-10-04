@@ -22,27 +22,27 @@ namespace Yoakke.Grammar.Lr
         /// <summary>
         /// True, if this is a final item, meaning the cursor is at the end.
         /// </summary>
-        public bool IsFinal => this.Cursor == this.Production.Symbols.Count;
+        public bool IsFinal => this.Cursor == this.Production.Right.Count;
 
         /// <summary>
         /// The symbol after the cursor.
         /// </summary>
-        public Symbol? AfterCursor => this.IsFinal ? null : this.Production.Symbols[this.Cursor];
+        public Symbol? AfterCursor => this.IsFinal ? null : this.Production.Right[this.Cursor];
 
         /// <summary>
         /// Retrieves the next item, with the cursor advanced one.
         /// </summary>
-        public LrItem Next => new(this.Production, Math.Min(this.Cursor + 1, this.Production.Symbols.Count));
+        public LrItem Next => new(this.Production, Math.Min(this.Cursor + 1, this.Production.Right.Count));
 
         /// <inheritdoc/>
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.Append($"{this.Production.Name} ->");
-            for (var i = 0; i < this.Production.Symbols.Count; ++i)
+            sb.Append($"{this.Production.Left} ->");
+            for (var i = 0; i < this.Production.Right.Count; ++i)
             {
                 if (this.Cursor == i) sb.Append(" _");
-                sb.Append($" {this.Production.Symbols[i]}");
+                sb.Append($" {this.Production.Right[i]}");
             }
             if (this.IsFinal) sb.Append(" _");
             return sb.ToString();

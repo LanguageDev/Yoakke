@@ -16,19 +16,19 @@ namespace Yoakke.Grammar.Cfg
         /// <summary>
         /// The nonterminal symbol that the follow-set was calculated for.
         /// </summary>
-        public Symbol.Nonterminal Symbol { get; }
+        public Nonterminal Symbol { get; }
 
         /// <summary>
         /// The terminals present in the follow-set.
         /// </summary>
-        public IReadOnlyCollection<Symbol.Terminal> Terminals { get; }
+        public IReadOnlyCollection<Terminal> Terminals { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FollowSet"/> struct.
         /// </summary>
         /// <param name="symbol">The symbol that the follow-set was calculated for.</param>
         /// <param name="terminals">The terminals present in the follow-set.</param>
-        public FollowSet(Symbol.Nonterminal symbol, IReadOnlyCollection<Symbol.Terminal> terminals)
+        public FollowSet(Nonterminal symbol, IReadOnlyCollection<Terminal> terminals)
         {
             this.Symbol = symbol;
             this.Terminals = terminals;

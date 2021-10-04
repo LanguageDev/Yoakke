@@ -13,15 +13,10 @@ namespace Yoakke.Grammar.Cfg
     /// <summary>
     /// Represents a single production rule in a context-free grammar.
     /// </summary>
-    public sealed record Production(string Name, IReadOnlyValueList<Symbol> Symbols)
+    public sealed record Production(Nonterminal Left, IReadOnlyValueList<Symbol> Right)
     {
-        /// <summary>
-        /// Constructs an initial LR item for this production.
-        /// </summary>
-        public LrItem InitialLrItem => new(this, 0);
-
         /// <inheritdoc/>
         public override string ToString() =>
-            $"{this.Name} -> {(this.Symbols.Count == 0 ? "ε" : string.Join(" ", this.Symbols))}";
+            $"{this.Left} -> {(this.Right.Count == 0 ? "ε" : string.Join(" ", this.Right))}";
     }
 }

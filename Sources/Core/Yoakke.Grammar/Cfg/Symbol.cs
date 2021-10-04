@@ -22,23 +22,5 @@ namespace Yoakke.Grammar.Cfg
         {
             public override string ToString() => "$";
         }
-
-        /// <summary>
-        /// Represents some terminal symbol.
-        /// </summary>
-        public sealed record Terminal(object Value) : Symbol
-        {
-            /// <inheritdoc/>
-            public override string ToString() => this.Value.ToString();
-        }
-
-        /// <summary>
-        /// Represents some nonterminal symbol referencing a rule.
-        /// </summary>
-        public sealed record Nonterminal(string Rule) : Symbol
-        {
-            /// <inheritdoc/>
-            public override string ToString() => this.Rule;
-        }
     }
 }
