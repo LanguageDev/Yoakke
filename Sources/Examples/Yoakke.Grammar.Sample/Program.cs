@@ -17,11 +17,11 @@ S -> E
 E -> 1 E
 E -> 1
 ");
-            cfg.StartSymbol = "S";
-            Console.WriteLine(cfg);
+            Console.WriteLine(cfg.ToTex());
 
+            /*
             var table = new LrParsingTable();
-            var sTick = cfg.GetProductions("S").First();
+            var sTick = cfg[new("S")].First();
             var i0 = cfg.Closure(sTick.InitialLrItem);
             var stk = new Stack<ISet<LrItem>>();
             stk.Push(i0);
@@ -74,8 +74,9 @@ E -> 1
                     // foreach (var follow in followSet.Terminals) table.AddAction(state, follow, reduction);
                 }
             }
+            */
 
-            Console.WriteLine(table);
+            // Console.WriteLine(table);
         }
 
         static ContextFreeGrammar ParseGrammar(string text)
@@ -112,11 +113,11 @@ E -> 1
                         prodSymbols = productions
                             .Take(end)
                             .Select(t => ruleNames.Contains(t)
-                                ? (Symbol)new Symbol.Nonterminal(t)
-                                : new Symbol.Terminal(t))
+                                ? (Symbol)new Nonterminal(t)
+                                : new Terminal(t))
                             .ToList();
                     }
-                    result.AddProduction(new(productionName, prodSymbols.ToValue()));
+                    result.Productions.Add(new(new(productionName), prodSymbols.ToValue()));
                     productions.RemoveRange(0, end);
                 }
             }

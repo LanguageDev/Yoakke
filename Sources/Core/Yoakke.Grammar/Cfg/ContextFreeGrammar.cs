@@ -210,7 +210,11 @@ namespace Yoakke.Grammar.Cfg
         }
 
         /// <inheritdoc/>
-        public string ToTex() => throw new NotImplementedException();
+        public override string ToString() => string.Join("\n", this.productionRules);
+
+        /// <inheritdoc/>
+        public string ToTex() =>
+            $"\\noindent\n{string.Join(" \\\\\n", this.productionRules.Select(r => $"{r.Left} \\rightarrow {string.Join(" ", r.Right)}"))}";
 
         /// <inheritdoc/>
         public bool DerivesEmpty(Symbol symbol) => throw new NotImplementedException();
