@@ -229,7 +229,7 @@ namespace Yoakke.Grammar.Cfg
         public FollowSet Follow(Symbol symbol) => throw new NotImplementedException();
 
         /// <inheritdoc/>
-        public IEnumerable<IEnumerable<object>> GenerateSentences() => throw new NotImplementedException();
+        public IEnumerable<IEnumerable<Terminal>> GenerateSentences() => throw new NotImplementedException();
 
         private ProductionCollection GetProductionCollection(Nonterminal nonterminal)
         {

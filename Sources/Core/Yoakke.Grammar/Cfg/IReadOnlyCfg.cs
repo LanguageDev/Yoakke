@@ -80,6 +80,6 @@ namespace Yoakke.Grammar.Cfg
         /// Generates sentences that the grammar accepts.
         /// </summary>
         /// <returns>A potentially infinite sequence of sentences.</returns>
-        public IEnumerable<IEnumerable<object>> GenerateSentences();
+        public IEnumerable<IEnumerable<Terminal>> GenerateSentences();
     }
 }
