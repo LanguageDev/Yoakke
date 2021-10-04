@@ -217,7 +217,14 @@ namespace Yoakke.Grammar.Cfg
             $"\\noindent\n{string.Join(" \\\\\n", this.productionRules.Select(r => $"{r.Left} \\rightarrow {string.Join(" ", r.Right)}"))}";
 
         /// <inheritdoc/>
-        public bool DerivesEmpty(Symbol symbol) => throw new NotImplementedException();
+        public bool DerivesEmpty(Symbol symbol)
+        {
+            // Terminals can't derive the empty word
+            if (symbol is Terminal) return false;
+
+            // TODO: We could cache this later
+            return this.CalculateEmptyDerivation()[symbol];
+        }
 
         /// <inheritdoc/>
         public FirstSet First(Symbol symbol) => throw new NotImplementedException();
@@ -272,6 +279,46 @@ namespace Yoakke.Grammar.Cfg
 
             var initials = this[this.StartSymbol];
             return GenerateSentencesFrom(initials);
+        }
+
+        private Dictionary<Symbol, bool> CalculateEmptyDerivation()
+        {
+            var result = new Dictionary<Symbol, bool>();
+
+            // Terminals don't derive it
+            foreach (var term in this.Terminals) result.Add(term, false);
+
+            // Any production rule that has an empty production derives it
+            foreach (var nonterm in this.Nonterminals)
+            {
+                if (this[nonterm].Any(p => p.Count == 0)) result.Add(nonterm, true);
+            }
+
+            // For nonterminals we loop as long as there is a change
+            while (true)
+            {
+                var changed = false;
+
+                // We loop through the remaining nonterminals
+                foreach (var nonterm in this.Nonterminals.Except(result.Keys).OfType<Nonterminal>())
+                {
+                    // If any of the productions happen to all derive empty already, this one also does
+                    foreach (var prod in this[nonterm])
+                    {
+                        if (prod.All(sym => result.TryGetValue(sym, out var derives) && derives))
+                        {
+                            // All symbols in this production derive the empty word, so this nonterminal does so
+                            result.Add(nonterm, true);
+                            changed = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (!changed) break;
+            }
+
+            return result;
         }
 
         private ProductionCollection GetProductionCollection(Nonterminal nonterminal)
