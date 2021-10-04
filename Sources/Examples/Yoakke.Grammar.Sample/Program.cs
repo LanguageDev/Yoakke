@@ -14,10 +14,17 @@ namespace Yoakke.Grammar.Sample
         {
             var cfg = ParseGrammar(@"
 S -> E
-E -> 1 E
+E -> E + E
+E -> E * E
+E -> ( E )
 E -> 1
 ");
-            Console.WriteLine(cfg.ToTex());
+            // Console.WriteLine(cfg.ToTex());
+
+            foreach (var e in cfg.GenerateSentences().Take(100))
+            {
+                Console.WriteLine(string.Join(" ", e));
+            }
 
             /*
             var table = new LrParsingTable();

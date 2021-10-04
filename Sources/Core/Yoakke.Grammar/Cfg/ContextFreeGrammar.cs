@@ -229,7 +229,50 @@ namespace Yoakke.Grammar.Cfg
         public FollowSet Follow(Symbol symbol) => throw new NotImplementedException();
 
         /// <inheritdoc/>
-        public IEnumerable<IEnumerable<Terminal>> GenerateSentences() => throw new NotImplementedException();
+        public IEnumerable<IEnumerable<Terminal>> GenerateSentences()
+        {
+            IEnumerable<IEnumerable<Terminal>> GenerateSentencesFrom(IEnumerable<IReadOnlyList<Symbol>> symbolSequences)
+            {
+                // For each sequence we try each substitution
+                // If anything results in a sequence of nonterminals, we yield it, otherwise we ass it to the next iteration
+                var currentIteration = symbolSequences.ToList();
+                while (currentIteration.Count > 0)
+                {
+                    var nextIteration = new List<IReadOnlyList<Symbol>>();
+                    foreach (var symbolSequence in currentIteration)
+                    {
+                        // If this is a complete terminal sequence, yield it
+                        if (symbolSequence.All(s => s is Terminal))
+                        {
+                            yield return symbolSequence.OfType<Terminal>();
+                        }
+                        else
+                        {
+                            // Otherwise we need to add all possible substitutions to it
+                            for (var i = 0; i < symbolSequence.Count; ++i)
+                            {
+                                // Skip terminals, they are already substituted
+                                if (symbolSequence[i] is not Nonterminal nt) continue;
+
+                                // We need to look at all production rules for this terminal and substitute it
+                                var productionRules = this[nt];
+                                foreach (var rule in productionRules)
+                                {
+                                    var symbolSequenceCopy = symbolSequence.ToList();
+                                    symbolSequenceCopy.RemoveAt(i);
+                                    symbolSequenceCopy.InsertRange(i, rule);
+                                    nextIteration.Add(symbolSequenceCopy);
+                                }
+                            }
+                        }
+                    }
+                    currentIteration = nextIteration;
+                }
+            }
+
+            var initials = this[this.StartSymbol];
+            return GenerateSentencesFrom(initials);
+        }
 
         private ProductionCollection GetProductionCollection(Nonterminal nonterminal)
         {
