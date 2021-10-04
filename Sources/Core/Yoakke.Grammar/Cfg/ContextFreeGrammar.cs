@@ -231,14 +231,14 @@ namespace Yoakke.Grammar.Cfg
         /// <inheritdoc/>
         public IEnumerable<IEnumerable<Terminal>> GenerateSentences()
         {
-            IEnumerable<IEnumerable<Terminal>> GenerateSentencesFrom(IEnumerable<IReadOnlyList<Symbol>> symbolSequences)
+            IEnumerable<IEnumerable<Terminal>> GenerateSentencesFrom(IEnumerable<IReadOnlyValueList<Symbol>> symbolSequences)
             {
                 // For each sequence we try each substitution
                 // If anything results in a sequence of nonterminals, we yield it, otherwise we ass it to the next iteration
-                var currentIteration = symbolSequences.ToList();
+                var currentIteration = symbolSequences.ToHashSet();
                 while (currentIteration.Count > 0)
                 {
-                    var nextIteration = new List<IReadOnlyList<Symbol>>();
+                    var nextIteration = new HashSet<IReadOnlyValueList<Symbol>>();
                     foreach (var symbolSequence in currentIteration)
                     {
                         // If this is a complete terminal sequence, yield it
@@ -261,7 +261,7 @@ namespace Yoakke.Grammar.Cfg
                                     var symbolSequenceCopy = symbolSequence.ToList();
                                     symbolSequenceCopy.RemoveAt(i);
                                     symbolSequenceCopy.InsertRange(i, rule);
-                                    nextIteration.Add(symbolSequenceCopy);
+                                    nextIteration.Add(symbolSequenceCopy.ToValue());
                                 }
                             }
                         }
