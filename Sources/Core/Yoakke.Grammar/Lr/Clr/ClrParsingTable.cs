@@ -79,18 +79,12 @@ namespace Yoakke.Grammar.Lr.Clr
 
         private IEnumerable<ClrItem> GetClrClosureItems(ClrItem item, Production prod)
         {
-            var firstSet = this.Grammar.First(item.Production.Right.Skip(item.Cursor + 1));
-            if (firstSet.Terminals.Count == 0 && firstSet.HasEmpty && item.Lookahead.Equals(Terminal.EndOfInput))
-            {
-                yield return new(prod, 0, Terminal.EndOfInput);
-            }
-            else
-            {
-                foreach (var term in firstSet.Terminals)
-                {
-                    yield return new(prod, 0, term);
-                }
-            }
+            // Construct the sequence consisting of everything after the nonterminal plus the lookahead
+            var after = item.Production.Right.Skip(item.Cursor + 1).Append(item.Lookahead);
+            // Compute the first-set
+            var firstSet = this.Grammar.First(after);
+            // Yield returns
+            foreach (var term in firstSet.Terminals) yield return new(prod, 0, term);
         }
     }
 }
