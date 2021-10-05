@@ -255,7 +255,11 @@ namespace Yoakke.Grammar.Cfg
         }
 
         /// <inheritdoc/>
-        public FollowSet Follow(Nonterminal nonterminal) => throw new NotImplementedException();
+        public FollowSet Follow(Nonterminal nonterminal)
+        {
+            // TODO: We should cache this later
+            return this.CalculateFollowSets()[nonterminal];
+        }
 
         /// <inheritdoc/>
         public IEnumerable<IEnumerable<Terminal>> GenerateSentences()
@@ -390,6 +394,54 @@ namespace Yoakke.Grammar.Cfg
             }
 
             return result.ToDictionary(kv => kv.Key, kv => new FirstSet(kv.Key, kv.Value.Empty, kv.Value.Terminals));
+        }
+
+        private Dictionary<Nonterminal, FollowSet> CalculateFollowSets()
+        {
+            var result = new Dictionary<Nonterminal, HashSet<Terminal>>();
+
+            // Initialize with an empty set
+            foreach (var nt in this.Nonterminals) result.Add(nt, new());
+
+            // Add $ to FOLLOW(S)
+            result[this.StartSymbol].Add(Symbol.EndOfInput);
+
+            // We loop while we can refine the sets
+            while (true)
+            {
+                var change = false;
+
+                // Go through each production
+                foreach (var production in this.Productions)
+                {
+                    var productionSet = result[production.Left];
+
+                    for (var i = 0; i < production.Right.Count; ++i)
+                    {
+                        // We only care about nonterminals
+                        if (production.Right[i] is not Nonterminal nt) continue;
+
+                        // Anything in FIRST(remaining) will be in FOLLOW(nt)
+                        var ntSet = result[nt];
+                        var remaining = this.First(production.Right.Skip(i + 1));
+                        foreach (var item in remaining.Terminals)
+                        {
+                            change = ntSet.Add(item) || change;
+                        }
+
+                        // If FIRST(remaining) produced the empty word,
+                        // we add everything in FOLLOW(production.Left) to FOLLOW(nt)
+                        if (remaining.HasEmpty)
+                        {
+                            foreach (var item in productionSet) change = ntSet.Add(item) || change;
+                        }
+                    }
+                }
+
+                if (!change) break;
+            }
+
+            return result.ToDictionary(kv => kv.Key, kv => new FollowSet(kv.Key, kv.Value));
         }
 
         private ProductionCollection GetProductionCollection(Nonterminal nonterminal)
