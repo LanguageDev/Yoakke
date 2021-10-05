@@ -57,7 +57,7 @@ namespace Yoakke.Grammar.Lr.Clr
         public ISet<ClrItem> Closure(IEnumerable<ClrItem> set) => TrivialImpl.Closure(
             this,
             set,
-            this.GetClrItems);
+            this.GetClrClosureItems);
 
         /// <inheritdoc/>
         public void Build() => TrivialImpl.Build(
@@ -77,7 +77,7 @@ namespace Yoakke.Grammar.Lr.Clr
                 }
             });
 
-        private IEnumerable<ClrItem> GetClrItems(ClrItem item, Production prod)
+        private IEnumerable<ClrItem> GetClrClosureItems(ClrItem item, Production prod)
         {
             var firstSet = this.Grammar.First(item.Production.Right.Skip(item.Cursor + 1));
             foreach (var term in firstSet.Terminals)
