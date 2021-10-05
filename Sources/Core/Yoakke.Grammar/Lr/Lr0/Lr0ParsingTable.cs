@@ -45,10 +45,10 @@ namespace Yoakke.Grammar.Lr.Lr0
         }
 
         /// <inheritdoc/>
-        public string ToDfaTex() => throw new NotImplementedException();
+        public string ToDfaDot() => throw new NotImplementedException();
 
         /// <inheritdoc/>
-        public string ToTableTex()
+        public string ToTableHtml()
         {
             var sb = new StringBuilder();
 

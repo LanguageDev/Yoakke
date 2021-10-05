@@ -44,19 +44,5 @@ namespace Yoakke.Grammar.Lr.Lr0
             if (this.IsFinal) sb.Append(" _");
             return sb.ToString();
         }
-
-        /// <inheritdoc/>
-        public string ToTex()
-        {
-            var sb = new StringBuilder();
-            sb.Append($"{this.Production.Left} $\\rightarrow$");
-            for (var i = 0; i < this.Production.Right.Count; ++i)
-            {
-                if (this.Cursor == i) sb.Append(" \\textbullet \\ ");
-                sb.Append($" {this.Production.Right[i]}");
-            }
-            if (this.IsFinal) sb.Append(" \\textbullet");
-            return sb.ToString();
-        }
     }
 }

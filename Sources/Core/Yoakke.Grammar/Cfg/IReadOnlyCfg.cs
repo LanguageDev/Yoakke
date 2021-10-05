@@ -42,12 +42,6 @@ namespace Yoakke.Grammar.Cfg
         public IReadOnlyCollection<IReadOnlyValueList<Symbol>> this[Nonterminal nonterminal] { get; }
 
         /// <summary>
-        /// Converts this CFG to a TeX representation.
-        /// </summary>
-        /// <returns>The TeX code describing this grammar.</returns>
-        public string ToTex();
-
-        /// <summary>
         /// Checks, if a given symbol derives the empty word.
         /// </summary>
         /// <param name="symbol">The symbol to check.</param>

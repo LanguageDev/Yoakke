@@ -43,11 +43,5 @@ namespace Yoakke.Grammar.Lr
         /// The symbol after the cursor. Null, if the cursor is at the end.
         /// </summary>
         public Symbol? AfterCursor { get; }
-
-        /// <summary>
-        /// Converts this LR item to TeX code.
-        /// </summary>
-        /// <returns>The TeX code to represents this item.</returns>
-        public string ToTex();
     }
 }

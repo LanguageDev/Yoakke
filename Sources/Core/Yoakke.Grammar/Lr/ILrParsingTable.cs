@@ -47,16 +47,16 @@ namespace Yoakke.Grammar.Lr
         public bool HasConflicts { get; }
 
         /// <summary>
-        /// Converts this table to a DFA representation TeX code.
+        /// Converts this table to a DFA representation Graphviz DOT code.
         /// </summary>
-        /// <returns>The TeX code of the DFA this table describes.</returns>
-        public string ToDfaTex();
+        /// <returns>The Graphviz DOT code of the DFA this table describes.</returns>
+        public string ToDfaDot();
 
         /// <summary>
-        /// Converts this table to TeX code.
+        /// Converts this table to HTML.
         /// </summary>
-        /// <returns>The TeX code of this table.</returns>
-        public string ToTableTex();
+        /// <returns>The HTML code of this table.</returns>
+        public string ToTableHtml();
 
         /// <summary>
         /// Calculates the closure of some LR item.

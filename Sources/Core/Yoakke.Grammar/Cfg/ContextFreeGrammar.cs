@@ -213,10 +213,6 @@ namespace Yoakke.Grammar.Cfg
         public override string ToString() => string.Join("\n", this.productionRules);
 
         /// <inheritdoc/>
-        public string ToTex() =>
-            $"\\noindent\n{string.Join(" \\\\\n", this.productionRules.Select(r => $"{r.Left} \\rightarrow {string.Join(" ", r.Right)}"))}";
-
-        /// <inheritdoc/>
         public void AugmentStartSymbol()
         {
             var oldStartSymbol = this.StartSymbol;

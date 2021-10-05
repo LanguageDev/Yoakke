@@ -21,7 +21,7 @@ L -> L , S
             cfg.AugmentStartSymbol();
             
             var table = LrParsingTable.Lr0(cfg);
-            Console.WriteLine(table.ToTableTex());
+            Console.WriteLine(table.ToTableHtml());
         }
 
         static ContextFreeGrammar ParseGrammar(string text)
