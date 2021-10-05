@@ -113,10 +113,10 @@ namespace Yoakke.Grammar.Lr
             for (var state = 0; state < table.StateCount; ++state)
             {
                 var set = stateIndexToSet[state];
-                var setText = string.Join(@"\n", set)
+                var setText = string.Join(@"\l", set)
                     .Replace(" -> ", " → ")
                     .Replace(" _", " &#8226;");
-                result.AppendLine($"  {state}[label=\"{setText}\", xlabel=<I<SUB>{state}</SUB>>]");
+                result.AppendLine($"  {state}[label=\"{setText}\\l\", xlabel=<I<SUB>{state}</SUB>>]");
             }
 
             // Transitions
@@ -140,6 +140,8 @@ namespace Yoakke.Grammar.Lr
             }
 
             result.Append('}');
+
+            result.Replace("'", "′");
 
             return result.ToString();
         }
