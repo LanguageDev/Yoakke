@@ -11,9 +11,9 @@ namespace Yoakke.Grammar.Lr
     /// <summary>
     /// Represents that the current token should be shifted.
     /// </summary>
-    public sealed record Shift(Lr0State State) : Action
+    public sealed record Shift(int State) : Action
     {
         /// <inheritdoc/>
-        public override string ToString() => $"shift({this.State.Index})";
+        public override string ToString() => $"shift({this.State})";
     }
 }
