@@ -11,16 +11,5 @@ namespace Yoakke.Grammar.Cfg
     /// <summary>
     /// Represents some symbol in the production rule of the context-free grammar.
     /// </summary>
-    public abstract record Symbol
-    {
-        /// <summary>
-        /// An end-of-input marker.
-        /// </summary>
-        public static Terminal EndOfInput { get; } = new(new EndOfInputMarker());
-
-        private class EndOfInputMarker
-        {
-            public override string ToString() => "$";
-        }
-    }
+    public abstract record Symbol;
 }

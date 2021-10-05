@@ -13,14 +13,12 @@ namespace Yoakke.Grammar.Sample
         static void Main(string[] args)
         {
             var cfg = ParseGrammar(@"
-S -> E
-E -> E + E
-E -> E * E
-E -> 1
+S -> C C
+C -> c C | d
 ");
             cfg.AugmentStartSymbol();
             
-            var table = LrParsingTable.Lr0(cfg);
+            var table = LrParsingTable.Clr(cfg);
             Console.WriteLine(table.ToHtmlTable());
             Console.WriteLine();
             Console.WriteLine();

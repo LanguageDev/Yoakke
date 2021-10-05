@@ -18,6 +18,16 @@ namespace Yoakke.Grammar.Internal
     internal static class TrivialImpl
     {
         /// <summary>
+        /// Checks if a table has any conflicts.
+        /// </summary>
+        /// <typeparam name="TItem">The LR item type.</typeparam>
+        /// <param name="table">The table to check.</param>
+        /// <returns>True, if <paramref name="table"/> contains conflicts.</returns>
+        public static bool HasConflicts<TItem>(ILrParsingTable<TItem> table)
+            where TItem : ILrItem => Enumerable.Range(0, table.StateCount)
+            .Any(state => table.Grammar.Terminals.Any(term => table.Action[state, term].Count > 1));
+
+        /// <summary>
         /// Calculates the closure for an item set.
         /// </summary>
         /// <typeparam name="TItem">The LR item type.</typeparam>

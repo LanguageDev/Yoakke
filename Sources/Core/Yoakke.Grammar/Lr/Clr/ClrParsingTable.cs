@@ -10,12 +10,12 @@ using System.Text;
 using Yoakke.Grammar.Cfg;
 using Yoakke.Grammar.Internal;
 
-namespace Yoakke.Grammar.Lr.Lr0
+namespace Yoakke.Grammar.Lr.Clr
 {
     /// <summary>
-    /// An LR(0) parsing table.
+    /// A canonical LR (aka. LR(1)) parsing table.
     /// </summary>
-    public class Lr0ParsingTable : ILrParsingTable<Lr0Item>
+    public class ClrParsingTable : ILrParsingTable<ClrItem>
     {
         /// <inheritdoc/>
         public IReadOnlyCfg Grammar { get; }
@@ -24,7 +24,7 @@ namespace Yoakke.Grammar.Lr.Lr0
         public int StateCount => this.StateAllocator.StateCount;
 
         /// <inheritdoc/>
-        public LrStateAllocator<Lr0Item> StateAllocator { get; } = new();
+        public LrStateAllocator<ClrItem> StateAllocator { get; } = new();
 
         /// <inheritdoc/>
         public LrActionTable Action { get; } = new();
@@ -36,10 +36,10 @@ namespace Yoakke.Grammar.Lr.Lr0
         public bool HasConflicts => TrivialImpl.HasConflicts(this);
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Lr0ParsingTable"/> class.
+        /// Initializes a new instance of the <see cref="ClrParsingTable"/> class.
         /// </summary>
         /// <param name="grammar">The grammar for the table.</param>
-        public Lr0ParsingTable(IReadOnlyCfg grammar)
+        public ClrParsingTable(IReadOnlyCfg grammar)
         {
             this.Grammar = grammar;
         }
@@ -51,16 +51,18 @@ namespace Yoakke.Grammar.Lr.Lr0
         public string ToHtmlTable() => LrTablePrinter.ToHtmlTable(this);
 
         /// <inheritdoc/>
-        public ISet<Lr0Item> Closure(Lr0Item item) => this.Closure(new[] { item });
+        public ISet<ClrItem> Closure(ClrItem item) => this.Closure(new[] { item });
 
         /// <inheritdoc/>
-        public ISet<Lr0Item> Closure(IEnumerable<Lr0Item> set) =>
-            TrivialImpl.Closure(this, set, (item, prod) => new[] { new Lr0Item(prod, 0) });
+        public ISet<ClrItem> Closure(IEnumerable<ClrItem> set) => TrivialImpl.Closure(
+            this,
+            set,
+            this.GetClrItems);
 
         /// <inheritdoc/>
         public void Build() => TrivialImpl.Build(
             this,
-            prod => new(prod, 0),
+            prod => new(prod, 0, Terminal.EndOfInput),
             item => item.Next,
             (state, finalItem) =>
             {
@@ -71,8 +73,17 @@ namespace Yoakke.Grammar.Lr.Lr0
                 else
                 {
                     var reduction = new Reduce(finalItem.Production);
-                    foreach (var term in this.Grammar.Terminals) this.Action[state, term].Add(reduction);
+                    this.Action[state, finalItem.Lookahead].Add(reduction);
                 }
             });
+
+        private IEnumerable<ClrItem> GetClrItems(ClrItem item, Production prod)
+        {
+            var firstSet = this.Grammar.First(item.Production.Right.Skip(item.Cursor + 1));
+            foreach (var term in firstSet.Terminals)
+            {
+                yield return new(prod, 0, term);
+            }
+        }
     }
 }

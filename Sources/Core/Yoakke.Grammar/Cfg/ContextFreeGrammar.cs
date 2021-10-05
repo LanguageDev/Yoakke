@@ -184,7 +184,7 @@ namespace Yoakke.Grammar.Cfg
             {
                 var productionsToRemove = this.productionRules.Where(p => p.Right.Contains(terminal)).ToList();
                 foreach (var p in productionsToRemove) this.productionRules.Remove(p);
-                if (terminal.Equals(Symbol.EndOfInput)) this.terminals.Add(Symbol.EndOfInput);
+                if (terminal.Equals(Terminal.EndOfInput)) this.terminals.Add(Terminal.EndOfInput);
             };
 
             this.nonterminals.Removed += (_, nonterminal) =>
@@ -201,7 +201,7 @@ namespace Yoakke.Grammar.Cfg
             {
                 var productionsToRemove = this.productionRules.Where(p => p.Right.OfType<Terminal>().Any()).ToList();
                 foreach(var p in productionsToRemove) this.productionRules.Remove(p);
-                this.terminals.Add(Symbol.EndOfInput);
+                this.terminals.Add(Terminal.EndOfInput);
             };
 
             this.nonterminals.Cleared += (_, _) =>
@@ -210,7 +210,7 @@ namespace Yoakke.Grammar.Cfg
                 this.StartSymbol = new("S");
             };
 
-            this.terminals.Add(Symbol.EndOfInput);
+            this.terminals.Add(Terminal.EndOfInput);
         }
 
         /// <inheritdoc/>
@@ -221,7 +221,7 @@ namespace Yoakke.Grammar.Cfg
         {
             var oldStartSymbol = this.StartSymbol;
             this.StartSymbol = new($"{this.StartSymbol}'");
-            this.Productions.Add(new(this.StartSymbol, new Symbol[] { oldStartSymbol }.ToValue()));
+            this.Productions.Add(new(this.StartSymbol, new Symbol[] { oldStartSymbol, Terminal.EndOfInput }.ToValue()));
         }
 
         /// <inheritdoc/>
@@ -412,7 +412,7 @@ namespace Yoakke.Grammar.Cfg
             foreach (var nt in this.Nonterminals) result.Add(nt, new());
 
             // Add $ to FOLLOW(S)
-            result[this.StartSymbol].Add(Symbol.EndOfInput);
+            result[this.StartSymbol].Add(Terminal.EndOfInput);
 
             // We loop while we can refine the sets
             while (true)

@@ -33,8 +33,7 @@ namespace Yoakke.Grammar.Lr.Slr
         public LrGotoTable Goto { get; } = new();
 
         /// <inheritdoc/>
-        public bool HasConflicts => Enumerable.Range(0, this.StateCount)
-            .Any(state => this.Grammar.Terminals.Any(term => this.Action[state, term].Count > 1));
+        public bool HasConflicts => TrivialImpl.HasConflicts(this);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SlrParsingTable"/> class.

@@ -13,6 +13,16 @@ namespace Yoakke.Grammar.Cfg
     /// </summary>
     public sealed record Terminal(object Value) : Symbol
     {
+        private class EndOfInputMarker
+        {
+            public override string ToString() => "$";
+        }
+
+        /// <summary>
+        /// An end-of-input marker.
+        /// </summary>
+        public static Terminal EndOfInput { get; } = new(new EndOfInputMarker());
+
         /// <inheritdoc/>
         public override string ToString() => this.Value.ToString();
     }
