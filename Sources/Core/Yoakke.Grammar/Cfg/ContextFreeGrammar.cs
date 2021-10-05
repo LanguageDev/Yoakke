@@ -221,7 +221,7 @@ namespace Yoakke.Grammar.Cfg
         {
             var oldStartSymbol = this.StartSymbol;
             this.StartSymbol = new($"{this.StartSymbol}'");
-            this.Productions.Add(new(this.StartSymbol, new Symbol[] { oldStartSymbol, Terminal.EndOfInput }.ToValue()));
+            this.Productions.Add(new(this.StartSymbol, new Symbol[] { oldStartSymbol }.ToValue()));
         }
 
         /// <inheritdoc/>
