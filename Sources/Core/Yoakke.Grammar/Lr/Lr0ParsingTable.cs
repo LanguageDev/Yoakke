@@ -8,11 +8,11 @@ using Yoakke.Grammar.Cfg;
 namespace Yoakke.Grammar.Lr
 {
     /// <summary>
-    /// A table that contains the actions and state transitions for an LR parser.
+    /// A table that contains the actions and state transitions for an LR 0 parser.
     /// </summary>
-    public sealed class LrParsingTable
+    public sealed class Lr0ParsingTable
     {
-        private Dictionary<ISet<Lr0Item>, int> itemSets = new(SetEqualityComparer<Lr0Item>.Default);
+        private Dictionary<ISet<Lr0Item>, Lr0State> itemSets = new(SetEqualityComparer<Lr0Item>.Default);
         private Dictionary<int, Dictionary<Terminal, HashSet<Action>>> action = new();
         private Dictionary<int, Dictionary<Symbol, int>> goTo = new();
 
@@ -95,10 +95,10 @@ namespace Yoakke.Grammar.Lr
         /// <param name="itemSet">The item set to allocate the state for.</param>
         /// <param name="idx">The allocated state index gets written here.</param>
         /// <returns>True, if the item set is unique and had no allocated state before.</returns>
-        public bool AllocateState(ISet<Lr0Item> itemSet, out int idx)
+        public bool AllocateState(ISet<Lr0Item> itemSet, out Lr0State state)
         {
-            if (this.itemSets.TryGetValue(itemSet, out idx)) return false;
-            idx = this.itemSets.Count;
+            if (this.itemSets.TryGetValue(itemSet, out state)) return false;
+            state = new(this.itemSets.Count, new(itemSet));
             this.itemSets.Add(itemSet, idx);
             return true;
         }

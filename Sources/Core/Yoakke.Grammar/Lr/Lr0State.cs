@@ -9,11 +9,14 @@ using System.Text;
 namespace Yoakke.Grammar.Lr
 {
     /// <summary>
-    /// Represents that the current token should be shifted.
+    /// Represents an LR 0 state in the DFA.
     /// </summary>
-    public sealed record Shift(Lr0State State) : Action
+    public sealed record Lr0State(int Index, Lr0ItemSet ItemSet)
     {
         /// <inheritdoc/>
-        public override string ToString() => $"shift({this.State.Index})";
+        public bool Equals(Lr0State other) => this.Index == other.Index;
+
+        /// <inheritdoc/>
+        public override int GetHashCode() => this.Index.GetHashCode();
     }
 }

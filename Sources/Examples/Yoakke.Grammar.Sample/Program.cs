@@ -19,18 +19,11 @@ E -> E * E
 E -> ( E )
 E -> 1
 ");
-            // Console.WriteLine(cfg.ToTex());
-
-            foreach (var e in cfg.GenerateSentences().Take(100))
-            {
-                Console.WriteLine(string.Join(" ", e));
-            }
-
-            /*
-            var table = new LrParsingTable();
+            
+            var table = new Lr0ParsingTable();
             var sTick = cfg[new("S")].First();
-            var i0 = cfg.Closure(sTick.InitialLrItem);
-            var stk = new Stack<ISet<LrItem>>();
+            var i0 = Lr0ItemSet.Closure(cfg, new Lr0Item(new(new("S"), sTick), 0));
+            var stk = new Stack<Lr0ItemSet>();
             stk.Push(i0);
 
             while (stk.TryPop(out var itemSet))
@@ -39,12 +32,12 @@ E -> 1
 
                 // Terminal advance
                 var itemsWithTerminals = itemSet
-                    .Where(prod => prod.AfterCursor is Symbol.Terminal)
+                    .Where(prod => prod.AfterCursor is Terminal)
                     .GroupBy(prod => prod.AfterCursor);
                 foreach (var group in itemsWithTerminals)
                 {
-                    var term = (Symbol.Terminal)group.Key!;
-                    var nextSet = cfg.Closure(group.Select(prod => prod.Next).ToHashSet());
+                    var term = (Terminal)group.Key!;
+                    var nextSet = Lr0ItemSet.Closure(cfg, group.Select(prod => prod.Next).ToList());
                     if (table.AllocateState(nextSet, out var nextState)) stk.Push(nextSet);
                     table.AddAction(state, term, Action.Shift.Instance);
                     table.AddGoto(state, term, nextState);
@@ -81,9 +74,8 @@ E -> 1
                     // foreach (var follow in followSet.Terminals) table.AddAction(state, follow, reduction);
                 }
             }
-            */
 
-            // Console.WriteLine(table);
+            Console.WriteLine(table);
         }
 
         static ContextFreeGrammar ParseGrammar(string text)

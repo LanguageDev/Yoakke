@@ -12,7 +12,5 @@ namespace Yoakke.Grammar.Lr
     /// <summary>
     /// Some action to perform for the LR parser.
     /// </summary>
-    public abstract record Action
-    {
-    }
+    public abstract record Action;
 }
