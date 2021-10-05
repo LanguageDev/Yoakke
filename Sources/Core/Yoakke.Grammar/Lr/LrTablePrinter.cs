@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Yoakke.Grammar.Lr
@@ -100,7 +101,47 @@ namespace Yoakke.Grammar.Lr
         public static string ToDotDfa<TItem>(ILrParsingTable<TItem> table)
             where TItem : ILrItem
         {
-            throw new NotImplementedException();
+            var result = new StringBuilder();
+
+            result
+                .AppendLine("digraph PDA {")
+                .AppendLine("  rankdir=LR;")
+                .AppendLine("  node [shape=rectangle, style=rounded];");
+
+            // Push out all states
+            var stateIndexToSet = table.StateAllocator.ItemSets.ToDictionary(kv => kv.Value, kv => kv.Key);
+            for (var state = 0; state < table.StateCount; ++state)
+            {
+                var set = stateIndexToSet[state];
+                var setText = string.Join(@"\n", set)
+                    .Replace(" -> ", " → ")
+                    .Replace(" _", " &#8226;");
+                result.AppendLine($"  {state}[label=\"{setText}\", xlabel=<I<SUB>{state}</SUB>>]");
+            }
+
+            // Transitions
+            for (var state = 0; state < table.StateCount; ++state)
+            {
+                // Terminals
+                foreach (var term in table.Grammar.Terminals)
+                {
+                    var toStates = table.Action[state, term]
+                        .OfType<Shift>()
+                        .Select(s => s.State);
+                    foreach (var toState in toStates) result.AppendLine($"  {state} -> {toState} [label=\"{term}\"]");
+                }
+                // Nonterminals
+                foreach (var nonterm in table.Grammar.Nonterminals)
+                {
+                    var toState = table.Goto[state, nonterm];
+                    if (toState is null) continue;
+                    result.AppendLine($"  {state} -> {toState} [label=\"{nonterm}\"]");
+                }
+            }
+
+            result.Append('}');
+
+            return result.ToString();
         }
     }
 }

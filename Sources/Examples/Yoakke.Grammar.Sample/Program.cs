@@ -22,6 +22,9 @@ L -> L , S
             
             var table = LrParsingTable.Lr0(cfg);
             Console.WriteLine(table.ToHtmlTable());
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine(table.ToDotDfa());
         }
 
         static ContextFreeGrammar ParseGrammar(string text)
