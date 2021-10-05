@@ -50,13 +50,13 @@ namespace Yoakke.Grammar.Lr
         /// Converts this table to a DFA representation Graphviz DOT code.
         /// </summary>
         /// <returns>The Graphviz DOT code of the DFA this table describes.</returns>
-        public string ToDfaDot();
+        public string ToDotDfa();
 
         /// <summary>
         /// Converts this table to HTML.
         /// </summary>
         /// <returns>The HTML code of this table.</returns>
-        public string ToTableHtml();
+        public string ToHtmlTable();
 
         /// <summary>
         /// Calculates the closure of some LR item.

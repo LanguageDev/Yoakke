@@ -184,6 +184,7 @@ namespace Yoakke.Grammar.Cfg
             {
                 var productionsToRemove = this.productionRules.Where(p => p.Right.Contains(terminal)).ToList();
                 foreach (var p in productionsToRemove) this.productionRules.Remove(p);
+                if (terminal.Equals(Symbol.EndOfInput)) this.terminals.Add(Symbol.EndOfInput);
             };
 
             this.nonterminals.Removed += (_, nonterminal) =>
@@ -200,6 +201,7 @@ namespace Yoakke.Grammar.Cfg
             {
                 var productionsToRemove = this.productionRules.Where(p => p.Right.OfType<Terminal>().Any()).ToList();
                 foreach(var p in productionsToRemove) this.productionRules.Remove(p);
+                this.terminals.Add(Symbol.EndOfInput);
             };
 
             this.nonterminals.Cleared += (_, _) =>
@@ -207,6 +209,8 @@ namespace Yoakke.Grammar.Cfg
                 this.productionRules.Clear();
                 this.StartSymbol = new("S");
             };
+
+            this.terminals.Add(Symbol.EndOfInput);
         }
 
         /// <inheritdoc/>

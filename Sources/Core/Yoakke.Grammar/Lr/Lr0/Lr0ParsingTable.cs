@@ -45,78 +45,10 @@ namespace Yoakke.Grammar.Lr.Lr0
         }
 
         /// <inheritdoc/>
-        public string ToDfaDot() => throw new NotImplementedException();
+        public string ToDotDfa() => LrTablePrinter.ToDotDfa(this);
 
         /// <inheritdoc/>
-        public string ToTableHtml()
-        {
-            var sb = new StringBuilder();
-
-            // Start of table
-            sb.Append(@"\begin{tabular}{|c|");
-            for (var i = 0; i < this.Grammar.Terminals.Count; ++i) sb.Append("|c");
-            sb.Append('|');
-            for (var i = 0; i < this.Grammar.Nonterminals.Count; ++i) sb.Append("|c");
-            sb.Append('|');
-            sb.AppendLine("}");
-
-            // Header with Action and Goto
-            sb
-                .Append("  ")
-                .Append(@$"\multicolumn{{1}}{{c}}{{}} & ")
-                .Append($@"\multicolumn{{{this.Grammar.Terminals.Count}}}{{c}}{{Action}} &")
-                .AppendLine($@"\multicolumn{{{this.Grammar.Nonterminals.Count}}}{{c}}{{Goto}} \\");
-            sb.AppendLine(@"  \hline");
-
-            // Header with state, terminals and symbols
-            sb.Append("  State");
-            foreach (var t in this.Grammar.Terminals) sb.Append($" & {t}");
-            foreach (var t in this.Grammar.Nonterminals) sb.Append($" & {t}");
-            sb
-                .AppendLine(@" \\")
-                .AppendLine(@"  \hline");
-
-            for (var i = 0; i < this.StateCount; ++i)
-            {
-                sb.AppendLine(@"  \hline");
-                sb.Append($"  {i}");
-                // Action
-                foreach (var t in this.Grammar.Terminals)
-                {
-                    sb.Append(" & ");
-                    var actions = this.Action[i, t];
-                    if (actions.Count == 1)
-                    {
-                        sb.Append(actions.First());
-                    }
-                    else
-                    {
-                        sb.Append(@"\begin{tabular}{c} ");
-                        sb.Append(string.Join(@" \\ ", actions));
-                        sb.Append(@" \end{tabular}");
-                    }
-                }
-                // Goto
-                foreach (var t in this.Grammar.Nonterminals)
-                {
-                    sb.Append(" & ");
-                    var to = this.Goto[i, t];
-                    if (to is not null) sb.Append(to.Value);
-                }
-                sb.AppendLine(@" \\");
-            }
-
-            // End of table
-            sb.AppendLine(@"  \hline");
-            sb.Append(@"\end{tabular}");
-
-            // Some escapes
-            sb
-                .Replace("$", @"\$")
-                .Replace("->", @"$\rightarrow$");
-
-            return sb.ToString();
-        }
+        public string ToHtmlTable() => LrTablePrinter.ToHtmlTable(this);
 
         /// <inheritdoc/>
         public ISet<Lr0Item> Closure(Lr0Item item) => this.Closure(new[] { item });
