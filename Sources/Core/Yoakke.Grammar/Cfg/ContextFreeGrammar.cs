@@ -233,7 +233,7 @@ namespace Yoakke.Grammar.Cfg
         public FirstSet First(IEnumerable<Symbol> symbolSequence) => throw new NotImplementedException();
 
         /// <inheritdoc/>
-        public FollowSet Follow(Symbol symbol) => throw new NotImplementedException();
+        public FollowSet Follow(Nonterminal nonterminal) => throw new NotImplementedException();
 
         /// <inheritdoc/>
         public IEnumerable<IEnumerable<Terminal>> GenerateSentences()

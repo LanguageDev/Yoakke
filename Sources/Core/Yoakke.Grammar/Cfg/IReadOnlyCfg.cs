@@ -70,11 +70,11 @@ namespace Yoakke.Grammar.Cfg
         public FirstSet First(IEnumerable<Symbol> symbolSequence);
 
         /// <summary>
-        /// Gets the follow-set of <paramref name="symbol"/>, which is all the terminals that can follow the given symbol.
+        /// Gets the follow-set of <paramref name="nonterminal"/>, which is all the terminals that can follow the given symbol.
         /// </summary>
-        /// <param name="symbol">The symbol to calculate the follow-set for.</param>
-        /// <returns>The <see cref="FollowSet"/> of <paramref name="symbol"/>.</returns>
-        public FollowSet Follow(Symbol symbol);
+        /// <param name="nonterminal">The nonterminal symbol to calculate the follow-set for.</param>
+        /// <returns>The <see cref="FollowSet"/> of <paramref name="nonterminal"/>.</returns>
+        public FollowSet Follow(Nonterminal nonterminal);
 
         /// <summary>
         /// Generates sentences that the grammar accepts.
