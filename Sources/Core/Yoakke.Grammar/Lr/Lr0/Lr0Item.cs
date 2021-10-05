@@ -26,7 +26,37 @@ namespace Yoakke.Grammar.Lr.Lr0
         /// <inheritdoc/>
         public Symbol? AfterCursor => this.IsFinal ? null : this.Production.Right[this.Cursor];
 
+        /// <summary>
+        /// Retrieves the next item, with the cursor advanced one.
+        /// </summary>
+        public Lr0Item Next => new(this.Production, Math.Min(this.Cursor + 1, this.Production.Right.Count));
+
         /// <inheritdoc/>
-        public string ToTex() => throw new NotImplementedException();
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.Append($"{this.Production.Left} ->");
+            for (var i = 0; i < this.Production.Right.Count; ++i)
+            {
+                if (this.Cursor == i) sb.Append(" _");
+                sb.Append($" {this.Production.Right[i]}");
+            }
+            if (this.IsFinal) sb.Append(" _");
+            return sb.ToString();
+        }
+
+        /// <inheritdoc/>
+        public string ToTex()
+        {
+            var sb = new StringBuilder();
+            sb.Append($"{this.Production.Left} \\rightarrow");
+            for (var i = 0; i < this.Production.Right.Count; ++i)
+            {
+                if (this.Cursor == i) sb.Append(" \\textbullet \\ ");
+                sb.Append($" {this.Production.Right[i]}");
+            }
+            if (this.IsFinal) sb.Append(" \\textbullet");
+            return sb.ToString();
+        }
     }
 }

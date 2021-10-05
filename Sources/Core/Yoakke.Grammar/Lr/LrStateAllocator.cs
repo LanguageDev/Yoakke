@@ -19,7 +19,7 @@ namespace Yoakke.Grammar.Lr
         /// <summary>
         /// The number of states allocated.
         /// </summary>
-        public int StateCount { get; }
+        public int StateCount => this.itemSets.Count;
 
         private readonly Dictionary<ISet<TItem>, int> itemSets = new(SetEqualityComparer<TItem>.Default);
 
@@ -29,7 +29,7 @@ namespace Yoakke.Grammar.Lr
         /// <param name="itemSet">The item set to allocate a state for.</param>
         /// <param name="state">The state gets written here, that corresponds to <paramref name="itemSet"/>.</param>
         /// <returns>True, if the state was new, false otherwise.</returns>
-        public bool AllocateState(ISet<TItem> itemSet, out int state)
+        public bool Allocate(ISet<TItem> itemSet, out int state)
         {
             if (this.itemSets.TryGetValue(itemSet, out state)) return false;
             state = this.itemSets.Count;

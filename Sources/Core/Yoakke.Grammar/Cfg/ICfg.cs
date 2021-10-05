@@ -40,5 +40,10 @@ namespace Yoakke.Grammar.Cfg
         /// <param name="nonterminal">The nonterminal to get the productions for.</param>
         /// <returns>The productions associated with <paramref name="nonterminal"/>.</returns>
         public new ICollection<IReadOnlyValueList<Symbol>> this[Nonterminal nonterminal] { get; }
+
+        /// <summary>
+        /// Creates a new start symbol, that is guaranteed to be not recursive.
+        /// </summary>
+        public void AugmentStartSymbol();
     }
 }

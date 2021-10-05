@@ -217,6 +217,14 @@ namespace Yoakke.Grammar.Cfg
             $"\\noindent\n{string.Join(" \\\\\n", this.productionRules.Select(r => $"{r.Left} \\rightarrow {string.Join(" ", r.Right)}"))}";
 
         /// <inheritdoc/>
+        public void AugmentStartSymbol()
+        {
+            var oldStartSymbol = this.StartSymbol;
+            this.StartSymbol = new($"{this.StartSymbol}'");
+            this.Productions.Add(new(this.StartSymbol, new Symbol[] { oldStartSymbol }.ToValue()));
+        }
+
+        /// <inheritdoc/>
         public bool DerivesEmpty(Symbol symbol)
         {
             // Terminals can't derive the empty word

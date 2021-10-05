@@ -42,6 +42,11 @@ namespace Yoakke.Grammar.Lr
         public LrGotoTable Goto { get; }
 
         /// <summary>
+        /// True, if the table has conflicts.
+        /// </summary>
+        public bool HasConflicts { get; }
+
+        /// <summary>
         /// Converts this table to a DFA representation TeX code.
         /// </summary>
         /// <returns>The TeX code of the DFA this table describes.</returns>
@@ -52,11 +57,6 @@ namespace Yoakke.Grammar.Lr
         /// </summary>
         /// <returns>The TeX code of this table.</returns>
         public string ToTableTex();
-
-        /// <summary>
-        /// Builds out the table from <see cref="Grammar"/>.
-        /// </summary>
-        public void Build();
 
         /// <summary>
         /// Calculates the closure of some LR item.
@@ -71,5 +71,10 @@ namespace Yoakke.Grammar.Lr
         /// <param name="set">The item set to calculate the closure of.</param>
         /// <returns>The LR closure of <paramref name="set"/>.</returns>
         public ISet<TItem> Closure(IEnumerable<TItem> set);
+
+        /// <summary>
+        /// Builds out the table from <see cref="Grammar"/>.
+        /// </summary>
+        public void Build();
     }
 }

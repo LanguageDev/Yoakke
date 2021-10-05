@@ -23,9 +23,12 @@ namespace Yoakke.Grammar.Lr
         /// <param name="nonterminal">The nontemrinal.</param>
         /// <returns>The destination state from state <paramref name="from"/> on nonterminal
         /// <paramref name="nonterminal"/>.</returns>
-        public int this[int from, Nonterminal nonterminal]
+        public int? this[int from, Nonterminal nonterminal]
         {
-            get => this.underlying[from][nonterminal];
+            get => this.underlying.TryGetValue(from, out var onMap)
+                && onMap.TryGetValue(nonterminal, out var to)
+                    ? to
+                    : null;
             set
             {
                 if (!this.underlying.TryGetValue(from, out var on))
@@ -33,7 +36,8 @@ namespace Yoakke.Grammar.Lr
                     on = new();
                     this.underlying.Add(from, on);
                 }
-                on.Add(nonterminal, value);
+                if (value is null) on.Remove(nonterminal);
+                else on[nonterminal] = value.Value;
             }
         }
     }

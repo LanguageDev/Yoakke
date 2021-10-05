@@ -20,62 +20,8 @@ E -> ( E )
 E -> 1
 ");
             
-            var table = new Lr0ParsingTable();
-            var sTick = cfg[new("S")].First();
-            var i0 = Lr0ItemSet.Closure(cfg, new Lr0Item(new(new("S"), sTick), 0));
-            var stk = new Stack<ISet<Lr0Item>>();
-            stk.Push(i0);
-
-            while (stk.TryPop(out var itemSet))
-            {
-                table.AllocateState(itemSet, out var state);
-
-                // Terminal advance
-                var itemsWithTerminals = itemSet
-                    .Where(prod => prod.AfterCursor is Terminal)
-                    .GroupBy(prod => prod.AfterCursor);
-                foreach (var group in itemsWithTerminals)
-                {
-                    var term = (Terminal)group.Key!;
-                    var nextSet = Lr0ItemSet.Closure(cfg, group.Select(prod => prod.Next).ToList());
-                    if (table.AllocateState(nextSet, out var nextState)) stk.Push(nextSet);
-                    table.AddAction(state, term, new Shift(nextState));
-                    table.AddGoto(state, term, nextState);
-                }
-
-                // Nonterminal advance
-                var itemsWithNonterminals = itemSet
-                    .Where(prod => prod.AfterCursor is Nonterminal)
-                    .GroupBy(prod => prod.AfterCursor);
-                foreach (var group in itemsWithNonterminals)
-                {
-                    var nonterm = (Nonterminal)group.Key!;
-                    var nextSet = Lr0ItemSet.Closure(cfg, group.Select(prod => prod.Next));
-                    if (table.AllocateState(nextSet, out var nextState)) stk.Push(nextSet);
-                    table.AddGoto(state, nonterm, nextState);
-                }
-
-                // Final items
-                var finalItems = itemSet.Where(prod => prod.IsFinal);
-                foreach (var item in finalItems)
-                {
-                    var reduction = new Reduce(item.Production);
-                    // LR(0)
-                    if (item.Production.Left.Equals(cfg.StartSymbol))
-                    {
-                        table.AddAction(state, Symbol.EndOfInput, reduction);
-                    }
-                    else
-                    {
-                        foreach (var term in cfg.Terminals) table.AddAction(state, term, reduction);
-                    }
-                    // SLR
-                    // var followSet = cfg.Follow(new Symbol.Nonterminal(item.Production.Name));
-                    // foreach (var follow in followSet.Terminals) table.AddAction(state, follow, reduction);
-                }
-            }
-
-            Console.WriteLine(table);
+            var table = LrParsingTable.Slr(cfg);
+            Console.WriteLine(table.ToTableTex());
         }
 
         static ContextFreeGrammar ParseGrammar(string text)
