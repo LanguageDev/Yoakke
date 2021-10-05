@@ -8,6 +8,7 @@ using System.Collections.Generic.Polyfill;
 using System.Linq;
 using System.Text;
 using Yoakke.Grammar.Cfg;
+using Yoakke.Grammar.Internal;
 
 namespace Yoakke.Grammar.Lr.Lr0
 {
@@ -54,91 +55,25 @@ namespace Yoakke.Grammar.Lr.Lr0
         public ISet<Lr0Item> Closure(Lr0Item item) => this.Closure(new[] { item });
 
         /// <inheritdoc/>
-        public ISet<Lr0Item> Closure(IEnumerable<Lr0Item> set)
-        {
-            var result = set.ToHashSet();
-            var stk = new Stack<Lr0Item>();
-            foreach (var item in set) stk.Push(item);
-            while (stk.TryPop(out var item))
-            {
-                var afterCursor = item.AfterCursor;
-                if (afterCursor is not Nonterminal nonterm) continue;
-                // It must be a nonterminal
-                var prods = this.Grammar[nonterm];
-                foreach (var prod in prods)
-                {
-                    var prodToAdd = new Production(nonterm, prod);
-                    var itemToAdd = new Lr0Item(prodToAdd, 0);
-                    if (result.Add(itemToAdd)) stk.Push(itemToAdd);
-                }
-            }
-            return result;
-        }
+        public ISet<Lr0Item> Closure(IEnumerable<Lr0Item> set) =>
+            TrivialImpl.Closure(this, set, (item, prod) => new[] { new Lr0Item(prod, 0) });
 
         /// <inheritdoc/>
-        public void Build()
-        {
-            var startProductions = this.Grammar[this.Grammar.StartSymbol];
-            if (startProductions.Count != 1) throw new InvalidOperationException("The grammar must have an augmented, single start symbol!");
-
-            // Construct the I0 set
-            var startProduction = new Production(this.Grammar.StartSymbol, startProductions.First());
-            var i0 = this.Closure(new Lr0Item(startProduction, 0));
-            var stk = new Stack<(ISet<Lr0Item> ItemSet, int State)>();
-            this.StateAllocator.Allocate(i0, out var state0);
-            stk.Push((i0, state0));
-
-            while (stk.TryPop(out var itemSetPair))
+        public void Build() => TrivialImpl.Build(
+            this,
+            prod => new(prod, 0),
+            item => item.Next,
+            (state, finalItem) =>
             {
-                var itemSet = itemSetPair.ItemSet;
-                var state = itemSetPair.State;
-
-                // Terminal advance
-                var itemsWithTerminals = itemSet
-                    .Where(prod => prod.AfterCursor is Terminal)
-                    .GroupBy(prod => prod.AfterCursor);
-                foreach (var group in itemsWithTerminals)
+                if (finalItem.Production.Left.Equals(this.Grammar.StartSymbol))
                 {
-                    var term = (Terminal)group.Key!;
-                    var nextSet = this.Closure(group.Select(prod => prod.Next));
-                    if (this.StateAllocator.Allocate(nextSet, out var nextState)) stk.Push((nextSet, nextState));
-                    this.Action[state, term].Add(new Shift(nextState));
+                    this.Action[state, Symbol.EndOfInput].Add(Accept.Instance);
                 }
-
-                // Nonterminal advance
-                var itemsWithNonterminals = itemSet
-                    .Where(prod => prod.AfterCursor is Nonterminal)
-                    .GroupBy(prod => prod.AfterCursor);
-                foreach (var group in itemsWithNonterminals)
+                else
                 {
-                    var nonterm = (Nonterminal)group.Key!;
-                    var nextSet = this.Closure(group.Select(prod => prod.Next));
-                    if (this.StateAllocator.Allocate(nextSet, out var nextState)) stk.Push((nextSet, nextState));
-                    this.Goto[state, nonterm] = nextState;
+                    var reduction = new Reduce(finalItem.Production);
+                    foreach (var term in this.Grammar.Terminals) this.Action[state, term].Add(reduction);
                 }
-
-                // Final items
-                var finalItems = itemSet.Where(prod => prod.IsFinal);
-                foreach (var item in finalItems) this.BuildFinalItem(state, item);
-            }
-        }
-
-        /// <summary>
-        /// Handles the build of a final item.
-        /// </summary>
-        /// <param name="state">The current state.</param>
-        /// <param name="finalItem">The final item.</param>
-        protected virtual void BuildFinalItem(int state, Lr0Item finalItem)
-        {
-            if (finalItem.Production.Left.Equals(this.Grammar.StartSymbol))
-            {
-                this.Action[state, Symbol.EndOfInput].Add(Accept.Instance);
-            }
-            else
-            {
-                var reduction = new Reduce(finalItem.Production);
-                foreach (var term in this.Grammar.Terminals) this.Action[state, term].Add(reduction);
-            }
-        }
+            });
     }
 }

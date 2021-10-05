@@ -6,8 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Yoakke.Grammar.Lr;
 
-namespace Yoakke.Grammar.Lr
+namespace Yoakke.Grammar.Internal
 {
     /// <summary>
     /// A helper for printing the LR tables.

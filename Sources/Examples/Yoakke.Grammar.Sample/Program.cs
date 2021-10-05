@@ -13,10 +13,10 @@ namespace Yoakke.Grammar.Sample
         static void Main(string[] args)
         {
             var cfg = ParseGrammar(@"
-S -> ( L )
-S -> x
-L -> S
-L -> L , S
+S -> E
+E -> E + E
+E -> E * E
+E -> 1
 ");
             cfg.AugmentStartSymbol();
             
