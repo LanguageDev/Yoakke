@@ -318,6 +318,9 @@ namespace Yoakke.Grammar.Cfg
                 if (!changed) break;
             }
 
+            // The remaining nonterminals simply don't derive it
+            foreach (var nonterm in this.Nonterminals.Except(result.Keys).OfType<Nonterminal>()) result.Add(nonterm, false);
+
             return result;
         }
 
