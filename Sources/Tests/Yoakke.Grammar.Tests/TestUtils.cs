@@ -48,11 +48,11 @@ namespace Yoakke.Grammar.Tests
                         prodSymbols = productions
                             .Take(end)
                             .Select(t => ruleNames.Contains(t)
-                                ? (Symbol)new Symbol.Nonterminal(t)
-                                : new Symbol.Terminal(t))
+                                ? (Symbol)new Nonterminal(t)
+                                : new Terminal(t))
                             .ToList();
                     }
-                    result.AddProduction(new(productionName, prodSymbols.ToValue()));
+                    result.Productions.Add(new(new(productionName), prodSymbols.ToValue()));
                     productions.RemoveRange(0, end);
                 }
             }

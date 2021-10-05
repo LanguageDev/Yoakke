@@ -222,15 +222,37 @@ namespace Yoakke.Grammar.Cfg
             // Terminals can't derive the empty word
             if (symbol is Terminal) return false;
 
-            // TODO: We could cache this later
+            // TODO: We should cache this later
             return this.CalculateEmptyDerivation()[symbol];
         }
 
         /// <inheritdoc/>
-        public FirstSet First(Symbol symbol) => throw new NotImplementedException();
+        public FirstSet First(Symbol symbol)
+        {
+            // TODO: We should cache this later
+            return this.CalculateFirstSets()[symbol];
+        }
 
         /// <inheritdoc/>
-        public FirstSet First(IEnumerable<Symbol> symbolSequence) => throw new NotImplementedException();
+        public FirstSet First(IEnumerable<Symbol> symbolSequence)
+        {
+            var first = new HashSet<Terminal>();
+            var derivesEpsilon = true;
+            var symbolList = symbolSequence.ToList();
+
+            foreach (var symbol in symbolSequence)
+            {
+                var firstSym = this.First(symbol);
+                foreach (var item in firstSym.Terminals) first.Add(item);
+                if (!firstSym.HasEmpty)
+                {
+                    derivesEpsilon = false;
+                    break;
+                }
+            }
+
+            return new(symbolList, derivesEpsilon, first);
+        }
 
         /// <inheritdoc/>
         public FollowSet Follow(Nonterminal nonterminal) => throw new NotImplementedException();
@@ -322,6 +344,52 @@ namespace Yoakke.Grammar.Cfg
             foreach (var nonterm in this.Nonterminals.Except(result.Keys).OfType<Nonterminal>()) result.Add(nonterm, false);
 
             return result;
+        }
+
+        private Dictionary<Symbol, FirstSet> CalculateFirstSets()
+        {
+            var result = new Dictionary<Symbol, (HashSet<Terminal> Terminals, bool Empty)>();
+
+            // For all terminals X, FIRST(X) = { X }
+            foreach (var t in this.Terminals) result[t] = (new() { t }, false);
+
+            // For all nonterminals we simply initialize with an empty set
+            foreach (var nt in this.Nonterminals) result[nt] = (new(), false);
+
+            // While there is change, we refine the sets
+            while (true)
+            {
+                var change = false;
+
+                foreach (var (left, right) in this.Productions)
+                {
+                    var pair = result[left];
+                    var producesEpsilon = true;
+                    for (var i = 0; i < right.Count; ++i)
+                    {
+                        var firstB = result[right[i]];
+                        foreach (var item in firstB.Terminals) change = pair.Terminals.Add(item) || change;
+
+                        if (!firstB.Empty)
+                        {
+                            producesEpsilon = false;
+                            break;
+                        }
+                    }
+
+                    if (producesEpsilon && !pair.Empty)
+                    {
+                        pair.Empty = true;
+                        change = true;
+                    }
+
+                    result[left] = pair;
+                }
+
+                if (!change) break;
+            }
+
+            return result.ToDictionary(kv => kv.Key, kv => new FirstSet(kv.Key, kv.Value.Empty, kv.Value.Terminals));
         }
 
         private ProductionCollection GetProductionCollection(Nonterminal nonterminal)

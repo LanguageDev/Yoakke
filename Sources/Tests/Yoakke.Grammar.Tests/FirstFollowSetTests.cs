@@ -25,7 +25,7 @@ namespace Yoakke.Grammar.Tests
         public void FirstSetTests(string grammarText, string[] firstSets)
         {
             var cfg = TestUtils.ParseGrammar(grammarText);
-            cfg.StartSymbol = "E";
+            cfg.StartSymbol = new("E");
 
             foreach (var term in cfg.Terminals)
             {
@@ -38,7 +38,7 @@ namespace Yoakke.Grammar.Tests
             foreach (var firstSetText in firstSets)
             {
                 var (rule, expectedTerms, expectedEps) = ParseSet(firstSetText);
-                var firstSet = cfg.First(new Symbol.Nonterminal(rule));
+                var firstSet = cfg.First(new Nonterminal(rule));
 
                 Assert.True(expectedTerms.SetEquals(firstSet.Terminals));
                 Assert.Equal(expectedEps, firstSet.HasEmpty);
@@ -62,25 +62,25 @@ namespace Yoakke.Grammar.Tests
         public void FollowSetTests(string grammarText, string[] followSets)
         {
             var cfg = TestUtils.ParseGrammar(grammarText);
-            cfg.StartSymbol = "E";
+            cfg.StartSymbol = new("E");
 
             foreach (var followSetText in followSets)
             {
                 var (rule, expectedTerms, _) = ParseSet(followSetText);
-                var followSet = cfg.Follow(new Symbol.Nonterminal(rule));
+                var followSet = cfg.Follow(new(rule));
 
                 Assert.True(expectedTerms.SetEquals(followSet.Terminals));
             }
         }
 
-        private static (string Rule, HashSet<Symbol.Terminal> Terminals, bool Epsilon) ParseSet(string text)
+        private static (string Rule, HashSet<Terminal> Terminals, bool Epsilon) ParseSet(string text)
         {
             var parts = text.Split(':');
             var terminals = parts[1].Trim().Split(',').Select(t => t.Trim());
             var hasEpsilon = terminals.Any(t => t == "ε");
             var termSymbols = terminals
                 .Where(t => t != "ε")
-                .Select(t => t == "$" ? Symbol.EndOfInput : new Symbol.Terminal(t))
+                .Select(t => t == "$" ? Symbol.EndOfInput : new Terminal(t))
                 .ToHashSet();
             return (parts[0].Trim(), termSymbols, hasEpsilon);
         }
