@@ -10,9 +10,9 @@ using Yoakke.Grammar.Cfg;
 namespace Yoakke.Grammar.Lr
 {
     /// <summary>
-    /// Represents a production with a cursor.
+    /// Represents a production with a cursor, without any lookahead.
     /// </summary>
-    public sealed record LrItem(Production Production, int Cursor)
+    public sealed record Lr0Item(Production Production, int Cursor)
     {
         /// <summary>
         /// True, if this is an initial item, meaning the cursor is at the start.
@@ -32,7 +32,7 @@ namespace Yoakke.Grammar.Lr
         /// <summary>
         /// Retrieves the next item, with the cursor advanced one.
         /// </summary>
-        public LrItem Next => new(this.Production, Math.Min(this.Cursor + 1, this.Production.Right.Count));
+        public Lr0Item Next => new(this.Production, Math.Min(this.Cursor + 1, this.Production.Right.Count));
 
         /// <inheritdoc/>
         public override string ToString()
@@ -45,6 +45,23 @@ namespace Yoakke.Grammar.Lr
                 sb.Append($" {this.Production.Right[i]}");
             }
             if (this.IsFinal) sb.Append(" _");
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Converts this LR item to TeX code.
+        /// </summary>
+        /// <returns>The TeX code to represents this item.</returns>
+        public string ToTex()
+        {
+            var sb = new StringBuilder();
+            sb.Append($"{this.Production.Left} \\rightarrow");
+            for (var i = 0; i < this.Production.Right.Count; ++i)
+            {
+                if (this.Cursor == i) sb.Append(" \\textbullet \\ ");
+                sb.Append($" {this.Production.Right[i]}");
+            }
+            if (this.IsFinal) sb.Append(" \\textbullet");
             return sb.ToString();
         }
     }

@@ -12,7 +12,7 @@ namespace Yoakke.Grammar.Lr
     /// </summary>
     public sealed class LrParsingTable
     {
-        private Dictionary<ISet<LrItem>, int> itemSets = new(SetEqualityComparer<LrItem>.Default);
+        private Dictionary<ISet<Lr0Item>, int> itemSets = new(SetEqualityComparer<Lr0Item>.Default);
         private Dictionary<int, Dictionary<Terminal, HashSet<Action>>> action = new();
         private Dictionary<int, Dictionary<Symbol, int>> goTo = new();
 
@@ -95,7 +95,7 @@ namespace Yoakke.Grammar.Lr
         /// <param name="itemSet">The item set to allocate the state for.</param>
         /// <param name="idx">The allocated state index gets written here.</param>
         /// <returns>True, if the item set is unique and had no allocated state before.</returns>
-        public bool AllocateState(ISet<LrItem> itemSet, out int idx)
+        public bool AllocateState(ISet<Lr0Item> itemSet, out int idx)
         {
             if (this.itemSets.TryGetValue(itemSet, out idx)) return false;
             idx = this.itemSets.Count;

@@ -10,9 +10,11 @@ using Yoakke.Grammar.Cfg;
 namespace Yoakke.Grammar.Lr
 {
     /// <summary>
-    /// Some action to perform for the LR parser.
+    /// Represents that the stack should be reduced using some rule.
     /// </summary>
-    public abstract record Action
+    public sealed record Reduce(Production Rule) : Action
     {
+        /// <inheritdoc/>
+        public override string ToString() => $"reduce({this.Rule})";
     }
 }

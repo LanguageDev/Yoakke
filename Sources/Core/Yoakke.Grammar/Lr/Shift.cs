@@ -5,14 +5,15 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Yoakke.Grammar.Cfg;
 
 namespace Yoakke.Grammar.Lr
 {
     /// <summary>
-    /// Some action to perform for the LR parser.
+    /// Represents that the current token should be shifted.
     /// </summary>
-    public abstract record Action
+    public sealed record Shift : Action
     {
+        /// <inheritdoc/>
+        public override string ToString() => "shift";
     }
 }
