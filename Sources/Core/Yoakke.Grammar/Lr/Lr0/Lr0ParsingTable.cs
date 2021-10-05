@@ -113,7 +113,7 @@ namespace Yoakke.Grammar.Lr.Lr0
             // Some escapes
             sb
                 .Replace("$", @"\$")
-                .Replace("->", @"\rightarrow");
+                .Replace("->", @"$\rightarrow$");
 
             return sb.ToString();
         }

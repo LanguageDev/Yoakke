@@ -21,6 +21,11 @@ namespace Yoakke.Grammar.Lr
         /// </summary>
         public int StateCount => this.itemSets.Count;
 
+        /// <summary>
+        /// The item sets in the allocator.
+        /// </summary>
+        public IEnumerable<KeyValuePair<ISet<TItem>, int>> ItemSets => this.itemSets;
+
         private readonly Dictionary<ISet<TItem>, int> itemSets = new(SetEqualityComparer<TItem>.Default);
 
         /// <summary>
