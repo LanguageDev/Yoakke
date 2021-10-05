@@ -23,7 +23,7 @@ E -> 1
             var table = new Lr0ParsingTable();
             var sTick = cfg[new("S")].First();
             var i0 = Lr0ItemSet.Closure(cfg, new Lr0Item(new(new("S"), sTick), 0));
-            var stk = new Stack<Lr0ItemSet>();
+            var stk = new Stack<ISet<Lr0Item>>();
             stk.Push(i0);
 
             while (stk.TryPop(out var itemSet))
@@ -39,18 +39,18 @@ E -> 1
                     var term = (Terminal)group.Key!;
                     var nextSet = Lr0ItemSet.Closure(cfg, group.Select(prod => prod.Next).ToList());
                     if (table.AllocateState(nextSet, out var nextState)) stk.Push(nextSet);
-                    table.AddAction(state, term, Action.Shift.Instance);
+                    table.AddAction(state, term, new Shift(nextState));
                     table.AddGoto(state, term, nextState);
                 }
 
                 // Nonterminal advance
                 var itemsWithNonterminals = itemSet
-                    .Where(prod => prod.AfterCursor is Symbol.Nonterminal)
+                    .Where(prod => prod.AfterCursor is Nonterminal)
                     .GroupBy(prod => prod.AfterCursor);
                 foreach (var group in itemsWithNonterminals)
                 {
-                    var nonterm = (Symbol.Nonterminal)group.Key!;
-                    var nextSet = cfg.Closure(group.Select(prod => prod.Next).ToHashSet());
+                    var nonterm = (Nonterminal)group.Key!;
+                    var nextSet = Lr0ItemSet.Closure(cfg, group.Select(prod => prod.Next));
                     if (table.AllocateState(nextSet, out var nextState)) stk.Push(nextSet);
                     table.AddGoto(state, nonterm, nextState);
                 }
@@ -59,9 +59,9 @@ E -> 1
                 var finalItems = itemSet.Where(prod => prod.IsFinal);
                 foreach (var item in finalItems)
                 {
-                    var reduction = new Action.Reduce(item.Production);
+                    var reduction = new Reduce(item.Production);
                     // LR(0)
-                    if (item.Production.Name == cfg.StartSymbol)
+                    if (item.Production.Left.Equals(cfg.StartSymbol))
                     {
                         table.AddAction(state, Symbol.EndOfInput, reduction);
                     }

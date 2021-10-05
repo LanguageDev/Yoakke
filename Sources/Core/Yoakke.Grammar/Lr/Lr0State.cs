@@ -11,7 +11,7 @@ namespace Yoakke.Grammar.Lr
     /// <summary>
     /// Represents an LR 0 state in the DFA.
     /// </summary>
-    public sealed record Lr0State(int Index, Lr0ItemSet ItemSet)
+    public sealed record Lr0State(int Index, IReadOnlyCollection<Lr0Item> ItemSet)
     {
         /// <inheritdoc/>
         public bool Equals(Lr0State other) => this.Index == other.Index;

@@ -93,13 +93,13 @@ namespace Yoakke.Grammar.Lr
         /// Allocates a state for a given item set.
         /// </summary>
         /// <param name="itemSet">The item set to allocate the state for.</param>
-        /// <param name="idx">The allocated state index gets written here.</param>
+        /// <param name="state">The allocated state gets written here.</param>
         /// <returns>True, if the item set is unique and had no allocated state before.</returns>
         public bool AllocateState(ISet<Lr0Item> itemSet, out Lr0State state)
         {
             if (this.itemSets.TryGetValue(itemSet, out state)) return false;
-            state = new(this.itemSets.Count, new(itemSet));
-            this.itemSets.Add(itemSet, idx);
+            state = new(this.itemSets.Count, itemSet.ToList());
+            this.itemSets.Add(itemSet, state);
             return true;
         }
 
@@ -109,12 +109,12 @@ namespace Yoakke.Grammar.Lr
         /// <param name="state">The state to add the action to.</param>
         /// <param name="term">The terminal to add the action to.</param>
         /// <param name="action">The action to perform.</param>
-        public void AddAction(int state, Terminal term, Action action)
+        public void AddAction(Lr0State state, Terminal term, Action action)
         {
-            if (!this.action.TryGetValue(state, out var termDict))
+            if (!this.action.TryGetValue(state.Index, out var termDict))
             {
                 termDict = new();
-                this.action.Add(state, termDict);
+                this.action.Add(state.Index, termDict);
             }
             if (!termDict.TryGetValue(term, out var actionList))
             {
@@ -130,14 +130,14 @@ namespace Yoakke.Grammar.Lr
         /// <param name="fromState">The source state to transition from.</param>
         /// <param name="symbol">The symbol to perform the transition on.</param>
         /// <param name="toState">The state to transition to.</param>
-        public void AddGoto(int fromState, Symbol symbol, int toState)
+        public void AddGoto(Lr0State fromState, Symbol symbol, Lr0State toState)
         {
-            if (!this.goTo.TryGetValue(fromState, out var on))
+            if (!this.goTo.TryGetValue(fromState.Index, out var on))
             {
                 on = new();
-                this.goTo.Add(fromState, on);
+                this.goTo.Add(fromState.Index, on);
             }
-            on.Add(symbol, toState);
+            on.Add(symbol, toState.Index);
         }
     }
 }
