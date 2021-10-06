@@ -62,11 +62,15 @@ namespace Yoakke.Grammar.Lr.Slr
             this,
             prod => new(prod, 0),
             item => item.Next,
+            set => set,
             (state, finalItem) =>
             {
                 var reduction = new Reduce(finalItem.Production);
                 var followSet = this.Grammar.Follow(finalItem.Production.Left);
                 foreach (var follow in followSet.Terminals) this.Action[state, follow].Add(reduction);
             });
+
+        /// <inheritdoc/>
+        public bool IsKernel(Lr0Item item) => TrivialImpl.IsKernel(this, item);
     }
 }

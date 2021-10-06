@@ -62,6 +62,7 @@ namespace Yoakke.Grammar.Lr.Lr0
             this,
             prod => new(prod, 0),
             item => item.Next,
+            set => set,
             (state, finalItem) =>
             {
                 if (finalItem.Production.Left.Equals(this.Grammar.StartSymbol))
@@ -74,5 +75,8 @@ namespace Yoakke.Grammar.Lr.Lr0
                     foreach (var term in this.Grammar.Terminals) this.Action[state, term].Add(reduction);
                 }
             });
+
+        /// <inheritdoc/>
+        public bool IsKernel(Lr0Item item) => TrivialImpl.IsKernel(this, item);
     }
 }

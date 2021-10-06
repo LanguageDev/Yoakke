@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Generic.Polyfill;
 using System.Text;
+using Yoakke.Collections;
 using Yoakke.Grammar.Cfg;
 
 namespace Yoakke.Grammar.Lr.Lalr
@@ -31,6 +32,22 @@ namespace Yoakke.Grammar.Lr.Lalr
             new(this.Production, Math.Min(this.Cursor + 1, this.Production.Right.Count), this.Lookaheads.ToHashSet());
 
         /// <inheritdoc/>
+        public bool Equals(LalrItem other) =>
+               this.Production.Equals(other.Production)
+            && this.Cursor == other.Cursor
+            && SetEqualityComparer<Terminal>.Default.Equals(this.Lookaheads, other.Lookaheads);
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            var h = default(HashCode);
+            h.Add(this.Production);
+            h.Add(this.Cursor);
+            h.Add(this.Lookaheads, SetEqualityComparer<Terminal>.Default);
+            return h.ToHashCode();
+        }
+
+        /// <inheritdoc/>
         public override string ToString()
         {
             var sb = new StringBuilder();
@@ -41,7 +58,7 @@ namespace Yoakke.Grammar.Lr.Lalr
                 sb.Append($" {this.Production.Right[i]}");
             }
             if (this.IsFinal) sb.Append(" _");
-            sb.Append($", {string.Join("/", this.Lookaheads)}]");
+            sb.Append($", {(this.Lookaheads.Count == 0 ? "ε" : string.Join("/", this.Lookaheads))}");
             return sb.ToString();
         }
     }

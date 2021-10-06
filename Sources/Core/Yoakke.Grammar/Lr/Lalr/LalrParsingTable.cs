@@ -4,6 +4,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Generic.Polyfill;
+using System.Linq;
 using System.Text;
 using Yoakke.Grammar.Cfg;
 using Yoakke.Grammar.Internal;
@@ -52,9 +54,19 @@ namespace Yoakke.Grammar.Lr.Lalr
         public ISet<LalrItem> Closure(LalrItem item) => this.Closure(new[] { item });
 
         /// <inheritdoc/>
-        public ISet<LalrItem> Closure(IEnumerable<LalrItem> set) => throw new NotImplementedException();
+        public ISet<LalrItem> Closure(IEnumerable<LalrItem> set) =>
+            TrivialImpl.Closure(this, set, (item, prod) => new[] { new LalrItem(prod, 0, new HashSet<Terminal>()) });
 
         /// <inheritdoc/>
-        public void Build() => throw new NotImplementedException();
+        public void Build() => TrivialImpl.Build(
+            this,
+            prod => new(prod, 0, new HashSet<Terminal>()),
+            item => item.Next,
+            // Filter for kernel items
+            set => set.Where(this.IsKernel).ToHashSet(),
+            (state, finalItem) => { });
+
+        /// <inheritdoc/>
+        public bool IsKernel(LalrItem item) => TrivialImpl.IsKernel(this, item);
     }
 }

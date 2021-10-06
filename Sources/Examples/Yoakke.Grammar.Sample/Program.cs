@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Yoakke.Collections;
 using Yoakke.Collections.Values;
 using Yoakke.Grammar.Cfg;
 using Yoakke.Grammar.Lr;
+using Yoakke.Grammar.Lr.Lalr;
 using Action = Yoakke.Grammar.Lr.Action;
 
 namespace Yoakke.Grammar.Sample
@@ -13,13 +15,15 @@ namespace Yoakke.Grammar.Sample
         static void Main(string[] args)
         {
             var cfg = ParseGrammar(@"
-S -> C C
-C -> c C | d
+S -> L = R | R
+L -> * R | id
+R -> L
 ");
             cfg.AugmentStartSymbol();
-            
-            var table = LrParsingTable.Clr(cfg);
-            Console.WriteLine(table.ToHtmlTable());
+
+            var table = new LalrParsingTable(cfg);
+            table.Build();
+            //Console.WriteLine(table.ToHtmlTable());
             Console.WriteLine();
             Console.WriteLine();
             Console.WriteLine(table.ToDotDfa());

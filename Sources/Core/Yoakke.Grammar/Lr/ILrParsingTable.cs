@@ -76,5 +76,12 @@ namespace Yoakke.Grammar.Lr
         /// Builds out the table from <see cref="Grammar"/>.
         /// </summary>
         public void Build();
+
+        /// <summary>
+        /// Checks, if a given item is a kernel item.
+        /// </summary>
+        /// <param name="item">The item to check.</param>
+        /// <returns>True, if <paramref name="item"/> is a kernel item.</returns>
+        public bool IsKernel(TItem item);
     }
 }

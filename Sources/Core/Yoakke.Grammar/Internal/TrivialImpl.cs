@@ -28,6 +28,17 @@ namespace Yoakke.Grammar.Internal
             .Any(state => table.Grammar.Terminals.Any(term => table.Action[state, term].Count > 1));
 
         /// <summary>
+        /// Checks if an item is considered a kernel item for a table.
+        /// </summary>
+        /// <typeparam name="TItem">The LR item type.</typeparam>
+        /// <param name="table">The table to check in.</param>
+        /// <param name="item">The item to check.</param>
+        /// <returns>True, if <paramref name="item"/> is a kernel item in <paramref name="table"/>.</returns>
+        public static bool IsKernel<TItem>(ILrParsingTable<TItem> table, TItem item)
+            where TItem : ILrItem => item.Production.Left.Equals(table.Grammar.StartSymbol)
+                                 || !item.IsInitial;
+
+        /// <summary>
         /// Calculates the closure for an item set.
         /// </summary>
         /// <typeparam name="TItem">The LR item type.</typeparam>
@@ -71,11 +82,13 @@ namespace Yoakke.Grammar.Internal
         /// <param name="table">The table to build.</param>
         /// <param name="makeFirstItem">A function to build the initial item from a production.</param>
         /// <param name="makeNextItem">A function to advance the cursor of an item.</param>
+        /// <param name="makeStateSet">A function to make the state set from the closure.</param>
         /// <param name="handleFinalItem">A function to handle final items.</param>
         public static void Build<TItem>(
             ILrParsingTable<TItem> table,
             Func<Production, TItem> makeFirstItem,
             Func<TItem, TItem> makeNextItem,
+            Func<ISet<TItem>, ISet<TItem>> makeStateSet,
             Action<int, TItem> handleFinalItem)
             where TItem : ILrItem
         {
@@ -86,7 +99,7 @@ namespace Yoakke.Grammar.Internal
             var startProduction = new Production(table.Grammar.StartSymbol, startProductions.First());
             var i0 = table.Closure(makeFirstItem(startProduction));
             var stk = new Stack<(ISet<TItem> ItemSet, int State)>();
-            table.StateAllocator.Allocate(i0, out var state0);
+            table.StateAllocator.Allocate(makeStateSet(i0), out var state0);
             stk.Push((i0, state0));
 
             while (stk.TryPop(out var itemSetPair))
@@ -102,7 +115,7 @@ namespace Yoakke.Grammar.Internal
                 {
                     var term = (Terminal)group.Key!;
                     var nextSet = table.Closure(group.Select(makeNextItem));
-                    if (table.StateAllocator.Allocate(nextSet, out var nextState)) stk.Push((nextSet, nextState));
+                    if (table.StateAllocator.Allocate(makeStateSet(nextSet), out var nextState)) stk.Push((nextSet, nextState));
                     table.Action[state, term].Add(new Shift(nextState));
                 }
 
@@ -114,7 +127,7 @@ namespace Yoakke.Grammar.Internal
                 {
                     var nonterm = (Nonterminal)group.Key!;
                     var nextSet = table.Closure(group.Select(makeNextItem));
-                    if (table.StateAllocator.Allocate(nextSet, out var nextState)) stk.Push((nextSet, nextState));
+                    if (table.StateAllocator.Allocate(makeStateSet(nextSet), out var nextState)) stk.Push((nextSet, nextState));
                     table.Goto[state, nonterm] = nextState;
                 }
 

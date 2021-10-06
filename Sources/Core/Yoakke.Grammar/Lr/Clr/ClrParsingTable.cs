@@ -64,6 +64,7 @@ namespace Yoakke.Grammar.Lr.Clr
             this,
             prod => new(prod, 0, Terminal.EndOfInput),
             item => item.Next,
+            set => set,
             (state, finalItem) =>
             {
                 if (finalItem.Production.Left.Equals(this.Grammar.StartSymbol))
@@ -76,6 +77,9 @@ namespace Yoakke.Grammar.Lr.Clr
                     this.Action[state, finalItem.Lookahead].Add(reduction);
                 }
             });
+
+        /// <inheritdoc/>
+        public bool IsKernel(ClrItem item) => TrivialImpl.IsKernel(this, item);
 
         private IEnumerable<ClrItem> GetClrClosureItems(ClrItem item, Production prod)
         {
