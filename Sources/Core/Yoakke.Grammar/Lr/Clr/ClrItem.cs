@@ -15,9 +15,6 @@ namespace Yoakke.Grammar.Lr.Clr
     public sealed record ClrItem(Production Production, int Cursor, Terminal Lookahead) : ILrItem
     {
         /// <inheritdoc/>
-        public IEnumerable<Terminal> Lookaheads => new[] { this.Lookahead };
-
-        /// <inheritdoc/>
         public bool IsInitial => this.Cursor == 0;
 
         /// <inheritdoc/>

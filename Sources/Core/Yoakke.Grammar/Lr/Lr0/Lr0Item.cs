@@ -15,9 +15,6 @@ namespace Yoakke.Grammar.Lr.Lr0
     public sealed record Lr0Item(Production Production, int Cursor) : ILrItem
     {
         /// <inheritdoc/>
-        public IEnumerable<Terminal> Lookaheads => Array.Empty<Terminal>();
-
-        /// <inheritdoc/>
         public bool IsInitial => this.Cursor == 0;
 
         /// <inheritdoc/>

@@ -25,11 +25,6 @@ namespace Yoakke.Grammar.Lr
         public int Cursor { get; }
 
         /// <summary>
-        /// The lookaheads in this item. The amount of lookaheads relate to the parameter k in LR(k).
-        /// </summary>
-        public IEnumerable<Terminal> Lookaheads { get; }
-
-        /// <summary>
         /// True, if this is an initial item, meaning the cursor is at the start.
         /// </summary>
         public bool IsInitial { get; }
