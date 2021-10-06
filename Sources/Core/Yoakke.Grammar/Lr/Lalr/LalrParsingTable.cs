@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using Yoakke.Grammar.Cfg;
 using Yoakke.Grammar.Internal;
+using Yoakke.Grammar.Lr.Lr0;
 
 namespace Yoakke.Grammar.Lr.Lalr
 {
@@ -68,5 +69,46 @@ namespace Yoakke.Grammar.Lr.Lalr
 
         /// <inheritdoc/>
         public bool IsKernel(LalrItem item) => TrivialImpl.IsKernel(this, item);
+
+        // TODO: Public only temporarily
+        public (ISet<(Terminal, Lr0Item)> Generated, ISet<(Lr0Item From, Lr0Item To)> Propagates) Lookaheads(ISet<Lr0Item> lalrItems)
+        {
+            ISet<LalrItem> Lr1Closure(Lr0Item item) => TrivialImpl.Closure(
+                this,
+                new[] { new LalrItem(item.Production, item.Cursor, new HashSet<Terminal> { Terminal.NotInGrammar }) },
+                (item, prod) => item.Lookaheads.Select(lookahead =>
+                    {
+                        // Construct the sequence consisting of everything after the nonterminal plus the lookahead
+                        var after = item.Production.Right.Skip(item.Cursor + 1).Append(lookahead);
+                        // Compute the first-set
+                        var firstSet = this.Grammar.First(after);
+                        // Yield returns
+                        return new LalrItem(prod, 0, firstSet.Terminals.ToHashSet());
+                    })).ToHashSet();
+
+            var gen = new HashSet<(Terminal, Lr0Item)>();
+            var prop = new HashSet<(Lr0Item, Lr0Item)>();
+
+            foreach (var item in lalrItems)
+            {
+                var j = Lr1Closure(item);
+                foreach (var b in j)
+                {
+                    foreach (var la in b.Lookaheads)
+                    {
+                        if (la.Equals(Terminal.NotInGrammar))
+                        {
+                            prop.Add((item, new Lr0Item(b.Production, b.Cursor).Next));
+                        }
+                        else
+                        {
+                            gen.Add((la, new Lr0Item(b.Production, b.Cursor).Next));
+                        }
+                    }
+                }
+            }
+
+            return (gen, prop);
+        }
     }
 }

@@ -6,6 +6,7 @@ using Yoakke.Collections.Values;
 using Yoakke.Grammar.Cfg;
 using Yoakke.Grammar.Lr;
 using Yoakke.Grammar.Lr.Lalr;
+using Yoakke.Grammar.Lr.Lr0;
 using Action = Yoakke.Grammar.Lr.Action;
 
 namespace Yoakke.Grammar.Sample
@@ -22,11 +23,14 @@ R -> L
             cfg.AugmentStartSymbol();
 
             var table = new LalrParsingTable(cfg);
-            table.Build();
+            var (gen, prod) = table.Lookaheads(new[] { new Lr0Item(cfg.Productions.First(p => p.Left.ToString() == "S'"), 0) }.ToHashSet());
+            foreach (var (t, p) in gen) Console.WriteLine($"{t} is generated from {p}");
+            foreach (var (a, b) in prod) Console.WriteLine($"lookaheads propagate from {a} to {b}");
+            // table.Build();
             //Console.WriteLine(table.ToHtmlTable());
-            Console.WriteLine();
-            Console.WriteLine();
-            Console.WriteLine(table.ToDotDfa());
+            //Console.WriteLine();
+            //Console.WriteLine();
+            //Console.WriteLine(table.ToDotDfa());
         }
 
         static ContextFreeGrammar ParseGrammar(string text)

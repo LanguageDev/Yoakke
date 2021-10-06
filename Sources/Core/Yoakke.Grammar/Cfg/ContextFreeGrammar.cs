@@ -362,6 +362,9 @@ namespace Yoakke.Grammar.Cfg
         {
             var result = new Dictionary<Symbol, (HashSet<Terminal> Terminals, bool Empty)>();
 
+            // Special case, # is not in the grammar
+            result[Terminal.NotInGrammar] = (new() { Terminal.NotInGrammar }, false);
+
             // For all terminals X, FIRST(X) = { X }
             foreach (var t in this.Terminals) result[t] = (new() { t }, false);
 

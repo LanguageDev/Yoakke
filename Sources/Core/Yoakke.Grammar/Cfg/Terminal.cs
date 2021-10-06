@@ -18,10 +18,20 @@ namespace Yoakke.Grammar.Cfg
             public override string ToString() => "$";
         }
 
+        private class NotInGrammarMarker
+        {
+            public override string ToString() => "#";
+        }
+
         /// <summary>
         /// An end-of-input marker.
         /// </summary>
         public static Terminal EndOfInput { get; } = new(new EndOfInputMarker());
+
+        /// <summary>
+        /// A terminal guaranteed to be not in any grammar.
+        /// </summary>
+        public static Terminal NotInGrammar { get; } = new(new NotInGrammarMarker());
 
         /// <inheritdoc/>
         public override string ToString() => this.Value.ToString();
