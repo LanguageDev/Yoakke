@@ -15,7 +15,7 @@ namespace Yoakke.Grammar.Lr.Lr0
     /// <summary>
     /// An LR(0) parsing table.
     /// </summary>
-    public class Lr0ParsingTable : ILrParsingTable<Lr0Item>
+    public sealed class Lr0ParsingTable : ILrParsingTable<Lr0Item>
     {
         /// <inheritdoc/>
         public IReadOnlyCfg Grammar { get; }

@@ -15,7 +15,7 @@ namespace Yoakke.Grammar.Lr.Clr
     /// <summary>
     /// A canonical LR (aka. LR(1)) parsing table.
     /// </summary>
-    public class ClrParsingTable : ILrParsingTable<ClrItem>
+    public sealed class ClrParsingTable : ILrParsingTable<ClrItem>
     {
         /// <inheritdoc/>
         public IReadOnlyCfg Grammar { get; }
