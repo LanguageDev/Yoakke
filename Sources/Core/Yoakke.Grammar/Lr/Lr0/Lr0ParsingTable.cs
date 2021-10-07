@@ -52,7 +52,7 @@ namespace Yoakke.Grammar.Lr.Lr0
 
         /// <inheritdoc/>
         public ISet<Lr0Item> Closure(IEnumerable<Lr0Item> set) =>
-            TrivialImpl.Closure(this, set, (item, prod) => new[] { new Lr0Item(prod, 0) });
+            TrivialImpl.Closure(this.Grammar, set, (item, prod) => new[] { new Lr0Item(prod, 0) });
 
         /// <inheritdoc/>
         public void Build() => TrivialImpl.Build(

@@ -53,7 +53,7 @@ namespace Yoakke.Grammar.Lr.Lalr
 
         /// <inheritdoc/>
         public ISet<LalrItem> Closure(IEnumerable<LalrItem> set) =>
-            TrivialImpl.Closure(this, set, (item, prod) => new[] { new LalrItem(prod, 0, new HashSet<Terminal>()) });
+            TrivialImpl.Closure(this.Grammar, set, (item, prod) => new[] { new LalrItem(prod, 0, new HashSet<Terminal>()) });
 
         /// <inheritdoc/>
         public void Build()
@@ -114,7 +114,7 @@ namespace Yoakke.Grammar.Lr.Lalr
             var propagatesFrom = new Dictionary<LalrItem, HashSet<LalrItem>>();
 
             ISet<LalrItem> LookaheadClosure(LalrItem item) => TrivialImpl.Closure(
-                this,
+                this.Grammar,
                 new[] { new LalrItem(item.Production, item.Cursor, new HashSet<Terminal> { Terminal.NotInGrammar }) },
                 (item, prod) => item.Lookaheads.Select(lookahead =>
                 {

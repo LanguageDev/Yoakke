@@ -52,7 +52,7 @@ namespace Yoakke.Grammar.Lr.Clr
 
         /// <inheritdoc/>
         public ISet<ClrItem> Closure(IEnumerable<ClrItem> set) => TrivialImpl.Closure(
-            this,
+            this.Grammar,
             set,
             this.GetClrClosureItems);
 

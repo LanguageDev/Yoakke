@@ -42,13 +42,13 @@ namespace Yoakke.Grammar.Internal
         /// Calculates the closure for an item set.
         /// </summary>
         /// <typeparam name="TItem">The LR item type.</typeparam>
-        /// <param name="table">The table to use.</param>
+        /// <param name="grammar">The grammar to use.</param>
         /// <param name="set">The set of items to generate the closure for.</param>
         /// <param name="getItems">The function that returns all items that belong in the closure, given an existing
         /// item and a production that expands from the given item.</param>
         /// <returns>The closure of <paramref name="set"/>.</returns>
         public static ISet<TItem> Closure<TItem>(
-            ILrParsingTable<TItem> table,
+            IReadOnlyCfg grammar,
             IEnumerable<TItem> set,
             Func<TItem, Production, IEnumerable<TItem>> getItems)
             where TItem : ILrItem
@@ -61,7 +61,7 @@ namespace Yoakke.Grammar.Internal
                 var afterCursor = item.AfterCursor;
                 if (afterCursor is not Nonterminal nonterm) continue;
                 // It must be a nonterminal
-                var prods = table.Grammar[nonterm];
+                var prods = grammar[nonterm];
                 foreach (var prod in prods)
                 {
                     var prodToAdd = new Production(nonterm, prod);
