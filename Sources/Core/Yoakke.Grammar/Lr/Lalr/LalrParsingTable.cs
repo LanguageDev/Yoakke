@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using Yoakke.Grammar.Cfg;
 using Yoakke.Grammar.Internal;
+using Yoakke.Grammar.Lr.Clr;
 using Yoakke.Grammar.Lr.Lr0;
 
 namespace Yoakke.Grammar.Lr.Lalr
@@ -18,6 +19,21 @@ namespace Yoakke.Grammar.Lr.Lalr
     /// </summary>
     public sealed class LalrParsingTable : ILrParsingTable<LalrItem>
     {
+        private class Lr0Comparer : IEqualityComparer<LalrItem>
+        {
+            public static Lr0Comparer Instance { get; } = new();
+
+            private Lr0Comparer()
+            {
+            }
+
+            public bool Equals(LalrItem x, LalrItem y) =>
+                   x.Production.Equals(y.Production)
+                && x.Cursor == y.Cursor;
+
+            public int GetHashCode(LalrItem obj) => HashCode.Combine(obj.Production, obj.Cursor);
+        }
+
         /// <inheritdoc/>
         public IReadOnlyCfg Grammar { get; }
 
@@ -95,36 +111,28 @@ namespace Yoakke.Grammar.Lr.Lalr
 
         private void CalculateLookaheads()
         {
-            // First, the lookahead of the initial item always has the '$'
-            var startProduction = new Production(this.Grammar.StartSymbol, this.Grammar[this.Grammar.StartSymbol].First());
-            var initialSet = this
-                .Closure(new LalrItem(startProduction, 0, new HashSet<Terminal>()))
-                .Where(this.IsKernel)
-                .ToHashSet();
-            var initialState = this.StateAllocator[initialSet];
-            foreach (var item in this.StateAllocator[initialState]) item.Lookaheads.Add(Terminal.EndOfInput);
-
-            // Now we determine the lookahead relations
+            // We determine the lookahead relations
             // We determine 2 things:
             //  - Spontaneous lookahead generation: In this case we add the item immediately to the relevant item in the set
             //  - Propagation: We make passes with these relations and add the propagated lookaheads until there is no change
             // For this we just need to store which items propagate into the currently observed item (also spontaneous
             // generations for the first pass)
-            var generatesFrom = new Dictionary<LalrItem, HashSet<Terminal>>();
-            var propagatesFrom = new Dictionary<LalrItem, HashSet<LalrItem>>();
+            var generatesFrom = new Dictionary<LalrItem, HashSet<Terminal>>(Lr0Comparer.Instance);
+            var propagatesFrom = new Dictionary<LalrItem, HashSet<LalrItem>>(Lr0Comparer.Instance);
 
+            // $ generates from the initial item
+            var initialProduction = new Production(this.Grammar.StartSymbol, this.Grammar[this.Grammar.StartSymbol].First());
+            var initialItem = new LalrItem(initialProduction, 0, new HashSet<Terminal>());
+            generatesFrom[initialItem] = new() { Terminal.EndOfInput };
+
+            // The closure should act as an LR(1) closure grouped by the lookaheads into LALR items
             ISet<LalrItem> LookaheadClosure(LalrItem item) => TrivialImpl.Closure(
                 this.Grammar,
-                new[] { new LalrItem(item.Production, item.Cursor, new HashSet<Terminal> { Terminal.NotInGrammar }) },
-                (item, prod) => item.Lookaheads.Select(lookahead =>
-                {
-                    // Construct the sequence consisting of everything after the nonterminal plus the lookahead
-                    var after = item.Production.Right.Skip(item.Cursor + 1).Append(lookahead);
-                    // Compute the first-set
-                    var firstSet = this.Grammar.First(after);
-                    // Merge results
-                    return new LalrItem(prod, 0, firstSet.Terminals.ToHashSet());
-                })).ToHashSet();
+                new[] { new ClrItem(item.Production, item.Cursor, Terminal.NotInGrammar) },
+                this.GetClrClosureItems)
+                .GroupBy(item => new Lr0Item(item.Production, item.Cursor))
+                .Select(g => new LalrItem(g.Key.Production, g.Key.Cursor, g.Select(i => i.Lookahead).ToHashSet()))
+                .ToHashSet();
 
             void DetermineLookaheads(ISet<LalrItem> kernelItems)
             {
@@ -187,6 +195,16 @@ namespace Yoakke.Grammar.Lr.Lalr
 
                 if (!change) break;
             }
+        }
+
+        private IEnumerable<ClrItem> GetClrClosureItems(ClrItem item, Production prod)
+        {
+            // Construct the sequence consisting of everything after the nonterminal plus the lookahead
+            var after = item.Production.Right.Skip(item.Cursor + 1).Append(item.Lookahead);
+            // Compute the first-set
+            var firstSet = this.Grammar.First(after);
+            // Yield returns
+            foreach (var term in firstSet.Terminals) yield return new(prod, 0, term);
         }
     }
 }
