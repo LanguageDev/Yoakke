@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using Yoakke.Grammar.Cfg;
 using Yoakke.Grammar.Lr.Clr;
+using Yoakke.Grammar.Lr.Lalr;
 using Yoakke.Grammar.Lr.Lr0;
 using Yoakke.Grammar.Lr.Slr;
 
@@ -49,6 +50,18 @@ namespace Yoakke.Grammar.Lr
         public static ClrParsingTable Clr(IReadOnlyCfg grammar)
         {
             var table = new ClrParsingTable(grammar);
+            table.Build();
+            return table;
+        }
+
+        /// <summary>
+        /// Builds a LALR parsing table.
+        /// </summary>
+        /// <param name="grammar">The grammar to build the table for.</param>
+        /// <returns>The LALR table for <paramref name="grammar"/>.</returns>
+        public static LalrParsingTable Lalr(IReadOnlyCfg grammar)
+        {
+            var table = new LalrParsingTable(grammar);
             table.Build();
             return table;
         }

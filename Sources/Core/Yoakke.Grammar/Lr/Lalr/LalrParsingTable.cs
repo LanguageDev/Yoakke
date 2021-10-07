@@ -68,6 +68,26 @@ namespace Yoakke.Grammar.Lr.Lalr
               (state, finalItem) => { });
 
             // Now we calculate the lookaheads, which is an iterative process
+            this.CalculateLookaheads();
+
+            // Now we can assign the final items properly
+            foreach (var (state, itemSet) in this.StateAllocator.States.Select(s => (s, this.StateAllocator[s])))
+            {
+                // Final items
+                var finalItems = itemSet.Where(prod => prod.IsFinal);
+                foreach (var finalItem in finalItems)
+                {
+                    if (finalItem.Production.Left.Equals(this.Grammar.StartSymbol))
+                    {
+                        this.Action[state, Terminal.EndOfInput].Add(Accept.Instance);
+                    }
+                    else
+                    {
+                        var reduction = new Reduce(finalItem.Production);
+                        foreach (var lookahead in finalItem.Lookaheads) this.Action[state, lookahead].Add(reduction);
+                    }
+                }
+            }
         }
 
         /// <inheritdoc/>
@@ -76,48 +96,97 @@ namespace Yoakke.Grammar.Lr.Lalr
         private void CalculateLookaheads()
         {
             // First, the lookahead of the initial item always has the '$'
-            
-        }
+            var startProduction = new Production(this.Grammar.StartSymbol, this.Grammar[this.Grammar.StartSymbol].First());
+            var initialSet = this
+                .Closure(new LalrItem(startProduction, 0, new HashSet<Terminal>()))
+                .Where(this.IsKernel)
+                .ToHashSet();
+            var initialState = this.StateAllocator[initialSet];
+            foreach (var item in this.StateAllocator[initialState]) item.Lookaheads.Add(Terminal.EndOfInput);
 
-        // TODO: Public only temporarily
-        public (ISet<(Terminal, Lr0Item)> Generated, ISet<(Lr0Item From, Lr0Item To)> Propagates) Lookaheads(ISet<Lr0Item> lalrItems)
-        {
-            ISet<LalrItem> Lr1Closure(Lr0Item item) => TrivialImpl.Closure(
+            // Now we determine the lookahead relations
+            // We determine 2 things:
+            //  - Spontaneous lookahead generation: In this case we add the item immediately to the relevant item in the set
+            //  - Propagation: We make passes with these relations and add the propagated lookaheads until there is no change
+            // For this we just need to store which items propagate into the currently observed item (also spontaneous
+            // generations for the first pass)
+            var generatesFrom = new Dictionary<LalrItem, HashSet<Terminal>>();
+            var propagatesFrom = new Dictionary<LalrItem, HashSet<LalrItem>>();
+
+            ISet<LalrItem> LookaheadClosure(LalrItem item) => TrivialImpl.Closure(
                 this,
                 new[] { new LalrItem(item.Production, item.Cursor, new HashSet<Terminal> { Terminal.NotInGrammar }) },
                 (item, prod) => item.Lookaheads.Select(lookahead =>
-                    {
-                        // Construct the sequence consisting of everything after the nonterminal plus the lookahead
-                        var after = item.Production.Right.Skip(item.Cursor + 1).Append(lookahead);
-                        // Compute the first-set
-                        var firstSet = this.Grammar.First(after);
-                        // Yield returns
-                        return new LalrItem(prod, 0, firstSet.Terminals.ToHashSet());
-                    })).ToHashSet();
-
-            var gen = new HashSet<(Terminal, Lr0Item)>();
-            var prop = new HashSet<(Lr0Item, Lr0Item)>();
-
-            foreach (var item in lalrItems)
-            {
-                var j = Lr1Closure(item);
-                foreach (var b in j)
                 {
-                    foreach (var la in b.Lookaheads)
+                    // Construct the sequence consisting of everything after the nonterminal plus the lookahead
+                    var after = item.Production.Right.Skip(item.Cursor + 1).Append(lookahead);
+                    // Compute the first-set
+                    var firstSet = this.Grammar.First(after);
+                    // Merge results
+                    return new LalrItem(prod, 0, firstSet.Terminals.ToHashSet());
+                })).ToHashSet();
+
+            void DetermineLookaheads(ISet<LalrItem> kernelItems)
+            {
+                foreach (var kernelItem in kernelItems)
+                {
+                    var kernelClosure = LookaheadClosure(kernelItem);
+                    foreach (var closureItem in kernelClosure)
                     {
-                        if (la.Equals(Terminal.NotInGrammar))
+                        foreach (var lookahead in closureItem.Lookaheads)
                         {
-                            prop.Add((item, new Lr0Item(b.Production, b.Cursor).Next));
-                        }
-                        else
-                        {
-                            gen.Add((la, new Lr0Item(b.Production, b.Cursor).Next));
+                            var to = closureItem.Next;
+                            if (lookahead.Equals(Terminal.NotInGrammar))
+                            {
+                                // Propagation
+                                if (!propagatesFrom!.TryGetValue(to, out var fromSet))
+                                {
+                                    fromSet = new();
+                                    propagatesFrom.Add(to, fromSet);
+                                }
+                                fromSet.Add(kernelItem);
+                            }
+                            else
+                            {
+                                // Spontaneous generation
+                                if (!generatesFrom!.TryGetValue(to, out var terminalSet))
+                                {
+                                    terminalSet = new();
+                                    generatesFrom.Add(to, terminalSet);
+                                }
+                                terminalSet.Add(lookahead);
+                            }
                         }
                     }
                 }
             }
 
-            return (gen, prop);
+            // We run the lookahead determination for each item in the item set
+            foreach (var itemSet in this.StateAllocator.ItemSets) DetermineLookaheads(itemSet);
+
+            // First we do an initial pass, where we simply write the spontaneous terminals into the lookaheads
+            foreach (var item in this.StateAllocator.ItemSets.SelectMany(i => i))
+            {
+                if (!generatesFrom.TryGetValue(item, out var terminals)) continue;
+                foreach (var term in terminals) item.Lookaheads.Add(term);
+            }
+
+            // Now we propagate as long as there is a change
+            while (true)
+            {
+                var change = false;
+
+                foreach (var item in this.StateAllocator.ItemSets.SelectMany(i => i))
+                {
+                    if (!propagatesFrom.TryGetValue(item, out var propagationSources)) continue;
+                    foreach (var fromItem in propagationSources)
+                    {
+                        foreach (var lookahead in fromItem.Lookaheads) change = item.Lookaheads.Add(lookahead) || change;
+                    }
+                }
+
+                if (!change) break;
+            }
         }
     }
 }

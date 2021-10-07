@@ -22,15 +22,11 @@ R -> L
 ");
             cfg.AugmentStartSymbol();
 
-            var table = new LalrParsingTable(cfg);
-            var (gen, prod) = table.Lookaheads(new[] { new Lr0Item(cfg.Productions.First(p => p.Left.ToString() == "S'"), 0) }.ToHashSet());
-            foreach (var (t, p) in gen) Console.WriteLine($"{t} is generated from {p}");
-            foreach (var (a, b) in prod) Console.WriteLine($"lookaheads propagate from {a} to {b}");
-            // table.Build();
-            //Console.WriteLine(table.ToHtmlTable());
-            //Console.WriteLine();
-            //Console.WriteLine();
-            //Console.WriteLine(table.ToDotDfa());
+            var table = LrParsingTable.Lalr(cfg);
+            Console.WriteLine(table.ToHtmlTable());
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine(table.ToDotDfa());
         }
 
         static ContextFreeGrammar ParseGrammar(string text)
