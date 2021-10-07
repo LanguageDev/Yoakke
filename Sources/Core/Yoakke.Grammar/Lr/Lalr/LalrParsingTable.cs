@@ -22,9 +22,6 @@ namespace Yoakke.Grammar.Lr.Lalr
         public IReadOnlyCfg Grammar { get; }
 
         /// <inheritdoc/>
-        public int StateCount => this.StateAllocator.StateCount;
-
-        /// <inheritdoc/>
         public LrStateAllocator<LalrItem> StateAllocator { get; } = new();
 
         /// <inheritdoc/>
@@ -59,16 +56,28 @@ namespace Yoakke.Grammar.Lr.Lalr
             TrivialImpl.Closure(this, set, (item, prod) => new[] { new LalrItem(prod, 0, new HashSet<Terminal>()) });
 
         /// <inheritdoc/>
-        public void Build() => TrivialImpl.Build(
-            this,
-            prod => new(prod, 0, new HashSet<Terminal>()),
-            item => item.Next,
-            // Filter for kernel items
-            set => set.Where(this.IsKernel).ToHashSet(),
-            (state, finalItem) => { });
+        public void Build()
+        {
+            TrivialImpl.Build(
+              this,
+              prod => new(prod, 0, new HashSet<Terminal>()),
+              item => item.Next,
+              // Filter for kernel items
+              set => set.Where(this.IsKernel).ToHashSet(),
+              // NOTE: We skip the reductions for now, we need to determine the lookahead sets
+              (state, finalItem) => { });
+
+            // Now we calculate the lookaheads, which is an iterative process
+        }
 
         /// <inheritdoc/>
         public bool IsKernel(LalrItem item) => TrivialImpl.IsKernel(this, item);
+
+        private void CalculateLookaheads()
+        {
+            // First, the lookahead of the initial item always has the '$'
+            
+        }
 
         // TODO: Public only temporarily
         public (ISet<(Terminal, Lr0Item)> Generated, ISet<(Lr0Item From, Lr0Item To)> Propagates) Lookaheads(ISet<Lr0Item> lalrItems)

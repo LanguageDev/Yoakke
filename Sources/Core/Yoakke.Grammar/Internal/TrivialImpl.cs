@@ -24,7 +24,7 @@ namespace Yoakke.Grammar.Internal
         /// <param name="table">The table to check.</param>
         /// <returns>True, if <paramref name="table"/> contains conflicts.</returns>
         public static bool HasConflicts<TItem>(ILrParsingTable<TItem> table)
-            where TItem : ILrItem => Enumerable.Range(0, table.StateCount)
+            where TItem : ILrItem => table.StateAllocator.States
             .Any(state => table.Grammar.Terminals.Any(term => table.Action[state, term].Count > 1));
 
         /// <summary>

@@ -22,11 +22,6 @@ namespace Yoakke.Grammar.Lr
         public IReadOnlyCfg Grammar { get; }
 
         /// <summary>
-        /// The number of states in the table.
-        /// </summary>
-        public int StateCount { get; }
-
-        /// <summary>
         /// The state allocator.
         /// </summary>
         public LrStateAllocator<TItem> StateAllocator { get; }

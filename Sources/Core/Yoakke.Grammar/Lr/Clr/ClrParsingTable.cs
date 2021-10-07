@@ -21,9 +21,6 @@ namespace Yoakke.Grammar.Lr.Clr
         public IReadOnlyCfg Grammar { get; }
 
         /// <inheritdoc/>
-        public int StateCount => this.StateAllocator.StateCount;
-
-        /// <inheritdoc/>
         public LrStateAllocator<ClrItem> StateAllocator { get; } = new();
 
         /// <inheritdoc/>

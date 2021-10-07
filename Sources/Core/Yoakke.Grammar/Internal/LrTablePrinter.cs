@@ -61,7 +61,7 @@ namespace Yoakke.Grammar.Internal
             result.AppendLine("  </tr>");
 
             // Now we can actually print the contents state by state
-            for (var state = 0; state < table.StateCount; ++state)
+            foreach (var state in table.StateAllocator.States)
             {
                 result.AppendLine("  <tr>");
                 // First we print the state
@@ -110,10 +110,9 @@ namespace Yoakke.Grammar.Internal
                 .AppendLine("  node [shape=rectangle, style=rounded];");
 
             // Push out all states
-            var stateIndexToSet = table.StateAllocator.ItemSets.ToDictionary(kv => kv.Value, kv => kv.Key);
-            for (var state = 0; state < table.StateCount; ++state)
+            foreach (var state in table.StateAllocator.States)
             {
-                var set = stateIndexToSet[state];
+                var set = table.StateAllocator[state];
                 var setText = string.Join(@"\l", set)
                     .Replace(" -> ", " → ")
                     .Replace(" _", " &#8226;");
@@ -121,7 +120,7 @@ namespace Yoakke.Grammar.Internal
             }
 
             // Transitions
-            for (var state = 0; state < table.StateCount; ++state)
+            foreach (var state in table.StateAllocator.States)
             {
                 // Terminals
                 foreach (var term in table.Grammar.Terminals)
