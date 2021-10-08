@@ -62,9 +62,16 @@ namespace Yoakke.Grammar.Lr.Slr
             set => set,
             (state, finalItem) =>
             {
-                var reduction = new Reduce(finalItem.Production);
-                var followSet = this.Grammar.Follow(finalItem.Production.Left);
-                foreach (var follow in followSet.Terminals) this.Action[state, follow].Add(reduction);
+                if (finalItem.Production.Left.Equals(this.Grammar.StartSymbol))
+                {
+                    this.Action[state, Terminal.EndOfInput].Add(Accept.Instance);
+                }
+                else
+                {
+                    var reduction = new Reduce(finalItem.Production);
+                    var followSet = this.Grammar.Follow(finalItem.Production.Left);
+                    foreach (var follow in followSet.Terminals) this.Action[state, follow].Add(reduction);
+                }
             });
 
         /// <inheritdoc/>

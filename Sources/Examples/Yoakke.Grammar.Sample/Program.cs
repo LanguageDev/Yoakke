@@ -23,14 +23,13 @@ S -> d b
 ");
             cfg.AugmentStartSymbol();
 
-            var table = LrParsingTable.Lr0(cfg);
-            /*
+            var table = LrParsingTable.Lalr(cfg);
             Console.WriteLine(table.ToHtmlTable());
             Console.WriteLine();
             Console.WriteLine();
             Console.WriteLine(table.ToDotDfa());
-            */
 
+            /*
             while (true)
             {
                 var input = Console.ReadLine();
@@ -38,6 +37,7 @@ S -> d b
                 var tree = Parse(table, input);
                 Console.WriteLine(tree.ToDot());
             }
+            */
         }
 
         static IParseTreeNode Parse(ILrParsingTable table, string input)
