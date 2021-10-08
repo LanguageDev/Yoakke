@@ -5,8 +5,10 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Generic.Polyfill;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using Yoakke.Collections;
 using Yoakke.Grammar.Cfg;
 using Yoakke.Grammar.Internal;
 using Yoakke.Grammar.Lr.Clr;
@@ -117,13 +119,14 @@ namespace Yoakke.Grammar.Lr.Lalr
             //  - Propagation: We make passes with these relations and add the propagated lookaheads until there is no change
             // For this we just need to store which items propagate into the currently observed item (also spontaneous
             // generations for the first pass)
-            var generatesFrom = new Dictionary<LalrItem, HashSet<Terminal>>(Lr0Comparer.Instance);
-            var propagatesFrom = new Dictionary<LalrItem, HashSet<LalrItem>>(Lr0Comparer.Instance);
+            var tupleComparer = new TupleEqualityComparer<int, LalrItem>(EqualityComparer<int>.Default, Lr0Comparer.Instance);
+            var generatesFrom = new Dictionary<(int State, LalrItem Item), HashSet<Terminal>>(tupleComparer);
+            var propagatesFrom = new Dictionary<(int State, LalrItem Item), HashSet<(int State, LalrItem Item)>>(tupleComparer);
 
             // $ generates from the initial item
             var initialProduction = new Production(this.Grammar.StartSymbol, this.Grammar[this.Grammar.StartSymbol].First());
             var initialItem = new LalrItem(initialProduction, 0, new HashSet<Terminal>());
-            generatesFrom[initialItem] = new() { Terminal.EndOfInput };
+            generatesFrom[(0, initialItem)] = new() { Terminal.EndOfInput };
 
             // The closure should act as an LR(1) closure grouped by the lookaheads into LALR items
             ISet<LalrItem> LookaheadClosure(LalrItem item) => TrivialImpl.Closure(
@@ -134,33 +137,39 @@ namespace Yoakke.Grammar.Lr.Lalr
                 .Select(g => new LalrItem(g.Key.Production, g.Key.Cursor, g.Select(i => i.Lookahead).ToHashSet()))
                 .ToHashSet();
 
-            void DetermineLookaheads(ISet<LalrItem> kernelItems)
+            void DetermineLookaheads(int fromState, ISet<LalrItem> kernelItems)
             {
                 foreach (var kernelItem in kernelItems)
                 {
                     var kernelClosure = LookaheadClosure(kernelItem);
                     foreach (var closureItem in kernelClosure)
                     {
+                        if (closureItem.IsFinal) continue;
+
+                        var toState = closureItem.AfterCursor is Terminal t
+                            ? this.Action[fromState, t].OfType<Shift>().First().State
+                            : this.Goto[fromState, (Nonterminal)closureItem.AfterCursor!]!.Value;
+                        var toItem = closureItem.Next;
+
                         foreach (var lookahead in closureItem.Lookaheads)
                         {
-                            var to = closureItem.Next;
                             if (lookahead.Equals(Terminal.NotInGrammar))
                             {
                                 // Propagation
-                                if (!propagatesFrom!.TryGetValue(to, out var fromSet))
+                                if (!propagatesFrom!.TryGetValue((toState, toItem), out var fromSet))
                                 {
-                                    fromSet = new();
-                                    propagatesFrom.Add(to, fromSet);
+                                    fromSet = new(tupleComparer);
+                                    propagatesFrom.Add((toState, toItem), fromSet);
                                 }
-                                fromSet.Add(kernelItem);
+                                fromSet.Add((fromState, closureItem));
                             }
                             else
                             {
                                 // Spontaneous generation
-                                if (!generatesFrom!.TryGetValue(to, out var terminalSet))
+                                if (!generatesFrom!.TryGetValue((toState, toItem), out var terminalSet))
                                 {
                                     terminalSet = new();
-                                    generatesFrom.Add(to, terminalSet);
+                                    generatesFrom.Add((toState, toItem), terminalSet);
                                 }
                                 terminalSet.Add(lookahead);
                             }
@@ -170,13 +179,16 @@ namespace Yoakke.Grammar.Lr.Lalr
             }
 
             // We run the lookahead determination for each item in the item set
-            foreach (var itemSet in this.StateAllocator.ItemSets) DetermineLookaheads(itemSet);
+            foreach (var fromState in this.StateAllocator.States) DetermineLookaheads(fromState, this.StateAllocator[fromState]);
 
             // First we do an initial pass, where we simply write the spontaneous terminals into the lookaheads
-            foreach (var item in this.StateAllocator.ItemSets.SelectMany(i => i))
+            foreach (var state in this.StateAllocator.States)
             {
-                if (!generatesFrom.TryGetValue(item, out var terminals)) continue;
-                foreach (var term in terminals) item.Lookaheads.Add(term);
+                foreach (var item in this.StateAllocator[state])
+                {
+                    if (!generatesFrom.TryGetValue((state, item), out var terminals)) continue;
+                    foreach (var term in terminals) item.Lookaheads.Add(term);
+                }
             }
 
             // Now we propagate as long as there is a change
@@ -184,12 +196,19 @@ namespace Yoakke.Grammar.Lr.Lalr
             {
                 var change = false;
 
-                foreach (var item in this.StateAllocator.ItemSets.SelectMany(i => i))
+                foreach (var state in this.StateAllocator.States)
                 {
-                    if (!propagatesFrom.TryGetValue(item, out var propagationSources)) continue;
-                    foreach (var fromItem in propagationSources)
+                    foreach (var item in this.StateAllocator[state])
                     {
-                        foreach (var lookahead in fromItem.Lookaheads) change = item.Lookaheads.Add(lookahead) || change;
+                        if (!propagatesFrom.TryGetValue((state, item), out var propagationSources)) continue;
+                        foreach (var (fromState, fromItem) in propagationSources)
+                        {
+                            var lookaheads = this.StateAllocator[fromState]
+                                .Where(i => Lr0Comparer.Instance.Equals(i, fromItem))
+                                .First()
+                                .Lookaheads;
+                            foreach (var lookahead in lookaheads) change = item.Lookaheads.Add(lookahead) || change;
+                        }
                     }
                 }
 

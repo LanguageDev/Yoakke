@@ -17,9 +17,11 @@ namespace Yoakke.Grammar.Sample
         static void Main(string[] args)
         {
             var cfg = ParseGrammar(@"
-S -> a S b
-S -> a S c
-S -> d b
+S -> a A c
+S -> a B d
+S -> B c
+A -> z
+B -> z
 ");
             cfg.AugmentStartSymbol();
 
