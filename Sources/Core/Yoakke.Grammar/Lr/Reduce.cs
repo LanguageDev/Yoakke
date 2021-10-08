@@ -12,9 +12,9 @@ namespace Yoakke.Grammar.Lr
     /// <summary>
     /// Represents that the stack should be reduced using some rule.
     /// </summary>
-    public sealed record Reduce(Production Rule) : Action
+    public sealed record Reduce(Production Production) : Action
     {
         /// <inheritdoc/>
-        public override string ToString() => $"reduce({this.Rule})";
+        public override string ToString() => $"reduce({this.Production})";
     }
 }

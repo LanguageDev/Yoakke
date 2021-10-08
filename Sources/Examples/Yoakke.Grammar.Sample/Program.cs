@@ -7,6 +7,7 @@ using Yoakke.Grammar.Cfg;
 using Yoakke.Grammar.Lr;
 using Yoakke.Grammar.Lr.Lalr;
 using Yoakke.Grammar.Lr.Lr0;
+using Yoakke.Grammar.ParseTree;
 using Action = Yoakke.Grammar.Lr.Action;
 
 namespace Yoakke.Grammar.Sample
@@ -23,10 +24,34 @@ S -> d b
             cfg.AugmentStartSymbol();
 
             var table = LrParsingTable.Lr0(cfg);
+            /*
             Console.WriteLine(table.ToHtmlTable());
             Console.WriteLine();
             Console.WriteLine();
             Console.WriteLine(table.ToDotDfa());
+            */
+
+            while (true)
+            {
+                var input = Console.ReadLine();
+                if (input is null) break;
+                var tree = Parse(table, input);
+                Console.WriteLine(tree.ToDot());
+            }
+        }
+
+        static IParseTreeNode Parse(ILrParsingTable table, string input)
+        {
+            var parser = new LrParser(table);
+            foreach (var action in parser.Parse(input, c => new(c.ToString()!)))
+            {
+                // First we do some state printing
+                Console.WriteLine($"State stack: {string.Join(" ", parser.StateStack.Reverse())}");
+                Console.WriteLine($"Result stack: {string.Join(" ", parser.ResultStack.Reverse().Select(r => r.Symbol))}");
+                Console.WriteLine(action);
+            }
+
+            return parser.ResultStack.First();
         }
 
         static ContextFreeGrammar ParseGrammar(string text)
