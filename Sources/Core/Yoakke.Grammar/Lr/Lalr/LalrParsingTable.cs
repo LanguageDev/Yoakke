@@ -121,7 +121,7 @@ namespace Yoakke.Grammar.Lr.Lalr
             // generations for the first pass)
             var tupleComparer = new TupleEqualityComparer<int, LalrItem>(EqualityComparer<int>.Default, Lr0Comparer.Instance);
             var generatesFrom = new Dictionary<(int State, LalrItem Item), HashSet<Terminal>>(tupleComparer);
-            var propagatesFrom = new Dictionary<(int State, LalrItem Item), HashSet<(int State, LalrItem Item)>>(tupleComparer);
+            var propagatesFrom = new Dictionary<(int State, LalrItem Item), List<(int State, LalrItem Item)>>(tupleComparer);
 
             // $ generates from the initial item
             var initialProduction = new Production(this.Grammar.StartSymbol, this.Grammar[this.Grammar.StartSymbol].First());
@@ -156,12 +156,12 @@ namespace Yoakke.Grammar.Lr.Lalr
                             if (lookahead.Equals(Terminal.NotInGrammar))
                             {
                                 // Propagation
-                                if (!propagatesFrom!.TryGetValue((toState, toItem), out var fromSet))
+                                if (!propagatesFrom.TryGetValue((fromState, kernelItem), out var toList))
                                 {
-                                    fromSet = new(tupleComparer);
-                                    propagatesFrom.Add((toState, toItem), fromSet);
+                                    toList = new();
+                                    propagatesFrom.Add((fromState, kernelItem), toList);
                                 }
-                                fromSet.Add((fromState, closureItem));
+                                toList.Add((toState, toItem));
                             }
                             else
                             {
@@ -196,19 +196,19 @@ namespace Yoakke.Grammar.Lr.Lalr
             {
                 var change = false;
 
-                foreach (var state in this.StateAllocator.States)
+                foreach (var ((fromState, fromItem), toList) in propagatesFrom)
                 {
-                    foreach (var item in this.StateAllocator[state])
+                    foreach (var (toState, toItem) in toList)
                     {
-                        if (!propagatesFrom.TryGetValue((state, item), out var propagationSources)) continue;
-                        foreach (var (fromState, fromItem) in propagationSources)
-                        {
-                            var lookaheads = this.StateAllocator[fromState]
-                                .Where(i => Lr0Comparer.Instance.Equals(i, fromItem))
-                                .First()
-                                .Lookaheads;
-                            foreach (var lookahead in lookaheads) change = item.Lookaheads.Add(lookahead) || change;
-                        }
+                        var lookaheadsFrom = this.StateAllocator[fromState]
+                            .Where(i => Lr0Comparer.Instance.Equals(i, fromItem))
+                            .First()
+                            .Lookaheads;
+                        var lookaheadsTo = this.StateAllocator[toState]
+                            .Where(i => Lr0Comparer.Instance.Equals(i, toItem))
+                            .First()
+                            .Lookaheads;
+                        foreach (var lookahead in lookaheadsFrom) change = lookaheadsTo.Add(lookahead) || change;
                     }
                 }
 
