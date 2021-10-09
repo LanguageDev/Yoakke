@@ -139,11 +139,16 @@ namespace Yoakke.Grammar.Tests
             // Assert item sets
             this.AssertState(
                 out var i0,
-                "S' -> _ S, $");
+                "S' -> _ S, $",
+                "S -> _ E, $",
+                "E -> _ 1 E, $",
+                "E -> _ 1, $");
             this.AssertState(
                 out var i1,
                 "E -> 1 _ E, $",
-                "E -> 1 _, $");
+                "E -> 1 _, $",
+                "E -> _ 1 E, $",
+                "E -> _ 1, $");
             this.AssertState(
                 out var i2,
                 "S' -> S _, $");
