@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ using Yoakke.Collections;
 using Yoakke.Collections.Values;
 using Yoakke.Grammar.Cfg;
 using Yoakke.Grammar.Lr;
+using Yoakke.Grammar.Lr.Clr;
 using Yoakke.Grammar.Lr.Lalr;
 using Yoakke.Grammar.Lr.Lr0;
 
@@ -27,6 +29,7 @@ namespace Yoakke.Grammar.Tests
         private static Func<IReadOnlyCfg, string, ILrItem> ItemParser =>
               typeof(TItem) == typeof(Lr0Item) ? ParseLr0Item
             : typeof(TItem) == typeof(LalrItem) ? ParseLalrItem
+            : typeof(TItem) == typeof(ClrItem) ? ParseClrItem
             : throw new NotSupportedException();
 
         /* Factory */
@@ -74,6 +77,13 @@ namespace Yoakke.Grammar.Tests
             var lr0 = ParseLr0Item(cfg, parts[0]);
             var lookaheads = parts[1].Split("/").Select(t => t.Trim() == "$" ? Terminal.EndOfInput : new Terminal(t.Trim()));
             return new(lr0.Production, lr0.Cursor, lookaheads.ToHashSet());
+        }
+
+        private static ClrItem ParseClrItem(IReadOnlyCfg cfg, string text)
+        {
+            var lalr = ParseLalrItem(cfg, text);
+            Debug.Assert(lalr.Lookaheads.Count() == 1, "LR(1) items should have exactly one lookahead");
+            return new(lalr.Production, lalr.Cursor, lalr.Lookaheads.First());
         }
     }
 }
