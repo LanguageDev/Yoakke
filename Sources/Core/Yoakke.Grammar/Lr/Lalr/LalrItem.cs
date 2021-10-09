@@ -43,7 +43,10 @@ namespace Yoakke.Grammar.Lr.Lalr
             var h = default(HashCode);
             h.Add(this.Production);
             h.Add(this.Cursor);
-            h.Add(this.Lookaheads, SetEqualityComparer<Terminal>.Default);
+            // NOTE: Since we modify the lookaheads, it's just better not to take them into account here...
+            // It caused me a 2 hour debug session why the tests didn't find the state with the LALR item exactly because of this
+            // I hate mutables. I truly do.
+            // h.Add(this.Lookaheads, SetEqualityComparer<Terminal>.Default);
             return h.ToHashCode();
         }
 

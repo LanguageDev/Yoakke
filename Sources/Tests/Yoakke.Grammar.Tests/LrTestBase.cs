@@ -12,6 +12,7 @@ using Yoakke.Collections;
 using Yoakke.Collections.Values;
 using Yoakke.Grammar.Cfg;
 using Yoakke.Grammar.Lr;
+using Yoakke.Grammar.Lr.Lalr;
 using Yoakke.Grammar.Lr.Lr0;
 
 namespace Yoakke.Grammar.Tests
@@ -25,6 +26,7 @@ namespace Yoakke.Grammar.Tests
 
         private static Func<IReadOnlyCfg, string, ILrItem> ItemParser =>
               typeof(TItem) == typeof(Lr0Item) ? ParseLr0Item
+            : typeof(TItem) == typeof(LalrItem) ? ParseLalrItem
             : throw new NotSupportedException();
 
         /* Factory */
@@ -63,7 +65,15 @@ namespace Yoakke.Grammar.Tests
             var cursor = fakeProd.Right.IndicesOf(new Terminal("_")).First();
             var right = fakeProd.Right.ToList();
             right.RemoveAt(cursor);
-            return new Lr0Item(new(fakeProd.Left, right.ToValue()), cursor);
+            return new(new(fakeProd.Left, right.ToValue()), cursor);
+        }
+
+        private static LalrItem ParseLalrItem(IReadOnlyCfg cfg, string text)
+        {
+            var parts = text.Split(", ");
+            var lr0 = ParseLr0Item(cfg, parts[0]);
+            var lookaheads = parts[1].Split("/").Select(t => t.Trim() == "$" ? Terminal.EndOfInput : new Terminal(t.Trim()));
+            return new(lr0.Production, lr0.Cursor, lookaheads.ToHashSet());
         }
     }
 }

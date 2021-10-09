@@ -34,7 +34,13 @@ namespace Yoakke.Collections
         }
 
         /// <inheritdoc/>
-        public bool Equals(ISet<T> x, ISet<T> y) => x.SetEquals(y);
+        public bool Equals(ISet<T> x, ISet<T> y)
+        {
+            if (ReferenceEquals(x, y)) return true;
+            if (x is HashSet<T> xh && xh.Comparer.Equals(this.Comparer)) return xh.SetEquals(y);
+            if (y is HashSet<T> yh && yh.Comparer.Equals(this.Comparer)) return yh.SetEquals(x);
+            return new HashSet<T>(x, this.Comparer).SetEquals(y);
+        }
 
         /// <inheritdoc/>
         public int GetHashCode(ISet<T> obj)
