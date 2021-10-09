@@ -69,11 +69,26 @@ namespace Yoakke.Grammar.Tests
                 "S -> a S c _");
 
             // Assert action table
-            table.Action[i0, new("a")].SequenceEqual(new[] { new Shift(i1) });
-            table.Action[i0, new("d")].SequenceEqual(new[] { new Shift(i2) });
-            table.Action[i1, new("a")].SequenceEqual(new[] { new Shift(i1) });
-            table.Action[i1, new("d")].SequenceEqual(new[] { new Shift(i2) });
-            table.Action[i3, Terminal.EndOfInput].SequenceEqual(new[] { Accept.Instance });
+            Assert.True(table.Action[i0, new("a")].ToHashSet().SetEquals(new[] { new Shift(i1) }));
+            Assert.True(table.Action[i0, new("d")].ToHashSet().SetEquals(new[] { new Shift(i2) }));
+            Assert.True(table.Action[i1, new("a")].ToHashSet().SetEquals(new[] { new Shift(i1) }));
+            Assert.True(table.Action[i1, new("d")].ToHashSet().SetEquals(new[] { new Shift(i2) }));
+            Assert.True(table.Action[i3, Terminal.EndOfInput].ToHashSet().SetEquals(new[] { Accept.Instance }));
+            Assert.True(table.Action[i5, new("b")].ToHashSet().SetEquals(new[] { new Shift(i6) }));
+            Assert.True(table.Action[i5, new("c")].ToHashSet().SetEquals(new[] { new Shift(i7) }));
+            foreach (var term in grammar.Terminals)
+            {
+                Assert.True(table.Action[i4, term].ToHashSet().SetEquals(
+                    new[] { new Reduce(TestUtils.ParseProduction(grammar, "S -> d b")) }));
+                Assert.True(table.Action[i6, term].ToHashSet().SetEquals(
+                    new[] { new Reduce(TestUtils.ParseProduction(grammar, "S -> a S b")) }));
+                Assert.True(table.Action[i7, term].ToHashSet().SetEquals(
+                    new[] { new Reduce(TestUtils.ParseProduction(grammar, "S -> a S c")) }));
+            }
+
+            // Assert goto table
+            Assert.Equal(i3, table.Goto[i0, new("S")]);
+            Assert.Equal(i5, table.Goto[i1, new("S")]);
         }
     }
 }
