@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Yoakke.Grammar.Tests
 {
-    internal static class TestGrammars
+    internal static class LrTestGrammars
     {
         public const string Lr0Grammar = @"
 S -> a S b
@@ -32,7 +32,7 @@ A -> z
 B -> z
 ";
 
-        public const string Lr1Grammar = @"
+        public const string ClrGrammar = @"
 S -> a E a
 S -> b E b
 S -> a F b
