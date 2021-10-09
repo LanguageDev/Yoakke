@@ -186,11 +186,17 @@ namespace Yoakke.Grammar.Tests
             // Assert item sets
             this.AssertState(
                 out var i0,
-                "S' -> _ S, $");
+                "S' -> _ S, $",
+                "S -> _ a A c, $",
+                "S -> _ a B d, $",
+                "S -> _ B c, $",
+                "B -> _ z, c");
             this.AssertState(
                 out var i1,
                 "S -> a _ A c, $",
-                "S -> a _ B d, $");
+                "S -> a _ B d, $",
+                "A -> _ z, c",
+                "B -> _ z, d");
             this.AssertState(
                 out var i2,
                 "B -> z _, c");
@@ -250,27 +256,35 @@ namespace Yoakke.Grammar.Tests
             this.Table = LrParsingTable.Clr(grammar);
 
             // Assert state count
-            Assert.Equal(13, this.Table.StateAllocator.States.Count);
+            Assert.Equal(14, this.Table.StateAllocator.States.Count);
 
             // Assert item sets
             this.AssertState(
                 out var i0,
-                "S' -> _ S, $");
+                "S' -> _ S, $",
+                "S -> _ a E a, $",
+                "S -> _ b E b, $",
+                "S -> _ a F b, $",
+                "S -> _ b F a, $");
             this.AssertState(
                 out var i1,
                 "S -> a _ E a, $",
-                "S -> a _ F b, $");
+                "S -> a _ F b, $",
+                "E -> _ e, a",
+                "F -> _ e, b");
             this.AssertState(
                 out var i2,
                 "S -> b _ E b, $",
-                "S -> b _ F a, $");
+                "S -> b _ F a, $",
+                "E -> _ e, b",
+                "F -> _ e, a");
             this.AssertState(
                 out var i3,
                 "S' -> S _, $");
             this.AssertState(
                 out var i4,
-                "E -> e _, a/b",
-                "F -> e _, a/b");
+                "E -> e _, b",
+                "F -> e _, a");
             this.AssertState(
                 out var i5,
                 "S -> b E _ b, $");
@@ -285,38 +299,44 @@ namespace Yoakke.Grammar.Tests
                 "S -> b E b _, $");
             this.AssertState(
                 out var i9,
-                "S -> a E _ a, $");
+                "E -> e _, a",
+                "F -> e _, b");
             this.AssertState(
                 out var i10,
-                "S -> a F _ b, $");
+                "S -> a E _ a, $");
             this.AssertState(
                 out var i11,
-                "S -> a F b _, $");
+                "S -> a F _ b, $");
             this.AssertState(
                 out var i12,
+                "S -> a F b _, $");
+            this.AssertState(
+                out var i13,
                 "S -> a E a _, $");
 
             // Assert action table
             this.AssertAction(i0, "a", this.Shift(i1));
             this.AssertAction(i0, "b", this.Shift(i2));
-            this.AssertAction(i1, "e", this.Shift(i4));
+            this.AssertAction(i1, "e", this.Shift(i9));
             this.AssertAction(i2, "e", this.Shift(i4));
             this.AssertAction(i3, "$", Accept.Instance);
-            this.AssertAction(i4, "a", this.Reduce("E -> e"), this.Reduce("F -> e"));
-            this.AssertAction(i4, "b", this.Reduce("E -> e"), this.Reduce("F -> e"));
+            this.AssertAction(i4, "a", this.Reduce("F -> e"));
+            this.AssertAction(i4, "b", this.Reduce("E -> e"));
             this.AssertAction(i5, "b", this.Shift(i8));
             this.AssertAction(i6, "a", this.Shift(i7));
             this.AssertAction(i7, "$", this.Reduce("S -> b F a"));
             this.AssertAction(i8, "$", this.Reduce("S -> b E b"));
-            this.AssertAction(i9, "a", this.Shift(i12));
-            this.AssertAction(i10, "b", this.Shift(i11));
-            this.AssertAction(i11, "$", this.Reduce("S -> a F b"));
-            this.AssertAction(i12, "$", this.Reduce("S -> a E a"));
+            this.AssertAction(i9, "a", this.Reduce("E -> e"));
+            this.AssertAction(i9, "b", this.Reduce("F -> e"));
+            this.AssertAction(i10, "a", this.Shift(i13));
+            this.AssertAction(i11, "b", this.Shift(i12));
+            this.AssertAction(i12, "$", this.Reduce("S -> a F b"));
+            this.AssertAction(i13, "$", this.Reduce("S -> a E a"));
 
             // Assert goto table
             Assert.Equal(i3, this.Table.Goto[i0, new("S")]);
-            Assert.Equal(i9, this.Table.Goto[i1, new("E")]);
-            Assert.Equal(i10, this.Table.Goto[i1, new("F")]);
+            Assert.Equal(i10, this.Table.Goto[i1, new("E")]);
+            Assert.Equal(i11, this.Table.Goto[i1, new("F")]);
             Assert.Equal(i5, this.Table.Goto[i2, new("E")]);
             Assert.Equal(i6, this.Table.Goto[i2, new("F")]);
         }
