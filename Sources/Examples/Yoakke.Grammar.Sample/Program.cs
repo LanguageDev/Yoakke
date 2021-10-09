@@ -62,11 +62,7 @@ S -> d b
                 .Select(t => t.Trim())
                 .Where(t => !string.IsNullOrWhiteSpace(t))
                 .ToList();
-            var arrowPositions = tokens
-                .Select((token, index) => (Token: token, Index: index))
-                .Where(i => i.Token == "->")
-                .Select(i => i.Index)
-                .ToList();
+            var arrowPositions = tokens.IndicesOf("->").ToList();
             var ruleNames = arrowPositions
                 .Select(pos => tokens[pos - 1])
                 .ToHashSet();

@@ -186,9 +186,8 @@ namespace Yoakke.Automata.Sparse
                 {
                     var symbolToRemove = map
                         .Where(kv => this.StateComparer.Equals(kv.Value, item))
-                        .Select(kv => kv.Key)
-                        .GetEnumerator();
-                    if (symbolToRemove.MoveNext()) map.Remove(symbolToRemove.Current);
+                        .Select(kv => kv.Key);
+                    if (symbolToRemove.TryFirst(out var current)) map.Remove(current);
                 }
             };
             this.allStates.Cleared += (sender, eventArgs) => this.transitions.Clear();

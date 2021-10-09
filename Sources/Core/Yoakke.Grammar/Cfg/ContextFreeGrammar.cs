@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Collections.Generic.Polyfill;
 using System.Linq;
 using System.Text;
+using Yoakke.Collections;
 using Yoakke.Collections.Values;
 using Yoakke.Grammar.Internal;
 using Yoakke.Grammar.Lr;
@@ -95,13 +96,9 @@ namespace Yoakke.Grammar.Cfg
 
             public bool Remove(IReadOnlyValueList<Symbol> item)
             {
-                var enumerator = this.Underlying
-                    .Select((p, i) => (Production: p, Index: i))
-                    .Where(p => p.Production.Right.Equals(item))
-                    .Select(p => p.Index)
-                    .GetEnumerator();
-                if (!enumerator.MoveNext()) return false;
-                this.Underlying.RemoveAt(enumerator.Current);
+                var indices = this.Underlying.IndicesOf(p => p.Right.Equals(item));
+                if (!indices.TryFirst(out var index)) return false;
+                this.Underlying.RemoveAt(index);
                 return true;
             }
 

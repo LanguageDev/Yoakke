@@ -360,10 +360,9 @@ namespace Yoakke.Automata.Dense
             foreach (var fromState in this.EpsilonClosure(from))
             {
                 if (!this.transitions.TransitionMap.TryGetValue(fromState, out var onMap)) continue;
-                var values = onMap.GetValues(on).GetEnumerator();
-                if (!values.MoveNext()) continue;
+                if (!onMap.GetValues(on).TryFirst(out var value)) continue;
 
-                foreach (var s in values.Current.SelectMany(this.EpsilonClosure))
+                foreach (var s in value.SelectMany(this.EpsilonClosure))
                 {
                     if (touched.Add(s)) yield return s;
                 }

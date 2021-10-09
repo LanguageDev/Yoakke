@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using Yoakke.Collections;
 using Yoakke.Collections.Values;
 using Yoakke.Grammar.Cfg;
 using Yoakke.Grammar.Lr;
@@ -32,11 +33,7 @@ namespace Yoakke.Grammar.Tests
         public static Lr0Item ParseLr0Item(IReadOnlyCfg cfg, string text)
         {
             var fakeProd = ParseProduction(cfg, text);
-            var cursor = fakeProd.Right
-                .Select((s, i) => (Symbol: s, Index: i))
-                .Where(p => p.Symbol.Equals(new Terminal("_")))
-                .Select(p => p.Index)
-                .First();
+            var cursor = fakeProd.Right.IndicesOf(new Terminal("_")).First();
             var right = fakeProd.Right.ToList();
             right.RemoveAt(cursor);
             return new Lr0Item(new(fakeProd.Left, right.ToValue()), cursor);
@@ -63,11 +60,7 @@ namespace Yoakke.Grammar.Tests
                 .Select(t => t.Trim())
                 .Where(t => !string.IsNullOrWhiteSpace(t))
                 .ToList();
-            var arrowPositions = tokens
-                .Select((token, index) => (Token: token, Index: index))
-                .Where(i => i.Token == "->")
-                .Select(i => i.Index)
-                .ToList();
+            var arrowPositions = tokens.IndicesOf("->").ToList();
             var ruleNames = arrowPositions
                 .Select(pos => tokens[pos - 1])
                 .ToHashSet();

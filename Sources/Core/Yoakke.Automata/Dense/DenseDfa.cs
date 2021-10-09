@@ -192,9 +192,8 @@ namespace Yoakke.Automata.Dense
                 {
                     var symbolToRemove = map
                         .Where(kv => this.StateComparer.Equals(kv.Value, item))
-                        .Select(kv => kv.Key)
-                        .GetEnumerator();
-                    if (symbolToRemove.MoveNext()) map.Remove(symbolToRemove.Current);
+                        .Select(kv => kv.Key);
+                    if (symbolToRemove.TryFirst(out var key)) map.Remove(key);
                 }
             };
             this.allStates.Cleared += (sender, eventArgs) => this.transitions.Clear();
@@ -252,17 +251,7 @@ namespace Yoakke.Automata.Dense
                 to = default;
                 return false;
             }
-            var values = fromMap.GetValues(on).GetEnumerator();
-            if (values.MoveNext())
-            {
-                to = values.Current;
-                return true;
-            }
-            else
-            {
-                to = default;
-                return false;
-            }
+            return fromMap.GetValues(on).TryFirst(out to);
         }
 
         /// <inheritdoc/>
