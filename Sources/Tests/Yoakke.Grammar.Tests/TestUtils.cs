@@ -4,16 +4,57 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 using Yoakke.Collections.Values;
 using Yoakke.Grammar.Cfg;
+using Yoakke.Grammar.Lr;
+using Yoakke.Grammar.Lr.Lr0;
 
 namespace Yoakke.Grammar.Tests
 {
     internal static class TestUtils
     {
+        public static void AssertLr0ItemSet(ILrParsingTable<Lr0Item> table, out int state, params string[] itemTexts) =>
+            AssertItemSet(table, out state, ParseLr0Item, itemTexts);
+
+        public static void AssertItemSet<TItem>(
+            ILrParsingTable<TItem> table,
+            out int state,
+            Func<IReadOnlyCfg, string, TItem> itemParser,
+            params string[] itemTexts)
+            where TItem : ILrItem =>
+            Assert.False(table.StateAllocator.Allocate(itemTexts.Select(t => itemParser(table.Grammar, t)).ToHashSet(), out state));
+
+        public static Lr0Item ParseLr0Item(IReadOnlyCfg cfg, string text)
+        {
+            var fakeProd = ParseProduction(cfg, text);
+            var cursor = fakeProd.Right
+                .Select((s, i) => (Symbol: s, Index: i))
+                .Where(p => p.Symbol.Equals(new Terminal("_")))
+                .Select(p => p.Index)
+                .First();
+            var right = fakeProd.Right.ToList();
+            right.RemoveAt(cursor);
+            return new Lr0Item(new(fakeProd.Left, right.ToValue()), cursor);
+        }
+
+        public static Production ParseProduction(IReadOnlyCfg cfg, string text)
+        {
+            var parts = text.Split("->");
+            var left = new Nonterminal(parts[0].Trim());
+            var rightParts = parts[1].Trim().Split(" ").Select(p => p.Trim());
+            var right = new List<Symbol>();
+            foreach (var part in rightParts)
+            {
+                right.Add(cfg.Nonterminals.Contains(new(part)) ? new Nonterminal(part) : new Terminal(part));
+            }
+            return new(left, right.ToValue());
+        }
+
         public static ContextFreeGrammar ParseGrammar(string text)
         {
             var result = new ContextFreeGrammar();

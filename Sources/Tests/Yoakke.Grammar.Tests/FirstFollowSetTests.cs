@@ -80,7 +80,7 @@ namespace Yoakke.Grammar.Tests
             var hasEpsilon = terminals.Any(t => t == "ε");
             var termSymbols = terminals
                 .Where(t => t != "ε")
-                .Select(t => t == "$" ? Symbol.EndOfInput : new Terminal(t))
+                .Select(t => t == "$" ? Terminal.EndOfInput : new Terminal(t))
                 .ToHashSet();
             return (parts[0].Trim(), termSymbols, hasEpsilon);
         }
