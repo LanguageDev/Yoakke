@@ -8,20 +8,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
-using Yoakke.Grammar.Cfg;
 using Yoakke.Grammar.Lr;
 using Yoakke.Grammar.Lr.Lr0;
 
 namespace Yoakke.Grammar.Tests
 {
-    public class Lr0TableTests : LrTestBase<Lr0Item>
+    public class SlrTableTests : LrTestBase<Lr0Item>
     {
         [Fact]
         public void FromLr0Grammar()
         {
             var grammar = ParseUtils.ParseGrammar(LrTestGrammars.Lr0Grammar);
             grammar.AugmentStartSymbol();
-            this.Table = LrParsingTable.Lr0(grammar);
+            this.Table = LrParsingTable.Slr(grammar);
 
             // Assert state count
             Assert.Equal(8, this.Table.StateAllocator.States.Count);
@@ -69,7 +68,7 @@ namespace Yoakke.Grammar.Tests
             this.AssertAction(i3, "$", Accept.Instance);
             this.AssertAction(i5, "b", this.Shift(i6));
             this.AssertAction(i5, "c", this.Shift(i7));
-            foreach (var term in grammar.Terminals)
+            foreach (var term in new[] { "$", "b", "c" })
             {
                 this.AssertAction(i4, term, this.Reduce("S -> d b"));
                 this.AssertAction(i6, term, this.Reduce("S -> a S b"));
@@ -86,7 +85,7 @@ namespace Yoakke.Grammar.Tests
         {
             var grammar = ParseUtils.ParseGrammar(LrTestGrammars.SlrGrammar);
             grammar.AugmentStartSymbol();
-            this.Table = LrParsingTable.Lr0(grammar);
+            this.Table = LrParsingTable.Slr(grammar);
 
             // Assert state count
             Assert.Equal(5, this.Table.StateAllocator.States.Count);
@@ -117,12 +116,10 @@ namespace Yoakke.Grammar.Tests
             // Assert action table
             this.AssertAction(i0, "1", this.Shift(i1));
             this.AssertAction(i1, "$", this.Reduce("E -> 1"));
-            this.AssertAction(i1, "1", this.Shift(i1), this.Reduce("E -> 1"));
+            this.AssertAction(i1, "1", this.Shift(i1));
             this.AssertAction(i2, "$", Accept.Instance);
             this.AssertAction(i3, "$", this.Reduce("S -> E"));
-            this.AssertAction(i3, "1", this.Reduce("S -> E"));
             this.AssertAction(i4, "$", this.Reduce("E -> 1 E"));
-            this.AssertAction(i4, "1", this.Reduce("E -> 1 E"));
 
             // Assert goto table
             Assert.Equal(i2, this.Table.Goto[i0, new("S")]);
@@ -135,7 +132,7 @@ namespace Yoakke.Grammar.Tests
         {
             var grammar = ParseUtils.ParseGrammar(LrTestGrammars.LalrGrammar);
             grammar.AugmentStartSymbol();
-            this.Table = LrParsingTable.Lr0(grammar);
+            this.Table = LrParsingTable.Slr(grammar);
 
             // Assert state count
             Assert.Equal(11, this.Table.StateAllocator.States.Count);
@@ -187,18 +184,17 @@ namespace Yoakke.Grammar.Tests
             this.AssertAction(i0, "a", this.Shift(i1));
             this.AssertAction(i0, "z", this.Shift(i2));
             this.AssertAction(i1, "z", this.Shift(i6));
+            this.AssertAction(i2, "c", this.Reduce("B -> z"));
+            this.AssertAction(i2, "d", this.Reduce("B -> z"));
             this.AssertAction(i3, "$", Accept.Instance);
             this.AssertAction(i4, "c", this.Shift(i5));
+            this.AssertAction(i5, "$", this.Reduce("S -> B c"));
+            this.AssertAction(i6, "c", this.Reduce("A -> z"), this.Reduce("B -> z"));
+            this.AssertAction(i6, "d", this.Reduce("B -> z"));
             this.AssertAction(i7, "c", this.Shift(i10));
             this.AssertAction(i8, "d", this.Shift(i9));
-            foreach (var term in grammar.Terminals)
-            {
-                this.AssertAction(i2, term, this.Reduce("B -> z"));
-                this.AssertAction(i5, term, this.Reduce("S -> B c"));
-                this.AssertAction(i6, term, this.Reduce("A -> z"), this.Reduce("B -> z"));
-                this.AssertAction(i9, term, this.Reduce("S -> a B d"));
-                this.AssertAction(i10, term, this.Reduce("S -> a A c"));
-            }
+            this.AssertAction(i9, "$", this.Reduce("S -> a B d"));
+            this.AssertAction(i10, "$", this.Reduce("S -> a A c"));
 
             // Assert goto table
             Assert.Equal(i3, this.Table.Goto[i0, new("S")]);
@@ -212,7 +208,7 @@ namespace Yoakke.Grammar.Tests
         {
             var grammar = ParseUtils.ParseGrammar(LrTestGrammars.ClrGrammar);
             grammar.AugmentStartSymbol();
-            this.Table = LrParsingTable.Lr0(grammar);
+            this.Table = LrParsingTable.Slr(grammar);
 
             // Assert state count
             Assert.Equal(13, this.Table.StateAllocator.States.Count);
@@ -275,18 +271,16 @@ namespace Yoakke.Grammar.Tests
             this.AssertAction(i1, "e", this.Shift(i4));
             this.AssertAction(i2, "e", this.Shift(i4));
             this.AssertAction(i3, "$", Accept.Instance);
+            this.AssertAction(i4, "a", this.Reduce("E -> e"), this.Reduce("F -> e"));
+            this.AssertAction(i4, "b", this.Reduce("E -> e"), this.Reduce("F -> e"));
             this.AssertAction(i5, "b", this.Shift(i8));
             this.AssertAction(i6, "a", this.Shift(i7));
+            this.AssertAction(i7, "$", this.Reduce("S -> b F a"));
+            this.AssertAction(i8, "$", this.Reduce("S -> b E b"));
             this.AssertAction(i9, "a", this.Shift(i12));
             this.AssertAction(i10, "b", this.Shift(i11));
-            foreach (var term in grammar.Terminals)
-            {
-                this.AssertAction(i4, term, this.Reduce("E -> e"), this.Reduce("F -> e"));
-                this.AssertAction(i7, term, this.Reduce("S -> b F a"));
-                this.AssertAction(i8, term, this.Reduce("S -> b E b"));
-                this.AssertAction(i11, term, this.Reduce("S -> a F b"));
-                this.AssertAction(i12, term, this.Reduce("S -> a E a"));
-            }
+            this.AssertAction(i11, "$", this.Reduce("S -> a F b"));
+            this.AssertAction(i12, "$", this.Reduce("S -> a E a"));
 
             // Assert goto table
             Assert.Equal(i3, this.Table.Goto[i0, new("S")]);

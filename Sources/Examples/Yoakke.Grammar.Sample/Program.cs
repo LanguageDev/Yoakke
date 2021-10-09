@@ -26,7 +26,7 @@ F -> e
 ");
             cfg.AugmentStartSymbol();
 
-            var table = LrParsingTable.Lr0(cfg);
+            var table = LrParsingTable.Slr(cfg);
             Console.WriteLine(table.ToHtmlTable());
             Console.WriteLine();
             Console.WriteLine();
