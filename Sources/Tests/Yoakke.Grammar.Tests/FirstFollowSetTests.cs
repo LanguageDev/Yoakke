@@ -24,7 +24,7 @@ namespace Yoakke.Grammar.Tests
         })]
         public void FirstSetTests(string grammarText, string[] firstSets)
         {
-            var cfg = TestUtils.ParseGrammar(grammarText);
+            var cfg = ParseUtils.ParseGrammar(grammarText);
             cfg.StartSymbol = new("E");
 
             foreach (var term in cfg.Terminals)
@@ -61,7 +61,7 @@ namespace Yoakke.Grammar.Tests
         })]
         public void FollowSetTests(string grammarText, string[] followSets)
         {
-            var cfg = TestUtils.ParseGrammar(grammarText);
+            var cfg = ParseUtils.ParseGrammar(grammarText);
             cfg.StartSymbol = new("E");
 
             foreach (var followSetText in followSets)
