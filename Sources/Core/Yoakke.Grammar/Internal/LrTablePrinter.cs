@@ -16,7 +16,7 @@ namespace Yoakke.Grammar.Internal
     internal static class LrTablePrinter
     {
         /// <summary>
-        /// Implements <see cref="ILrParsingTable{TItem}.ToHtmlTable"/>.
+        /// Implements <see cref="ILrParsingTable.ToHtmlTable"/>.
         /// </summary>
         /// <typeparam name="TItem">The item type.</typeparam>
         /// <param name="table">The table to convert.</param>
@@ -94,7 +94,7 @@ namespace Yoakke.Grammar.Internal
         }
 
         /// <summary>
-        /// Implements <see cref="ILrParsingTable{TItem}.ToDotDfa"/>.
+        /// Implements <see cref="ILrParsingTable.ToDotDfa"/>.
         /// </summary>
         /// <typeparam name="TItem">The item type.</typeparam>
         /// <param name="table">The table to convert.</param>

@@ -17,16 +17,15 @@ namespace Yoakke.Grammar.Sample
         static void Main(string[] args)
         {
             var cfg = ParseGrammar(@"
-S -> a E a
-S -> b E b
-S -> a F b
-S -> b F a
-E -> e
-F -> e
+S -> E
+E -> E + E
+E -> F
+F -> 1
+E -> 1
 ");
             cfg.AugmentStartSymbol();
 
-            var table = LrParsingTable.Clr(cfg);
+            var table = LrParsingTable.Lr0(cfg);
             Console.WriteLine(table.ToHtmlTable());
             Console.WriteLine();
             Console.WriteLine();
