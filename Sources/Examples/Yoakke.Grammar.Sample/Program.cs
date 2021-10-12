@@ -229,15 +229,11 @@ namespace Yoakke.Grammar.Sample
             var cfg = ParseGrammar(@"
 S -> NP VP
 S -> S PP
-NP -> NOUN
-NP -> DETERMINER NOUN
+NP -> noun
+NP -> determiner noun
 NP -> NP PP
-PP -> PREPOSITION NP
-VP -> VERB NP
-NOUN -> I | man | telescope | bed | apartment | park
-DETERMINER -> a | the
-PREPOSITION -> on | in | with
-VERB -> saw
+PP -> preposition NP
+VP -> verb NP
 ");
             cfg.AugmentStartSymbol();
 
@@ -256,19 +252,29 @@ VERB -> saw
 
         static void GlrParse(ILrParsingTable table, string text)
         {
-            // Console.WriteLine("=========================");
-            // Console.WriteLine($"Parsing {text}");
+            var nouns = new[] { "I", "man", "telescope", "bed", "apartment", "park" };
+            var determiners = new[] { "a", "the" };
+            var prepositions = new[] { "on", "in", "with" };
+            var verbs = new[] { "saw" };
+
+            Terminal ToTerm(string word)
+            {
+                if (nouns!.Contains(word)) return new("noun");
+                if (determiners!.Contains(word)) return new("determiner");
+                if (prepositions!.Contains(word)) return new("preposition");
+                if (verbs!.Contains(word)) return new("verb");
+                throw new ArgumentOutOfRangeException();
+            }
+
             var words = text
                 .Split(' ')
                 .Select(t => t.Trim())
                 .Where(t => t.Length > 0)
-                .Select(t => new Terminal(t))
+                .Select(ToTerm)
                 .Append(Terminal.EndOfInput)
                 .ToList();
+
             var gss = new GraphStructuredStack();
-            // Console.WriteLine("=========================");
-            // Console.WriteLine("Initial GSS:");
-            // gss.DebugPrint();
             for (var i = 0; i < words.Count; ++i)
             {
                 Console.WriteLine("=========================");
