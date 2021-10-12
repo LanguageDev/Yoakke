@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using Yoakke.Collections;
 using Yoakke.Collections.Graphs;
 using Yoakke.Collections.Values;
@@ -16,30 +17,22 @@ namespace Yoakke.Grammar.Sample
 {
     abstract class Vertex
     {
-        public int Level { get; }
-
-        public HashSet<Vertex> Prev { get; }
-
-        protected Vertex(int level, HashSet<Vertex> prev)
-        {
-            this.Level = level;
-            this.Prev = prev;
-        }
+        public abstract IEnumerable<Vertex> Prev { get; }
     }
 
     class StateVertex : Vertex
     {
         public int State { get; }
 
+        public override ISet<SymbolVertex> Prev { get; } = new HashSet<SymbolVertex>();
+
         public StateVertex()
-            : base(0, new())
         {
-            this.State = 0;
         }
 
-        public StateVertex(int level, int state, Vertex prev)
-            : base(level, new() { prev })
+        public StateVertex(SymbolVertex prev, int state)
         {
+            this.Prev.Add(prev);
             this.State = state;
         }
     }
@@ -48,177 +41,203 @@ namespace Yoakke.Grammar.Sample
     {
         public Symbol Symbol { get; }
 
-        public SymbolVertex(int level, Symbol symbol, Vertex prev)
-            : base(level, new() { prev })
+        public override ISet<StateVertex> Prev { get; } = new HashSet<StateVertex>();
+
+        public SymbolVertex(StateVertex prev, Symbol symbol)
         {
+            this.Prev.Add(prev);
             this.Symbol = symbol;
         }
     }
 
     class GraphStructuredStack
     {
-        private readonly List<Dictionary<object, Vertex>> levels;
+        private readonly ILrParsingTable table;
 
-        public GraphStructuredStack()
+        // Head tracking
+        private readonly Dictionary<int, StateVertex> heads = new() { { 0, new() } };
+
+        // Temporary vertex heads
+        private readonly Dictionary<Symbol, SymbolVertex> symbolHeads = new();
+        private readonly HashSet<StateVertex> oldHeads = new();
+
+        // Action tracking
+        private readonly Stack<(StateVertex Vertex, Reduce Reduce)> remainingReduces = new();
+        private readonly Stack<(StateVertex Vertex, Shift Shift)> remainingShifts = new();
+
+        // Current terminal
+        private Terminal currentTerminal = Terminal.NotInGrammar;
+
+        public GraphStructuredStack(ILrParsingTable table)
         {
-            this.levels = new() { new() { { 0, new StateVertex() } } };
+            this.table = table;
         }
 
-        public void DebugPrint()
+        public string ToDot()
         {
-            Console.WriteLine("graph GSS {");
-            Console.WriteLine("  rankdir=RL;");
+            var result = new StringBuilder();
+            result.AppendLine("graph GSS {");
+            result.AppendLine("  rankdir=RL;");
 
-            // First we name the nodes
-            var nodeNames = new Dictionary<Vertex, int>();
-            foreach (var node in this.levels[^1].Values.SelectMany(v => BreadthFirst.Search(v, n => n.Prev)))
+            var allHeads = this.oldHeads.Concat(this.heads.Values).ToHashSet();
+
+            // We number each vertex
+            var vertexNames = new Dictionary<Vertex, int>();
+            foreach (var v in allHeads.Cast<Vertex>().SelectMany(n => BreadthFirst.Search(n, v => v.Prev)))
             {
-                if (nodeNames.ContainsKey(node)) continue;
-                nodeNames.Add(node, nodeNames.Count);
+                if (vertexNames.ContainsKey(v)) continue;
+                vertexNames.Add(v, vertexNames.Count);
             }
 
-            // We print all levels in subgraphs
-            for (var l = 0; l < this.levels.Count; ++l)
+            // For the old and current heads we create a subgraph to align them
+            result.AppendLine("  subgraph Heads {");
+            result.AppendLine($"    {{rank=same {string.Join(" ", allHeads.Select(h => vertexNames[h]))}}}");
+            foreach (var h in allHeads)
             {
-                Console.WriteLine($"  subgraph level_{l} {{");
-                Console.WriteLine($"    {{rank=same {string.Join(" ", this.levels[l].Values.Where(v => nodeNames.ContainsKey(v)).Select(v => nodeNames[v]))}}}");
-                foreach (var node in this.levels[l].Values)
+                var reductionsOnHead = this.remainingReduces
+                    .Where(r => ReferenceEquals(r.Vertex, h))
+                    .Select(r => r.Reduce);
+                var shiftsOnHead = this.remainingShifts
+                    .Where(s => ReferenceEquals(s.Vertex, h))
+                    .Select(s => s.Shift);
+                var opsOnHead = reductionsOnHead.Cast<Action>().Concat(shiftsOnHead);
+                result.AppendLine($"    {vertexNames[h]}[label=\"{h.State}\", shape=circle, xlabel=\"{string.Join(@"\l", opsOnHead)}\"];");
+            }
+            result.AppendLine("  }");
+
+            // Define all other nodes
+            foreach (var vertex in vertexNames.Keys.Except(allHeads))
+            {
+                result.Append($"  {vertexNames[vertex]}[");
+                if (vertex is StateVertex state)
                 {
-                    if (!nodeNames.ContainsKey(node)) continue;
-                    var idx = nodeNames[node];
-                    if (node is StateVertex stateVertex)
-                    {
-                        Console.WriteLine($"    {idx}[label=\"{stateVertex.State}\", shape=circle];");
-                    }
-                    else
-                    {
-                        var symbolVertex = (SymbolVertex)node;
-                        Console.WriteLine($"    {idx}[label=\"{symbolVertex.Symbol}\", shape=square];");
-                    }
+                    result.Append($"label=\"{state.State}\", shape=circle");
                 }
-                Console.WriteLine("  }");
+                else
+                {
+                    var symbol = (SymbolVertex)vertex;
+                    result.Append($"label=\"{symbol.Symbol}\", shape=square");
+                }
+                result.AppendLine("]");
             }
 
-            // Finally print connections
-            foreach (var (node, idx) in nodeNames)
+            // Connections
+            foreach (var v1 in vertexNames.Keys)
             {
-                foreach (var prev in node.Prev) Console.WriteLine($"  {idx} -- {nodeNames[prev]}");
+                foreach (var v2 in v1.Prev) result.AppendLine($"  {vertexNames[v1]} -- {vertexNames[v2]}");
             }
 
-            Console.WriteLine("}");
+            result.Append("}");
+            return result.ToString();
         }
 
-        public bool Step(ILrParsingTable table, Terminal input)
+        public void Feed(Terminal terminal)
         {
-            // We keep track of the unhandled heads in a stack
-            // Unhandled heads are all heads that didn't have a shift or accept action performed as the last action
-            // Initially the stack will contain the current heads with all the possible actions they can perform
-            var stk = new Stack<(StateVertex Head, Action Action)>();
-            var initialActions = this.levels[^1].Values
-                .Cast<StateVertex>()
-                .SelectMany(h => table.Action[h.State, input].Select(a => (Head: h, Action: a)));
-            foreach (var item in initialActions) stk.Push(item);
-            var lastLevel = this.levels[^1].Values.First().Level;
+            // If there are remaining actions to perform, feeding another terminal is illegal
+            if (this.remainingReduces.Count > 0 || this.remainingShifts.Count > 0) throw new InvalidOperationException("Not all actions are performed yet");
 
-            // As long as there is an unhandled head, handle it
-            while (stk.TryPop(out var top))
-            {
-                var (head, action) = top;
+            // Symbol heads are cached per-feed
+            this.symbolHeads.Clear();
 
-                // Fow now we immediately terminate on an accept
-                if (action is Accept) return true;
+            // We add the old heads
+            this.oldHeads.Clear();
+            foreach (var h in this.heads.Values) this.oldHeads.Add(h);
 
-                // If this is a shift, we just do the shifting and we are done with this node
-                // Nothing derives onto the stack, as this head can be considered in-sync with the input
-                if (action is Shift shift)
-                {
-                    this.Push(lastLevel, head, input, shift.State);
-                    continue;
-                }
+            // We store the terminal
+            this.currentTerminal = terminal;
 
-                // This is a reduce, which is a bit more complicated
-                var reduce = (Reduce)action;
-                // We first need to pop off enough symbol stack elements for the reduction
-                // The pop might happen on a joint vertex, so the pop will result in multiple possible nodes
-                // We need to consider all of them at once and collect all elements for the reduction
-                var poppedElements = new HashSet<StateVertex> { head };
-                for (var i = 0; i < reduce.Production.Right.Count; ++i) poppedElements = Pop(poppedElements);
-                // Now that we popped off the proper amount of elements, we also need to push onto all these roots
-                // all the different actions that can be performed on them, not unlike for the initialization of this stack
-                foreach (var root in poppedElements)
-                {
-                    // We push on a new state
-                    var nextState = table.Goto[root.State, reduce.Production.Left];
-                    if (nextState is null) continue;
-                    var nextRoot = this.Push(root.Level, root, reduce.Production.Left, nextState.Value);
-                    // We add all possible actions on this state to be processed, until they all terminate in a shift too
-                    foreach (var nextAction in table.Action[nextState.Value, input]) stk.Push((nextRoot, nextAction));
-                }
-            }
+            // Then we push each action for each head
+            foreach (var head in this.heads.Values) this.PushActions(head);
 
-            return false;
+            // Now we clear the current heads, they will be filled up
+            this.heads.Clear();
         }
 
-        private StateVertex Push(int levelOffset, StateVertex stateVertex, Symbol symbol, int state)
+        public bool Step()
         {
-            // Make sure we have enough levels
-            if (this.levels.Count == levelOffset + 1)
+            // We always reduce everywhere first
+            if (this.remainingReduces.TryPop(out var r))
             {
-                this.levels.Add(new());
-                this.levels.Add(new());
+                this.Reduce(r.Vertex, r.Reduce);
+                return true;
             }
-            // First push the symbol vertex
-            SymbolVertex symbolVertex;
-            var symbolLevel = levelOffset + 1;
-            if (this.levels[symbolLevel].TryGetValue(symbol, out var existingSymbol))
+            // Then shift
+            if (this.remainingShifts.TryPop(out var s)) this.Shift(s.Vertex, s.Shift);
+            // If there are no more shifts, we are done
+            return this.remainingShifts.Count > 0;
+        }
+
+        private bool IsActive(StateVertex vertex) =>
+               this.remainingReduces.Any(r => ReferenceEquals(r.Vertex, vertex))
+            || this.remainingShifts.Any(s => ReferenceEquals(s.Vertex, vertex));
+
+        private void Reduce(StateVertex vertex, Reduce reduce)
+        {
+            // If the vertex is not a vertex anymore, we remove it from the old heads
+            if (!this.IsActive(vertex)) this.oldHeads.Remove(vertex);
+            // Now we need to pop off |b| amount of symbol vertices for an X -> b reduction
+            var newRoots = new HashSet<StateVertex> { vertex };
+            for (var i = 0; i < reduce.Production.Right.Count; ++i) newRoots = Pop(newRoots).ToHashSet();
+            // We have all the new roots, all of them get a symbol and state pushed on
+            foreach (var root in newRoots)
             {
-                symbolVertex = (SymbolVertex)existingSymbol;
-                symbolVertex.Prev.Add(stateVertex);
+                // Check what state we result in
+                var stateGoto = this.table.Goto[root.State, reduce.Production.Left];
+                // If nothing, we terminate this branch
+                if (stateGoto is null) continue;
+                // Otherwise we push on the symbol and the state
+                var nextSymbol = new SymbolVertex(root, reduce.Production.Left);
+                var nextState = new StateVertex(nextSymbol, stateGoto.Value);
+                // For debugging we push on this node as an old head, will be deleted by a shift anyway
+                this.oldHeads.Add(nextState);
+                // Now we add all actions that can be performed on this new state for the current terminal for further processing
+                this.PushActions(nextState);
+            }
+        }
+
+        private void Shift(StateVertex vertex, Shift shift)
+        {
+            // The vertex is surely out of the heads now
+            this.oldHeads.Remove(vertex);
+            // Now we try to push on the symbol and next state
+            // First the symbol
+            if (this.symbolHeads.TryGetValue(this.currentTerminal, out var nextSymbolVertex))
+            {
+                // The next symbol is already contained, just connect it up
+                nextSymbolVertex.Prev.Add(vertex);
             }
             else
             {
-                symbolVertex = new(symbolLevel, symbol, stateVertex);
-                this.levels[symbolLevel].Add(symbol, symbolVertex);
+                // Does not exist yet
+                nextSymbolVertex = new(vertex, this.currentTerminal);
+                this.symbolHeads.Add(this.currentTerminal, nextSymbolVertex);
             }
-            // Then push the state vertex
-            StateVertex newStateVertex;
-            var newStateLevel = levelOffset + 2;
-            if (this.levels[newStateLevel].TryGetValue(state, out var existingState))
+            // Now the state
+            if (this.heads.TryGetValue(shift.State, out var nextStateVertex))
             {
-                newStateVertex = (StateVertex)existingState;
-                existingState.Prev.Add(symbolVertex);
+                // The next state is already contained, just connect it up
+                nextStateVertex.Prev.Add(nextSymbolVertex);
             }
             else
             {
-                newStateVertex = new(newStateLevel, state, symbolVertex);
-                this.levels[newStateLevel].Add(state, newStateVertex);
+                // Does not exist yet
+                nextStateVertex = new(nextSymbolVertex, shift.State);
+                this.heads.Add(shift.State, nextStateVertex);
             }
-            return newStateVertex;
         }
 
-        private static HashSet<StateVertex> Pop(HashSet<StateVertex> vertices)
+        private static IEnumerable<StateVertex> Pop(IEnumerable<StateVertex> vertices) =>
+            vertices.SelectMany(v => v.Prev.SelectMany(u => u.Prev));
+
+        private void PushActions(StateVertex vertex)
         {
-            var result = new HashSet<StateVertex>();
-            // We keep unhandled nodes on a stack
-            var stk = new Stack<Vertex>();
-            // Initially we push every previous node of the current node
-            foreach (var item in vertices.SelectMany(v => v.Prev)) stk.Push(item);
-            // While there's an unprocessed node, take it out
-            while (stk.TryPop(out var node))
+            var actions = this.table.Action[vertex.State, this.currentTerminal];
+            foreach (var action in actions)
             {
-                // If this node is a symbol vertex, the previous items all belong in the result and we are done
-                if (node is SymbolVertex symbolVertex)
-                {
-                    // this.levels[node.Level].Remove(symbolVertex.Symbol);
-                    foreach (var p in symbolVertex.Prev) result.Add((StateVertex)p);
-                    continue;
-                }
-                // Otherwise this is a state vertex and we need to go further back
-                var stateVertex = (StateVertex)node;
-                // this.levels[node.Level].Remove(stateVertex.State);
-                foreach (var p in stateVertex.Prev) stk.Push(p);
+                if (action is Shift s) this.remainingShifts.Push((vertex, s));
+                else if (action is Reduce r) this.remainingReduces.Push((vertex, r));
+                // NOTE: else it's an accept
             }
-            return result;
         }
     }
 
@@ -270,19 +289,33 @@ VP -> verb NP
                 .Split(' ')
                 .Select(t => t.Trim())
                 .Where(t => t.Length > 0)
+                .ToList();
+            var terminals = words
                 .Select(ToTerm)
                 .Append(Terminal.EndOfInput)
                 .ToList();
+            words.Add("$");
 
-            var gss = new GraphStructuredStack();
+            var gss = new GraphStructuredStack(table);
+            Console.WriteLine("=========================");
+            Console.WriteLine(gss.ToDot());
+            Console.WriteLine("=========================");
             for (var i = 0; i < words.Count; ++i)
             {
+                Console.WriteLine($"processing {words[i]}");
+                gss.Feed(terminals[i]);
                 Console.WriteLine("=========================");
-                Console.WriteLine($"Processing {words[i]}");
+                Console.WriteLine(gss.ToDot());
                 Console.WriteLine("=========================");
-                Console.WriteLine("Current GSS:");
-                gss.Step(table, words[i]);
-                gss.DebugPrint();
+                while (gss.Step())
+                {
+                    Console.WriteLine("=========================");
+                    Console.WriteLine(gss.ToDot());
+                    Console.WriteLine("=========================");
+                }
+                Console.WriteLine("=========================");
+                Console.WriteLine(gss.ToDot());
+                Console.WriteLine("=========================");
             }
         }
 
