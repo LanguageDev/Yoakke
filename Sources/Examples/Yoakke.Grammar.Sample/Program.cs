@@ -223,10 +223,18 @@ namespace Yoakke.Grammar.Sample
         private void Reduce(StateVertex vertex, Reduce reduce)
         {
             // If the vertex is not a vertex anymore, we remove it from the old heads
-            if (!this.IsActive(vertex)) this.oldHeads.Remove(vertex);
+            if (!this.IsActive(vertex))
+            {
+                this.oldHeads.Remove(vertex);
+                this.reduceLayer.StateVertices.Remove(vertex.State);
+            }
             // Now we need to pop off |b| amount of symbol vertices for an X -> b reduction
             var newRoots = new HashSet<StateVertex> { vertex };
-            for (var i = 0; i < reduce.Production.Right.Count; ++i) newRoots = Pop(newRoots).ToHashSet();
+            for (var i = 0; i < reduce.Production.Right.Count; ++i)
+            {
+
+                newRoots = Pop(newRoots).ToHashSet();
+            }
             // We have all the new roots, all of them get a symbol and state pushed on
             foreach (var root in newRoots)
             {
