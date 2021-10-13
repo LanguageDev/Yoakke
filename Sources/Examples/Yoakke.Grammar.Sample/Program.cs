@@ -230,11 +230,7 @@ namespace Yoakke.Grammar.Sample
             }
             // Now we need to pop off |b| amount of symbol vertices for an X -> b reduction
             var newRoots = new HashSet<StateVertex> { vertex };
-            for (var i = 0; i < reduce.Production.Right.Count; ++i)
-            {
-
-                newRoots = Pop(newRoots).ToHashSet();
-            }
+            for (var i = 0; i < reduce.Production.Right.Count; ++i) newRoots = Pop(newRoots).ToHashSet();
             // We have all the new roots, all of them get a symbol and state pushed on
             foreach (var root in newRoots)
             {
