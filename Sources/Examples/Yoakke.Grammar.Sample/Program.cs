@@ -24,7 +24,9 @@ namespace Yoakke.Grammar.Sample
     {
         public int State { get; }
 
-        public override ISet<SymbolVertex> Prev { get; } = new HashSet<SymbolVertex>();
+        public override IEnumerable<Vertex> Prev => this.PrevMap.Values;
+
+        public Dictionary<Symbol, SymbolVertex> PrevMap { get; } = new Dictionary<Symbol, SymbolVertex>();
 
         public StateVertex()
         {
@@ -32,7 +34,7 @@ namespace Yoakke.Grammar.Sample
 
         public StateVertex(SymbolVertex prev, int state)
         {
-            this.Prev.Add(prev);
+            this.PrevMap.Add(prev.Symbol, prev);
             this.State = state;
         }
     }
@@ -50,15 +52,58 @@ namespace Yoakke.Grammar.Sample
         }
     }
 
+    class VertexLayer
+    {
+        public IDictionary<int, StateVertex> StateVertices { get; } = new Dictionary<int, StateVertex>();
+
+        public void Clear()
+        {
+            this.StateVertices.Clear();
+        }
+
+        public StateVertex? Push(StateVertex prevState, Symbol symbol, int state)
+        {
+            // We can only share a symbol vertex, if we share the state vertex
+            // So first we check if we share a state vertex
+            if (this.StateVertices.TryGetValue(state, out var nextState))
+            {
+                // There is a state vertex we can share, there's a possibility we can share the symbol vertex too
+                if (nextState.PrevMap.TryGetValue(symbol, out var nextSymbol))
+                {
+                    // Everything is cached, nothing to do, just connect them up
+                    nextSymbol.Prev.Add(prevState);
+                }
+                else
+                {
+                    // The next symbol does not exist yet
+                    nextSymbol = new(prevState, symbol);
+                    nextState.PrevMap.Add(symbol, nextSymbol);
+                }
+                // Anyway, the state exists
+                return null;
+            }
+            else
+            {
+                // The state does not exist yet, we need to add it
+                // In this case, we don't share the symbols either
+                var nextSymbol = new SymbolVertex(prevState, symbol);
+                nextSymbol.Prev.Add(prevState);
+                nextState = new(nextSymbol, state);
+                this.StateVertices.Add(state, nextState);
+                return nextState;
+            }
+        }
+    }
+
     class GraphStructuredStack
     {
         private readonly ILrParsingTable table;
 
-        // Head tracking
-        private readonly Dictionary<int, StateVertex> heads = new() { { 0, new() } };
+        // Layer caches
+        private readonly VertexLayer reduceLayer = new();
+        private readonly VertexLayer shiftLayer = new();
 
         // Temporary vertex heads
-        private readonly Dictionary<Symbol, SymbolVertex> symbolHeads = new();
         private readonly HashSet<StateVertex> oldHeads = new();
 
         // Action tracking
@@ -71,6 +116,8 @@ namespace Yoakke.Grammar.Sample
         public GraphStructuredStack(ILrParsingTable table)
         {
             this.table = table;
+            // Initial state
+            this.shiftLayer.StateVertices.Add(0, new());
         }
 
         public string ToDot()
@@ -79,7 +126,7 @@ namespace Yoakke.Grammar.Sample
             result.AppendLine("graph GSS {");
             result.AppendLine("  rankdir=RL;");
 
-            var allHeads = this.oldHeads.Concat(this.heads.Values).ToHashSet();
+            var allHeads = this.oldHeads.Concat(this.shiftLayer.StateVertices.Values).ToHashSet();
 
             // We number each vertex
             var vertexNames = new Dictionary<Vertex, int>();
@@ -128,6 +175,9 @@ namespace Yoakke.Grammar.Sample
             }
 
             result.Append("}");
+
+            result.Replace("->", "→");
+
             return result.ToString();
         }
 
@@ -136,21 +186,19 @@ namespace Yoakke.Grammar.Sample
             // If there are remaining actions to perform, feeding another terminal is illegal
             if (this.remainingReduces.Count > 0 || this.remainingShifts.Count > 0) throw new InvalidOperationException("Not all actions are performed yet");
 
-            // Symbol heads are cached per-feed
-            this.symbolHeads.Clear();
-
             // We add the old heads
             this.oldHeads.Clear();
-            foreach (var h in this.heads.Values) this.oldHeads.Add(h);
+            foreach (var h in this.shiftLayer.StateVertices.Values) this.oldHeads.Add(h);
+
+            // Clear cache
+            this.shiftLayer.Clear();
+            this.reduceLayer.Clear();
 
             // We store the terminal
             this.currentTerminal = terminal;
 
             // Then we push each action for each head
-            foreach (var head in this.heads.Values) this.PushActions(head);
-
-            // Now we clear the current heads, they will be filled up
-            this.heads.Clear();
+            foreach (var head in this.oldHeads) this.PushActions(head);
         }
 
         public bool Step()
@@ -161,10 +209,11 @@ namespace Yoakke.Grammar.Sample
                 this.Reduce(r.Vertex, r.Reduce);
                 return true;
             }
-            // Then shift
-            if (this.remainingShifts.TryPop(out var s)) this.Shift(s.Vertex, s.Shift);
+            // We do the shifts all at once
+            var result = this.remainingShifts.Count > 0;
+            while (this.remainingShifts.TryPop(out var s)) this.Shift(s.Vertex, s.Shift);
             // If there are no more shifts, we are done
-            return this.remainingShifts.Count > 0;
+            return result;
         }
 
         private bool IsActive(StateVertex vertex) =>
@@ -186,12 +235,13 @@ namespace Yoakke.Grammar.Sample
                 // If nothing, we terminate this branch
                 if (stateGoto is null) continue;
                 // Otherwise we push on the symbol and the state
-                var nextSymbol = new SymbolVertex(root, reduce.Production.Left);
-                var nextState = new StateVertex(nextSymbol, stateGoto.Value);
+                var pushedVertex = this.reduceLayer.Push(root, reduce.Production.Left, stateGoto.Value);
+                // If the vertex existed, we don't do anything
+                if (pushedVertex is null) continue;
                 // For debugging we push on this node as an old head, will be deleted by a shift anyway
-                this.oldHeads.Add(nextState);
+                this.oldHeads.Add(pushedVertex);
                 // Now we add all actions that can be performed on this new state for the current terminal for further processing
-                this.PushActions(nextState);
+                this.PushActions(pushedVertex);
             }
         }
 
@@ -200,34 +250,11 @@ namespace Yoakke.Grammar.Sample
             // The vertex is surely out of the heads now
             this.oldHeads.Remove(vertex);
             // Now we try to push on the symbol and next state
-            // First the symbol
-            if (this.symbolHeads.TryGetValue(this.currentTerminal, out var nextSymbolVertex))
-            {
-                // The next symbol is already contained, just connect it up
-                nextSymbolVertex.Prev.Add(vertex);
-            }
-            else
-            {
-                // Does not exist yet
-                nextSymbolVertex = new(vertex, this.currentTerminal);
-                this.symbolHeads.Add(this.currentTerminal, nextSymbolVertex);
-            }
-            // Now the state
-            if (this.heads.TryGetValue(shift.State, out var nextStateVertex))
-            {
-                // The next state is already contained, just connect it up
-                nextStateVertex.Prev.Add(nextSymbolVertex);
-            }
-            else
-            {
-                // Does not exist yet
-                nextStateVertex = new(nextSymbolVertex, shift.State);
-                this.heads.Add(shift.State, nextStateVertex);
-            }
+            this.shiftLayer.Push(vertex, this.currentTerminal, shift.State);
         }
 
         private static IEnumerable<StateVertex> Pop(IEnumerable<StateVertex> vertices) =>
-            vertices.SelectMany(v => v.Prev.SelectMany(u => u.Prev));
+            vertices.SelectMany(v => v.PrevMap.Values.SelectMany(u => u.Prev));
 
         private void PushActions(StateVertex vertex)
         {
@@ -257,9 +284,6 @@ VP -> verb NP
             cfg.AugmentStartSymbol();
 
             var table = LrParsingTable.Lalr(cfg);
-            Console.WriteLine("Parsing table:");
-            Console.WriteLine(table.ToHtmlTable());
-            Console.WriteLine("=========================");
 
             while (true)
             {
@@ -313,9 +337,6 @@ VP -> verb NP
                     Console.WriteLine(gss.ToDot());
                     Console.WriteLine("=========================");
                 }
-                Console.WriteLine("=========================");
-                Console.WriteLine(gss.ToDot());
-                Console.WriteLine("=========================");
             }
         }
 
