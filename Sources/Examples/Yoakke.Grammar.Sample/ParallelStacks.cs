@@ -11,10 +11,11 @@ using System.Threading.Tasks;
 using Yoakke.Collections.Graphs;
 using Yoakke.Grammar.Cfg;
 using Yoakke.Grammar.Lr;
+using Yoakke.Grammar.ParseTree;
 
 namespace Yoakke.Grammar.Sample
 {
-    class ParallelStacks : INondetStack
+    public class ParallelStacks : INondetStack
     {
         public ILrParsingTable ParsingTable { get; }
 
@@ -116,15 +117,22 @@ namespace Yoakke.Grammar.Sample
         {
             this.heads.Remove(vertex);
             // Now we need to pop off |b| amount of symbol vertices for an X -> b reduction
+            var reducedSubtrees = new List<IParseTreeNode>();
             var newRoot = vertex;
-            for (var i = 0; i < reduce.Production.Right.Count; ++i) newRoot = Pop(newRoot);
+            for (var i = 0; i < reduce.Production.Right.Count; ++i)
+            {
+                var (r, s) = Pop(newRoot);
+                newRoot = r;
+                reducedSubtrees.Add(s.ParseTree);
+            }
             // We have the new root, act on it
             // Check what state we result in
             var stateGoto = this.ParsingTable.Goto[newRoot.State, reduce.Production.Left];
             // If nothing, we terminate this branch
             if (stateGoto is null) return;
             // Otherwise we push on the symbol and the state
-            var pushedVertex = Push(newRoot, reduce.Production.Left, stateGoto.Value);
+            var tree = new ProductionParseTreeNode(reduce.Production, reducedSubtrees);
+            var pushedVertex = Push(newRoot, tree, stateGoto.Value);
             // We add it as a head
             this.heads.Add(pushedVertex);
             // Now we add all actions that can be performed on this new state for the current terminal for further processing
@@ -136,20 +144,21 @@ namespace Yoakke.Grammar.Sample
             // The vertex is surely out of the heads now
             this.heads.Remove(vertex);
             // Now we try to push on the symbol and next state
-            var newHead = Push(vertex, this.currentTerminal, shift.State);
+            var leaf = new LeafParseTreeNode(this.currentTerminal, this.currentTerminal);
+            var newHead = Push(vertex, leaf, shift.State);
             this.heads.Add(newHead);
         }
 
-        private static StateVertex Pop(StateVertex vertex)
+        private static (StateVertex State, SymbolVertex Symbol) Pop(StateVertex vertex)
         {
             Debug.Assert(vertex.PrevMap.Count == 1, "Parallel stacks can only have one back-edges per vertex.");
             var prevSymbol = vertex.PrevMap.Values.First();
             Debug.Assert(prevSymbol.Prev.Count == 1, "Parallel stacks can only have one back-edges per vertex.");
-            return prevSymbol.Prev.First();
+            return (prevSymbol.Prev.First(), prevSymbol);
         }
 
-        private static StateVertex Push(StateVertex vertex, Symbol symbol, int state) =>
-            new(new(vertex, symbol), state);
+        private static StateVertex Push(StateVertex vertex, IParseTreeNode node, int state) =>
+            new(new(vertex, node), state);
 
         private void PushActions(StateVertex vertex)
         {
@@ -170,14 +179,7 @@ namespace Yoakke.Grammar.Sample
 
         private StateVertex CloneStack(StateVertex vertex)
         {
-            static StateVertex CloneState(StateVertex vertex) => vertex.PrevMap.Count == 0
-                ? new()
-                : new(CloneSymbol(vertex.PrevMap.Values.First()), vertex.State);
-
-            static SymbolVertex CloneSymbol(SymbolVertex vertex) =>
-                new(CloneState(vertex.Prev.First()), vertex.Symbol);
-
-            var newHead = CloneState(vertex);
+            var newHead = vertex.Clone();
             this.heads.Add(newHead);
             return newHead;
         }

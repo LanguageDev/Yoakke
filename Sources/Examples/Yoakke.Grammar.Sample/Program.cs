@@ -36,7 +36,7 @@ VP -> verb NP
             {
                 var input = Console.ReadLine();
                 if (input is null) break;
-                GlrParse(new GraphStructuredStack(table), input);
+                GlrParse(new ParallelStacks(table), input);
             }
         }
 

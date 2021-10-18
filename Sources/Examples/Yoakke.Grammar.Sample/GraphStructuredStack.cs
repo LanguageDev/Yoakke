@@ -10,10 +10,11 @@ using System.Threading.Tasks;
 using Yoakke.Collections.Graphs;
 using Yoakke.Grammar.Cfg;
 using Yoakke.Grammar.Lr;
+using Yoakke.Grammar.ParseTree;
 
 namespace Yoakke.Grammar.Sample
 {
-    class VertexLayer
+    public class VertexLayer
     {
         public IDictionary<int, StateVertex> StateVertices { get; } = new Dictionary<int, StateVertex>();
 
@@ -22,14 +23,14 @@ namespace Yoakke.Grammar.Sample
             this.StateVertices.Clear();
         }
 
-        public StateVertex? Push(StateVertex prevState, Symbol symbol, int state)
+        public StateVertex? Push(StateVertex prevState, IParseTreeNode node, int state)
         {
             // We can only share a symbol vertex, if we share the state vertex
             // So first we check if we share a state vertex
             if (this.StateVertices.TryGetValue(state, out var nextState))
             {
                 // There is a state vertex we can share, there's a possibility we can share the symbol vertex too
-                if (nextState.PrevMap.TryGetValue(symbol, out var nextSymbol))
+                if (nextState.PrevMap.TryGetValue(node, out var nextSymbol))
                 {
                     // Everything is cached, nothing to do, just connect them up
                     nextSymbol.Prev.Add(prevState);
@@ -37,8 +38,8 @@ namespace Yoakke.Grammar.Sample
                 else
                 {
                     // The next symbol does not exist yet
-                    nextSymbol = new(prevState, symbol);
-                    nextState.PrevMap.Add(symbol, nextSymbol);
+                    nextSymbol = new(prevState, node);
+                    nextState.PrevMap.Add(node, nextSymbol);
                 }
                 // Anyway, the state exists
                 return null;
@@ -47,7 +48,7 @@ namespace Yoakke.Grammar.Sample
             {
                 // The state does not exist yet, we need to add it
                 // In this case, we don't share the symbols either
-                var nextSymbol = new SymbolVertex(prevState, symbol);
+                var nextSymbol = new SymbolVertex(prevState, node);
                 nextSymbol.Prev.Add(prevState);
                 nextState = new(nextSymbol, state);
                 this.StateVertices.Add(state, nextState);
@@ -56,7 +57,7 @@ namespace Yoakke.Grammar.Sample
         }
     }
 
-    class GraphStructuredStack : INondetStack
+    public class GraphStructuredStack : INondetStack
     {
         public ILrParsingTable ParsingTable { get; }
 
@@ -190,23 +191,31 @@ namespace Yoakke.Grammar.Sample
                 this.reduceLayer.StateVertices.Remove(vertex.State);
             }
             // Now we need to pop off |b| amount of symbol vertices for an X -> b reduction
-            var newRoots = new HashSet<StateVertex> { vertex };
-            for (var i = 0; i < reduce.Production.Right.Count; ++i) newRoots = Pop(newRoots).ToHashSet();
+            // The thing is, nodes can contain multiple trees, so this all becomes a parallel mess very quickly
+            var newRoots = PopAndCollect(vertex, reduce.Production.Right.Count)
+                .ToList()
+                .GroupBy(v => v.State)
+                .ToDictionary(g => g.Key, g => g.Select(v => v.Nodes).ToList());
             // We have all the new roots, all of them get a symbol and state pushed on
-            foreach (var root in newRoots)
+            foreach (var (root, nodeLists) in newRoots)
             {
                 // Check what state we result in
                 var stateGoto = this.ParsingTable.Goto[root.State, reduce.Production.Left];
                 // If nothing, we terminate this branch
                 if (stateGoto is null) continue;
                 // Otherwise we push on the symbol and the state
-                var pushedVertex = this.reduceLayer.Push(root, reduce.Production.Left, stateGoto.Value);
-                // If the vertex existed, we don't do anything
-                if (pushedVertex is null) continue;
-                // For debugging we push on this node as an old head, will be deleted by a shift anyway
-                this.oldHeads.Add(pushedVertex);
-                // Now we add all actions that can be performed on this new state for the current terminal for further processing
-                this.PushActions(pushedVertex);
+                var trees = nodeLists.Select(nodes => new ProductionParseTreeNode(reduce.Production, nodes));
+                // Fir each tree we try to push
+                foreach (var tree in trees)
+                {
+                    var pushedVertex = this.reduceLayer.Push(root, tree, stateGoto.Value);
+                    // If the vertex existed, we don't do anything
+                    if (pushedVertex is null) continue;
+                    // For debugging we push on this node as an old head, will be deleted by a shift anyway
+                    this.oldHeads.Add(pushedVertex);
+                    // Now we add all actions that can be performed on this new state for the current terminal for further processing
+                    this.PushActions(pushedVertex);
+                }
             }
         }
 
@@ -215,11 +224,44 @@ namespace Yoakke.Grammar.Sample
             // The vertex is surely out of the heads now
             this.oldHeads.Remove(vertex);
             // Now we try to push on the symbol and next state
-            this.shiftLayer.Push(vertex, this.currentTerminal, shift.State);
+            var leafNode = new LeafParseTreeNode(this.currentTerminal, this.currentTerminal);
+            this.shiftLayer.Push(vertex, leafNode, shift.State);
         }
 
-        private static IEnumerable<StateVertex> Pop(IEnumerable<StateVertex> vertices) =>
-            vertices.SelectMany(v => v.PrevMap.Values.SelectMany(u => u.Prev));
+        private static IEnumerable<(StateVertex State, List<IParseTreeNode> Nodes)> PopAndCollect(StateVertex initial, int count)
+        {
+            static IEnumerable<(StateVertex State, List<IParseTreeNode>)> PopAndCollectImpl(
+                StateVertex currentVertex,
+                int count,
+                Stack<IParseTreeNode> currentPopped)
+            {
+                if (count == 0)
+                {
+                    // We have arived at the pop target
+                    yield return (currentVertex, currentPopped.ToList());
+                }
+                else
+                {
+                    // We need to pop further
+                    var groups = Pop(currentVertex).GroupBy(v => v.State);
+                    foreach (var group in groups)
+                    {
+                        var nextVertex = group.Key;
+                        foreach (var sym in group.Select(v => v.Symbol))
+                        {
+                            currentPopped.Push(sym.ParseTree);
+                            foreach (var r in PopAndCollectImpl(nextVertex, count - 1, currentPopped)) yield return r;
+                            currentPopped.Pop();
+                        }
+                    }
+                }
+            }
+
+            return PopAndCollectImpl(initial, count, new());
+        }
+
+        private static IEnumerable<(StateVertex State, SymbolVertex Symbol)> Pop(StateVertex vertex) =>
+            vertex.PrevMap.Values.SelectMany(prevSym => prevSym.Prev.Select(prevState => (prevState, prevSym)));
 
         private void PushActions(StateVertex vertex)
         {

@@ -35,5 +35,17 @@ namespace Yoakke.Grammar.ParseTree
             this.Symbol = symbol;
             this.Terminal = terminal;
         }
+
+        /// <inheritdoc/>
+        public override bool Equals(object obj) => obj is IParseTreeNode other && this.Equals(other);
+
+        /// <inheritdoc/>
+        public bool Equals(IParseTreeNode other) =>
+               other is LeafParseTreeNode leaf
+            && this.Symbol.Equals(leaf.Symbol)
+            && this.Terminal.Equals(leaf.Terminal);
+
+        /// <inheritdoc/>
+        public override int GetHashCode() => HashCode.Combine(this.Symbol, this.Terminal);
     }
 }

@@ -12,7 +12,7 @@ using Yoakke.Grammar.Lr;
 
 namespace Yoakke.Grammar.Sample
 {
-    interface INondetStack
+    public interface INondetStack
     {
         public ILrParsingTable ParsingTable { get; }
 

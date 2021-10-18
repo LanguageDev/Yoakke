@@ -12,7 +12,7 @@ namespace Yoakke.Grammar.ParseTree
     /// <summary>
     /// Represents a single node in a parse-tree.
     /// </summary>
-    public interface IParseTreeNode
+    public interface IParseTreeNode : IEquatable<IParseTreeNode>
     {
         /// <summary>
         /// The symbol that produced this node.

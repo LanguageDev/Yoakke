@@ -8,21 +8,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Yoakke.Grammar.Cfg;
+using Yoakke.Grammar.ParseTree;
 
 namespace Yoakke.Grammar.Sample
 {
-    abstract class Vertex
+    public abstract class Vertex
     {
         public abstract IEnumerable<Vertex> Prev { get; }
     }
 
-    class StateVertex : Vertex
+    public class StateVertex : Vertex
     {
-        public int State { get; }
+        public int State { get; init; }
 
         public override IEnumerable<Vertex> Prev => this.PrevMap.Values;
 
-        public Dictionary<Symbol, SymbolVertex> PrevMap { get; } = new Dictionary<Symbol, SymbolVertex>();
+        public Dictionary<IParseTreeNode, SymbolVertex> PrevMap { get; init; } = new Dictionary<IParseTreeNode, SymbolVertex>();
 
         public StateVertex()
         {
@@ -30,21 +31,41 @@ namespace Yoakke.Grammar.Sample
 
         public StateVertex(SymbolVertex prev, int state)
         {
-            this.PrevMap.Add(prev.Symbol, prev);
+            this.PrevMap.Add(prev.ParseTree, prev);
             this.State = state;
         }
+
+        public StateVertex Clone() => new()
+        {
+            State = this.State,
+            PrevMap = this.PrevMap.ToDictionary(kv => kv.Key, kv => kv.Value.Clone()),
+        };
     }
 
-    class SymbolVertex : Vertex
+    public class SymbolVertex : Vertex
     {
-        public Symbol Symbol { get; }
+        public Symbol Symbol => this.ParseTree.Symbol;
+
+        public IParseTreeNode ParseTree { get; }
 
         public override ISet<StateVertex> Prev { get; } = new HashSet<StateVertex>();
 
-        public SymbolVertex(StateVertex prev, Symbol symbol)
+        private SymbolVertex(IParseTreeNode treeNode)
+        {
+            this.ParseTree = treeNode;
+        }
+
+        public SymbolVertex(StateVertex prev, IParseTreeNode treeNode)
         {
             this.Prev.Add(prev);
-            this.Symbol = symbol;
+            this.ParseTree = treeNode;
+        }
+
+        public SymbolVertex Clone()
+        {
+            var result = new SymbolVertex(this.ParseTree);
+            foreach (var p in this.Prev) result.Prev.Add(p.Clone());
+            return result;
         }
     }
 }
