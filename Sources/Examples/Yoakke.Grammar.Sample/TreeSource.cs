@@ -46,14 +46,14 @@ namespace Yoakke.Grammar.Sample
         }
     }
 
-    public class InrementalTreeSource : ITreeSource
+    public class IncrementalTreeSource : ITreeSource
     {
         public bool IsEnd => this.index >= this.nodes.Count;
 
         private readonly List<IIncrementalTreeNode> nodes;
         private int index;
 
-        public InrementalTreeSource(IEnumerable<Terminal> terminals)
+        public IncrementalTreeSource(IEnumerable<Terminal> terminals)
         {
             this.nodes = terminals.Select(t => (IIncrementalTreeNode)new LeafIncrementalTreeNode(t, -1)).ToList();
         }
