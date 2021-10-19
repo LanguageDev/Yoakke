@@ -23,7 +23,7 @@ namespace Yoakke.Grammar.Sample
 
         public override IEnumerable<Vertex> Prev => this.PrevMap.Values;
 
-        public Dictionary<IParseTreeNode, SymbolVertex> PrevMap { get; init; } = new Dictionary<IParseTreeNode, SymbolVertex>();
+        public Dictionary<IIncrementalTreeNode, SymbolVertex> PrevMap { get; init; } = new Dictionary<IIncrementalTreeNode, SymbolVertex>();
 
         public StateVertex()
         {
@@ -46,16 +46,16 @@ namespace Yoakke.Grammar.Sample
     {
         public Symbol Symbol => this.ParseTree.Symbol;
 
-        public IParseTreeNode ParseTree { get; }
+        public IIncrementalTreeNode ParseTree { get; }
 
         public override ISet<StateVertex> Prev { get; } = new HashSet<StateVertex>();
 
-        private SymbolVertex(IParseTreeNode treeNode)
+        private SymbolVertex(IIncrementalTreeNode treeNode)
         {
             this.ParseTree = treeNode;
         }
 
-        public SymbolVertex(StateVertex prev, IParseTreeNode treeNode)
+        public SymbolVertex(StateVertex prev, IIncrementalTreeNode treeNode)
         {
             this.Prev.Add(prev);
             this.ParseTree = treeNode;

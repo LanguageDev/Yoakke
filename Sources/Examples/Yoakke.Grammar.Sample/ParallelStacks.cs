@@ -27,7 +27,7 @@ namespace Yoakke.Grammar.Sample
         private readonly Stack<(StateVertex Vertex, Shift Shift)> remainingShifts = new();
 
         // Current terminal
-        private Terminal currentTerminal = Terminal.NotInGrammar;
+        private IIncrementalTreeNode? currentNode;
 
         public ParallelStacks(ILrParsingTable table)
         {
@@ -86,13 +86,13 @@ namespace Yoakke.Grammar.Sample
             return result.ToString();
         }
 
-        public void Feed(Terminal terminal)
+        public void Feed(IIncrementalTreeNode currentNode)
         {
             // If there are remaining actions to perform, feeding another terminal is illegal
             if (this.remainingReduces.Count > 0 || this.remainingShifts.Count > 0) throw new InvalidOperationException("Not all actions are performed yet");
 
             // We store the terminal
-            this.currentTerminal = terminal;
+            this.currentNode = currentNode;
 
             // We push each action for each head
             foreach (var head in this.heads) this.PushActions(head);
@@ -117,7 +117,7 @@ namespace Yoakke.Grammar.Sample
         {
             this.heads.Remove(vertex);
             // Now we need to pop off |b| amount of symbol vertices for an X -> b reduction
-            var reducedSubtrees = new List<IParseTreeNode>();
+            var reducedSubtrees = new List<IIncrementalTreeNode>();
             var newRoot = vertex;
             for (var i = 0; i < reduce.Production.Right.Count; ++i)
             {
@@ -131,7 +131,7 @@ namespace Yoakke.Grammar.Sample
             // If nothing, we terminate this branch
             if (stateGoto is null) return;
             // Otherwise we push on the symbol and the state
-            var tree = new ProductionParseTreeNode(reduce.Production, reducedSubtrees);
+            var tree = new ProductionIncrementalTreeNode(reduce.Production, stateGoto.Value, reducedSubtrees);
             var pushedVertex = Push(newRoot, tree, stateGoto.Value);
             // We add it as a head
             this.heads.Add(pushedVertex);
@@ -141,11 +141,11 @@ namespace Yoakke.Grammar.Sample
 
         private void Shift(StateVertex vertex, Shift shift)
         {
+            Debug.Assert(this.currentNode is not null, "The current node cannot be null.");
             // The vertex is surely out of the heads now
             this.heads.Remove(vertex);
             // Now we try to push on the symbol and next state
-            var leaf = new LeafParseTreeNode(this.currentTerminal, this.currentTerminal);
-            var newHead = Push(vertex, leaf, shift.State);
+            var newHead = Push(vertex, this.currentNode, shift.State);
             this.heads.Add(newHead);
         }
 
@@ -157,12 +157,13 @@ namespace Yoakke.Grammar.Sample
             return (prevSymbol.Prev.First(), prevSymbol);
         }
 
-        private static StateVertex Push(StateVertex vertex, IParseTreeNode node, int state) =>
+        private static StateVertex Push(StateVertex vertex, IIncrementalTreeNode node, int state) =>
             new(new(vertex, node), state);
 
         private void PushActions(StateVertex vertex)
         {
-            var actions = this.ParsingTable.Action[vertex.State, this.currentTerminal];
+            Debug.Assert(this.currentNode is not null, "The current node cannot be null.");
+            var actions = this.ParsingTable.Action[vertex.State, this.currentNode.FirstTerminal];
             var i = 0;
             foreach (var action in actions)
             {

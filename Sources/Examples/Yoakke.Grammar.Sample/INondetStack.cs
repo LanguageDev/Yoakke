@@ -17,7 +17,7 @@ namespace Yoakke.Grammar.Sample
         public ILrParsingTable ParsingTable { get; }
 
         public string ToDot();
-        public void Feed(Terminal terminal);
+        public void Feed(IIncrementalTreeNode currentNode);
         public bool Step();
     }
 }

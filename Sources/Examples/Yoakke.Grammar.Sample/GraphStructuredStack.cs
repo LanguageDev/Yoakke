@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,7 +24,7 @@ namespace Yoakke.Grammar.Sample
             this.StateVertices.Clear();
         }
 
-        public StateVertex? Push(StateVertex prevState, IParseTreeNode node, int state)
+        public StateVertex? Push(StateVertex prevState, IIncrementalTreeNode node, int state)
         {
             // We can only share a symbol vertex, if we share the state vertex
             // So first we check if we share a state vertex
@@ -73,7 +74,7 @@ namespace Yoakke.Grammar.Sample
         private readonly Stack<(StateVertex Vertex, Shift Shift)> remainingShifts = new();
 
         // Current terminal
-        private Terminal currentTerminal = Terminal.NotInGrammar;
+        private IIncrementalTreeNode? currentNode;
 
         public GraphStructuredStack(ILrParsingTable table)
         {
@@ -143,7 +144,7 @@ namespace Yoakke.Grammar.Sample
             return result.ToString();
         }
 
-        public void Feed(Terminal terminal)
+        public void Feed(IIncrementalTreeNode currentNode)
         {
             // If there are remaining actions to perform, feeding another terminal is illegal
             if (this.remainingReduces.Count > 0 || this.remainingShifts.Count > 0) throw new InvalidOperationException("Not all actions are performed yet");
@@ -156,8 +157,8 @@ namespace Yoakke.Grammar.Sample
             this.shiftLayer.Clear();
             this.reduceLayer.Clear();
 
-            // We store the terminal
-            this.currentTerminal = terminal;
+            // We store the current node
+            this.currentNode = currentNode;
 
             // Then we push each action for each head
             foreach (var head in this.oldHeads) this.PushActions(head);
@@ -204,7 +205,11 @@ namespace Yoakke.Grammar.Sample
                 // If nothing, we terminate this branch
                 if (stateGoto is null) continue;
                 // Otherwise we push on the symbol and the state
-                var trees = nodeLists.Select(nodes => new ProductionParseTreeNode(reduce.Production, nodes));
+                var trees = nodeLists.Select(nodes =>
+                    new ProductionIncrementalTreeNode(reduce.Production, stateGoto.Value, nodes)
+                    {
+                        IsReusable = !(this.shiftLayer.StateVertices.Count > 1) && !(this.reduceLayer.StateVertices.Count > 1),
+                    });
                 // Fir each tree we try to push
                 foreach (var tree in trees)
                 {
@@ -221,19 +226,19 @@ namespace Yoakke.Grammar.Sample
 
         private void Shift(StateVertex vertex, Shift shift)
         {
+            Debug.Assert(this.currentNode is not null, "The current node cannot be null.");
             // The vertex is surely out of the heads now
             this.oldHeads.Remove(vertex);
             // Now we try to push on the symbol and next state
-            var leafNode = new LeafParseTreeNode(this.currentTerminal, this.currentTerminal);
-            this.shiftLayer.Push(vertex, leafNode, shift.State);
+            this.shiftLayer.Push(vertex, this.currentNode, shift.State);
         }
 
-        private static IEnumerable<(StateVertex State, List<IParseTreeNode> Nodes)> PopAndCollect(StateVertex initial, int count)
+        private static IEnumerable<(StateVertex State, List<IIncrementalTreeNode> Nodes)> PopAndCollect(StateVertex initial, int count)
         {
-            static IEnumerable<(StateVertex State, List<IParseTreeNode>)> PopAndCollectImpl(
+            static IEnumerable<(StateVertex State, List<IIncrementalTreeNode>)> PopAndCollectImpl(
                 StateVertex currentVertex,
                 int count,
-                Stack<IParseTreeNode> currentPopped)
+                Stack<IIncrementalTreeNode> currentPopped)
             {
                 if (count == 0)
                 {
@@ -265,7 +270,8 @@ namespace Yoakke.Grammar.Sample
 
         private void PushActions(StateVertex vertex)
         {
-            var actions = this.ParsingTable.Action[vertex.State, this.currentTerminal];
+            Debug.Assert(this.currentNode is not null, "The current node cannot be null.");
+            var actions = this.ParsingTable.Action[vertex.State, this.currentNode.FirstTerminal];
             foreach (var action in actions)
             {
                 if (action is Shift s) this.remainingShifts.Push((vertex, s));

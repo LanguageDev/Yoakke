@@ -36,7 +36,7 @@ VP -> verb NP
             {
                 var input = Console.ReadLine();
                 if (input is null) break;
-                GlrParse(new ParallelStacks(table), input);
+                GlrParse(new GraphStructuredStack(table), input);
             }
         }
 
@@ -67,13 +67,15 @@ VP -> verb NP
                 .ToList();
             words.Add("$");
 
+            var treeSource = new TerminalTreeSource(terminals);
+
             Console.WriteLine("=========================");
             Console.WriteLine(stack.ToDot());
             Console.WriteLine("=========================");
             for (var i = 0; i < words.Count; ++i)
             {
                 Console.WriteLine($"processing {words[i]}");
-                stack.Feed(terminals[i]);
+                stack.Feed(treeSource.Next(null));
                 Console.WriteLine("=========================");
                 Console.WriteLine(stack.ToDot());
                 Console.WriteLine("=========================");
