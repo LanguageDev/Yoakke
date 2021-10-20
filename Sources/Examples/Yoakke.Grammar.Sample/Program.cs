@@ -100,9 +100,8 @@ namespace Yoakke.Grammar.Sample
             // Console.WriteLine(table.ToHtmlTable());
             while (true)
             {
-                var input = Console.ReadLine();
-                if (input is null) break;
-                GlrParse(() => new ParallelStacks(table), input);
+                var input = ReadCode();
+                GlrParse(() => new GraphStructuredStack(table), input);
             }
         }
 
@@ -232,6 +231,17 @@ namespace Yoakke.Grammar.Sample
 
             result.Append('}');
             return result.ToString();
+        }
+
+        static string ReadCode()
+        {
+            var result = new StringBuilder();
+            while (true)
+            {
+                var line = Console.ReadLine();
+                if (line is null || line == "END") return result.ToString();
+                result.AppendLine(line);
+            }
         }
 
         static ContextFreeGrammar ParseGrammar(string text)
