@@ -56,21 +56,13 @@ expr_list -> ε
             {
                 var input = Console.ReadLine();
                 if (input is null) break;
-                GlrParse(new GraphStructuredStack(table), input);
+                GlrParse(() => new GraphStructuredStack(table), input);
             }
         }
 
-        static void GlrParse(INondetStack stack, string text)
+        static void GlrParse(Func<INondetStack> makeStack, string text)
         {
-            var nouns = new[] { "I", "man", "telescope", "bed", "apartment", "park" };
-            var determiners = new[] { "a", "the" };
-            var prepositions = new[] { "on", "in", "with" };
-            var verbs = new[] { "saw" };
-
-            Terminal ToTerm(string word)
-            {
-                return new(word);
-            }
+            Terminal ToTerm(string word) => new(word);
 
             var words = text
                 .Split(' ')
@@ -83,15 +75,19 @@ expr_list -> ε
                 .ToList();
             words.Add("$");
 
-            var treeSource = new TerminalTreeSource(terminals);
+            var treeSource = new IncrementalTreeSource(terminals);
+
+        begin:
+
+            var stack = makeStack();
 
             Console.WriteLine("=========================");
             Console.WriteLine(stack.ToDot());
             Console.WriteLine("=========================");
-            for (var i = 0; i < words.Count; ++i)
+            while (!treeSource.IsEnd)
             {
-                Console.WriteLine($"processing {words[i]}");
-                stack.Feed(treeSource.Next(null));
+                // Console.WriteLine($"processing {words[i]}");
+                stack.Feed(treeSource.Next(stack.CurrentState));
                 Console.WriteLine("=========================");
                 Console.WriteLine(stack.ToDot());
                 Console.WriteLine("=========================");
@@ -107,9 +103,33 @@ expr_list -> ε
             foreach (var ast in stack.Trees)
             {
                 Console.WriteLine("=========================");
-                Console.WriteLine(Clone(ast).ToDot());
+                Console.WriteLine(ToDot(CloneIncrementalTree(ast)));
                 Console.WriteLine("=========================");
             }
+
+            var parts = Console.ReadLine()!.Split(";");
+            var start = int.Parse(parts[0].Trim());
+            var length = int.Parse(parts[1].Trim());
+            var inserted = parts[2]
+                .Trim()
+                .Split(' ')
+                .Select(t => t.Trim())
+                .Where(t => t.Length > 0)
+                .Select(ToTerm)
+                .ToList();
+
+            treeSource.Reset(stack.Trees.Count() == 1 ? stack.Trees.First() : null);
+            treeSource.MakeEdit(start, length, inserted);
+
+            Console.WriteLine("Nodes:");
+            foreach (var ast in stack.Trees)
+            {
+                Console.WriteLine("=========================");
+                Console.WriteLine(ToDot(CloneIncrementalTree(ast)));
+                Console.WriteLine("=========================");
+            }
+
+            goto begin;
         }
 
         static IParseTreeNode Parse(ILrParsingTable table, string input)
@@ -126,11 +146,59 @@ expr_list -> ε
             return parser.ResultStack.First();
         }
 
-        static IParseTreeNode Clone(IIncrementalTreeNode node)
+        static IIncrementalTreeNode CloneIncrementalTree(IIncrementalTreeNode node)
+        {
+            if (node is LeafIncrementalTreeNode leaf) return new LeafIncrementalTreeNode(leaf.Terminal);
+            var prod = (ProductionIncrementalTreeNode)node;
+            return new ProductionIncrementalTreeNode(prod.Production, prod.ParserState, prod.Children.Select(CloneIncrementalTree).ToList())
+            {
+                IsReusable = prod.IsReusable,
+            };
+        }
+
+        static IParseTreeNode CloneTree(IIncrementalTreeNode node)
         {
             if (node is LeafIncrementalTreeNode leaf) return new LeafParseTreeNode(leaf.Terminal, leaf.Terminal);
             var prod = (ProductionIncrementalTreeNode)node;
-            return new ProductionParseTreeNode(prod.Production, prod.Children.Select(Clone).ToList());
+            return new ProductionParseTreeNode(prod.Production, prod.Children.Select(CloneTree).ToList());
+        }
+
+        static string ToDot(IIncrementalTreeNode node)
+        {
+            var result = new StringBuilder();
+            result.AppendLine("graph parse_tree {");
+
+            // We assign each node an ID
+            var nodeIds = new Dictionary<IIncrementalTreeNode, int>(ReferenceEqualityComparer.Instance);
+            foreach (var n in BreadthFirst.Search(node, n => ((IIncrementalTreeNode)n).Children, ReferenceEqualityComparer.Instance)) nodeIds.Add((IIncrementalTreeNode)n, nodeIds.Count);
+
+            // Define each node with the label
+            foreach (var (n, id) in nodeIds)
+            {
+                result.Append($"  {id}[label=\"");
+
+                if (n is LeafIncrementalTreeNode leaf)
+                {
+                    result.Append($"{n.Symbol}[{leaf.Terminal}]");
+                }
+                else
+                {
+                    var p = (ProductionIncrementalTreeNode)n;
+                    result.Append(n.Symbol);
+                    if (!p.IsReusable) result.Append(" X");
+                }
+
+                result.AppendLine("\"];");
+            }
+
+            // Connect parent-child relations
+            foreach (var (n, id) in nodeIds)
+            {
+                foreach (var other in n.Children) result.AppendLine($"  {id} -- {nodeIds[other]}");
+            }
+
+            result.Append('}');
+            return result.ToString();
         }
 
         static ContextFreeGrammar ParseGrammar(string text)

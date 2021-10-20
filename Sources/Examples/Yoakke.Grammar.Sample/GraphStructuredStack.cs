@@ -216,7 +216,8 @@ namespace Yoakke.Grammar.Sample
                 var trees = nodeLists.Select(nodes =>
                     new ProductionIncrementalTreeNode(reduce.Production, stateGoto.Value, nodes)
                     {
-                        IsReusable = this.CurrentState is not null,
+                        IsReusable = this.CurrentState is not null
+                                  || this.shiftLayer.StateVertices.Count == 0,
                     });
                 // Fir each tree we try to push
                 foreach (var tree in trees)

@@ -65,6 +65,7 @@ namespace Yoakke.Grammar.Sample
             {
                 this.nodes.Clear();
                 this.nodes.Add(node);
+                this.nodes.Add(new LeafIncrementalTreeNode(Terminal.EndOfInput));
             }
         }
 
@@ -101,7 +102,7 @@ namespace Yoakke.Grammar.Sample
             {
                 var node = this.nodes[i];
                 var nodeWidth = node.Width;
-                if (offset <= start && offset <= start + eraseLength)
+                if (Intersects(offset, nodeWidth, start, eraseLength))
                 {
                     // The current node is within edit range
                     if (node is LeafIncrementalTreeNode leaf)
@@ -133,7 +134,7 @@ namespace Yoakke.Grammar.Sample
             }
         }
 
-        private void MakeEditImpl(
+        private bool MakeEditImpl(
             int offset,
             int start,
             int eraseLength,
@@ -141,7 +142,9 @@ namespace Yoakke.Grammar.Sample
             IEnumerable<Terminal> insertions)
         {
             current.IsReusable = false;
+            var insertedTerminals = false;
             var i = 0;
+            var origOffset = offset;
             if (offset == start)
             {
                 // The offset is just at the start of the edit, insert the terminals
@@ -151,9 +154,9 @@ namespace Yoakke.Grammar.Sample
             // Deal with the remaining children
             for (; i < current.Children.Count;)
             {
-                var node = this.nodes[i];
+                var node = current.Children[i];
                 var nodeWidth = node.Width;
-                if (offset <= start && offset <= start + eraseLength)
+                if (Intersects(offset, nodeWidth, start, eraseLength))
                 {
                     // The current node is within edit range
                     if (node is LeafIncrementalTreeNode)
@@ -167,7 +170,7 @@ namespace Yoakke.Grammar.Sample
                         // The node is a production, which means this node is not reusable anymore
                         // and needs pruning in the children
                         var prod = (ProductionIncrementalTreeNode)node;
-                        this.MakeEditImpl(offset, start, eraseLength, prod, insertions);
+                        insertedTerminals = this.MakeEditImpl(offset, start, eraseLength, prod, insertions) || insertedTerminals;
                         ++i;
                     }
                 }
@@ -178,6 +181,23 @@ namespace Yoakke.Grammar.Sample
                 }
                 offset += nodeWidth;
             }
+
+            if (!insertedTerminals)
+            {
+                offset = origOffset;
+                for (var j = 0; j < current.Children.Count; ++j)
+                {
+                    if (offset <= start && start < offset + current.Children[j].Width)
+                    {
+                        foreach (var n in insertions) current.Children.Insert(j++, new LeafIncrementalTreeNode(n));
+                        insertedTerminals = true;
+                        break;
+                    }
+                    offset += current.Children[j].Width;
+                }
+            }
+
+            return insertedTerminals;
         }
 
         private void Explode()
@@ -185,6 +205,13 @@ namespace Yoakke.Grammar.Sample
             var node = this.nodes[this.index];
             this.nodes.RemoveAt(this.index);
             this.nodes.InsertRange(this.index, node.Children);
+        }
+
+        private static bool Intersects(int start1, int len1, int start2, int len2)
+        {
+            var end1 = start1 + len1;
+            var end2 = start2 + len2;
+            return !(end1 <= start2 || end2 <= start1);
         }
     }
 }
