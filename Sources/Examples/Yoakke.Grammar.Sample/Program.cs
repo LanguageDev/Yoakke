@@ -93,29 +93,106 @@ namespace Yoakke.Grammar.Sample
 
 	unop ::= '-' | not | '#' | '~'
 ";
-            var simpleGrammar = @"
-S ::= [S] E
-E ::= '{' '+' '}' | '{' '-' '}'
+
+            var luaCode = @"
+function allwords()
+    local line = io.read() -- current line
+    local pos = 1 -- current position in the line
+    return function() -- iterator function
+        while line do -- repeat while there are lines
+            local s, e = string.find(line, ""%w+"", pos)
+            if s then -- found a word?
+                pos = e + 1 -- update next position
+                return string.sub(line, s, e) -- return the word
+            else
+                line = io.read() -- word not found; try next line
+                pos = 1 -- restart from first position
+            end
+        end
+        return nil -- no more lines: end of traversal
+    end
+end
+
+function prefix(w1, w2)
+    return (w1 .. ' ') .. w2
+end
+
+local statetab
+
+function insert(index, value)
+    if not statetab[index] then
+        statetab[index] = {
+            n = 0
+        }
+    end
+    table.insert(statetab[index], value)
+end
+
+local N = 2
+local MAXGEN = 10000
+local NOWORD = ""\n""
+
+-- build table
+statetab = {}
+local w1, w2 = NOWORD, NOWORD
+for w in allwords() do
+    insert(prefix(w1, w2), w)
+    w1 = w2;
+    w2 = w;
+end
+insert(prefix(w1, w2), NOWORD)
+-- generate text
+w1 = NOWORD;
+w2 = NOWORD -- reinitialize
+for i = 1, MAXGEN do
+    local list = statetab[prefix(w1, w2)]
+    -- choose a random item from list
+    local r = math.random(table.getn(list))
+    local nextword = list[r]
+    if nextword == NOWORD then
+        return
+    end
+    io.write(nextword, "" "")
+    w1 = w2;
+    w2 = nextword
+end
 ";
+
             var cfg = EbnfParser.ParseGrammar(luaGrammar);
             cfg.AugmentStartSymbol();
 
-            var table = LrParsingTable.Lr0(cfg);
-            // TableStats(table);
+            var tables = new (string Name, ILrParsingTable Table)[]
+            {
+                ("LR0", LrParsingTable.Lr0(cfg)),
+                ("SLR", LrParsingTable.Slr(cfg)),
+                ("LALR", LrParsingTable.Lalr(cfg)),
+                ("CLR", LrParsingTable.Clr(cfg)),
+            };
 
-            var input = ReadCode();
-            GlrParse(table, false, false, input);
+            foreach (var isGss in new[] { false, true })
+            {
+                foreach (var isInc in new[] { false, true })
+                {
+                    foreach (var (tname, table) in tables)
+                    {
+                        Console.WriteLine($"{(isGss ? "GSS" : "Parallel")} / {(isInc ? "Yes" : "No")} / {tname}");
+                        GlrParse(table, isGss, isInc, luaCode, "11 ; 0 ; stdin");
+                    }
+                }
+            }
         }
 
-        static void GlrParse(ILrParsingTable table, bool gss, bool incr, string text) => GlrParse(
+        static void GlrParse(ILrParsingTable table, bool gss, bool incr, string text, params string[] edits) => GlrParse(
             () => gss ? new GraphStructuredStack(table) : new ParallelStacks(table),
             ts => incr ? new IncrementalTreeSource(ts) : new TerminalTreeSource(ts),
-            text);
+            text,
+            edits);
 
-        static void GlrParse(Func<INondetStack> makeStack, Func<List<Terminal>, ITreeSource> makeSource, string text)
+        static void GlrParse(Func<INondetStack> makeStack, Func<List<Terminal>, ITreeSource> makeSource, string text, params string[] edits)
         {
             var terminals = LuaLexer.LexTerminals(text);
             var treeSource = makeSource(terminals);
+            var editIndex = 0;
 
         begin:
             var stack = makeStack();
@@ -126,51 +203,56 @@ E ::= '{' '+' '}' | '{' '-' '}'
             while (!treeSource.IsEnd)
             {
                 var t = treeSource.Next(stack.CurrentState);
-                Console.WriteLine($"processing {t.Symbol}");
+                // Console.WriteLine($"processing {t.Symbol}");
                 stack.Feed(t);
-                Console.WriteLine("=========================");
-                Console.WriteLine(stack.ToDot());
-                Console.WriteLine("=========================");
+                // Console.WriteLine("=========================");
+                // Console.WriteLine(stack.ToDot());
+                // Console.WriteLine("=========================");
                 while (stack.Step())
                 {
-                    Console.WriteLine("=========================");
-                    Console.WriteLine(stack.ToDot());
-                    Console.WriteLine("=========================");
+                    // Console.WriteLine("=========================");
+                    // Console.WriteLine(stack.ToDot());
+                    // Console.WriteLine("=========================");
                 }
             }
 
-            Console.WriteLine("Nodes:");
-            foreach (var ast in stack.Trees)
-            {
+            //Console.WriteLine("Nodes:");
+            // foreach (var ast in stack.Trees)
+            //{
                 //Console.WriteLine("=========================");
-                Console.WriteLine(ToDot(CloneIncrementalTree(ast)));
+                //Console.WriteLine(ToDot(CloneIncrementalTree(ast)));
                 //Console.WriteLine("=========================");
-            }
+            //}
 
             Console.WriteLine($"Shifts: {stack.ShiftCount}");
             Console.WriteLine($"Reduces: {stack.ReduceCount}");
             Console.WriteLine($"Vertices: {stack.VertexCount}");
             Console.WriteLine($"Edges: {stack.EdgeCount}");
 
-            var parts = Console.ReadLine()!.Split(";");
-            var start = int.Parse(parts[0].Trim());
-            var length = int.Parse(parts[1].Trim());
-            var inserted = LuaLexer.LexTerminals(parts[2])
-                .SkipLast(1)
-                .ToList();
-
-            treeSource.Reset(stack.Trees.Count() == 1 ? stack.Trees.First() : null);
-            treeSource.MakeEdit(start, length, inserted);
-
-            Console.WriteLine("Nodes:");
-            foreach (var ast in stack.Trees)
+            if (editIndex < edits.Length)
             {
-                Console.WriteLine("=========================");
-                Console.WriteLine(ToDot(CloneIncrementalTree(ast)));
-                Console.WriteLine("=========================");
+                Console.WriteLine($"apply edit {edits[editIndex]}");
+                var parts = edits[editIndex].Split(";");
+                var start = int.Parse(parts[0].Trim());
+                var length = int.Parse(parts[1].Trim());
+                var inserted = LuaLexer.LexTerminals(parts[2])
+                    .SkipLast(1)
+                    .ToList();
+
+                treeSource.Reset(stack.Trees.Count() == 1 ? stack.Trees.First() : null);
+                treeSource.MakeEdit(start, length, inserted);
+
+                ++editIndex;
+                goto begin;
             }
 
-            goto begin;
+            // Console.WriteLine("Nodes:");
+            // foreach (var ast in stack.Trees)
+            //{
+            //    Console.WriteLine("=========================");
+            //    Console.WriteLine(ToDot(CloneIncrementalTree(ast)));
+            //    Console.WriteLine("=========================");
+            //}
         }
 
         static IParseTreeNode Parse(ILrParsingTable table, string input)
