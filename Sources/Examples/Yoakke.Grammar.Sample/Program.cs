@@ -86,6 +86,14 @@ VP -> verb NP
                     Console.WriteLine("=========================");
                 }
             }
+
+            Console.WriteLine("Nodes:");
+            foreach (var ast in stack.Trees)
+            {
+                Console.WriteLine("=========================");
+                Console.WriteLine(ToDot(ast));
+                Console.WriteLine("=========================");
+            }
         }
 
         static IParseTreeNode Parse(ILrParsingTable table, string input)
@@ -100,6 +108,36 @@ VP -> verb NP
             }
 
             return parser.ResultStack.First();
+        }
+
+        static string ToDot(IIncrementalTreeNode node)
+        {
+            var result = new StringBuilder();
+            result.AppendLine("graph parse_tree {");
+
+            // We assign each node an ID
+            var nodeIds = new Dictionary<IIncrementalTreeNode, int>();
+            foreach (var n in BreadthFirst.Search(node, n => n.Children)) nodeIds.Add(n, nodeIds.Count);
+
+            // Define each node with the label
+            foreach (var (n, id) in nodeIds)
+            {
+                result.Append($"  {id}[label=\"");
+
+                if (n is LeafIncrementalTreeNode leaf) result.Append($"{n.Symbol}[{leaf.Terminal}]");
+                else result.Append(n.Symbol);
+
+                result.AppendLine("\"];");
+            }
+
+            // Connect parent-child relations
+            foreach (var (n, id) in nodeIds)
+            {
+                foreach (var other in n.Children) result.AppendLine($"  {id} -- {nodeIds[other]}");
+            }
+
+            result.Append('}');
+            return result.ToString();
         }
 
         static ContextFreeGrammar ParseGrammar(string text)
