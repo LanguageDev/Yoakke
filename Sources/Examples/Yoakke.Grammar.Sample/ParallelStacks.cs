@@ -21,6 +21,10 @@ namespace Yoakke.Grammar.Sample
 
         public int? CurrentState => this.heads.Count == 1 ? this.heads.First().State : null;
 
+        public IEnumerable<IIncrementalTreeNode> Trees => this.heads
+            .Where(h => h.PrevMap.Count > 0)
+            .SelectMany(h => h.PrevMap.Values.Select(v => v.ParseTree));
+
         // The heads
         private readonly List<StateVertex> heads = new();
 

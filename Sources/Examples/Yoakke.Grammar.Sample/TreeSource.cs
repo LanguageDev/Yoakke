@@ -96,15 +96,88 @@ namespace Yoakke.Grammar.Sample
 
         public void MakeEdit(int start, int eraseLength, IEnumerable<Terminal> insertions)
         {
-            for (var i = 0; i < this.nodes.Count; ++i)
+            var offset = 0;
+            for (var i = 0; i < this.nodes.Count;)
             {
-                // TODO
+                var node = this.nodes[i];
+                var nodeWidth = node.Width;
+                if (offset <= start && offset <= start + eraseLength)
+                {
+                    // The current node is within edit range
+                    if (node is LeafIncrementalTreeNode leaf)
+                    {
+                        // The node is a leaf, which means we need to delete it
+                        // But also insert all insertions here
+                        this.nodes.RemoveAt(i);
+                        this.nodes.InsertRange(i, insertions.Select(t => new LeafIncrementalTreeNode(t)));
+                        // Since we inserted everything, we also erase all insertions not to accidentally duplicate them
+                        // Also skip the inserted elements, they are not relevant for the edit
+                        i += insertions.Count();
+                        insertions = Enumerable.Empty<Terminal>();
+                    }
+                    else
+                    {
+                        // The node is a production, which means this node is not reusable anymore
+                        // and needs pruning in the children
+                        var prod = (ProductionIncrementalTreeNode)node;
+                        this.MakeEditImpl(offset, start, eraseLength, prod, insertions);
+                        ++i;
+                    }
+                }
+                else
+                {
+                    // Not within edit range, just skip node
+                    ++i;
+                }
+                offset += nodeWidth;
             }
         }
 
-        private void MakeEditImpl(int start, int eraseLength, IIncrementalTreeNode current, Queue<Terminal> insertions)
+        private void MakeEditImpl(
+            int offset,
+            int start,
+            int eraseLength,
+            ProductionIncrementalTreeNode current,
+            IEnumerable<Terminal> insertions)
         {
-            // TODO
+            current.IsReusable = false;
+            var i = 0;
+            if (offset == start)
+            {
+                // The offset is just at the start of the edit, insert the terminals
+                foreach (var t in insertions) current.Children.Insert(i++, new LeafIncrementalTreeNode(t));
+                insertions = Enumerable.Empty<Terminal>();
+            }
+            // Deal with the remaining children
+            for (; i < current.Children.Count;)
+            {
+                var node = this.nodes[i];
+                var nodeWidth = node.Width;
+                if (offset <= start && offset <= start + eraseLength)
+                {
+                    // The current node is within edit range
+                    if (node is LeafIncrementalTreeNode)
+                    {
+                        // The node is a leaf, which means we need to delete it
+                        // But also insert all insertions here
+                        current.Children.RemoveAt(i);
+                    }
+                    else
+                    {
+                        // The node is a production, which means this node is not reusable anymore
+                        // and needs pruning in the children
+                        var prod = (ProductionIncrementalTreeNode)node;
+                        this.MakeEditImpl(offset, start, eraseLength, prod, insertions);
+                        ++i;
+                    }
+                }
+                else
+                {
+                    // Not within edit range, just skip node
+                    ++i;
+                }
+                offset += nodeWidth;
+            }
         }
 
         private void Explode()
