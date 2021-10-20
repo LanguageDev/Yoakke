@@ -20,17 +20,37 @@ namespace Yoakke.Grammar.Sample
         static void Main(string[] args)
         {
             var cfg = ParseGrammar(@"
-S -> NP VP
-S -> S PP
-NP -> noun
-NP -> det noun
-NP -> NP PP
-PP -> prep NP
-VP -> verb NP
+S -> decl_list
+decl_list -> decl_list decl
+decl_list -> decl
+decl_list -> ε
+
+decl -> function_decl
+function_decl -> Function Name ( arg_list ) { stmt_list }
+arg_list -> arg_list , Name
+arg_list -> Name
+arg_list -> ε
+
+stmt_list -> stmt_list stmt
+stmt_list -> stmt
+stmt_list -> ε
+
+stmt -> expr
+
+expr -> expr + expr
+expr -> expr * expr
+expr -> expr ( expr_list )
+expr -> Name
+expr -> 1
+
+expr_list -> expr_list , expr
+expr_list -> expr
+expr_list -> ε
 ");
             cfg.AugmentStartSymbol();
 
             var table = LrParsingTable.Lalr(cfg);
+            // Console.WriteLine(table.ToHtmlTable());
 
             while (true)
             {
@@ -49,11 +69,7 @@ VP -> verb NP
 
             Terminal ToTerm(string word)
             {
-                if (nouns!.Contains(word)) return new("noun");
-                if (determiners!.Contains(word)) return new("det");
-                if (prepositions!.Contains(word)) return new("prep");
-                if (verbs!.Contains(word)) return new("verb");
-                throw new ArgumentOutOfRangeException();
+                return new(word);
             }
 
             var words = text
