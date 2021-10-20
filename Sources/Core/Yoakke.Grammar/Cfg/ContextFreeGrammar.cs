@@ -231,11 +231,14 @@ namespace Yoakke.Grammar.Cfg
             return this.CalculateEmptyDerivation()[symbol];
         }
 
+        // TODO: Clear on modify
+        private Dictionary<Symbol, FirstSet>? firstSets;
+
         /// <inheritdoc/>
         public FirstSet First(Symbol symbol)
         {
-            // TODO: We should cache this later
-            return this.CalculateFirstSets()[symbol];
+            if (this.firstSets is null) this.firstSets = this.CalculateFirstSets();
+            return this.firstSets[symbol];
         }
 
         /// <inheritdoc/>
@@ -259,11 +262,14 @@ namespace Yoakke.Grammar.Cfg
             return new(symbolList, derivesEpsilon, first);
         }
 
+        // TODO: Clear on modify
+        private Dictionary<Nonterminal, FollowSet>? followSets;
+
         /// <inheritdoc/>
         public FollowSet Follow(Nonterminal nonterminal)
         {
-            // TODO: We should cache this later
-            return this.CalculateFollowSets()[nonterminal];
+            if (this.followSets is null) this.followSets = this.CalculateFollowSets();
+            return this.followSets[nonterminal];
         }
 
         /// <inheritdoc/>

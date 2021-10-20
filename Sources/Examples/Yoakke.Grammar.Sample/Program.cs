@@ -95,19 +95,18 @@ namespace Yoakke.Grammar.Sample
 
 	unop ::= '-' | not | '#' | '~'
 ";
-            var g = EbnfParser.ParseGrammar(luaGrammar);
-            foreach (var w in g.GenerateSentences())
-            {
-                Console.WriteLine(string.Join(" ", w));
-            }
+            var cfg = EbnfParser.ParseGrammar(luaGrammar);
+            cfg.AugmentStartSymbol();
 
             /*
+            var table = LrParsingTable.Lalr(cfg);
+            // Console.WriteLine(table.ToHtmlTable());
+
             var cfg = ParseGrammar(@"");
             cfg.AugmentStartSymbol();
 
             var table = LrParsingTable.Lalr(cfg);
             // Console.WriteLine(table.ToHtmlTable());
-
             while (true)
             {
                 var input = Console.ReadLine();
