@@ -107,6 +107,9 @@ expr_list -> ε
                 Console.WriteLine("=========================");
             }
 
+            Console.WriteLine($"Shifts: {stack.ShiftCount}");
+            Console.WriteLine($"Reduces: {stack.ReduceCount}");
+
             var parts = Console.ReadLine()!.Split(";");
             var start = int.Parse(parts[0].Trim());
             var length = int.Parse(parts[1].Trim());

@@ -70,6 +70,10 @@ namespace Yoakke.Grammar.Sample
             .Where(h => h.PrevMap.Count > 0)
             .SelectMany(h => h.PrevMap.Values.Select(v => v.ParseTree));
 
+        public int ShiftCount { get; private set; }
+
+        public int ReduceCount { get; private set; }
+
         // Layer caches
         private readonly VertexLayer reduceLayer = new();
         private readonly VertexLayer shiftLayer = new();
@@ -193,6 +197,7 @@ namespace Yoakke.Grammar.Sample
 
         private void Reduce(StateVertex vertex, Reduce reduce)
         {
+            ++this.ReduceCount;
             // If the vertex is not a vertex anymore, we remove it from the old heads
             if (!this.IsActive(vertex))
             {
@@ -214,7 +219,7 @@ namespace Yoakke.Grammar.Sample
                 if (stateGoto is null) continue;
                 // Otherwise we push on the symbol and the state
                 var trees = nodeLists.Select(nodes =>
-                    new ProductionIncrementalTreeNode(reduce.Production, stateGoto.Value, nodes)
+                    new ProductionIncrementalTreeNode(reduce.Production, root.State, nodes)
                     {
                         IsReusable = this.CurrentState is not null
                                   || this.shiftLayer.StateVertices.Count == 0,
@@ -235,6 +240,7 @@ namespace Yoakke.Grammar.Sample
 
         private void Shift(StateVertex vertex, Shift shift)
         {
+            ++this.ShiftCount;
             Debug.Assert(this.currentNode is not null, "The current node cannot be null.");
             // The vertex is surely out of the heads now
             this.oldHeads.Remove(vertex);
@@ -280,12 +286,22 @@ namespace Yoakke.Grammar.Sample
         private void PushActions(StateVertex vertex)
         {
             Debug.Assert(this.currentNode is not null, "The current node cannot be null.");
-            var actions = this.ParsingTable.Action[vertex.State, this.currentNode.FirstTerminal];
-            foreach (var action in actions)
+            if (this.currentNode is LeafIncrementalTreeNode leaf)
             {
-                if (action is Shift s) this.remainingShifts.Push((vertex, s));
-                else if (action is Reduce r) this.remainingReduces.Push((vertex, r));
-                // NOTE: else it's an accept
+                // Leaf, just a terminal
+                var actions = this.ParsingTable.Action[vertex.State, leaf.Terminal];
+                foreach (var action in actions)
+                {
+                    if (action is Shift s) this.remainingShifts.Push((vertex, s));
+                    else if (action is Reduce r) this.remainingReduces.Push((vertex, r));
+                    // NOTE: else it's an accept
+                }
+            }
+            else
+            {
+                var prod = (ProductionIncrementalTreeNode)this.currentNode;
+                var stateGoto = this.ParsingTable.Goto[vertex.State, prod.Production.Left];
+                if (stateGoto is not null) this.remainingShifts.Push((vertex, new(stateGoto.Value)));
             }
         }
     }

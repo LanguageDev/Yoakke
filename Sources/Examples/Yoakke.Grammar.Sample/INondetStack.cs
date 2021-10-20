@@ -16,6 +16,9 @@ namespace Yoakke.Grammar.Sample
     {
         public ILrParsingTable ParsingTable { get; }
 
+        public int ShiftCount { get; }
+        public int ReduceCount { get; }
+
         public int? CurrentState { get; }
         public IEnumerable<IIncrementalTreeNode> Trees { get; }
 

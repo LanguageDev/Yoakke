@@ -25,6 +25,10 @@ namespace Yoakke.Grammar.Sample
             .Where(h => h.PrevMap.Count > 0)
             .SelectMany(h => h.PrevMap.Values.Select(v => v.ParseTree));
 
+        public int ShiftCount { get; private set; }
+
+        public int ReduceCount { get; private set; }
+
         // The heads
         private readonly List<StateVertex> heads = new();
 
@@ -121,6 +125,7 @@ namespace Yoakke.Grammar.Sample
 
         private void Reduce(StateVertex vertex, Reduce reduce)
         {
+            ++this.ReduceCount;
             this.heads.Remove(vertex);
             // Now we need to pop off |b| amount of symbol vertices for an X -> b reduction
             var reducedSubtrees = new List<IIncrementalTreeNode>();
@@ -137,7 +142,7 @@ namespace Yoakke.Grammar.Sample
             // If nothing, we terminate this branch
             if (stateGoto is null) return;
             // Otherwise we push on the symbol and the state
-            var tree = new ProductionIncrementalTreeNode(reduce.Production, stateGoto.Value, reducedSubtrees)
+            var tree = new ProductionIncrementalTreeNode(reduce.Production, newRoot.State, reducedSubtrees)
             {
                 IsReusable = this.heads.Count == 1,
             };
@@ -150,6 +155,7 @@ namespace Yoakke.Grammar.Sample
 
         private void Shift(StateVertex vertex, Shift shift)
         {
+            ++this.ShiftCount;
             Debug.Assert(this.currentNode is not null, "The current node cannot be null.");
             // The vertex is surely out of the heads now
             this.heads.Remove(vertex);
