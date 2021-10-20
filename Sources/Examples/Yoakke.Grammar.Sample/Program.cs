@@ -58,11 +58,9 @@ namespace Yoakke.Grammar.Sample
 
 	var ::=  Name | prefixexp '[' exp ']' | prefixexp '.' Name 
 
-	namelist ::= Name namelist_list
-    namelist_list ::= [namelist_list] ',' Name
+	namelist ::= Name | namelist , Name
 
-	explist ::= exp explist_list
-    explist_list ::= [explist_list] ',' exp
+	explist ::= exp | explist , exp
 
 	exp ::=  nil | false | true | Numeral | LiteralString | '...' | functiondef | 
 		 prefixexp | tableconstructor | exp binop exp | unop exp 
@@ -98,13 +96,6 @@ namespace Yoakke.Grammar.Sample
             var cfg = EbnfParser.ParseGrammar(luaGrammar);
             cfg.AugmentStartSymbol();
 
-            /*
-            var table = LrParsingTable.Lalr(cfg);
-            // Console.WriteLine(table.ToHtmlTable());
-
-            var cfg = ParseGrammar(@"");
-            cfg.AugmentStartSymbol();
-
             var table = LrParsingTable.Lalr(cfg);
             // Console.WriteLine(table.ToHtmlTable());
             while (true)
@@ -113,28 +104,14 @@ namespace Yoakke.Grammar.Sample
                 if (input is null) break;
                 GlrParse(() => new GraphStructuredStack(table), input);
             }
-            */
         }
 
         static void GlrParse(Func<INondetStack> makeStack, string text)
         {
-            Terminal ToTerm(string word) => new(word);
-
-            var words = text
-                .Split(' ')
-                .Select(t => t.Trim())
-                .Where(t => t.Length > 0)
-                .ToList();
-            var terminals = words
-                .Select(ToTerm)
-                .Append(Terminal.EndOfInput)
-                .ToList();
-            words.Add("$");
-
+            var terminals = LuaLexer.LexTerminals(text);
             var treeSource = new IncrementalTreeSource(terminals);
 
         begin:
-
             var stack = makeStack();
 
             Console.WriteLine("=========================");
@@ -142,8 +119,9 @@ namespace Yoakke.Grammar.Sample
             Console.WriteLine("=========================");
             while (!treeSource.IsEnd)
             {
-                // Console.WriteLine($"processing {words[i]}");
-                stack.Feed(treeSource.Next(stack.CurrentState));
+                var t = treeSource.Next(stack.CurrentState);
+                Console.WriteLine($"processing {t.Symbol}");
+                stack.Feed(t);
                 Console.WriteLine("=========================");
                 Console.WriteLine(stack.ToDot());
                 Console.WriteLine("=========================");
@@ -169,12 +147,8 @@ namespace Yoakke.Grammar.Sample
             var parts = Console.ReadLine()!.Split(";");
             var start = int.Parse(parts[0].Trim());
             var length = int.Parse(parts[1].Trim());
-            var inserted = parts[2]
-                .Trim()
-                .Split(' ')
-                .Select(t => t.Trim())
-                .Where(t => t.Length > 0)
-                .Select(ToTerm)
+            var inserted = LuaLexer.LexTerminals(parts[2])
+                .SkipLast(1)
                 .ToList();
 
             treeSource.Reset(stack.Trees.Count() == 1 ? stack.Trees.First() : null);
@@ -376,5 +350,21 @@ namespace Yoakke.Grammar.Sample
     [Lexer(typeof(LuaTokenType))]
     public partial class LuaLexer
     {
+        public static List<Terminal> LexTerminals(string src)
+        {
+            var l = new LuaLexer(src);
+            var res = new List<Terminal>();
+            while (true)
+            {
+                var t = l.Next();
+                if (t.Kind == LuaTokenType.End)
+                {
+                    res.Add(Terminal.EndOfInput);
+                    break;
+                }
+                res.Add(new(t.Kind == LuaTokenType.Keyword ? t.Text : t.Kind.ToString()));
+            }
+            return res;
+        }
     }
 }
