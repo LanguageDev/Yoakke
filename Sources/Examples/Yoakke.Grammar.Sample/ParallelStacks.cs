@@ -131,7 +131,10 @@ namespace Yoakke.Grammar.Sample
             // If nothing, we terminate this branch
             if (stateGoto is null) return;
             // Otherwise we push on the symbol and the state
-            var tree = new ProductionIncrementalTreeNode(reduce.Production, stateGoto.Value, reducedSubtrees);
+            var tree = new ProductionIncrementalTreeNode(reduce.Production, stateGoto.Value, reducedSubtrees)
+            {
+                IsReusable = this.heads.Count == 1,
+            };
             var pushedVertex = Push(newRoot, tree, stateGoto.Value);
             // We add it as a head
             this.heads.Add(pushedVertex);
