@@ -18,6 +18,8 @@ namespace Yoakke.Grammar.Sample
 
         public int ShiftCount { get; }
         public int ReduceCount { get; }
+        public int EdgeCount { get; }
+        public int VertexCount { get; }
 
         public int? CurrentState { get; }
         public IEnumerable<IIncrementalTreeNode> Trees { get; }

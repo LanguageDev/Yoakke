@@ -19,6 +19,13 @@ namespace Yoakke.Grammar.Sample
     {
         public IDictionary<int, StateVertex> StateVertices { get; } = new Dictionary<int, StateVertex>();
 
+        private readonly GraphStructuredStack gss;
+
+        public VertexLayer(GraphStructuredStack gss)
+        {
+            this.gss = gss;
+        }
+
         public void Clear()
         {
             this.StateVertices.Clear();
@@ -35,12 +42,15 @@ namespace Yoakke.Grammar.Sample
                 {
                     // Everything is cached, nothing to do, just connect them up
                     nextSymbol.Prev.Add(prevState);
+                    ++this.gss.EdgeCount;
                 }
                 else
                 {
                     // The next symbol does not exist yet
                     nextSymbol = new(prevState, node);
                     nextState.PrevMap.Add(node, nextSymbol);
+                    this.gss.EdgeCount += 2;
+                    ++this.gss.VertexCount;
                 }
                 // Anyway, the state exists
                 return null;
@@ -53,6 +63,8 @@ namespace Yoakke.Grammar.Sample
                 nextSymbol.Prev.Add(prevState);
                 nextState = new(nextSymbol, state);
                 this.StateVertices.Add(state, nextState);
+                this.gss.VertexCount += 2;
+                this.gss.EdgeCount += 2;
                 return nextState;
             }
         }
@@ -74,9 +86,13 @@ namespace Yoakke.Grammar.Sample
 
         public int ReduceCount { get; private set; }
 
+        public int EdgeCount { get; internal set; }
+
+        public int VertexCount { get; internal set; } = 1;
+
         // Layer caches
-        private readonly VertexLayer reduceLayer = new();
-        private readonly VertexLayer shiftLayer = new();
+        private readonly VertexLayer reduceLayer;
+        private readonly VertexLayer shiftLayer;
 
         // Temporary vertex heads
         private readonly HashSet<StateVertex> oldHeads = new();
@@ -91,6 +107,8 @@ namespace Yoakke.Grammar.Sample
         public GraphStructuredStack(ILrParsingTable table)
         {
             this.ParsingTable = table;
+            this.shiftLayer = new(this);
+            this.reduceLayer = new(this);
             // Initial state
             this.shiftLayer.StateVertices.Add(0, new());
         }

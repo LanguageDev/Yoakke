@@ -24,7 +24,7 @@ namespace Yoakke.Grammar.Sample
             var luaGrammar = @"
     S ::= block
 
-	block ::= stat_list [retstat]
+	block ::= [stat_list] [retstat]
 
     stat_list ::= [stat_list] stat
 
@@ -37,7 +37,7 @@ namespace Yoakke.Grammar.Sample
 		 do block end | 
 		 while exp do block end | 
 		 repeat block until exp | 
-		 if exp then block elseif_list [else block] end | 
+		 if exp then block [elseif_list] [else block] end | 
 		 for Name '=' exp ',' exp [',' exp] do block end | 
 		 for namelist in explist do block end | 
 		 function funcname funcbody | 
@@ -50,10 +50,10 @@ namespace Yoakke.Grammar.Sample
 
 	label ::= '::' Name '::'
 
-	funcname ::= Name funcname_list [':' Name]
+	funcname ::= Name [funcname_list] [':' Name]
     funcname_list ::= [funcname_list] '.' Name
 
-	varlist ::= var varlist_list
+	varlist ::= var [varlist_list]
     varlist_list ::= [varlist_list] ',' var
 
 	var ::=  Name | prefixexp '[' exp ']' | prefixexp '.' Name 
@@ -73,13 +73,13 @@ namespace Yoakke.Grammar.Sample
 
 	functiondef ::= function funcbody
 
-	funcbody ::= '(' [parlist] ')' block end
+	funcbody ::= '(' [parlist] ')' [block] end
 
 	parlist ::= namelist [',' '...'] | '...'
 
 	tableconstructor ::= '{' [fieldlist] '}'
 
-	fieldlist ::= field fieldlist_list [fieldsep]
+	fieldlist ::= field [fieldlist_list] [fieldsep]
     fieldlist_list ::= [fieldlist_list] fieldsep field
 
 	field ::= '[' exp ']' '=' exp | Name '=' exp | exp
@@ -97,7 +97,7 @@ namespace Yoakke.Grammar.Sample
             cfg.AugmentStartSymbol();
 
             var table = LrParsingTable.Lalr(cfg);
-            // Console.WriteLine(table.ToHtmlTable());
+            
             while (true)
             {
                 var input = ReadCode();
@@ -142,6 +142,8 @@ namespace Yoakke.Grammar.Sample
 
             Console.WriteLine($"Shifts: {stack.ShiftCount}");
             Console.WriteLine($"Reduces: {stack.ReduceCount}");
+            Console.WriteLine($"Vertices: {stack.VertexCount}");
+            Console.WriteLine($"Edges: {stack.EdgeCount}");
 
             var parts = Console.ReadLine()!.Split(";");
             var start = int.Parse(parts[0].Trim());
@@ -353,7 +355,9 @@ namespace Yoakke.Grammar.Sample
         Keyword,
 
         [Regex(Regexes.IntLiteral)] Numeral,
-        [Regex(Regexes.StringLiteral)] LiteralString,
+        [Regex(Regexes.StringLiteral)]
+        [Regex(@"'((\\[^\n\r])|[^\r\n\\'])*'")]
+        LiteralString,
         [Regex(Regexes.Identifier)] Name,
     }
 

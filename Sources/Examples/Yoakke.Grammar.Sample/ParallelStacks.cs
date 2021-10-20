@@ -29,6 +29,10 @@ namespace Yoakke.Grammar.Sample
 
         public int ReduceCount { get; private set; }
 
+        public int EdgeCount { get; private set; }
+
+        public int VertexCount { get; private set; } = 1;
+
         // The heads
         private readonly List<StateVertex> heads = new();
 
@@ -161,7 +165,7 @@ namespace Yoakke.Grammar.Sample
             // The vertex is surely out of the heads now
             this.heads.Remove(vertex);
             // Now we try to push on the symbol and next state
-            var newHead = Push(vertex, this.currentNode, shift.State);
+            var newHead = this.Push(vertex, this.currentNode, shift.State);
             this.heads.Add(newHead);
         }
 
@@ -173,8 +177,12 @@ namespace Yoakke.Grammar.Sample
             return (prevSymbol.Prev.First(), prevSymbol);
         }
 
-        private static StateVertex Push(StateVertex vertex, IIncrementalTreeNode node, int state) =>
-            new(new(vertex, node), state);
+        private StateVertex Push(StateVertex vertex, IIncrementalTreeNode node, int state)
+        {
+            this.VertexCount += 2;
+            this.EdgeCount += 2;
+            return new(new(vertex, node), state);
+        }
 
         private void PushActions(StateVertex vertex)
         {
@@ -205,6 +213,22 @@ namespace Yoakke.Grammar.Sample
 
         private StateVertex CloneStack(StateVertex vertex)
         {
+            // Just for counting
+            Vertex? it = vertex;
+            while (it is not null)
+            {
+                ++this.VertexCount;
+                if (it.Prev.Any())
+                {
+                    ++this.EdgeCount;
+                    it = it.Prev.First();
+                }
+                else
+                {
+                    it = null;
+                }
+            }
+            // Actual important things
             var newHead = vertex.Clone();
             this.heads.Add(newHead);
             return newHead;
