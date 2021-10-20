@@ -91,7 +91,7 @@ VP -> verb NP
             foreach (var ast in stack.Trees)
             {
                 Console.WriteLine("=========================");
-                Console.WriteLine(ToDot(ast));
+                Console.WriteLine(Clone(ast).ToDot());
                 Console.WriteLine("=========================");
             }
         }
@@ -110,34 +110,11 @@ VP -> verb NP
             return parser.ResultStack.First();
         }
 
-        static string ToDot(IIncrementalTreeNode node)
+        static IParseTreeNode Clone(IIncrementalTreeNode node)
         {
-            var result = new StringBuilder();
-            result.AppendLine("graph parse_tree {");
-
-            // We assign each node an ID
-            var nodeIds = new Dictionary<IIncrementalTreeNode, int>();
-            foreach (var n in BreadthFirst.Search(node, n => n.Children)) nodeIds.Add(n, nodeIds.Count);
-
-            // Define each node with the label
-            foreach (var (n, id) in nodeIds)
-            {
-                result.Append($"  {id}[label=\"");
-
-                if (n is LeafIncrementalTreeNode leaf) result.Append($"{n.Symbol}[{leaf.Terminal}]");
-                else result.Append(n.Symbol);
-
-                result.AppendLine("\"];");
-            }
-
-            // Connect parent-child relations
-            foreach (var (n, id) in nodeIds)
-            {
-                foreach (var other in n.Children) result.AppendLine($"  {id} -- {nodeIds[other]}");
-            }
-
-            result.Append('}');
-            return result.ToString();
+            if (node is LeafIncrementalTreeNode leaf) return new LeafParseTreeNode(leaf.Terminal, leaf.Terminal);
+            var prod = (ProductionIncrementalTreeNode)node;
+            return new ProductionParseTreeNode(prod.Production, prod.Children.Select(Clone).ToList());
         }
 
         static ContextFreeGrammar ParseGrammar(string text)

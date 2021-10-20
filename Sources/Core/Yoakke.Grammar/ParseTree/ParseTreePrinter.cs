@@ -27,8 +27,8 @@ namespace Yoakke.Grammar.ParseTree
             result.AppendLine("graph parse_tree {");
 
             // We assign each node an ID
-            var nodeIds = new Dictionary<IParseTreeNode, int>();
-            foreach (var n in BreadthFirst.Search(node, n => n.Children)) nodeIds.Add(n, nodeIds.Count);
+            var nodeIds = new Dictionary<IParseTreeNode, int>(ReferenceEqualityComparer.Instance);
+            foreach (var n in BreadthFirst.Search(node, n => ((IParseTreeNode)n).Children, ReferenceEqualityComparer.Instance)) nodeIds.Add((IParseTreeNode)n, nodeIds.Count);
 
             // Define each node with the label
             foreach (var (n, id) in nodeIds)

@@ -66,7 +66,7 @@ namespace Yoakke.Grammar.Sample
             ? this.shiftLayer.StateVertices.Keys.First()
             : null;
 
-        public IEnumerable<IIncrementalTreeNode> Trees => this.shiftLayer.StateVertices.Values
+        public IEnumerable<IIncrementalTreeNode> Trees => this.oldHeads
             .Where(h => h.PrevMap.Count > 0)
             .SelectMany(h => h.PrevMap.Values.Select(v => v.ParseTree));
 
