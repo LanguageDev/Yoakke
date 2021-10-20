@@ -93,29 +93,36 @@ namespace Yoakke.Grammar.Sample
 
 	unop ::= '-' | not | '#' | '~'
 ";
+            var simpleGrammar = @"
+S ::= [S] E
+E ::= '{' '+' '}' | '{' '-' '}'
+";
             var cfg = EbnfParser.ParseGrammar(luaGrammar);
             cfg.AugmentStartSymbol();
 
-            var table = LrParsingTable.Lalr(cfg);
-            
-            while (true)
-            {
-                var input = ReadCode();
-                GlrParse(() => new GraphStructuredStack(table), input);
-            }
+            var table = LrParsingTable.Lr0(cfg);
+            // TableStats(table);
+
+            var input = ReadCode();
+            GlrParse(table, false, false, input);
         }
 
-        static void GlrParse(Func<INondetStack> makeStack, string text)
+        static void GlrParse(ILrParsingTable table, bool gss, bool incr, string text) => GlrParse(
+            () => gss ? new GraphStructuredStack(table) : new ParallelStacks(table),
+            ts => incr ? new IncrementalTreeSource(ts) : new TerminalTreeSource(ts),
+            text);
+
+        static void GlrParse(Func<INondetStack> makeStack, Func<List<Terminal>, ITreeSource> makeSource, string text)
         {
             var terminals = LuaLexer.LexTerminals(text);
-            var treeSource = new IncrementalTreeSource(terminals);
+            var treeSource = makeSource(terminals);
 
         begin:
             var stack = makeStack();
 
-            Console.WriteLine("=========================");
-            Console.WriteLine(stack.ToDot());
-            Console.WriteLine("=========================");
+            //Console.WriteLine("=========================");
+            //Console.WriteLine(stack.ToDot());
+            //Console.WriteLine("=========================");
             while (!treeSource.IsEnd)
             {
                 var t = treeSource.Next(stack.CurrentState);
@@ -135,9 +142,9 @@ namespace Yoakke.Grammar.Sample
             Console.WriteLine("Nodes:");
             foreach (var ast in stack.Trees)
             {
-                Console.WriteLine("=========================");
+                //Console.WriteLine("=========================");
                 Console.WriteLine(ToDot(CloneIncrementalTree(ast)));
-                Console.WriteLine("=========================");
+                //Console.WriteLine("=========================");
             }
 
             Console.WriteLine($"Shifts: {stack.ShiftCount}");
@@ -178,6 +185,28 @@ namespace Yoakke.Grammar.Sample
             }
 
             return parser.ResultStack.First();
+        }
+
+        static void TableStats<T>(ILrParsingTable<T> table)
+            where T : ILrItem
+        {
+            Console.WriteLine($"States: {table.StateAllocator.States.Count}");
+            var conflicts = 0;
+            var conflictingActions = 0;
+            foreach (var t in table.Grammar.Terminals)
+            {
+                foreach (var s in table.StateAllocator.States)
+                {
+                    var actions = table.Action[s, t];
+                    if (actions.Count > 1)
+                    {
+                        ++conflictingActions;
+                        conflicts += actions.Count - 1;
+                    }
+                }
+            }
+            Console.WriteLine($"Conflicting actions: {conflictingActions}");
+            Console.WriteLine($"Conflicts: {conflicts}");
         }
 
         static IIncrementalTreeNode CloneIncrementalTree(IIncrementalTreeNode node)

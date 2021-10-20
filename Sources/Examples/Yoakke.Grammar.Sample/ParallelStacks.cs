@@ -23,7 +23,8 @@ namespace Yoakke.Grammar.Sample
 
         public IEnumerable<IIncrementalTreeNode> Trees => this.heads
             .Where(h => h.PrevMap.Count > 0)
-            .SelectMany(h => h.PrevMap.Values.Select(v => v.ParseTree));
+            .SelectMany(h => h.PrevMap.Values.Select(v => v.ParseTree))
+            .Distinct();
 
         public int ShiftCount { get; private set; }
 
@@ -113,7 +114,7 @@ namespace Yoakke.Grammar.Sample
             this.currentNode = currentNode;
 
             // We push each action for each head
-            foreach (var head in this.heads) this.PushActions(head);
+            foreach (var head in this.heads.ToList()) this.PushActions(head);
         }
 
         public bool Step()
@@ -198,6 +199,7 @@ namespace Yoakke.Grammar.Sample
             if (this.currentNode is LeafIncrementalTreeNode leaf)
             {
                 var actions = this.ParsingTable.Action[vertex.State, leaf.Terminal];
+                if (actions.Count == 0) this.heads.Remove(vertex);
                 var i = 0;
                 foreach (var action in actions)
                 {
