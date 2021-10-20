@@ -20,6 +20,8 @@ namespace Yoakke.Grammar.Sample
         public int ReduceCount { get; }
         public int EdgeCount { get; }
         public int VertexCount { get; }
+        public int BranchCount { get; }
+        public int DeathCount { get; }
 
         public int? CurrentState { get; }
         public IEnumerable<IIncrementalTreeNode> Trees { get; }

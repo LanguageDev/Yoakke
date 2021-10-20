@@ -90,6 +90,10 @@ namespace Yoakke.Grammar.Sample
 
         public int VertexCount { get; internal set; } = 1;
 
+        public int BranchCount { get; internal set; } = 1;
+
+        public int DeathCount { get; internal set; }
+
         // Layer caches
         private readonly VertexLayer reduceLayer;
         private readonly VertexLayer shiftLayer;
@@ -234,7 +238,11 @@ namespace Yoakke.Grammar.Sample
                 // Check what state we result in
                 var stateGoto = this.ParsingTable.Goto[root.State, reduce.Production.Left];
                 // If nothing, we terminate this branch
-                if (stateGoto is null) continue;
+                if (stateGoto is null)
+                {
+                    ++this.DeathCount;
+                    continue;
+                }
                 // Otherwise we push on the symbol and the state
                 var trees = nodeLists.Select(nodes =>
                     new ProductionIncrementalTreeNode(reduce.Production, root.State, nodes)
@@ -263,7 +271,8 @@ namespace Yoakke.Grammar.Sample
             // The vertex is surely out of the heads now
             this.oldHeads.Remove(vertex);
             // Now we try to push on the symbol and next state
-            this.shiftLayer.Push(vertex, this.currentNode, shift.State);
+            var pushed = this.shiftLayer.Push(vertex, this.currentNode, shift.State);
+            if (pushed is not null) ++this.BranchCount;
         }
 
         private static IEnumerable<(StateVertex State, List<IIncrementalTreeNode> Nodes)> PopAndCollect(StateVertex initial, int count)

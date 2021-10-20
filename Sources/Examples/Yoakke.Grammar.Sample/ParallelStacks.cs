@@ -33,6 +33,10 @@ namespace Yoakke.Grammar.Sample
 
         public int VertexCount { get; private set; } = 1;
 
+        public int BranchCount { get; private set; } = 1;
+
+        public int DeathCount { get; private set; }
+
         // The heads
         private readonly List<StateVertex> heads = new();
 
@@ -145,7 +149,11 @@ namespace Yoakke.Grammar.Sample
             // Check what state we result in
             var stateGoto = this.ParsingTable.Goto[newRoot.State, reduce.Production.Left];
             // If nothing, we terminate this branch
-            if (stateGoto is null) return;
+            if (stateGoto is null)
+            {
+                ++this.DeathCount;
+                return;
+            }
             // Otherwise we push on the symbol and the state
             var tree = new ProductionIncrementalTreeNode(reduce.Production, newRoot.State, reducedSubtrees)
             {
@@ -228,6 +236,7 @@ namespace Yoakke.Grammar.Sample
                     it = null;
                 }
             }
+            ++this.BranchCount;
             // Actual important things
             var newHead = vertex.Clone();
             this.heads.Add(newHead);
