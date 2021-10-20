@@ -136,6 +136,7 @@ namespace Yoakke.Grammar.Sample
                 newRoot = r;
                 reducedSubtrees.Add(s.ParseTree);
             }
+            reducedSubtrees.Reverse();
             // We have the new root, act on it
             // Check what state we result in
             var stateGoto = this.ParsingTable.Goto[newRoot.State, reduce.Production.Left];
@@ -178,18 +179,27 @@ namespace Yoakke.Grammar.Sample
         private void PushActions(StateVertex vertex)
         {
             Debug.Assert(this.currentNode is not null, "The current node cannot be null.");
-            var actions = this.ParsingTable.Action[vertex.State, this.currentNode.FirstTerminal];
-            var i = 0;
-            foreach (var action in actions)
+            if (this.currentNode is LeafIncrementalTreeNode leaf)
             {
-                var head = vertex;
-                // If this is a nondeterministic step, clone the stack and act on that
-                if (i > 0) head = this.CloneStack(vertex);
-                // Act on the chosen head
-                if (action is Shift s) this.remainingShifts.Push((head, s));
-                else if (action is Reduce r) this.remainingReduces.Push((head, r));
-                // NOTE: else it's an accept
-                ++i;
+                var actions = this.ParsingTable.Action[vertex.State, leaf.Terminal];
+                var i = 0;
+                foreach (var action in actions)
+                {
+                    var head = vertex;
+                    // If this is a nondeterministic step, clone the stack and act on that
+                    if (i > 0) head = this.CloneStack(vertex);
+                    // Act on the chosen head
+                    if (action is Shift s) this.remainingShifts.Push((head, s));
+                    else if (action is Reduce r) this.remainingReduces.Push((head, r));
+                    // NOTE: else it's an accept
+                    ++i;
+                }
+            }
+            else
+            {
+                var prod = (ProductionIncrementalTreeNode)this.currentNode;
+                var stateGoto = this.ParsingTable.Goto[vertex.State, prod.Production.Left];
+                if (stateGoto is not null) this.remainingShifts.Push((vertex, new(stateGoto.Value)));
             }
         }
 
