@@ -16,6 +16,8 @@ namespace Yoakke.Grammar.Sample
     {
         public ILrParsingTable ParsingTable { get; }
 
+        public int? CurrentState { get; }
+
         public string ToDot();
         public void Feed(IIncrementalTreeNode currentNode);
         public bool Step();

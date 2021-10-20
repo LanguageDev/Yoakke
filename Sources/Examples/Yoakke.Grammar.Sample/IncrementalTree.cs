@@ -36,16 +36,15 @@ namespace Yoakke.Grammar.Sample
 
         public int Width => 1;
 
-        public int ParserState { get; }
+        public int ParserState => -1;
 
         public IReadOnlyList<IIncrementalTreeNode> Children => Array.Empty<IIncrementalTreeNode>();
 
         public Terminal FirstTerminal => this.Terminal;
 
-        public LeafIncrementalTreeNode(Terminal terminal, int state)
+        public LeafIncrementalTreeNode(Terminal terminal)
         {
             this.Terminal = terminal;
-            this.ParserState = state;
         }
 
         public override bool Equals(object? obj) => this.Equals(obj as IIncrementalTreeNode);

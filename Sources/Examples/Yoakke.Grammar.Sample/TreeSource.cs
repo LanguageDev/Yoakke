@@ -37,7 +37,7 @@ namespace Yoakke.Grammar.Sample
         public void Reset(IIncrementalTreeNode? node) => this.index = 0;
 
         public IIncrementalTreeNode Next(int? currentState) =>
-            new LeafIncrementalTreeNode(this.terminals[this.index++], currentState ?? -1);
+            new LeafIncrementalTreeNode(this.terminals[this.index++]);
 
         public void MakeEdit(int start, int eraseLength, IEnumerable<Terminal> insertions)
         {
@@ -55,7 +55,7 @@ namespace Yoakke.Grammar.Sample
 
         public IncrementalTreeSource(IEnumerable<Terminal> terminals)
         {
-            this.nodes = terminals.Select(t => (IIncrementalTreeNode)new LeafIncrementalTreeNode(t, -1)).ToList();
+            this.nodes = terminals.Select(t => (IIncrementalTreeNode)new LeafIncrementalTreeNode(t)).ToList();
         }
 
         public void Reset(IIncrementalTreeNode? node)
@@ -70,17 +70,48 @@ namespace Yoakke.Grammar.Sample
 
         public IIncrementalTreeNode Next(int? currentState)
         {
-            // Initial terminal
-            if (this.nodes[this.index].ParserState == -1) return this.nodes[this.index++];
-
-            // TODO
-            throw new NotImplementedException();
+            if (currentState is null)
+            {
+                // The current state is nondeterministic
+                // We have to explode until we have a terminal
+                for (; this.nodes[this.index].ParserState != -1; this.Explode())
+                {
+                    // Pass
+                }
+            }
+            else
+            {
+                // Deterministic current state
+                // While the node is not reusable or the states are not equal, we explode
+                for (;
+                       (!this.nodes[this.index].IsReusable
+                    || this.nodes[this.index].ParserState != currentState)
+                    && this.nodes[this.index].ParserState != -1; this.Explode())
+                {
+                    // Pass
+                }
+            }
+            return this.nodes[this.index++];
         }
 
         public void MakeEdit(int start, int eraseLength, IEnumerable<Terminal> insertions)
         {
+            for (var i = 0; i < this.nodes.Count; ++i)
+            {
+                // TODO
+            }
+        }
+
+        private void MakeEditImpl(int start, int eraseLength, IIncrementalTreeNode current, Queue<Terminal> insertions)
+        {
             // TODO
-            throw new NotImplementedException();
+        }
+
+        private void Explode()
+        {
+            var node = this.nodes[this.index];
+            this.nodes.RemoveAt(this.index);
+            this.nodes.InsertRange(this.index, node.Children);
         }
     }
 }

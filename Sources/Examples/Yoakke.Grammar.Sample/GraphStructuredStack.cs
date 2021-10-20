@@ -62,6 +62,10 @@ namespace Yoakke.Grammar.Sample
     {
         public ILrParsingTable ParsingTable { get; }
 
+        public int? CurrentState => this.shiftLayer.StateVertices.Count == 1
+            ? this.shiftLayer.StateVertices.Keys.First()
+            : null;
+
         // Layer caches
         private readonly VertexLayer reduceLayer = new();
         private readonly VertexLayer shiftLayer = new();
@@ -208,7 +212,7 @@ namespace Yoakke.Grammar.Sample
                 var trees = nodeLists.Select(nodes =>
                     new ProductionIncrementalTreeNode(reduce.Production, stateGoto.Value, nodes)
                     {
-                        IsReusable = !(this.shiftLayer.StateVertices.Count > 1) && !(this.reduceLayer.StateVertices.Count > 1),
+                        IsReusable = this.CurrentState is not null,
                     });
                 // Fir each tree we try to push
                 foreach (var tree in trees)

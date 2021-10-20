@@ -19,6 +19,8 @@ namespace Yoakke.Grammar.Sample
     {
         public ILrParsingTable ParsingTable { get; }
 
+        public int? CurrentState => this.heads.Count == 1 ? this.heads.First().State : null;
+
         // The heads
         private readonly List<StateVertex> heads = new();
 
