@@ -22,7 +22,7 @@ namespace Yoakke.Grammar.Sample
         static void Main(string[] args)
         {
             var luaGrammar = @"
-    chunk ::= block
+    S ::= block
 
 	block ::= stat_list [retstat]
 
@@ -96,7 +96,10 @@ namespace Yoakke.Grammar.Sample
 	unop ::= '-' | not | '#' | '~'
 ";
             var g = EbnfParser.ParseGrammar(luaGrammar);
-            Console.WriteLine(g);
+            foreach (var w in g.GenerateSentences())
+            {
+                Console.WriteLine(string.Join(" ", w));
+            }
 
             /*
             var cfg = ParseGrammar(@"");
@@ -298,5 +301,81 @@ namespace Yoakke.Grammar.Sample
             }
             return result;
         }
+    }
+
+    public enum LuaTokenType
+    {
+        [Error] Error,
+        [End] End,
+
+        [Ignore]
+        [Regex(Regexes.Whitespace)]
+        [Regex(@"--[^\r\n]*")] Ignore,
+
+        [Token(";")]
+        [Token(".")]
+        [Token("=")]
+        [Token(",")]
+        [Token(":")]
+        [Token("::")]
+        [Token("[")]
+        [Token("]")]
+        [Token("(")]
+        [Token(")")]
+        [Token("{")]
+        [Token("}")]
+        [Token("...")]
+        [Token("+")]
+        [Token("-")]
+        [Token("*")]
+        [Token("/")]
+        [Token("//")]
+        [Token("^")]
+        [Token("%")]
+        [Token("&")]
+        [Token("~")]
+        [Token("|")]
+        [Token(">>")]
+        [Token("<<")]
+        [Token("..")]
+        [Token("<")]
+        [Token("<=")]
+        [Token(">")]
+        [Token(">=")]
+        [Token("==")]
+        [Token("~=")]
+        [Token("~")]
+        [Token("break")]
+        [Token("goto")]
+        [Token("do")]
+        [Token("end")]
+        [Token("while")]
+        [Token("repeat")]
+        [Token("until")]
+        [Token("if")]
+        [Token("then")]
+        [Token("elseif")]
+        [Token("else")]
+        [Token("for")]
+        [Token("in")]
+        [Token("function")]
+        [Token("local")]
+        [Token("return")]
+        [Token("nil")]
+        [Token("false")]
+        [Token("true")]
+        [Token("and")]
+        [Token("or")]
+        [Token("not")]
+        Keyword,
+
+        [Regex(Regexes.IntLiteral)] Numeral,
+        [Regex(Regexes.StringLiteral)] LiteralString,
+        [Regex(Regexes.Identifier)] Name,
+    }
+
+    [Lexer(typeof(LuaTokenType))]
+    public partial class LuaLexer
+    {
     }
 }
