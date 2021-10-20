@@ -11,6 +11,8 @@ using Yoakke.Grammar.Lr;
 using Yoakke.Grammar.Lr.Lalr;
 using Yoakke.Grammar.Lr.Lr0;
 using Yoakke.Grammar.ParseTree;
+using Yoakke.Lexer;
+using Yoakke.Lexer.Attributes;
 using Action = Yoakke.Grammar.Lr.Action;
 
 namespace Yoakke.Grammar.Sample
@@ -19,34 +21,85 @@ namespace Yoakke.Grammar.Sample
     {
         static void Main(string[] args)
         {
-            var cfg = ParseGrammar(@"
-S -> decl_list
-decl_list -> decl_list decl
-decl_list -> decl
-decl_list -> ε
+            var luaGrammar = @"
+    chunk ::= block
 
-decl -> function_decl
-function_decl -> Function Name ( arg_list ) { stmt_list }
-arg_list -> arg_list , Name
-arg_list -> Name
-arg_list -> ε
+	block ::= stat_list [retstat]
 
-stmt_list -> stmt_list stmt
-stmt_list -> stmt
-stmt_list -> ε
+    stat_list ::= [stat_list] stat
 
-stmt -> expr
+	stat ::=  ';' | 
+		 varlist '=' explist | 
+		 functioncall | 
+		 label | 
+		 break | 
+		 goto Name | 
+		 do block end | 
+		 while exp do block end | 
+		 repeat block until exp | 
+		 if exp then block elseif_list [else block] end | 
+		 for Name '=' exp ',' exp [',' exp] do block end | 
+		 for namelist in explist do block end | 
+		 function funcname funcbody | 
+		 local function Name funcbody | 
+		 local namelist ['=' explist]
 
-expr -> expr + expr
-expr -> expr * expr
-expr -> expr ( expr_list )
-expr -> Name
-expr -> 1
+    elseif_list ::= [elseif_list] elseif exp then block
 
-expr_list -> expr_list , expr
-expr_list -> expr
-expr_list -> ε
-");
+	retstat ::= return [explist] [';']
+
+	label ::= '::' Name '::'
+
+	funcname ::= Name funcname_list [':' Name]
+    funcname_list ::= [funcname_list] '.' Name
+
+	varlist ::= var varlist_list
+    varlist_list ::= [varlist_list] ',' var
+
+	var ::=  Name | prefixexp '[' exp ']' | prefixexp '.' Name 
+
+	namelist ::= Name namelist_list
+    namelist_list ::= [namelist_list] ',' Name
+
+	explist ::= exp explist_list
+    explist_list ::= [explist_list] ',' exp
+
+	exp ::=  nil | false | true | Numeral | LiteralString | '...' | functiondef | 
+		 prefixexp | tableconstructor | exp binop exp | unop exp 
+
+	prefixexp ::= var | functioncall | '(' exp ')'
+
+	functioncall ::=  prefixexp args | prefixexp ':' Name args 
+
+	args ::=  '(' [explist] ')' | tableconstructor | LiteralString 
+
+	functiondef ::= function funcbody
+
+	funcbody ::= '(' [parlist] ')' block end
+
+	parlist ::= namelist [',' '...'] | '...'
+
+	tableconstructor ::= '{' [fieldlist] '}'
+
+	fieldlist ::= field fieldlist_list [fieldsep]
+    fieldlist_list ::= [fieldlist_list] fieldsep field
+
+	field ::= '[' exp ']' '=' exp | Name '=' exp | exp
+
+	fieldsep ::= ',' | ';'
+
+	binop ::=  '+' | '-' | '*' | '/' | '//' | '^' | '%' | 
+		 '&' | '~' | '|' | '>>' | '<<' | '..' | 
+		 '<' | '<=' | '>' | '>=' | '==' | '~=' | 
+		 and | or
+
+	unop ::= '-' | not | '#' | '~'
+";
+            var g = EbnfParser.ParseGrammar(luaGrammar);
+            Console.WriteLine(g);
+
+            /*
+            var cfg = ParseGrammar(@"");
             cfg.AugmentStartSymbol();
 
             var table = LrParsingTable.Lalr(cfg);
@@ -58,6 +111,7 @@ expr_list -> ε
                 if (input is null) break;
                 GlrParse(() => new GraphStructuredStack(table), input);
             }
+            */
         }
 
         static void GlrParse(Func<INondetStack> makeStack, string text)
