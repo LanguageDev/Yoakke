@@ -172,7 +172,7 @@ This would be how C# handles it's brace-initialization. 0 or more initializers, 
 Similar to the previous case, but at least one element is mandatory: `(initializer (',' initializer)* ','?)`. The type of this is `(Initializer, IReadOnlyList<(IToken<TKind>, Expression)>, IToken<TKind>?)`.
 
 #### The solution
-Since these are very common patterns, the parser library provides a `Punctuated<TValue, TPunct>` type. `TValue` is the punctuated element type - like an `Expression` -, `TPunct` is the punctuation type - like a `IToken<TKind>`. The above complex types are implicitly convertible to `Punctuated<TValue, TPunct>`, which provides simpler access to its elements.
+Since these are very common patterns, the parser library provides a `Punctuated<TValue, TPunct>` type. `TValue` is the punctuated element type - like an `Expression`, and `TPunct` is the punctuation type - like a `IToken<TKind>`. The above complex types are implicitly convertible to `Punctuated<TValue, TPunct>`, which provides simpler access to its elements.
 
 Let's see an example usage:
 ```csharp
