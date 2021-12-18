@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Generic.Polyfill;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
@@ -253,8 +254,16 @@ end_loop:
         private (IDenseDfa<StateSet<int>, char> Dfa, Dictionary<StateSet<int>, TokenDescription> StateToToken)?
             BuildDfa(LexerDescription description)
         {
-            var stateCount = 0;
-            int MakeState() => stateCount++;
+            var rnd = new Random();
+            var occupiedStates = new HashSet<int>();
+            int MakeState()
+            {
+                while (true)
+                {
+                    var s = rnd.Next();
+                    if (occupiedStates.Add(s)) return s;
+                }
+            }
 
             // Store which token corresponds to which end state
             var tokenToNfaState = new Dictionary<TokenDescription, int>();
