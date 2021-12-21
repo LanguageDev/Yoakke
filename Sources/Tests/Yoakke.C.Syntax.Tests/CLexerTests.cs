@@ -171,6 +171,19 @@ namespace Yoakke.C.Syntax.Tests
             Assert.Equal(end, lexer.Next());
         }
 
+        [Theory]
+
+        [InlineData(Kind.Identifier, "Äfoo")]
+        [InlineData(Kind.Identifier, "\u0410")]
+        [InlineData(Kind.Identifier, "\u0100")]
+        public void NotExpextedLexSingleToken(Kind kind, string text)
+        {
+            var expected = Tok(kind, text);
+            var lexer = new CLexer(text);
+            var token = lexer.Next();
+            Assert.NotEqual(expected, token);
+        }
+
         [Fact]
         public void SimpleSequence()
         {

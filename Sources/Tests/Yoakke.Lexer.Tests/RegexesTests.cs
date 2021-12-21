@@ -123,6 +123,9 @@ namespace Yoakke.Lexer.Tests
         [InlineData("foo", typeof(Identifier), true, typeof(IdentifierLexer))]
         [InlineData("Foo7", typeof(Identifier), true, typeof(IdentifierLexer))]
         [InlineData("2foo", typeof(Identifier), false, typeof(IdentifierLexer))]
+        [InlineData("Äfoo", typeof(Identifier), false, typeof(IdentifierLexer))]
+        [InlineData("\u0410", typeof(Identifier), false, typeof(IdentifierLexer))] // Cyrillic A
+        [InlineData("\u0100", typeof(Identifier), false, typeof(IdentifierLexer))] // Latin Ā
         [InlineData("\"hello\"", typeof(Identifier), false, typeof(IdentifierLexer))]
 
         [InlineData("\"hello\"", typeof(StringLiteral), true, typeof(StringLiteralLexer))]

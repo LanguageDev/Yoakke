@@ -604,7 +604,7 @@ namespace Yoakke.C.Syntax
 
         private static bool IsNewline(char ch) => ch == '\n' || ch == '\r';
 
-        private static bool IsIdent(char ch) => char.IsLetterOrDigit(ch) || ch == '_';
+        private static bool IsIdent(char ch) => char.IsDigit(ch) || (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || ch == '_';
 
         private static bool IsHex(char ch) => "0123456789abcdefABCDEF".Contains(ch);
 
