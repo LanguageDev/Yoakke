@@ -361,6 +361,11 @@ namespace Yoakke.C.Syntax
         KeywordIf,
 
         /// <summary>
+        /// 'inline' keyword.
+        /// </summary>
+        KeywordInline,
+
+        /// <summary>
         /// 'int' keyword.
         /// </summary>
         KeywordInt,
@@ -374,6 +379,11 @@ namespace Yoakke.C.Syntax
         /// 'register' keyword.
         /// </summary>
         KeywordRegister,
+
+        /// <summary>
+        /// 'restrict' keyword.
+        /// </summary>
+        KeywordRestrict,
 
         /// <summary>
         /// 'return' keyword.
@@ -439,5 +449,55 @@ namespace Yoakke.C.Syntax
         /// 'while' keyword.
         /// </summary>
         KeywordWhile,
+
+        /// <summary>
+        /// '_Alignas' keyword.
+        /// </summary>
+        KeywordAlignAs,
+
+        /// <summary>
+        /// '_Alignof' keyword.
+        /// </summary>
+        KeywordAlignOf,
+
+        /// <summary>
+        /// '_Atomic' keyword.
+        /// </summary>
+        KeywordAtomic,
+
+        /// <summary>
+        /// '_Bool' keyword.
+        /// </summary>
+        KeywordBool,
+
+        /// <summary>
+        /// '_Complex' keyword.
+        /// </summary>
+        KeywordComplex,
+
+        /// <summary>
+        /// '_Generic' keyword.
+        /// </summary>
+        KeywordGeneric,
+
+        /// <summary>
+        /// '_Imaginary' keyword.
+        /// </summary>
+        KeywordImaginary,
+
+        /// <summary>
+        /// '_Noreturn' keyword.
+        /// </summary>
+        KeywordNoReturn,
+
+        /// <summary>
+        /// '_Static_assert' keyword.
+        /// </summary>
+        KeywordStaticAssert,
+
+        /// <summary>
+        /// '_Thread_local' keyword.
+        /// </summary>
+        KeywordThreadLocal,
     }
 }
