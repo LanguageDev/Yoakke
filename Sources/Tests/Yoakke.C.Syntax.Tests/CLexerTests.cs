@@ -69,6 +69,9 @@ namespace Yoakke.C.Syntax.Tests
         [InlineData(Kind.Identifier, "hello")]
         [InlineData(Kind.Identifier, "ifa")]
         [InlineData(Kind.Identifier, "Hello_123_abc")]
+        [InlineData(Kind.Identifier, "Äfoo")]
+        [InlineData(Kind.Identifier, "\u0410")]
+        [InlineData(Kind.Identifier, "\u0100")]
 
         [InlineData(Kind.IntLiteral, "0x1fb")]
         [InlineData(Kind.IntLiteral, "0X1Fb")]
@@ -181,6 +184,19 @@ namespace Yoakke.C.Syntax.Tests
             var end = Tok(Kind.End, Rn(0, token.Text.Length, 0), string.Empty);
             Assert.Equal(expected, token);
             Assert.Equal(end, lexer.Next());
+        }
+
+        [Theory]
+
+        [InlineData(Kind.Identifier, "Äfoo")]
+        [InlineData(Kind.Identifier, "\u0410")]
+        [InlineData(Kind.Identifier, "\u0100")]
+        public void DisabledUnicodeCharacters(Kind kind, string text)
+        {
+            var expected = Tok(kind, text);
+            var lexer = new CLexer(text) { AllowUnicodeCharacters = false };
+            var token = lexer.Next();
+            Assert.NotEqual(expected, token);
         }
 
         [Fact]

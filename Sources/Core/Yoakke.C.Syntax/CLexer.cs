@@ -38,6 +38,11 @@ namespace Yoakke.C.Syntax
         /// </summary>
         public bool AllowTrigraphs { get; set; } = true;
 
+        /// <summary>
+        /// True, if unicode characters in identifiers should be enabled.
+        /// </summary>
+        public bool AllowUnicodeCharacters { get; set; } = true;
+
         /// <inheritdoc/>
         public Position Position => this.source.Position;
 
@@ -260,7 +265,7 @@ namespace Yoakke.C.Syntax
             }
 
             // Literals
-            if (IsLiteralSeparator(peek) || IsIdent(peek))
+            if (IsLiteralSeparator(peek) || this.IsIdent(peek))
             {
                 var isLiteral = false;
                 var text = new StringBuilder().Append(peek);
@@ -307,10 +312,10 @@ namespace Yoakke.C.Syntax
                 }
             }
 
-            if (IsIdent(peek))
+            if (this.IsIdent(peek))
             {
                 var text = new StringBuilder().Append(peek);
-                this.TakeWhile(text, IsIdent, ref offset);
+                this.TakeWhile(text, this.IsIdent, ref offset);
                 var str = text.ToString();
                 // Determine the token-type
                 var tokenType = str switch
@@ -612,11 +617,12 @@ namespace Yoakke.C.Syntax
             return this.source.ConsumeToken<CToken>(length, (range, text) => new(range, text, logicalRange, logicalText, type));
         }
 
+        private bool IsIdent(char ch) => char.IsDigit(ch) || ch == '_'
+            || (this.AllowUnicodeCharacters ? char.IsLetter(ch) : (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z'));
+
         private static bool IsSpace(char ch) => ch == ' ' || ch == '\0';
 
         private static bool IsNewline(char ch) => ch == '\n' || ch == '\r';
-
-        private static bool IsIdent(char ch) => char.IsLetterOrDigit(ch) || ch == '_';
 
         private static bool IsHex(char ch) => "0123456789abcdefABCDEF".Contains(ch);
 
