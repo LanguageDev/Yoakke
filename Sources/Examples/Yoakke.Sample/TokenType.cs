@@ -5,53 +5,52 @@
 using Yoakke.Lexer;
 using Yoakke.Lexer.Attributes;
 
-namespace Yoakke.Sample
+namespace Yoakke.Sample;
+
+public enum TokenType
 {
-    public enum TokenType
-    {
-        [Error] Error,
-        [End] End,
+  [Error] Error,
+  [End] End,
 
-        [Ignore] [Regex(Regexes.Whitespace)] Whitespace,
+  [Ignore] [Regex(Regexes.Whitespace)] Whitespace,
 
-        [Token("func")] KwFunc,
-        [Token("if")] KwIf,
-        [Token("else")] KwElse,
-        [Token("while")] KwWhile,
-        [Token("return")] KwReturn,
-        [Token("var")] KwVar,
-        [Token("and")] KwAnd,
-        [Token("or")] KwOr,
-        [Token("not")] KwNot,
+  [Token("func")] KwFunc,
+  [Token("if")] KwIf,
+  [Token("else")] KwElse,
+  [Token("while")] KwWhile,
+  [Token("return")] KwReturn,
+  [Token("var")] KwVar,
+  [Token("and")] KwAnd,
+  [Token("or")] KwOr,
+  [Token("not")] KwNot,
 
-        [Token("{")] OpenBrace,
-        [Token("}")] CloseBrace,
-        [Token("(")] OpenParen,
-        [Token(")")] CloseParen,
-        [Token(";")] Semicol,
+  [Token("{")] OpenBrace,
+  [Token("}")] CloseBrace,
+  [Token("(")] OpenParen,
+  [Token(")")] CloseParen,
+  [Token(";")] Semicol,
 
-        [Token("+")] Plus,
-        [Token("-")] Minus,
-        [Token("*")] Star,
-        [Token("/")] Slash,
-        [Token("%")] Percent,
-        [Token("=")] Assign,
-        [Token("==")] Equal,
-        [Token("!=")] NotEqual,
-        [Token(">")] Greater,
-        [Token("<")] Less,
-        [Token(">=")] GreaterEqual,
-        [Token("<=")] LessEqual,
-        [Token("!")] Exclamation,
-        [Token(",")] Comma,
+  [Token("+")] Plus,
+  [Token("-")] Minus,
+  [Token("*")] Star,
+  [Token("/")] Slash,
+  [Token("%")] Percent,
+  [Token("=")] Assign,
+  [Token("==")] Equal,
+  [Token("!=")] NotEqual,
+  [Token(">")] Greater,
+  [Token("<")] Less,
+  [Token(">=")] GreaterEqual,
+  [Token("<=")] LessEqual,
+  [Token("!")] Exclamation,
+  [Token(",")] Comma,
 
-        [Regex(Regexes.Identifier)] Ident,
-        [Regex(Regexes.IntLiteral)] IntLit,
-        [Regex(Regexes.StringLiteral)] StrLit,
-    }
+  [Regex(Regexes.Identifier)] Ident,
+  [Regex(Regexes.IntLiteral)] IntLit,
+  [Regex(Regexes.StringLiteral)] StrLit,
+}
 
-    [Lexer(typeof(TokenType))]
-    public partial class Lexer
-    {
-    }
+[Lexer(typeof(TokenType))]
+public partial class Lexer
+{
 }

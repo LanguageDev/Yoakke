@@ -6,15 +6,14 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Yoakke.Lsp.Model.Basic;
 
-namespace Yoakke.Lsp.Model.Capabilities.Server.RegistrationOptions
+namespace Yoakke.Lsp.Model.Capabilities.Server.RegistrationOptions;
+
+/// <summary>
+/// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#documentOnTypeFormattingRegistrationOptions.
+/// </summary>
+public class DocumentOnTypeFormattingRegistrationOptions : DocumentOnTypeFormattingOptions, ITextDocumentRegistrationOptions
 {
-    /// <summary>
-    /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#documentOnTypeFormattingRegistrationOptions.
-    /// </summary>
-    public class DocumentOnTypeFormattingRegistrationOptions : DocumentOnTypeFormattingOptions, ITextDocumentRegistrationOptions
-    {
-        /// <inheritdoc/>
-        [JsonProperty("documentSelector")]
-        public IReadOnlyList<DocumentFilter>? DocumentSelector { get; set; }
-    }
+  /// <inheritdoc/>
+  [JsonProperty("documentSelector")]
+  public IReadOnlyList<DocumentFilter>? DocumentSelector { get; set; }
 }

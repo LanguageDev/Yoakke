@@ -7,23 +7,22 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Yoakke.Lsp.Model.TextSynchronization;
 
-namespace Yoakke.Lsp.Model.Serialization
-{
-    /// <summary>
-    /// A <see cref="JsonConverter"/> for <see cref="TextDocumentContentChangeEvent"/>.
-    /// </summary>
-    public class TextDocumentContentChangeEventConverter : JsonConverter<TextDocumentContentChangeEvent>
-    {
-        /// <inheritdoc/>
-        public override TextDocumentContentChangeEvent? ReadJson(JsonReader reader, Type objectType, TextDocumentContentChangeEvent? existingValue, bool hasExistingValue, JsonSerializer serializer)
-        {
-            var obj = JObject.Load(reader);
-            if (obj.ContainsKey("range")) return obj.ToObject<TextDocumentContentChangeEvent.Incremental>(serializer);
-            else return obj.ToObject<TextDocumentContentChangeEvent.Full>(serializer);
-        }
+namespace Yoakke.Lsp.Model.Serialization;
 
-        /// <inheritdoc/>
-        public override void WriteJson(JsonWriter writer, TextDocumentContentChangeEvent? value, JsonSerializer serializer) =>
-            serializer.Serialize(writer, value);
-    }
+/// <summary>
+/// A <see cref="JsonConverter"/> for <see cref="TextDocumentContentChangeEvent"/>.
+/// </summary>
+public class TextDocumentContentChangeEventConverter : JsonConverter<TextDocumentContentChangeEvent>
+{
+  /// <inheritdoc/>
+  public override TextDocumentContentChangeEvent? ReadJson(JsonReader reader, Type objectType, TextDocumentContentChangeEvent? existingValue, bool hasExistingValue, JsonSerializer serializer)
+  {
+    var obj = JObject.Load(reader);
+    if (obj.ContainsKey("range")) return obj.ToObject<TextDocumentContentChangeEvent.Incremental>(serializer);
+    else return obj.ToObject<TextDocumentContentChangeEvent.Full>(serializer);
+  }
+
+  /// <inheritdoc/>
+  public override void WriteJson(JsonWriter writer, TextDocumentContentChangeEvent? value, JsonSerializer serializer) =>
+      serializer.Serialize(writer, value);
 }

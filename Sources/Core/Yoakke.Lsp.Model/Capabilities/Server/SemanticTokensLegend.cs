@@ -6,23 +6,22 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace Yoakke.Lsp.Model.Capabilities.Server
-{
-    /// <summary>
-    /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#semanticTokensLegend.
-    /// </summary>
-    public class SemanticTokensLegend
-    {
-        /// <summary>
-        /// The token types a server uses.
-        /// </summary>
-        [JsonProperty("tokenTypes")]
-        public IReadOnlyList<string> TokenTypes { get; set; } = Array.Empty<string>();
+namespace Yoakke.Lsp.Model.Capabilities.Server;
 
-        /// <summary>
-        /// The token modifiers a server uses.
-        /// </summary>
-        [JsonProperty("tokenModifiers")]
-        public IReadOnlyList<string> TokenModifiers { get; set; } = Array.Empty<string>();
-    }
+/// <summary>
+/// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#semanticTokensLegend.
+/// </summary>
+public class SemanticTokensLegend
+{
+  /// <summary>
+  /// The token types a server uses.
+  /// </summary>
+  [JsonProperty("tokenTypes")]
+  public IReadOnlyList<string> TokenTypes { get; set; } = Array.Empty<string>();
+
+  /// <summary>
+  /// The token modifiers a server uses.
+  /// </summary>
+  [JsonProperty("tokenModifiers")]
+  public IReadOnlyList<string> TokenModifiers { get; set; } = Array.Empty<string>();
 }

@@ -6,23 +6,22 @@ using System;
 using System.Collections.Generic;
 using Yoakke.Text;
 
-namespace Yoakke.Reporting.Present
+namespace Yoakke.Reporting.Present;
+
+/// <summary>
+/// A syntax highlighter that does nothing. Serves as a default.
+/// </summary>
+public class NullSyntaxHighlighter : ISyntaxHighlighter
 {
-    /// <summary>
-    /// A syntax highlighter that does nothing. Serves as a default.
-    /// </summary>
-    public class NullSyntaxHighlighter : ISyntaxHighlighter
-    {
-        /// <summary>
-        /// A default instance for the null syntax highlighter.
-        /// </summary>
-        public static readonly NullSyntaxHighlighter Instance = new();
+  /// <summary>
+  /// A default instance for the null syntax highlighter.
+  /// </summary>
+  public static readonly NullSyntaxHighlighter Instance = new();
 
-        /// <inheritdoc/>
-        public SyntaxHighlightStyle Style { get; set; } = SyntaxHighlightStyle.Default;
+  /// <inheritdoc/>
+  public SyntaxHighlightStyle Style { get; set; } = SyntaxHighlightStyle.Default;
 
-        /// <inheritdoc/>
-        public IReadOnlyList<ColoredToken> GetHighlightingForLine(ISourceFile sourceFile, int line) =>
-            Array.Empty<ColoredToken>();
-    }
+  /// <inheritdoc/>
+  public IReadOnlyList<ColoredToken> GetHighlightingForLine(ISourceFile sourceFile, int line) =>
+      Array.Empty<ColoredToken>();
 }

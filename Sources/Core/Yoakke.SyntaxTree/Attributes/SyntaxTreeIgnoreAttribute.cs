@@ -4,13 +4,12 @@
 
 using System;
 
-namespace Yoakke.SyntaxTree.Attributes
+namespace Yoakke.SyntaxTree.Attributes;
+
+/// <summary>
+/// An attribute to mark a member be ignored by the syntax tree generator.
+/// </summary>
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
+public class SyntaxTreeIgnoreAttribute : Attribute
 {
-    /// <summary>
-    /// An attribute to mark a member be ignored by the syntax tree generator.
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
-    public class SyntaxTreeIgnoreAttribute : Attribute
-    {
-    }
 }

@@ -4,23 +4,22 @@
 
 using Newtonsoft.Json;
 
-namespace Yoakke.Lsp.Model.Capabilities.Client
+namespace Yoakke.Lsp.Model.Capabilities.Client;
+
+/// <summary>
+/// see https://microsoft.github.io/language-server-protocol/specifications/specification-current/#semanticTokensWorkspaceClientCapabilities.
+/// </summary>
+public class SemanticTokensWorkspaceClientCapabilities
 {
-    /// <summary>
-    /// see https://microsoft.github.io/language-server-protocol/specifications/specification-current/#semanticTokensWorkspaceClientCapabilities.
-    /// </summary>
-    public class SemanticTokensWorkspaceClientCapabilities
-    {
-        /// <summary>
-        /// Whether the client implementation supports a refresh request sent from
-        /// the server to the client.
-        ///
-        /// Note that this event is global and will force the client to refresh all
-        /// semantic tokens currently shown. It should be used with absolute care
-        /// and is useful for situation where a server for example detect a project
-        /// wide change that requires such a calculation.
-        /// </summary>
-        [JsonProperty("refreshSupport", NullValueHandling = NullValueHandling.Ignore)]
-        public bool? RefreshSupport { get; set; }
-    }
+  /// <summary>
+  /// Whether the client implementation supports a refresh request sent from
+  /// the server to the client.
+  ///
+  /// Note that this event is global and will force the client to refresh all
+  /// semantic tokens currently shown. It should be used with absolute care
+  /// and is useful for situation where a server for example detect a project
+  /// wide change that requires such a calculation.
+  /// </summary>
+  [JsonProperty("refreshSupport", NullValueHandling = NullValueHandling.Ignore)]
+  public bool? RefreshSupport { get; set; }
 }

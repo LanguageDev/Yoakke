@@ -4,17 +4,16 @@
 
 using Newtonsoft.Json;
 
-namespace Yoakke.Lsp.Model.Capabilities.Client
+namespace Yoakke.Lsp.Model.Capabilities.Client;
+
+/// <summary>
+/// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#didChangeConfigurationClientCapabilities.
+/// </summary>
+public class DidChangeConfigurationClientCapabilities
 {
-    /// <summary>
-    /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#didChangeConfigurationClientCapabilities.
-    /// </summary>
-    public class DidChangeConfigurationClientCapabilities
-    {
-        /// <summary>
-        /// Did change configuration notification supports dynamic registration.
-        /// </summary>
-        [JsonProperty("dynamicRegistration", NullValueHandling = NullValueHandling.Ignore)]
-        public bool? DynamicRegistration { get; set; }
-    }
+  /// <summary>
+  /// Did change configuration notification supports dynamic registration.
+  /// </summary>
+  [JsonProperty("dynamicRegistration", NullValueHandling = NullValueHandling.Ignore)]
+  public bool? DynamicRegistration { get; set; }
 }

@@ -5,24 +5,23 @@
 using Newtonsoft.Json;
 using Yoakke.Lsp.Model.Basic;
 
-namespace Yoakke.Lsp.Model.TextSynchronization
-{
-    /// <summary>
-    /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#didSaveTextDocumentParams.
-    /// </summary>
-    public class DidSaveTextDocumentParams
-    {
-        /// <summary>
-        /// The document that was saved.
-        /// </summary>
-        [JsonProperty("textDocument")]
-        public TextDocumentIdentifier TextDocument { get; set; } = new();
+namespace Yoakke.Lsp.Model.TextSynchronization;
 
-        /// <summary>
-        /// Optional the content when saved. Depends on the includeText value
-        /// when the save notification was requested.
-        /// </summary>
-        [JsonProperty("text", NullValueHandling = NullValueHandling.Ignore)]
-        public string? Text { get; set; }
-    }
+/// <summary>
+/// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#didSaveTextDocumentParams.
+/// </summary>
+public class DidSaveTextDocumentParams
+{
+  /// <summary>
+  /// The document that was saved.
+  /// </summary>
+  [JsonProperty("textDocument")]
+  public TextDocumentIdentifier TextDocument { get; set; } = new();
+
+  /// <summary>
+  /// Optional the content when saved. Depends on the includeText value
+  /// when the save notification was requested.
+  /// </summary>
+  [JsonProperty("text", NullValueHandling = NullValueHandling.Ignore)]
+  public string? Text { get; set; }
 }

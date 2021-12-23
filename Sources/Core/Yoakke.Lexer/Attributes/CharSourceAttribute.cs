@@ -4,13 +4,12 @@
 
 using System;
 
-namespace Yoakke.Lexer.Attributes
+namespace Yoakke.Lexer.Attributes;
+
+/// <summary>
+/// An attribute to annotate the source character stream for the generated lexer.
+/// </summary>
+[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
+public class CharSourceAttribute : Attribute
 {
-    /// <summary>
-    /// An attribute to annotate the source character stream for the generated lexer.
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
-    public class CharSourceAttribute : Attribute
-    {
-    }
 }

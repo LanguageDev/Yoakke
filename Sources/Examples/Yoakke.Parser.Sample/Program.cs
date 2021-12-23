@@ -7,95 +7,94 @@ using Yoakke.Lexer;
 using Yoakke.Lexer.Attributes;
 using Yoakke.Parser.Attributes;
 
-namespace Yoakke.Parser.Sample
+namespace Yoakke.Parser.Sample;
+
+public enum TokenType
 {
-    public enum TokenType
+  [Error] Error,
+  [End] End,
+  [Ignore] [Regex(Regexes.Whitespace)] Whitespace,
+
+  [Token("(")] OpenParen,
+  [Token(")")] CloseParen,
+
+  [Token("+")] Add,
+  [Token("-")] Sub,
+  [Token("*")] Mul,
+  [Token("/")] Div,
+  [Token("%")] Mod,
+  [Token("^")] Exp,
+
+  [Token(";")] Semicol,
+
+  [Regex(Regexes.IntLiteral)] IntLit,
+}
+
+[Lexer(typeof(TokenType))]
+public partial class Lexer
+{
+}
+
+[Parser(typeof(TokenType))]
+public partial class Parser
+{
+  [Rule("program: expression ';'")]
+  public static int Program(int n, IToken _) => n;
+
+  [Right("^")]
+  [Left("*", "/", "%")]
+  [Left("+", "-")]
+  [Rule("expression")]
+  public static int BinOp(int a, IToken op, int b) => op.Text switch
+  {
+    "^" => (int)Math.Pow(a, b),
+    "*" => a * b,
+    "/" => a / b,
+    "%" => a % b,
+    "+" => a + b,
+    "-" => a - b,
+    _ => throw new NotImplementedException(),
+  };
+
+  [Rule("expression : '(' expression ')'")]
+  public static int Grouping(IToken _1, int n, IToken _2) => n;
+
+  [Rule("expression : IntLit")]
+  public static int IntLit(IToken token) => int.Parse(token.Text);
+
+  public void Synchronize()
+  {
+    for (; this.TokenStream.TryPeek(out var t) && t.Text != ";"; this.TokenStream.Consume(1))
     {
-        [Error] Error,
-        [End] End,
-        [Ignore] [Regex(Regexes.Whitespace)] Whitespace,
-
-        [Token("(")] OpenParen,
-        [Token(")")] CloseParen,
-
-        [Token("+")] Add,
-        [Token("-")] Sub,
-        [Token("*")] Mul,
-        [Token("/")] Div,
-        [Token("%")] Mod,
-        [Token("^")] Exp,
-
-        [Token(";")] Semicol,
-
-        [Regex(Regexes.IntLiteral)] IntLit,
     }
+    this.TokenStream.Consume(1);
+  }
+}
 
-    [Lexer(typeof(TokenType))]
-    public partial class Lexer
+internal class Program
+{
+  private static void Main(string[] args)
+  {
+    var lexer = new Lexer(Console.In);
+    var parser = new Parser(lexer);
+
+    while (true)
     {
-    }
-
-    [Parser(typeof(TokenType))]
-    public partial class Parser
-    {
-        [Rule("program: expression ';'")]
-        public static int Program(int n, IToken _) => n;
-
-        [Right("^")]
-        [Left("*", "/", "%")]
-        [Left("+", "-")]
-        [Rule("expression")]
-        public static int BinOp(int a, IToken op, int b) => op.Text switch
+      var result = parser.ParseProgram();
+      if (result.IsOk)
+      {
+        Console.WriteLine($" => {result.Ok.Value}");
+      }
+      else
+      {
+        var err = result.Error;
+        foreach (var element in err.Elements.Values)
         {
-            "^" => (int)Math.Pow(a, b),
-            "*" => a * b,
-            "/" => a / b,
-            "%" => a % b,
-            "+" => a + b,
-            "-" => a - b,
-            _ => throw new NotImplementedException(),
-        };
-
-        [Rule("expression : '(' expression ')'")]
-        public static int Grouping(IToken _1, int n, IToken _2) => n;
-
-        [Rule("expression : IntLit")]
-        public static int IntLit(IToken token) => int.Parse(token.Text);
-
-        public void Synchronize()
-        {
-            for (; this.TokenStream.TryPeek(out var t) && t.Text != ";"; this.TokenStream.Consume(1))
-            {
-            }
-            this.TokenStream.Consume(1);
+          Console.WriteLine($"  expected {string.Join(" or ", element.Expected)} while parsing {element.Context}");
         }
+        Console.WriteLine($"  but got {(err.Got == null ? "end of input" : ((IToken<TokenType>)err.Got).Text)}");
+        parser.Synchronize();
+      }
     }
-
-    internal class Program
-    {
-        private static void Main(string[] args)
-        {
-            var lexer = new Lexer(Console.In);
-            var parser = new Parser(lexer);
-
-            while (true)
-            {
-                var result = parser.ParseProgram();
-                if (result.IsOk)
-                {
-                    Console.WriteLine($" => {result.Ok.Value}");
-                }
-                else
-                {
-                    var err = result.Error;
-                    foreach (var element in err.Elements.Values)
-                    {
-                        Console.WriteLine($"  expected {string.Join(" or ", element.Expected)} while parsing {element.Context}");
-                    }
-                    Console.WriteLine($"  but got {(err.Got == null ? "end of input" : ((IToken<TokenType>)err.Got).Text)}");
-                    parser.Synchronize();
-                }
-            }
-        }
-    }
+  }
 }

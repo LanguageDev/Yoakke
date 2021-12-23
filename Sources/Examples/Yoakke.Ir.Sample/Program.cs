@@ -6,71 +6,71 @@ using Yoakke.Ir.Syntax;
 using AttributeTargets = Yoakke.Ir.Model.Attributes.AttributeTargets;
 using Type = Yoakke.Ir.Model.Type;
 
-namespace Yoakke.Ir.Sample
+namespace Yoakke.Ir.Sample;
+
+public class FooDefinition : IAttributeDefinition
 {
-    public class FooDefinition : IAttributeDefinition
-    {
-        public string Name => "foo";
+  public string Name => "foo";
 
-        public bool AllowMultiple => true;
+  public bool AllowMultiple => true;
 
-        public AttributeTargets Targets => AttributeTargets.Instruction | AttributeTargets.Assembly | AttributeTargets.BasicBlock
-            | AttributeTargets.Procedure;
+  public AttributeTargets Targets => AttributeTargets.Instruction | AttributeTargets.Assembly | AttributeTargets.BasicBlock
+      | AttributeTargets.Procedure;
 
-        public IReadOnlyList<Type> ParameterTypes => Array.Empty<Type>();
+  public IReadOnlyList<Type> ParameterTypes => Array.Empty<Type>();
 
-        public IAttribute Instantiate(IReadOnlyList<Constant> arguments) => new Foo(this);
-    }
+  public IAttribute Instantiate(IReadOnlyList<Constant> arguments) => new Foo(this);
+}
 
-    public class Foo : IAttribute
-    {
-        public IAttributeDefinition Definition { get; }
+public class Foo : IAttribute
+{
+  public IAttributeDefinition Definition { get; }
 
-        public IReadOnlyList<Constant> Arguments => Array.Empty<Constant>();
+  public IReadOnlyList<Constant> Arguments => Array.Empty<Constant>();
 
-        public Foo(FooDefinition definition) => this.Definition = definition;
-    }
+  public Foo(FooDefinition definition) => this.Definition = definition;
+}
 
-    class Program
-    {
-        static void Main(string[] args)
+class Program
+{
+  static void Main(string[] args)
+  {
+    var ctx = new Context();
+    ctx.WithTypeDefinition("i32", new Type.Int(32));
+    ctx
+        .WithInstructionSyntax("nop", _ => new Instruction.Nop(), (_, _) => { })
+        .WithInstructionSyntax("ret",
+        _ => new Instruction.Ret(),
+        (ins, writer) =>
         {
-            var ctx = new Context();
-            ctx.WithTypeDefinition("i32", new Type.Int(32));
-            ctx
-                .WithInstructionSyntax("nop", _ => new Instruction.Nop(), (_, _) => { })
-                .WithInstructionSyntax("ret",
-                _ => new Instruction.Ret(),
-                (ins, writer) =>
-                {
-                    if (ins.Value is not null)
-                    {
-                        writer.Underlying.Write(' ');
-                        // TODO: Write value
-                        throw new NotImplementedException();
-                    }
-                })
-                .WithInstructionSyntax("add",
-                parser =>
-                {
-                    var type = parser.ParseType();
-                    var left = parser.ParseValue(type);
-                    parser.Expect(IrTokenType.Comma);
-                    var right = parser.ParseValue(type);
-                    return new Instruction.Add(left, right);
-                },
-                (ins, writer) =>
-                {
-                    writer.Underlying.Write(' ');
-                    writer.WriteType(ins.Left.Type);
-                    writer.Underlying.Write(' ');
-                    writer.WriteValue(ins.Left);
-                    writer.Underlying.Write(", ");
-                    writer.WriteValue(ins.Right);
-                });
-            ctx.WithAttributeDefinition(new FooDefinition());
+          if (ins.Value is not null)
+          {
+            writer.Underlying.Write(' ');
+                    // TODO: Write value
+                    throw new NotImplementedException();
+          }
+        })
+        .WithInstructionSyntax("add",
+        parser =>
+        {
+          var type = parser.ParseType();
+          var left = parser.ParseValue(type);
+          parser.Expect(IrTokenType.Comma);
+          var right = parser.ParseValue(type);
+          return new Instruction.Add(left, right);
+        },
+        (ins, writer) =>
+        {
+          writer.Underlying.Write(' ');
+          writer.WriteType(ins.Left.Type);
+          writer.Underlying.Write(' ');
+          writer.WriteValue(ins.Left);
+          writer.Underlying.Write(", ");
+          writer.WriteValue(ins.Right);
+        });
+    ctx.WithAttributeDefinition(new FooDefinition());
 
-            var src = @"
+    var src = @"
 [assembly: foo]
 [assembly: foo]
 
@@ -83,12 +83,11 @@ block owo: [block: foo]
 
 procedure aaa() [foo]
 ";
-            var lexer = new IrLexer(src);
-            var parser = new IrParser(ctx, lexer);
-            var asm = parser.ParseAssembly();
+    var lexer = new IrLexer(src);
+    var parser = new IrParser(ctx, lexer);
+    var asm = parser.ParseAssembly();
 
-            var writer = new IrWriter(ctx, Console.Out);
-            writer.WriteAssembly(asm);
-        }
-    }
+    var writer = new IrWriter(ctx, Console.Out);
+    writer.WriteAssembly(asm);
+  }
 }

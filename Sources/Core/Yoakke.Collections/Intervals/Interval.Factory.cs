@@ -6,19 +6,18 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Yoakke.Collections.Intervals
+namespace Yoakke.Collections.Intervals;
+
+/// <summary>
+/// Factory methods and constants for generic intervals.
+/// </summary>
+internal static class Interval
 {
-    /// <summary>
-    /// Factory methods and constants for generic intervals.
-    /// </summary>
-    internal static class Interval
-    {
-        /// <summary>
-        /// The valid infinity strings without sign.
-        /// </summary>
-        internal static readonly IReadOnlyList<string> InfinityStrings = new[]
-        {
+  /// <summary>
+  /// The valid infinity strings without sign.
+  /// </summary>
+  internal static readonly IReadOnlyList<string> InfinityStrings = new[]
+  {
             "∞", "oo", "infinity", "infty", string.Empty,
         };
-    }
 }

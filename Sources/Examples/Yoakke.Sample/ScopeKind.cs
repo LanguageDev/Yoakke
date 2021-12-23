@@ -2,12 +2,11 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
-namespace Yoakke.Sample
+namespace Yoakke.Sample;
+
+public enum ScopeKind
 {
-    public enum ScopeKind
-    {
-        Local,
-        Global,
-        Function,
-    }
+  Local,
+  Global,
+  Function,
 }

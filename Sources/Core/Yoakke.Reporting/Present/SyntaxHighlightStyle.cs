@@ -5,22 +5,22 @@
 using System;
 using System.Collections.Generic;
 
-namespace Yoakke.Reporting.Present
-{
-    /// <summary>
-    /// Styles for <see cref="ISyntaxHighlighter"/>s.
-    /// </summary>
-    public class SyntaxHighlightStyle
-    {
-        /// <summary>
-        /// The default syntax highlight style.
-        /// </summary>
-        public static readonly SyntaxHighlightStyle Default = new();
+namespace Yoakke.Reporting.Present;
 
-        /// <summary>
-        /// The colors for the different token kinds.
-        /// </summary>
-        public IDictionary<TokenKind, ConsoleColor> TokenColors { get; set; } = new Dictionary<TokenKind, ConsoleColor>
+/// <summary>
+/// Styles for <see cref="ISyntaxHighlighter"/>s.
+/// </summary>
+public class SyntaxHighlightStyle
+{
+  /// <summary>
+  /// The default syntax highlight style.
+  /// </summary>
+  public static readonly SyntaxHighlightStyle Default = new();
+
+  /// <summary>
+  /// The colors for the different token kinds.
+  /// </summary>
+  public IDictionary<TokenKind, ConsoleColor> TokenColors { get; set; } = new Dictionary<TokenKind, ConsoleColor>
         {
             { TokenKind.Comment, ConsoleColor.DarkGreen },
             { TokenKind.Keyword, ConsoleColor.Magenta },
@@ -31,18 +31,17 @@ namespace Yoakke.Reporting.Present
             { TokenKind.Other, ConsoleColor.White },
         };
 
-        /// <summary>
-        /// The default color to use.
-        /// </summary>
-        public ConsoleColor DefaultColor { get; set; } = ConsoleColor.White;
+  /// <summary>
+  /// The default color to use.
+  /// </summary>
+  public ConsoleColor DefaultColor { get; set; } = ConsoleColor.White;
 
-        /// <summary>
-        /// Retrieves the appropriate color for the given <see cref="TokenKind"/>.
-        /// </summary>
-        /// <param name="kind">The <see cref="TokenKind"/> to get the color for.</param>
-        /// <returns>The <see cref="ConsoleColor"/> associated with <paramref name="kind"/>, or
-        /// <see cref="DefaultColor"/>, if none is associated with it.</returns>
-        public ConsoleColor GetTokenColor(TokenKind kind) =>
-            this.TokenColors.TryGetValue(kind, out var col) ? col : this.DefaultColor;
-    }
+  /// <summary>
+  /// Retrieves the appropriate color for the given <see cref="TokenKind"/>.
+  /// </summary>
+  /// <param name="kind">The <see cref="TokenKind"/> to get the color for.</param>
+  /// <returns>The <see cref="ConsoleColor"/> associated with <paramref name="kind"/>, or
+  /// <see cref="DefaultColor"/>, if none is associated with it.</returns>
+  public ConsoleColor GetTokenColor(TokenKind kind) =>
+      this.TokenColors.TryGetValue(kind, out var col) ? col : this.DefaultColor;
 }

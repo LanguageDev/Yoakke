@@ -4,19 +4,18 @@
 
 using Newtonsoft.Json;
 
-namespace Yoakke.Lsp.Model.Capabilities.Client
+namespace Yoakke.Lsp.Model.Capabilities.Client;
+
+/// <summary>
+/// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#didChangeWatchedFilesClientCapabilities.
+/// </summary>
+public class DidChangeWatchedFilesClientCapabilities
 {
-    /// <summary>
-    /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#didChangeWatchedFilesClientCapabilities.
-    /// </summary>
-    public class DidChangeWatchedFilesClientCapabilities
-    {
-        /// <summary>
-        /// Did change watched files notification supports dynamic registration.
-        /// Please note that the current protocol doesn't support static
-        /// configuration for file changes from the server side.
-        /// </summary>
-        [JsonProperty("dynamicRegistration", NullValueHandling = NullValueHandling.Ignore)]
-        public bool? DynamicRegistration { get; set; }
-    }
+  /// <summary>
+  /// Did change watched files notification supports dynamic registration.
+  /// Please note that the current protocol doesn't support static
+  /// configuration for file changes from the server side.
+  /// </summary>
+  [JsonProperty("dynamicRegistration", NullValueHandling = NullValueHandling.Ignore)]
+  public bool? DynamicRegistration { get; set; }
 }

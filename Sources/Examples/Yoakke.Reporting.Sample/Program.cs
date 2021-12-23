@@ -7,59 +7,58 @@ using System.Collections.Generic;
 using Yoakke.Reporting.Present;
 using Yoakke.Text;
 
-namespace Yoakke.Reporting.Sample
-{
-    internal class MyHighlighter : ISyntaxHighlighter
-    {
-        /// <inheritdoc/>
-        public SyntaxHighlightStyle Style { get; set; } = SyntaxHighlightStyle.Default;
+namespace Yoakke.Reporting.Sample;
 
-        /// <inheritdoc/>
-        public IReadOnlyList<ColoredToken> GetHighlightingForLine(ISourceFile sourceFile, int line)
-        {
-            if (line == 1)
-            {
-                return new ColoredToken[]
-                {
+internal class MyHighlighter : ISyntaxHighlighter
+{
+  /// <inheritdoc/>
+  public SyntaxHighlightStyle Style { get; set; } = SyntaxHighlightStyle.Default;
+
+  /// <inheritdoc/>
+  public IReadOnlyList<ColoredToken> GetHighlightingForLine(ISourceFile sourceFile, int line)
+  {
+    if (line == 1)
+    {
+      return new ColoredToken[]
+      {
                 new ColoredToken(0, 4, TokenKind.Keyword),
                 new ColoredToken(5, 3, TokenKind.Name),
-                };
-            }
-            else if (line == 2)
-            {
-                return new ColoredToken[]
-                {
+      };
+    }
+    else if (line == 2)
+    {
+      return new ColoredToken[]
+      {
                 new ColoredToken(4, 6, TokenKind.Keyword),
                 new ColoredToken(11, 1, TokenKind.Literal),
                 new ColoredToken(12, 1, TokenKind.Punctuation),
-                };
-            }
-            return Array.Empty<ColoredToken>();
-        }
+      };
     }
+    return Array.Empty<ColoredToken>();
+  }
+}
 
-    internal class Program
-    {
-        private static void Main(string[] args)
-        {
-            var src = new SourceFile("test.txt", @"
+internal class Program
+{
+  private static void Main(string[] args)
+  {
+    var src = new SourceFile("test.txt", @"
 func foo() {
     return 0;
 }
 ");
 
-            var presenter = new TextDiagnosticsPresenter(Console.Error)
-            {
-                SyntaxHighlighter = new MyHighlighter(),
-            };
+    var presenter = new TextDiagnosticsPresenter(Console.Error)
+    {
+      SyntaxHighlighter = new MyHighlighter(),
+    };
 
-            var diag = new Diagnostics()
-                .WithCode("E001")
-                .WithSeverity(Severity.Error)
-                .WithMessage("you made a mistake")
-                .WithSourceInfo(new Location(src, new Text.Range(new Position(2, 4), 6)), Severity.Error, "mistake made here");
+    var diag = new Diagnostics()
+        .WithCode("E001")
+        .WithSeverity(Severity.Error)
+        .WithMessage("you made a mistake")
+        .WithSourceInfo(new Location(src, new Text.Range(new Position(2, 4), 6)), Severity.Error, "mistake made here");
 
-            presenter.Present(diag);
-        }
-    }
+    presenter.Present(diag);
+  }
 }

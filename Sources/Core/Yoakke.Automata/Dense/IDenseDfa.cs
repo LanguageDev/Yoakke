@@ -7,24 +7,23 @@ using System.Collections.Generic;
 using System.Text;
 using Yoakke.Collections.Intervals;
 
-namespace Yoakke.Automata.Dense
+namespace Yoakke.Automata.Dense;
+
+/// <summary>
+/// Represents a dense DFA.
+/// </summary>
+/// <typeparam name="TState">The state type.</typeparam>
+/// <typeparam name="TSymbol">The symbol type.</typeparam>
+public interface IDenseDfa<TState, TSymbol>
+    : IDfa<TState, TSymbol>,
+      IReadOnlyDenseDfa<TState, TSymbol>,
+      IDenseFiniteAutomaton<TState, TSymbol>
 {
-    /// <summary>
-    /// Represents a dense DFA.
-    /// </summary>
-    /// <typeparam name="TState">The state type.</typeparam>
-    /// <typeparam name="TSymbol">The symbol type.</typeparam>
-    public interface IDenseDfa<TState, TSymbol>
-        : IDfa<TState, TSymbol>,
-          IReadOnlyDenseDfa<TState, TSymbol>,
-          IDenseFiniteAutomaton<TState, TSymbol>
-    {
-        /// <summary>
-        /// Completes this DFA over the given alphabet.
-        /// </summary>
-        /// <param name="alphabet">The alphabet to complete over.</param>
-        /// <param name="trap">A default trap state to transition to.</param>
-        /// <returns>True, if this DFA was not completed and needed completion, false otherwise.</returns>
-        public bool Complete(IEnumerable<Interval<TSymbol>> alphabet, TState trap);
-    }
+  /// <summary>
+  /// Completes this DFA over the given alphabet.
+  /// </summary>
+  /// <param name="alphabet">The alphabet to complete over.</param>
+  /// <param name="trap">A default trap state to transition to.</param>
+  /// <returns>True, if this DFA was not completed and needed completion, false otherwise.</returns>
+  public bool Complete(IEnumerable<Interval<TSymbol>> alphabet, TState trap);
 }

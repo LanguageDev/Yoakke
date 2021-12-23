@@ -5,15 +5,14 @@
 using Newtonsoft.Json;
 using Yoakke.Lsp.Model.Basic;
 
-namespace Yoakke.Lsp.Model.Capabilities.Server
+namespace Yoakke.Lsp.Model.Capabilities.Server;
+
+/// <summary>
+/// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#hoverOptions.
+/// </summary>
+public class HoverOptions : IWorkDoneProgressOptions
 {
-    /// <summary>
-    /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#hoverOptions.
-    /// </summary>
-    public class HoverOptions : IWorkDoneProgressOptions
-    {
-        /// <inheritdoc/>
-        [JsonProperty("workDoneProgress", NullValueHandling = NullValueHandling.Ignore)]
-        public bool? WorkDoneProgress { get; set; }
-    }
+  /// <inheritdoc/>
+  [JsonProperty("workDoneProgress", NullValueHandling = NullValueHandling.Ignore)]
+  public bool? WorkDoneProgress { get; set; }
 }

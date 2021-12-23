@@ -5,23 +5,22 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace Yoakke.Lsp.Model.Capabilities.Server
-{
-    /// <summary>
-    /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#documentOnTypeFormattingOptions.
-    /// </summary>
-    public class DocumentOnTypeFormattingOptions
-    {
-        /// <summary>
-        /// A character on which formatting should be triggered, like `}`.
-        /// </summary>
-        [JsonProperty("firstTriggerCharacter")]
-        public string FirstTriggerCharacter { get; set; } = string.Empty;
+namespace Yoakke.Lsp.Model.Capabilities.Server;
 
-        /// <summary>
-        /// More trigger characters.
-        /// </summary>
-        [JsonProperty("moreTriggerCharacter", NullValueHandling = NullValueHandling.Ignore)]
-        public IReadOnlyList<string>? MoreTriggerCharacter { get; set; }
-    }
+/// <summary>
+/// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#documentOnTypeFormattingOptions.
+/// </summary>
+public class DocumentOnTypeFormattingOptions
+{
+  /// <summary>
+  /// A character on which formatting should be triggered, like `}`.
+  /// </summary>
+  [JsonProperty("firstTriggerCharacter")]
+  public string FirstTriggerCharacter { get; set; } = string.Empty;
+
+  /// <summary>
+  /// More trigger characters.
+  /// </summary>
+  [JsonProperty("moreTriggerCharacter", NullValueHandling = NullValueHandling.Ignore)]
+  public IReadOnlyList<string>? MoreTriggerCharacter { get; set; }
 }

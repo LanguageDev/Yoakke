@@ -4,30 +4,29 @@
 
 using Newtonsoft.Json;
 
-namespace Yoakke.Lsp.Model.Client
+namespace Yoakke.Lsp.Model.Client;
+
+/// <summary>
+/// General parameters to register for a capability.
+/// </summary>
+public class Registration
 {
-    /// <summary>
-    /// General parameters to register for a capability.
-    /// </summary>
-    public class Registration
-    {
-        /// <summary>
-        /// The id used to register the request. The id can be used to deregister
-        /// the request again.
-        /// </summary>
-        [JsonProperty("id")]
-        public string Id { get; set; } = string.Empty;
+  /// <summary>
+  /// The id used to register the request. The id can be used to deregister
+  /// the request again.
+  /// </summary>
+  [JsonProperty("id")]
+  public string Id { get; set; } = string.Empty;
 
-        /// <summary>
-        /// The method / capability to register for.
-        /// </summary>
-        [JsonProperty("method")]
-        public string Method { get; set; } = string.Empty;
+  /// <summary>
+  /// The method / capability to register for.
+  /// </summary>
+  [JsonProperty("method")]
+  public string Method { get; set; } = string.Empty;
 
-        /// <summary>
-        /// Options necessary for the registration.
-        /// </summary>
-        [JsonProperty("registerOptions", NullValueHandling = NullValueHandling.Ignore)]
-        public object? RegisterOptions { get; set; }
-    }
+  /// <summary>
+  /// Options necessary for the registration.
+  /// </summary>
+  [JsonProperty("registerOptions", NullValueHandling = NullValueHandling.Ignore)]
+  public object? RegisterOptions { get; set; }
 }

@@ -5,17 +5,16 @@
 using System;
 using System.Collections.Generic;
 
-namespace Yoakke.Collections.Values
+namespace Yoakke.Collections.Values;
+
+/// <summary>
+/// Represents a generic associative container of keys and values that implements value-based equality.
+/// </summary>
+/// <typeparam name="TKey">The key type.</typeparam>
+/// <typeparam name="TValue">The value type.</typeparam>
+public interface IReadOnlyValueDictionary<TKey, TValue>
+    : IReadOnlyDictionary<TKey, TValue>,
+      IEquatable<IReadOnlyDictionary<TKey, TValue>>,
+      IEquatable<IReadOnlyValueDictionary<TKey, TValue>>
 {
-    /// <summary>
-    /// Represents a generic associative container of keys and values that implements value-based equality.
-    /// </summary>
-    /// <typeparam name="TKey">The key type.</typeparam>
-    /// <typeparam name="TValue">The value type.</typeparam>
-    public interface IReadOnlyValueDictionary<TKey, TValue>
-        : IReadOnlyDictionary<TKey, TValue>,
-          IEquatable<IReadOnlyDictionary<TKey, TValue>>,
-          IEquatable<IReadOnlyValueDictionary<TKey, TValue>>
-    {
-    }
 }

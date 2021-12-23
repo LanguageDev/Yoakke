@@ -7,18 +7,17 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Yoakke.Lsp.Model.Workspace;
 
-namespace Yoakke.Lsp.Model.Capabilities.Server.RegistrationOptions
+namespace Yoakke.Lsp.Model.Capabilities.Server.RegistrationOptions;
+
+/// <summary>
+/// The options to register for file operations.
+/// </summary>
+[Since(3, 16, 0)]
+public class FileOperationRegistrationOptions
 {
-    /// <summary>
-    /// The options to register for file operations.
-    /// </summary>
-    [Since(3, 16, 0)]
-    public class FileOperationRegistrationOptions
-    {
-        /// <summary>
-        /// The actual filters.
-        /// </summary>
-        [JsonProperty("filters")]
-        public IReadOnlyList<FileOperationFilter> Filters { get; set; } = Array.Empty<FileOperationFilter>();
-    }
+  /// <summary>
+  /// The actual filters.
+  /// </summary>
+  [JsonProperty("filters")]
+  public IReadOnlyList<FileOperationFilter> Filters { get; set; } = Array.Empty<FileOperationFilter>();
 }

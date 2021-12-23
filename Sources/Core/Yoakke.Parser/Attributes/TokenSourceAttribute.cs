@@ -4,13 +4,12 @@
 
 using System;
 
-namespace Yoakke.Parser.Attributes
+namespace Yoakke.Parser.Attributes;
+
+/// <summary>
+/// An attribute to mark a field or property as the thing holding onto the token source.
+/// </summary>
+[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+public class TokenSourceAttribute : Attribute
 {
-    /// <summary>
-    /// An attribute to mark a field or property as the thing holding onto the token source.
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-    public class TokenSourceAttribute : Attribute
-    {
-    }
 }

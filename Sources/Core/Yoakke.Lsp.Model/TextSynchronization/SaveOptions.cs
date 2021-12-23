@@ -4,17 +4,16 @@
 
 using Newtonsoft.Json;
 
-namespace Yoakke.Lsp.Model.TextSynchronization
+namespace Yoakke.Lsp.Model.TextSynchronization;
+
+/// <summary>
+/// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#saveOptions.
+/// </summary>
+public class SaveOptions
 {
-    /// <summary>
-    /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#saveOptions.
-    /// </summary>
-    public class SaveOptions
-    {
-        /// <summary>
-        /// The client is supposed to include the content on save.
-        /// </summary>
-        [JsonProperty("includeText", NullValueHandling = NullValueHandling.Ignore)]
-        public bool? IncludeText { get; set; }
-    }
+  /// <summary>
+  /// The client is supposed to include the content on save.
+  /// </summary>
+  [JsonProperty("includeText", NullValueHandling = NullValueHandling.Ignore)]
+  public bool? IncludeText { get; set; }
 }

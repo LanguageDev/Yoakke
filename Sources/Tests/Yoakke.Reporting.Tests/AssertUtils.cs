@@ -4,16 +4,15 @@
 
 using Xunit;
 
-namespace Yoakke.Reporting.Tests
-{
-    /// <summary>
-    /// Assertion helpers.
-    /// </summary>
-    public static class AssertUtils
-    {
-        public static void AreEqualIgnoreNewlineEncoding(string expected, string got) =>
-            Assert.Equal(NormalizeNewlines(expected), NormalizeNewlines(got));
+namespace Yoakke.Reporting.Tests;
 
-        private static string NormalizeNewlines(string s) => s.Replace("\r\n", "\n").Replace('\r', '\n');
-    }
+/// <summary>
+/// Assertion helpers.
+/// </summary>
+public static class AssertUtils
+{
+  public static void AreEqualIgnoreNewlineEncoding(string expected, string got) =>
+      Assert.Equal(NormalizeNewlines(expected), NormalizeNewlines(got));
+
+  private static string NormalizeNewlines(string s) => s.Replace("\r\n", "\n").Replace('\r', '\n');
 }

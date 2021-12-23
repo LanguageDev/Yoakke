@@ -6,18 +6,17 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Yoakke.Collections.Intervals
-{
-    /// <summary>
-    /// A common base for interval endpoints.
-    /// </summary>
-    /// <typeparam name="T">The type of the endpoint value.</typeparam>
-    public abstract record Bound<T> : IComparable<Bound<T>>
-    {
-        /// <inheritdoc/>
-        public int CompareTo(Bound<T> other) => BoundComparer<T>.Default.Compare(this, other);
+namespace Yoakke.Collections.Intervals;
 
-        /// <inheritdoc/>
-        public override int GetHashCode() => BoundComparer<T>.Default.GetHashCode(this);
-    }
+/// <summary>
+/// A common base for interval endpoints.
+/// </summary>
+/// <typeparam name="T">The type of the endpoint value.</typeparam>
+public abstract record Bound<T> : IComparable<Bound<T>>
+{
+  /// <inheritdoc/>
+  public int CompareTo(Bound<T> other) => BoundComparer<T>.Default.Compare(this, other);
+
+  /// <inheritdoc/>
+  public override int GetHashCode() => BoundComparer<T>.Default.GetHashCode(this);
 }

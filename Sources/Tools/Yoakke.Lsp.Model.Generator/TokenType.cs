@@ -5,46 +5,45 @@
 using Yoakke.Lexer;
 using Yoakke.Lexer.Attributes;
 
-namespace Yoakke.Lsp.Model.Generator
+namespace Yoakke.Lsp.Model.Generator;
+
+internal enum TokenType
 {
-    internal enum TokenType
-    {
-        [Error] Error,
-        [End] End,
+  [Error] Error,
+  [End] End,
 
-        [Ignore]
-        [Regex(Regexes.Whitespace)]
-        [Regex(Regexes.LineComment)]
-        Ignore,
+  [Ignore]
+  [Regex(Regexes.Whitespace)]
+  [Regex(Regexes.LineComment)]
+  Ignore,
 
-        [Regex(Regexes.MultilineComment)]
-        DocComment,
+  [Regex(Regexes.MultilineComment)]
+  DocComment,
 
-        [Token("export")] KwExport,
-        [Token("interface")] KwInterface,
-        [Token("namespace")] KwNamespace,
-        [Token("const")] KwConst,
-        [Token("extends")] KwExtends,
-        [Token("type")] KwType,
+  [Token("export")] KwExport,
+  [Token("interface")] KwInterface,
+  [Token("namespace")] KwNamespace,
+  [Token("const")] KwConst,
+  [Token("extends")] KwExtends,
+  [Token("type")] KwType,
 
-        [Token("(")] OpenParen,
-        [Token(")")] CloseParen,
-        [Token("{")] OpenBrace,
-        [Token("}")] CloseBrace,
-        [Token("[")] OpenBracket,
-        [Token("]")] CloseBracket,
-        [Token("|")] Pipe,
-        [Token("?")] Qmark,
-        [Token(":")] Colon,
-        [Token(";")] Semicolon,
+  [Token("(")] OpenParen,
+  [Token(")")] CloseParen,
+  [Token("{")] OpenBrace,
+  [Token("}")] CloseBrace,
+  [Token("[")] OpenBracket,
+  [Token("]")] CloseBracket,
+  [Token("|")] Pipe,
+  [Token("?")] Qmark,
+  [Token(":")] Colon,
+  [Token(";")] Semicolon,
 
-        [Regex(Regexes.Identifier)] Ident,
-        [Regex(@"'[^']*'")] StringLit,
-        [Regex(Regexes.IntLiteral)] NumLit,
-    }
+  [Regex(Regexes.Identifier)] Ident,
+  [Regex(@"'[^']*'")] StringLit,
+  [Regex(Regexes.IntLiteral)] NumLit,
+}
 
-    [Lexer(typeof(TokenType))]
-    internal partial class TsLexer
-    {
-    }
+[Lexer(typeof(TokenType))]
+internal partial class TsLexer
+{
 }

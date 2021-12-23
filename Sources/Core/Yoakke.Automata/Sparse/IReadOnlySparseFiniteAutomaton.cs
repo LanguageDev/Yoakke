@@ -6,23 +6,22 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Yoakke.Automata.Sparse
-{
-    /// <summary>
-    /// Represents a sparse finite automaton that stores all transitions separately.
-    /// </summary>
-    /// <typeparam name="TState">The state type.</typeparam>
-    /// <typeparam name="TSymbol">The symbol type.</typeparam>
-    public interface IReadOnlySparseFiniteAutomaton<TState, TSymbol> : IReadOnlyFiniteAutomaton<TState, TSymbol>
-    {
-        /// <summary>
-        /// The alphabet of this automaton.
-        /// </summary>
-        public IReadOnlyCollection<TSymbol> Alphabet { get; }
+namespace Yoakke.Automata.Sparse;
 
-        /// <summary>
-        /// The transitions of this automaton.
-        /// </summary>
-        public IReadOnlyCollection<Transition<TState, TSymbol>> Transitions { get; }
-    }
+/// <summary>
+/// Represents a sparse finite automaton that stores all transitions separately.
+/// </summary>
+/// <typeparam name="TState">The state type.</typeparam>
+/// <typeparam name="TSymbol">The symbol type.</typeparam>
+public interface IReadOnlySparseFiniteAutomaton<TState, TSymbol> : IReadOnlyFiniteAutomaton<TState, TSymbol>
+{
+  /// <summary>
+  /// The alphabet of this automaton.
+  /// </summary>
+  public IReadOnlyCollection<TSymbol> Alphabet { get; }
+
+  /// <summary>
+  /// The transitions of this automaton.
+  /// </summary>
+  public IReadOnlyCollection<Transition<TState, TSymbol>> Transitions { get; }
 }

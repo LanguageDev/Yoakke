@@ -4,17 +4,16 @@
 
 using Newtonsoft.Json;
 
-namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
+namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument;
+
+/// <summary>
+/// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#documentFormattingClientCapabilities.
+/// </summary>
+public class DocumentFormattingClientCapabilities
 {
-    /// <summary>
-    /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#documentFormattingClientCapabilities.
-    /// </summary>
-    public class DocumentFormattingClientCapabilities
-    {
-        /// <summary>
-        /// Whether formatting supports dynamic registration.
-        /// </summary>
-        [JsonProperty("dynamicRegistration", NullValueHandling = NullValueHandling.Ignore)]
-        public bool? DynamicRegistration { get; set; }
-    }
+  /// <summary>
+  /// Whether formatting supports dynamic registration.
+  /// </summary>
+  [JsonProperty("dynamicRegistration", NullValueHandling = NullValueHandling.Ignore)]
+  public bool? DynamicRegistration { get; set; }
 }

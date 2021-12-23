@@ -4,21 +4,20 @@
 
 using System.Collections.Generic;
 
-namespace Yoakke.Ir.Model.Attributes
-{
-    /// <summary>
-    /// An attribute instance.
-    /// </summary>
-    public interface IAttribute
-    {
-        /// <summary>
-        /// The definition of this instance.
-        /// </summary>
-        public IAttributeDefinition Definition { get; }
+namespace Yoakke.Ir.Model.Attributes;
 
-        /// <summary>
-        /// The arguments passed in for this attribute instance.
-        /// </summary>
-        public IReadOnlyList<Constant> Arguments { get; }
-    }
+/// <summary>
+/// An attribute instance.
+/// </summary>
+public interface IAttribute
+{
+  /// <summary>
+  /// The definition of this instance.
+  /// </summary>
+  public IAttributeDefinition Definition { get; }
+
+  /// <summary>
+  /// The arguments passed in for this attribute instance.
+  /// </summary>
+  public IReadOnlyList<Constant> Arguments { get; }
 }

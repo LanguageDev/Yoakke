@@ -4,33 +4,32 @@
 
 using System;
 
-namespace Yoakke.Parser.Attributes
+namespace Yoakke.Parser.Attributes;
+
+/// <summary>
+/// An attribute to mark a class as a parser with rule methods inside.
+/// </summary>
+[AttributeUsage(AttributeTargets.Class)]
+public class ParserAttribute : Attribute
 {
-    /// <summary>
-    /// An attribute to mark a class as a parser with rule methods inside.
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Class)]
-    public class ParserAttribute : Attribute
-    {
-        /// <summary>
-        /// The token kind type to use as a parser element.
-        /// </summary>
-        public Type? TokenType { get; }
+  /// <summary>
+  /// The token kind type to use as a parser element.
+  /// </summary>
+  public Type? TokenType { get; }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ParserAttribute"/> class.
-        /// </summary>
-        public ParserAttribute()
-        {
-        }
+  /// <summary>
+  /// Initializes a new instance of the <see cref="ParserAttribute"/> class.
+  /// </summary>
+  public ParserAttribute()
+  {
+  }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ParserAttribute"/> class.
-        /// </summary>
-        /// <param name="tokenType">The token kind type to use as a parser element.</param>
-        public ParserAttribute(Type tokenType)
-        {
-            this.TokenType = tokenType;
-        }
-    }
+  /// <summary>
+  /// Initializes a new instance of the <see cref="ParserAttribute"/> class.
+  /// </summary>
+  /// <param name="tokenType">The token kind type to use as a parser element.</param>
+  public ParserAttribute(Type tokenType)
+  {
+    this.TokenType = tokenType;
+  }
 }

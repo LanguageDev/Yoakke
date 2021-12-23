@@ -4,17 +4,16 @@
 
 using System.Runtime.Serialization;
 
-namespace Yoakke.Lsp.Model.LanguageFeatures
+namespace Yoakke.Lsp.Model.LanguageFeatures;
+
+/// <summary>
+/// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#tokenFormat.
+/// </summary>
+public enum TokenFormat
 {
-    /// <summary>
-    /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#tokenFormat.
-    /// </summary>
-    public enum TokenFormat
-    {
-        /// <summary>
-        /// Relative token format.
-        /// </summary>
-        [EnumMember(Value = "relative")]
-        Relative,
-    }
+  /// <summary>
+  /// Relative token format.
+  /// </summary>
+  [EnumMember(Value = "relative")]
+  Relative,
 }

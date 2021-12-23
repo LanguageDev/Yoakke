@@ -5,21 +5,20 @@
 using Newtonsoft.Json;
 using Yoakke.Lsp.Model.Basic;
 
-namespace Yoakke.Lsp.Model.Capabilities.Server
-{
-    /// <summary>
-    /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#documentLinkOptions.
-    /// </summary>
-    public class DocumentLinkOptions : IWorkDoneProgressOptions
-    {
-        /// <inheritdoc/>
-        [JsonProperty("workDoneProgress", NullValueHandling = NullValueHandling.Ignore)]
-        public bool? WorkDoneProgress { get; set; }
+namespace Yoakke.Lsp.Model.Capabilities.Server;
 
-        /// <summary>
-        /// Document links have a resolve provider as well.
-        /// </summary>
-        [JsonProperty("resolveProvider", NullValueHandling = NullValueHandling.Ignore)]
-        public bool? ResolveProvider { get; set; }
-    }
+/// <summary>
+/// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#documentLinkOptions.
+/// </summary>
+public class DocumentLinkOptions : IWorkDoneProgressOptions
+{
+  /// <inheritdoc/>
+  [JsonProperty("workDoneProgress", NullValueHandling = NullValueHandling.Ignore)]
+  public bool? WorkDoneProgress { get; set; }
+
+  /// <summary>
+  /// Document links have a resolve provider as well.
+  /// </summary>
+  [JsonProperty("resolveProvider", NullValueHandling = NullValueHandling.Ignore)]
+  public bool? ResolveProvider { get; set; }
 }

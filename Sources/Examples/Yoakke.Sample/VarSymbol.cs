@@ -5,24 +5,23 @@
 using Yoakke.Symbols;
 using Yoakke.Text;
 
-namespace Yoakke.Sample
+namespace Yoakke.Sample;
+
+public class VarSymbol : ISymbol
 {
-    public class VarSymbol : ISymbol
-    {
-        /// <inheritdoc/>
-        public IReadOnlyScope Scope { get; }
+  /// <inheritdoc/>
+  public IReadOnlyScope Scope { get; }
 
-        /// <inheritdoc/>
-        public string Name { get; }
+  /// <inheritdoc/>
+  public string Name { get; }
 
-        /// <inheritdoc/>
-        public Location? Definition { get; }
+  /// <inheritdoc/>
+  public Location? Definition { get; }
 
-        public VarSymbol(IReadOnlyScope scope, string name, Location? definition = null)
-        {
-            this.Scope = scope;
-            this.Name = name;
-            this.Definition = definition;
-        }
-    }
+  public VarSymbol(IReadOnlyScope scope, string name, Location? definition = null)
+  {
+    this.Scope = scope;
+    this.Name = name;
+    this.Definition = definition;
+  }
 }

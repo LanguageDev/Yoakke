@@ -4,40 +4,39 @@
 
 using System.Numerics;
 
-namespace Yoakke.Ir.Model
+namespace Yoakke.Ir.Model;
+
+/// <summary>
+/// Represents some compile-time constant value.
+/// </summary>
+public abstract record Constant
 {
+  /// <summary>
+  /// The <see cref="Model.Type"/> of this constant.
+  /// </summary>
+  public abstract Type Type { get; }
+
+  /* Variants */
+
+  public record Int : Constant
+  {
+    /// <inheritdoc/>
+    public override Type Type { get; }
+
     /// <summary>
-    /// Represents some compile-time constant value.
+    /// The value of this integer.
     /// </summary>
-    public abstract record Constant
+    public BigInteger Value { get; }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Int"/> class.
+    /// </summary>
+    /// <param name="type">The exact integer type.</param>
+    /// <param name="value">The numeric value.</param>
+    public Int(Type.Int type, BigInteger value)
     {
-        /// <summary>
-        /// The <see cref="Model.Type"/> of this constant.
-        /// </summary>
-        public abstract Type Type { get; }
-
-        /* Variants */
-
-        public record Int : Constant
-        {
-            /// <inheritdoc/>
-            public override Type Type { get; }
-
-            /// <summary>
-            /// The value of this integer.
-            /// </summary>
-            public BigInteger Value { get; }
-
-            /// <summary>
-            /// Initializes a new instance of the <see cref="Int"/> class.
-            /// </summary>
-            /// <param name="type">The exact integer type.</param>
-            /// <param name="value">The numeric value.</param>
-            public Int(Type.Int type, BigInteger value)
-            {
-                this.Type = type;
-                this.Value = value;
-            }
-        }
+      this.Type = type;
+      this.Value = value;
     }
+  }
 }

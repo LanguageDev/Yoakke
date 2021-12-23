@@ -8,48 +8,47 @@ using Yoakke.Lexer.Attributes;
 using Yoakke.Parser.Attributes;
 using IgnoreAttribute = Yoakke.Lexer.Attributes.IgnoreAttribute;
 
-namespace Yoakke.Parser.Tests
+namespace Yoakke.Parser.Tests;
+
+/**
+ NOTE: The following typo caused a very big headache
+ [Rule("gouping: Identifier")]
+
+ Proposal: When we detect direct left-recursion that we can't resolve, error out and suggest that it's a possible typo
+ */
+public partial class LeftRecursionTests
 {
-    /**
-     NOTE: The following typo caused a very big headache
-     [Rule("gouping: Identifier")]
+  internal enum TokenType
+  {
+    [End] End,
+    [Error] Error,
+    [Ignore] [Regex(Regexes.Whitespace)] Whitespace,
 
-     Proposal: When we detect direct left-recursion that we can't resolve, error out and suggest that it's a possible typo
-     */
-    public partial class LeftRecursionTests
-    {
-        internal enum TokenType
-        {
-            [End] End,
-            [Error] Error,
-            [Ignore] [Regex(Regexes.Whitespace)] Whitespace,
+    [Regex(Regexes.Identifier)] Identifier,
+  }
 
-            [Regex(Regexes.Identifier)] Identifier,
-        }
+  [Lexer(typeof(TokenType))]
+  internal partial class Lexer
+  {
+  }
 
-        [Lexer(typeof(TokenType))]
-        internal partial class Lexer
-        {
-        }
+  [Parser(typeof(TokenType))]
+  internal partial class Parser
+  {
+    [Rule("grouping : grouping Identifier")]
+    private static string Group(string group, IToken next) => $"({group}, {next.Text})";
 
-        [Parser(typeof(TokenType))]
-        internal partial class Parser
-        {
-            [Rule("grouping : grouping Identifier")]
-            private static string Group(string group, IToken next) => $"({group}, {next.Text})";
+    [Rule("grouping: Identifier")]
+    private static string Ident(IToken t) => t.Text;
+  }
 
-            [Rule("grouping: Identifier")]
-            private static string Ident(IToken t) => t.Text;
-        }
+  private static string Parse(string source) =>
+      new Parser(new Lexer(source)).ParseGrouping().Ok.Value;
 
-        private static string Parse(string source) =>
-            new Parser(new Lexer(source)).ParseGrouping().Ok.Value;
-
-        [Theory]
-        [InlineData("a", "a")]
-        [InlineData("(a, b)", "a b")]
-        [InlineData("((a, b), c)", "a b c")]
-        [InlineData("(((a, b), c), d)", "a b c d")]
-        public void Tests(string expected, string input) => Assert.Equal(expected, Parse(input));
-    }
+  [Theory]
+  [InlineData("a", "a")]
+  [InlineData("(a, b)", "a b")]
+  [InlineData("((a, b), c)", "a b c")]
+  [InlineData("(((a, b), c), d)", "a b c d")]
+  public void Tests(string expected, string input) => Assert.Equal(expected, Parse(input));
 }

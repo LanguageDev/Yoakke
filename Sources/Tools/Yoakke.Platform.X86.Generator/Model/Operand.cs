@@ -4,44 +4,43 @@
 
 using System.Xml.Serialization;
 
-namespace Yoakke.Platform.X86.Generator.Model
+namespace Yoakke.Platform.X86.Generator.Model;
+
+/// <summary>
+/// A single instruction operand.
+/// </summary>
+public class Operand
 {
-    /// <summary>
-    /// A single instruction operand.
-    /// </summary>
-    public class Operand
-    {
-        /// <summary>
-        /// The operand type.
-        /// </summary>
-        [XmlAttribute(AttributeName = "type")]
-        public string Type { get; set; } = string.Empty;
+  /// <summary>
+  /// The operand type.
+  /// </summary>
+  [XmlAttribute(AttributeName = "type")]
+  public string Type { get; set; } = string.Empty;
 
-        /// <summary>
-        /// True, if this is an input operand.
-        /// </summary>
-        [XmlAttribute(AttributeName = "input")]
-        public bool IsInput { get; set; }
+  /// <summary>
+  /// True, if this is an input operand.
+  /// </summary>
+  [XmlAttribute(AttributeName = "input")]
+  public bool IsInput { get; set; }
 
-        /// <summary>
-        /// True, if this is an output operand.
-        /// </summary>
-        [XmlAttribute(AttributeName = "output")]
-        public bool IsOutput { get; set; }
+  /// <summary>
+  /// True, if this is an output operand.
+  /// </summary>
+  [XmlAttribute(AttributeName = "output")]
+  public bool IsOutput { get; set; }
 
-        /// <summary>
-        /// The extended size of the operand, in case it's being extended with the instruction.
-        /// </summary>
-        [XmlIgnore]
-        public int? ExtendedSize { get; set; }
+  /// <summary>
+  /// The extended size of the operand, in case it's being extended with the instruction.
+  /// </summary>
+  [XmlIgnore]
+  public int? ExtendedSize { get; set; }
 
-        /// <summary>
-        /// Just for the XML writer to function properly.
-        /// </summary>
-        [XmlAttribute(AttributeName = "extended-size")]
-        public int ExtendedSizeXml
-        {
-            set => this.ExtendedSize = value;
-        }
-    }
+  /// <summary>
+  /// Just for the XML writer to function properly.
+  /// </summary>
+  [XmlAttribute(AttributeName = "extended-size")]
+  public int ExtendedSizeXml
+  {
+    set => this.ExtendedSize = value;
+  }
 }

@@ -5,16 +5,15 @@
 using Yoakke.Streams;
 using Yoakke.Text;
 
-namespace Yoakke.Lexer
+namespace Yoakke.Lexer;
+
+/// <summary>
+/// A general character stream to read from for lexers.
+/// </summary>
+public interface ICharStream : IPeekableStream<char>
 {
-    /// <summary>
-    /// A general character stream to read from for lexers.
-    /// </summary>
-    public interface ICharStream : IPeekableStream<char>
-    {
-        /// <summary>
-        /// The current <see cref="Text.Position"/> the stream is at.
-        /// </summary>
-        public Position Position { get; }
-    }
+  /// <summary>
+  /// The current <see cref="Text.Position"/> the stream is at.
+  /// </summary>
+  public Position Position { get; }
 }

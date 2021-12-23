@@ -4,27 +4,26 @@
 
 using System;
 
-namespace Yoakke.Lexer.Attributes
-{
-    /// <summary>
-    /// An attribute to mark a class to generate a lexer for token types.
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Class)]
-    public class LexerAttribute : Attribute
-    {
-        /// <summary>
-        /// The enumeration type that is annotated with token attributes.
-        /// The lexer will be generated based on the annotations on the enum fields.
-        /// </summary>
-        public Type TokenType { get; set; }
+namespace Yoakke.Lexer.Attributes;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LexerAttribute"/> class.
-        /// </summary>
-        /// <param name="tokenType">The token type to generate the lexer for.</param>
-        public LexerAttribute(Type tokenType)
-        {
-            this.TokenType = tokenType;
-        }
-    }
+/// <summary>
+/// An attribute to mark a class to generate a lexer for token types.
+/// </summary>
+[AttributeUsage(AttributeTargets.Class)]
+public class LexerAttribute : Attribute
+{
+  /// <summary>
+  /// The enumeration type that is annotated with token attributes.
+  /// The lexer will be generated based on the annotations on the enum fields.
+  /// </summary>
+  public Type TokenType { get; set; }
+
+  /// <summary>
+  /// Initializes a new instance of the <see cref="LexerAttribute"/> class.
+  /// </summary>
+  /// <param name="tokenType">The token type to generate the lexer for.</param>
+  public LexerAttribute(Type tokenType)
+  {
+    this.TokenType = tokenType;
+  }
 }

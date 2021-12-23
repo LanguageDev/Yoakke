@@ -6,17 +6,16 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Yoakke.Automata.Sparse
+namespace Yoakke.Automata.Sparse;
+
+/// <summary>
+/// Represents a sparse NFA.
+/// </summary>
+/// <typeparam name="TState">The state type.</typeparam>
+/// <typeparam name="TSymbol">The symbol type.</typeparam>
+public interface ISparseNfa<TState, TSymbol>
+    : INfa<TState, TSymbol>,
+      IReadOnlySparseNfa<TState, TSymbol>,
+      ISparseFiniteAutomaton<TState, TSymbol>
 {
-    /// <summary>
-    /// Represents a sparse NFA.
-    /// </summary>
-    /// <typeparam name="TState">The state type.</typeparam>
-    /// <typeparam name="TSymbol">The symbol type.</typeparam>
-    public interface ISparseNfa<TState, TSymbol>
-        : INfa<TState, TSymbol>,
-          IReadOnlySparseNfa<TState, TSymbol>,
-          ISparseFiniteAutomaton<TState, TSymbol>
-    {
-    }
 }

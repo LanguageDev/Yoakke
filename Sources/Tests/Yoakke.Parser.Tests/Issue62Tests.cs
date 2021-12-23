@@ -9,43 +9,42 @@ using Yoakke.Lexer.Attributes;
 using Yoakke.Parser.Attributes;
 using IgnoreAttribute = Yoakke.Lexer.Attributes.IgnoreAttribute;
 
-namespace Yoakke.Parser.Tests
+namespace Yoakke.Parser.Tests;
+
+// https://github.com/LanguageDev/Yoakke/issues/62
+public partial class Issue62Tests
 {
-    // https://github.com/LanguageDev/Yoakke/issues/62
-    public partial class Issue62Tests
-    {
-        internal enum TokenType
-        {
-            [End] End,
-            [Error] Error,
-            [Ignore] [Regex(Regexes.Whitespace)] Whitespace,
+  internal enum TokenType
+  {
+    [End] End,
+    [Error] Error,
+    [Ignore] [Regex(Regexes.Whitespace)] Whitespace,
 
-            [Regex(Regexes.Identifier)] Identifier,
-            [Token(";")] Semicolon,
-        }
+    [Regex(Regexes.Identifier)] Identifier,
+    [Token(";")] Semicolon,
+  }
 
-        [Lexer(typeof(TokenType))]
-        internal partial class Lexer
-        {
-        }
+  [Lexer(typeof(TokenType))]
+  internal partial class Lexer
+  {
+  }
 
-        [Parser(typeof(TokenType))]
-        internal partial class Parser
-        {
-            [Rule("program : statement*")]
-            public static string Program(IReadOnlyList<string> idents) => string.Join(", ", idents);
+  [Parser(typeof(TokenType))]
+  internal partial class Parser
+  {
+    [Rule("program : statement*")]
+    public static string Program(IReadOnlyList<string> idents) => string.Join(", ", idents);
 
-            [Rule("statement : Identifier ';'")]
-            public static string Statement(IToken<TokenType> identifier, IToken<TokenType> _) => identifier.Text;
-        }
+    [Rule("statement : Identifier ';'")]
+    public static string Statement(IToken<TokenType> identifier, IToken<TokenType> _) => identifier.Text;
+  }
 
-        private static string Parse(string source) =>
-           new Parser(new Lexer(source)).ParseProgram().Ok.Value;
+  private static string Parse(string source) =>
+     new Parser(new Lexer(source)).ParseProgram().Ok.Value;
 
-        [Theory]
-        [InlineData("", "; ^")]
-        [InlineData("x", "x ;")]
-        [InlineData("x, y", "x; y;")]
-        public void Tests(string expected, string input) => Assert.Equal(expected, Parse(input));
-    }
+  [Theory]
+  [InlineData("", "; ^")]
+  [InlineData("x", "x ;")]
+  [InlineData("x, y", "x; y;")]
+  public void Tests(string expected, string input) => Assert.Equal(expected, Parse(input));
 }

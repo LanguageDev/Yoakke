@@ -4,53 +4,52 @@
 
 using Xunit;
 
-namespace Yoakke.Lexer.Tests
+namespace Yoakke.Lexer.Tests;
+
+public class TokenTests : TestBase<int>
 {
-    public class TokenTests : TestBase<int>
-    {
-        [Fact]
-        public void Equality()
-        {
-            var t1 = Token("hello", 3, Range((3, 4), 5));
-            var t2 = Token("hello", 3, Range((3, 4), 5));
-            Assert.Equal(t1, t2);
-            Assert.Equal(t1.GetHashCode(), t2.GetHashCode());
-        }
+  [Fact]
+  public void Equality()
+  {
+    var t1 = Token("hello", 3, Range((3, 4), 5));
+    var t2 = Token("hello", 3, Range((3, 4), 5));
+    Assert.Equal(t1, t2);
+    Assert.Equal(t1.GetHashCode(), t2.GetHashCode());
+  }
 
-        [Fact]
-        public void InequalityContent()
-        {
-            var t1 = Token("hello", 3, Range((3, 4), 5));
-            var t2 = Token("bye", 3, Range((3, 4), 5));
-            Assert.NotEqual(t1, t2);
-            Assert.NotEqual(t1.GetHashCode(), t2.GetHashCode());
-        }
+  [Fact]
+  public void InequalityContent()
+  {
+    var t1 = Token("hello", 3, Range((3, 4), 5));
+    var t2 = Token("bye", 3, Range((3, 4), 5));
+    Assert.NotEqual(t1, t2);
+    Assert.NotEqual(t1.GetHashCode(), t2.GetHashCode());
+  }
 
-        [Fact]
-        public void InequalityKind()
-        {
-            var t1 = Token("hello", 3, Range((3, 4), 5));
-            var t2 = Token("hello", 4, Range((3, 4), 5));
-            Assert.NotEqual(t1, t2);
-            Assert.NotEqual(t1.GetHashCode(), t2.GetHashCode());
-        }
+  [Fact]
+  public void InequalityKind()
+  {
+    var t1 = Token("hello", 3, Range((3, 4), 5));
+    var t2 = Token("hello", 4, Range((3, 4), 5));
+    Assert.NotEqual(t1, t2);
+    Assert.NotEqual(t1.GetHashCode(), t2.GetHashCode());
+  }
 
-        [Fact]
-        public void InequalityPosition()
-        {
-            var t1 = Token("hello", 3, Range((3, 4), 5));
-            var t2 = Token("hello", 4, Range((4, 4), 5));
-            Assert.NotEqual(t1, t2);
-            Assert.NotEqual(t1.GetHashCode(), t2.GetHashCode());
-        }
+  [Fact]
+  public void InequalityPosition()
+  {
+    var t1 = Token("hello", 3, Range((3, 4), 5));
+    var t2 = Token("hello", 4, Range((4, 4), 5));
+    Assert.NotEqual(t1, t2);
+    Assert.NotEqual(t1.GetHashCode(), t2.GetHashCode());
+  }
 
-        [Fact]
-        public void InequalityLength()
-        {
-            var t1 = Token("hello", 3, Range((3, 4), 5));
-            var t2 = Token("hello", 4, Range((3, 4), 6));
-            Assert.NotEqual(t1, t2);
-            Assert.NotEqual(t1.GetHashCode(), t2.GetHashCode());
-        }
-    }
+  [Fact]
+  public void InequalityLength()
+  {
+    var t1 = Token("hello", 3, Range((3, 4), 5));
+    var t2 = Token("hello", 4, Range((3, 4), 6));
+    Assert.NotEqual(t1, t2);
+    Assert.NotEqual(t1.GetHashCode(), t2.GetHashCode());
+  }
 }

@@ -5,21 +5,20 @@
 using System.Collections.Generic;
 using Yoakke.Platform.X86.Operands;
 
-namespace Yoakke.Platform.X86
-{
-    /// <summary>
-    /// A single x86 instruction.
-    /// </summary>
-    public interface IInstruction : ICodeElement
-    {
-        /// <summary>
-        /// The <see cref="IOperand"/>s this <see cref="IInstruction"/> needs.
-        /// </summary>
-        public IReadOnlyList<IOperand> Operands { get; }
+namespace Yoakke.Platform.X86;
 
-        /// <summary>
-        /// Optional inline comment.
-        /// </summary>
-        public string? Comment { get; }
-    }
+/// <summary>
+/// A single x86 instruction.
+/// </summary>
+public interface IInstruction : ICodeElement
+{
+  /// <summary>
+  /// The <see cref="IOperand"/>s this <see cref="IInstruction"/> needs.
+  /// </summary>
+  public IReadOnlyList<IOperand> Operands { get; }
+
+  /// <summary>
+  /// Optional inline comment.
+  /// </summary>
+  public string? Comment { get; }
 }

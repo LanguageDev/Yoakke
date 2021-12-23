@@ -4,43 +4,42 @@
 
 using System.Xml.Serialization;
 
-namespace Yoakke.Platform.X86.Generator.Model
+namespace Yoakke.Platform.X86.Generator.Model;
+
+/// <summary>
+/// Encodes an immediate operand.
+/// </summary>
+public class Immediate
 {
-    /// <summary>
-    /// Encodes an immediate operand.
-    /// </summary>
-    public class Immediate
-    {
-        /// <summary>
-        /// The size of the <see cref="Immediate"/> value in bytes.
-        /// </summary>
-        [XmlIgnore]
-        public int Size { get; set; }
+  /// <summary>
+  /// The size of the <see cref="Immediate"/> value in bytes.
+  /// </summary>
+  [XmlIgnore]
+  public int Size { get; set; }
 
-        /// <summary>
-        /// The operand number this <see cref="Immediate"/> belongs to.
-        /// </summary>
-        [XmlIgnore]
-        public int OperandNumber { get; set; }
+  /// <summary>
+  /// The operand number this <see cref="Immediate"/> belongs to.
+  /// </summary>
+  [XmlIgnore]
+  public int OperandNumber { get; set; }
 
-        /// <summary>
-        /// The string-encoded size in the XML.
-        /// </summary>
-        [XmlAttribute(AttributeName = "size")]
-        public string SizeString
-        {
-            get => this.Size.ToString();
-            set => this.Size = int.Parse(value);
-        }
+  /// <summary>
+  /// The string-encoded size in the XML.
+  /// </summary>
+  [XmlAttribute(AttributeName = "size")]
+  public string SizeString
+  {
+    get => this.Size.ToString();
+    set => this.Size = int.Parse(value);
+  }
 
-        /// <summary>
-        /// The operand number encoded with a '#'.
-        /// </summary>
-        [XmlAttribute(AttributeName = "value")]
-        public string OperandNumberString
-        {
-            get => $"#{this.OperandNumber}";
-            set => this.OperandNumber = int.Parse(value[1..]);
-        }
-    }
+  /// <summary>
+  /// The operand number encoded with a '#'.
+  /// </summary>
+  [XmlAttribute(AttributeName = "value")]
+  public string OperandNumberString
+  {
+    get => $"#{this.OperandNumber}";
+    set => this.OperandNumber = int.Parse(value[1..]);
+  }
 }

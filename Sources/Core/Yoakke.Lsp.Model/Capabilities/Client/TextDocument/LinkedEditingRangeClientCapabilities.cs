@@ -4,20 +4,19 @@
 
 using Newtonsoft.Json;
 
-namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
+namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument;
+
+/// <summary>
+/// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_linkedEditingRange.
+/// </summary>
+public class LinkedEditingRangeClientCapabilities
 {
-    /// <summary>
-    /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_linkedEditingRange.
-    /// </summary>
-    public class LinkedEditingRangeClientCapabilities
-    {
-        /// <summary>
-        /// Whether implementation supports dynamic registration.
-        /// If this is set to `true` the client supports the new
-        /// `(TextDocumentRegistrationOptions &amp; StaticRegistrationOptions)`
-        /// return value for the corresponding server capability as well.
-        /// </summary>
-        [JsonProperty("dynamicRegistration", NullValueHandling = NullValueHandling.Ignore)]
-        public bool? DynamicRegistration { get; set; }
-    }
+  /// <summary>
+  /// Whether implementation supports dynamic registration.
+  /// If this is set to `true` the client supports the new
+  /// `(TextDocumentRegistrationOptions &amp; StaticRegistrationOptions)`
+  /// return value for the corresponding server capability as well.
+  /// </summary>
+  [JsonProperty("dynamicRegistration", NullValueHandling = NullValueHandling.Ignore)]
+  public bool? DynamicRegistration { get; set; }
 }

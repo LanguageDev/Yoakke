@@ -4,20 +4,19 @@
 
 using Newtonsoft.Json;
 
-namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument
+namespace Yoakke.Lsp.Model.Capabilities.Client.TextDocument;
+
+/// <summary>
+/// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_selectionRange.
+/// </summary>
+public class SelectionRangeClientCapabilities
 {
-    /// <summary>
-    /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_selectionRange.
-    /// </summary>
-    public class SelectionRangeClientCapabilities
-    {
-        /// <summary>
-        /// Whether implementation supports dynamic registration for selection range
-        /// providers. If this is set to `true` the client supports the new
-        /// `SelectionRangeRegistrationOptions` return value for the corresponding
-        /// server capability as well.
-        /// </summary>
-        [JsonProperty("dynamicRegistration", NullValueHandling = NullValueHandling.Ignore)]
-        public bool? DynamicRegistration { get; set; }
-    }
+  /// <summary>
+  /// Whether implementation supports dynamic registration for selection range
+  /// providers. If this is set to `true` the client supports the new
+  /// `SelectionRangeRegistrationOptions` return value for the corresponding
+  /// server capability as well.
+  /// </summary>
+  [JsonProperty("dynamicRegistration", NullValueHandling = NullValueHandling.Ignore)]
+  public bool? DynamicRegistration { get; set; }
 }

@@ -5,33 +5,32 @@
 using System.Globalization;
 using System.Xml.Serialization;
 
-namespace Yoakke.Platform.X86.Generator.Model
+namespace Yoakke.Platform.X86.Generator.Model;
+
+/// <summary>
+/// A prefix byte for an operand.
+/// </summary>
+public class Prefix
 {
-    /// <summary>
-    /// A prefix byte for an operand.
-    /// </summary>
-    public class Prefix
-    {
-        /// <summary>
-        /// The actual numeric opcode.
-        /// </summary>
-        [XmlIgnore]
-        public byte Code { get; set; }
+  /// <summary>
+  /// The actual numeric opcode.
+  /// </summary>
+  [XmlIgnore]
+  public byte Code { get; set; }
 
-        /// <summary>
-        /// The hex string of this opcode.
-        /// </summary>
-        [XmlAttribute(AttributeName = "byte")]
-        public string HexString
-        {
-            get => this.Code.ToString("x");
-            set => this.Code = byte.Parse(value, NumberStyles.HexNumber);
-        }
+  /// <summary>
+  /// The hex string of this opcode.
+  /// </summary>
+  [XmlAttribute(AttributeName = "byte")]
+  public string HexString
+  {
+    get => this.Code.ToString("x");
+    set => this.Code = byte.Parse(value, NumberStyles.HexNumber);
+  }
 
-        /// <summary>
-        /// True, if the prefix is required.
-        /// </summary>
-        [XmlAttribute(AttributeName = "mandatory")]
-        public bool Required { get; set; }
-    }
+  /// <summary>
+  /// True, if the prefix is required.
+  /// </summary>
+  [XmlAttribute(AttributeName = "mandatory")]
+  public bool Required { get; set; }
 }

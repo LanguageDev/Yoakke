@@ -4,55 +4,54 @@
 
 using System.Collections.Generic;
 
-namespace Yoakke.Parser.Generator.Ast
+namespace Yoakke.Parser.Generator.Ast;
+
+internal partial class BnfAst
 {
-    internal partial class BnfAst
+  /// <summary>
+  /// Represents a repeating, folding parse rule.
+  /// This is used for left-recursion elimination.
+  /// </summary>
+  public class FoldLeft : BnfAst
+  {
+    /// <summary>
+    /// The sub-element to apply.
+    /// </summary>
+    public BnfAst First { get; }
+
+    /// <summary>
+    /// The alternative elements to apply repeatedly after.
+    /// </summary>
+    public BnfAst Second { get; }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FoldLeft"/> class.
+    /// </summary>
+    /// <param name="first">The first element of the fold.</param>
+    /// <param name="second">The second elements of the fold, that will be repeated.</param>
+    public FoldLeft(BnfAst first, BnfAst second)
     {
-        /// <summary>
-        /// Represents a repeating, folding parse rule.
-        /// This is used for left-recursion elimination.
-        /// </summary>
-        public class FoldLeft : BnfAst
-        {
-            /// <summary>
-            /// The sub-element to apply.
-            /// </summary>
-            public BnfAst First { get; }
-
-            /// <summary>
-            /// The alternative elements to apply repeatedly after.
-            /// </summary>
-            public BnfAst Second { get; }
-
-            /// <summary>
-            /// Initializes a new instance of the <see cref="FoldLeft"/> class.
-            /// </summary>
-            /// <param name="first">The first element of the fold.</param>
-            /// <param name="second">The second elements of the fold, that will be repeated.</param>
-            public FoldLeft(BnfAst first, BnfAst second)
-            {
-                this.First = first;
-                this.Second = second;
-            }
-
-            /// <inheritdoc/>
-            protected override BnfAst SubstituteByReferenceImpl(BnfAst find, BnfAst replaceWith) => new FoldLeft(
-                this.First.SubstituteByReference(find, replaceWith),
-                this.Second.SubstituteByReference(find, replaceWith));
-
-            /// <inheritdoc/>
-            public override IEnumerable<Call> GetFirstCalls() => this.First.GetFirstCalls();
-
-            /// <inheritdoc/>
-            public override BnfAst Desugar() =>
-                new FoldLeft(this.First.Desugar(), this.Second.Desugar());
-
-            /// <inheritdoc/>
-            public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens) =>
-                this.First.GetParsedType(ruleSet, tokens);
-
-            /// <inheritdoc/>
-            public override string ToString() => $"FoldLeft({this.First}, {this.Second})";
-        }
+      this.First = first;
+      this.Second = second;
     }
+
+    /// <inheritdoc/>
+    protected override BnfAst SubstituteByReferenceImpl(BnfAst find, BnfAst replaceWith) => new FoldLeft(
+        this.First.SubstituteByReference(find, replaceWith),
+        this.Second.SubstituteByReference(find, replaceWith));
+
+    /// <inheritdoc/>
+    public override IEnumerable<Call> GetFirstCalls() => this.First.GetFirstCalls();
+
+    /// <inheritdoc/>
+    public override BnfAst Desugar() =>
+        new FoldLeft(this.First.Desugar(), this.Second.Desugar());
+
+    /// <inheritdoc/>
+    public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens) =>
+        this.First.GetParsedType(ruleSet, tokens);
+
+    /// <inheritdoc/>
+    public override string ToString() => $"FoldLeft({this.First}, {this.Second})";
+  }
 }

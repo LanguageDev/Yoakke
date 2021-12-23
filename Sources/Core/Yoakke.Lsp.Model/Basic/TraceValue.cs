@@ -4,29 +4,28 @@
 
 using System.Runtime.Serialization;
 
-namespace Yoakke.Lsp.Model.Basic
+namespace Yoakke.Lsp.Model.Basic;
+
+/// <summary>
+/// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#traceValue.
+/// </summary>
+public enum TraceValue
 {
-    /// <summary>
-    /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#traceValue.
-    /// </summary>
-    public enum TraceValue
-    {
-        /// <summary>
-        /// No trace.
-        /// </summary>
-        [EnumMember(Value = "off")]
-        Off,
+  /// <summary>
+  /// No trace.
+  /// </summary>
+  [EnumMember(Value = "off")]
+  Off,
 
-        /// <summary>
-        /// Trace messages.
-        /// </summary>
-        [EnumMember(Value = "messages")]
-        Messages,
+  /// <summary>
+  /// Trace messages.
+  /// </summary>
+  [EnumMember(Value = "messages")]
+  Messages,
 
-        /// <summary>
-        /// Verbose trace.
-        /// </summary>
-        [EnumMember(Value = "verbose")]
-        Verbose,
-    }
+  /// <summary>
+  /// Verbose trace.
+  /// </summary>
+  [EnumMember(Value = "verbose")]
+  Verbose,
 }

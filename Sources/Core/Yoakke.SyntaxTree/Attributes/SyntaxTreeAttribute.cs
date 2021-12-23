@@ -4,13 +4,12 @@
 
 using System;
 
-namespace Yoakke.SyntaxTree.Attributes
+namespace Yoakke.SyntaxTree.Attributes;
+
+/// <summary>
+/// An attribute to annotate that the given node is part of a syntax tree.
+/// </summary>
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = false, Inherited = true)]
+public class SyntaxTreeAttribute : Attribute
 {
-    /// <summary>
-    /// An attribute to annotate that the given node is part of a syntax tree.
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = false, Inherited = true)]
-    public class SyntaxTreeAttribute : Attribute
-    {
-    }
 }

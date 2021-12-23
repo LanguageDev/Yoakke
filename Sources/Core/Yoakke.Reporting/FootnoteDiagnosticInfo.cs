@@ -2,17 +2,16 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
-namespace Yoakke.Reporting
-{
-    /// <summary>
-    /// A footnote diagnostic information.
-    /// </summary>
-    public class FootnoteDiagnosticInfo : IDiagnosticInfo
-    {
-        /// <inheritdoc/>
-        public Severity? Severity { get; set; }
+namespace Yoakke.Reporting;
 
-        /// <inheritdoc/>
-        public string? Message { get; set; }
-    }
+/// <summary>
+/// A footnote diagnostic information.
+/// </summary>
+public class FootnoteDiagnosticInfo : IDiagnosticInfo
+{
+  /// <inheritdoc/>
+  public Severity? Severity { get; set; }
+
+  /// <inheritdoc/>
+  public string? Message { get; set; }
 }

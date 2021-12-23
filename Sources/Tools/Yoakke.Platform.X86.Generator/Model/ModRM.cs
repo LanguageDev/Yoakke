@@ -4,29 +4,28 @@
 
 using System.Xml.Serialization;
 
-namespace Yoakke.Platform.X86.Generator.Model
+namespace Yoakke.Platform.X86.Generator.Model;
+
+/// <summary>
+/// The ModRM byte for <see cref="Encoding"/> in an <see cref="Instruction"/>.
+/// </summary>
+public class ModRM
 {
-    /// <summary>
-    /// The ModRM byte for <see cref="Encoding"/> in an <see cref="Instruction"/>.
-    /// </summary>
-    public class ModRM
-    {
-        /// <summary>
-        /// Mode bits.
-        /// </summary>
-        [XmlAttribute(AttributeName = "mode")]
-        public string Mode { get; set; } = string.Empty;
+  /// <summary>
+  /// Mode bits.
+  /// </summary>
+  [XmlAttribute(AttributeName = "mode")]
+  public string Mode { get; set; } = string.Empty;
 
-        /// <summary>
-        /// Register bits.
-        /// </summary>
-        [XmlAttribute(AttributeName = "reg")]
-        public string Reg { get; set; } = string.Empty;
+  /// <summary>
+  /// Register bits.
+  /// </summary>
+  [XmlAttribute(AttributeName = "reg")]
+  public string Reg { get; set; } = string.Empty;
 
-        /// <summary>
-        /// R/M bits.
-        /// </summary>
-        [XmlAttribute(AttributeName = "rm")]
-        public string Rm { get; set; } = string.Empty;
-    }
+  /// <summary>
+  /// R/M bits.
+  /// </summary>
+  [XmlAttribute(AttributeName = "rm")]
+  public string Rm { get; set; } = string.Empty;
 }

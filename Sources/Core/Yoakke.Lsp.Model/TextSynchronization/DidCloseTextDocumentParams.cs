@@ -5,17 +5,16 @@
 using Newtonsoft.Json;
 using Yoakke.Lsp.Model.Basic;
 
-namespace Yoakke.Lsp.Model.TextSynchronization
+namespace Yoakke.Lsp.Model.TextSynchronization;
+
+/// <summary>
+/// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#didCloseTextDocumentParams.
+/// </summary>
+public class DidCloseTextDocumentParams
 {
-    /// <summary>
-    /// See https://microsoft.github.io/language-server-protocol/specifications/specification-current/#didCloseTextDocumentParams.
-    /// </summary>
-    public class DidCloseTextDocumentParams
-    {
-        /// <summary>
-        /// The document that was closed.
-        /// </summary>
-        [JsonProperty("textDocument")]
-        public TextDocumentIdentifier TextDocument { get; set; } = new();
-    }
+  /// <summary>
+  /// The document that was closed.
+  /// </summary>
+  [JsonProperty("textDocument")]
+  public TextDocumentIdentifier TextDocument { get; set; } = new();
 }
