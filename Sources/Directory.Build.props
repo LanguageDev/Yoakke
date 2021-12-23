@@ -1,19 +1,11 @@
 <Project>
   <PropertyGroup>
     <!-- Language-level settings -->
-    <LangVersion>9.0</LangVersion>
+    <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
 
     <!-- Analysis -->
     <AnalysisLevel>latest</AnalysisLevel>
-    <WarningLevel>5</WarningLevel>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="All" />
-  </ItemGroup>
-
-  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
-    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    <WarningLevel>9999</WarningLevel>
   </PropertyGroup>
 </Project>
