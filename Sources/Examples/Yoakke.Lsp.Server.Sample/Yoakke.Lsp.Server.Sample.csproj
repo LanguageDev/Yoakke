@@ -1,9 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
-
     <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
 
@@ -20,5 +16,4 @@
           DestinationFolder="$(ProjectDir)../Yoakke.Lsp.Server.Sample.VsCodeClient/out"
           SkipUnchangedFiles="true" />
   </Target>
-
 </Project>

@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <Import Project="$(MSBuildThisFileDirectory)/../SourceGenerator.props" />
-  
+
   <ItemGroup>
     <Compile Include="$(SolutionDir)/Core/Yoakke.Collections/**/*.cs" Link="Yoakke.Collections" />
     <Compile Remove="$(SolutionDir)/Core/Yoakke.Collections/obj/**/*.cs" />
@@ -9,5 +8,4 @@
     <Compile Include="$(SolutionDir)/Core/Yoakke.Automata/**/*.cs" Link="Yoakke.Automata" />
     <Compile Remove="$(SolutionDir)/Core/Yoakke.Automata/obj/**/*.cs" />
   </ItemGroup>
-  
 </Project>

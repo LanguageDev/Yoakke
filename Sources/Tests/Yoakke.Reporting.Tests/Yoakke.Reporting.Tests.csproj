@@ -1,7 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <ItemGroup>
     <ProjectReference Include="$(SolutionDir)\Core\Yoakke.Reporting\Yoakke.Reporting.csproj" />
   </ItemGroup>
-
 </Project>

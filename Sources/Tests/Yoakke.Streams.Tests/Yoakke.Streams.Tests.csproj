@@ -1,7 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <ItemGroup>
     <ProjectReference Include="$(SolutionDir)\Core\Yoakke.Streams\Yoakke.Streams.csproj" />
   </ItemGroup>
-
 </Project>

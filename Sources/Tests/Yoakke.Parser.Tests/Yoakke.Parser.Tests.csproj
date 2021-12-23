@@ -1,9 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <ItemGroup>
     <ProjectReference Include="$(SolutionDir)\Core\Yoakke.Parser\Yoakke.Parser.csproj" />
     <ProjectReference Include="$(SolutionDir)\Core\Yoakke.Lexer.Generator\Yoakke.Lexer.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="False" />
     <ProjectReference Include="$(SolutionDir)\Core\Yoakke.Parser.Generator\Yoakke.Parser.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="False" />
   </ItemGroup>
-
 </Project>

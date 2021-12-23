@@ -3,6 +3,10 @@
   <Import Project="$(MSBuildThisFileDirectory)/../Directory.Build.props" />
 
   <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <DocumentationFile>$(MSBuildProjectDirectory)/doc/$(MSBuildProjectName).xml</DocumentationFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>$(MSBuildProjectName)</PackageId>
@@ -18,7 +22,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\..\..\.github\resources\YoakkeLogo.png">
+    <None Include="$(SolutionDir)\..\.github\resources\YoakkeLogo.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>

@@ -1,9 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <ItemGroup>
     <ProjectReference Include="$(SolutionDir)\Core\Yoakke.SyntaxTree\Yoakke.SyntaxTree.csproj" />
     <ProjectReference Include="$(SolutionDir)\Core\Yoakke.SyntaxTree.Generator\Yoakke.SyntaxTree.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="False" />
     <ProjectReference Include="$(SolutionDir)\Tests\Yoakke.SyntaxTree.Tests.Tree\Yoakke.SyntaxTree.Tests.Tree.csproj" />
   </ItemGroup>
-
 </Project>

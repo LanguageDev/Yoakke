@@ -1,12 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-  </PropertyGroup>
-
   <ItemGroup>
     <ProjectReference Include="$(SolutionDir)\Core\Yoakke.SyntaxTree\Yoakke.SyntaxTree.csproj" />
     <ProjectReference Include="$(SolutionDir)\Core\Yoakke.SyntaxTree.Generator\Yoakke.SyntaxTree.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="False" />
   </ItemGroup>
-
 </Project>

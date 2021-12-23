@@ -21,14 +21,14 @@
     <!-- Source-generator abstractions -->
     <Compile Include="$(SolutionDir)/Core/Yoakke.SourceGenerator.Common/**/*.cs" Link="Yoakke.SourceGenerator.Common" />
     <Compile Remove="$(SolutionDir)/Core/Yoakke.SourceGenerator.Common/obj/**/*.cs" />
-    
+
     <!-- Run-time polyfill libraries -->
     <Compile Include="$(SolutionDir)/Core/Yoakke.Polyfill/**/*.cs" Link="Yoakke.Polyfill" />
     <Compile Remove="$(SolutionDir)/Core/Yoakke.Polyfill/obj/**/*.cs" />
 
     <PackageReference Include="System.Memory" Version="4.5.4" PrivateAssets="all" GeneratePathProperty="true" />
     <None Include="$(PkgSystem_Memory)\lib\netstandard2.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-    
+
     <PackageReference Include="IndexRange" Version="1.0.0" PrivateAssets="all" GeneratePathProperty="true" />
     <None Include="$(PkgIndexRange)\lib\netstandard2.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
 
@@ -51,5 +51,4 @@
       <TargetPathWithTargetPlatformMoniker Include="$(PkgIsExternalInit)\lib\netstandard2.0\*.dll" IncludeRuntimeDependency="false" />
     </ItemGroup>
   </Target>
-  
 </Project>

@@ -1,5 +1,3 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <Import Project="$(MSBuildThisFileDirectory)/../SourceGenerator.props"/>
-
 </Project>

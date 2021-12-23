@@ -1,9 +1,9 @@
-<!-- Sample project settings -->
+<!-- Test project settings -->
 <Project>
   <Import Project="$(MSBuildThisFileDirectory)/../Directory.Build.props" />
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <OutputType>Exe</OutputType>
+    <OutputType>exe</OutputType>
   </PropertyGroup>
 </Project>
