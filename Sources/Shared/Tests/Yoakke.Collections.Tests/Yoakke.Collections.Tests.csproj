@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="$(SolutionDir)\Shared\Libraries\Yoakke.Collections\Yoakke.Collections.csproj" />
+  </ItemGroup>
+</Project>

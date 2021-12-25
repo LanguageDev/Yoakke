@@ -1,5 +1,0 @@
-<Project Sdk="Microsoft.NET.Sdk">
-  <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)\Core\Yoakke.Automata\Yoakke.Automata.csproj" />
-  </ItemGroup>
-</Project>

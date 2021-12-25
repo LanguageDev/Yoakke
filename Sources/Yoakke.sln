@@ -1,127 +1,98 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31205.134
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31919.166
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lexer", "Core\Yoakke.Lexer\Yoakke.Lexer.csproj", "{36D85E41-4CB1-4198-8248-05A30082F0F2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lexer", "SynKit\Libraries\Yoakke.Lexer\Yoakke.Lexer.csproj", "{36D85E41-4CB1-4198-8248-05A30082F0F2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lexer.Generator", "Core\Yoakke.Lexer.Generator\Yoakke.Lexer.Generator.csproj", "{CB252735-C1B6-4F6E-8299-A552069FDBE6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lexer.Generator", "SynKit\Libraries\Yoakke.Lexer.Generator\Yoakke.Lexer.Generator.csproj", "{CB252735-C1B6-4F6E-8299-A552069FDBE6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lexer.Tests", "Tests\Yoakke.Lexer.Tests\Yoakke.Lexer.Tests.csproj", "{A76E877C-B326-4B66-A9CF-53515538773A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lexer.Tests", "SynKit\Tests\Yoakke.Lexer.Tests\Yoakke.Lexer.Tests.csproj", "{A76E877C-B326-4B66-A9CF-53515538773A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Text", "Core\Yoakke.Text\Yoakke.Text.csproj", "{1B5BA09D-B866-4C63-A1B2-54FE7F409CCE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Text", "SynKit\Libraries\Yoakke.Text\Yoakke.Text.csproj", "{1B5BA09D-B866-4C63-A1B2-54FE7F409CCE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Parser", "Core\Yoakke.Parser\Yoakke.Parser.csproj", "{4E6DC779-3A18-4360-B289-02E68757F6EB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Parser", "SynKit\Libraries\Yoakke.Parser\Yoakke.Parser.csproj", "{4E6DC779-3A18-4360-B289-02E68757F6EB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Parser.Generator", "Core\Yoakke.Parser.Generator\Yoakke.Parser.Generator.csproj", "{7E7BC74B-EB71-45F1-92B0-AA53F546EB18}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Parser.Generator", "SynKit\Libraries\Yoakke.Parser.Generator\Yoakke.Parser.Generator.csproj", "{7E7BC74B-EB71-45F1-92B0-AA53F546EB18}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Parser.Tests", "Tests\Yoakke.Parser.Tests\Yoakke.Parser.Tests.csproj", "{266FD9F8-E6E6-4D4D-A2C8-BA250E480E0E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Parser.Tests", "SynKit\Tests\Yoakke.Parser.Tests\Yoakke.Parser.Tests.csproj", "{266FD9F8-E6E6-4D4D-A2C8-BA250E480E0E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.SourceGenerator.Common", "Core\Yoakke.SourceGenerator.Common\Yoakke.SourceGenerator.Common.csproj", "{BEFA414D-D649-402A-8DD1-4F9A1F9558F2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.SourceGenerator.Common", "Shared\Libraries\Yoakke.SourceGenerator.Common\Yoakke.SourceGenerator.Common.csproj", "{BEFA414D-D649-402A-8DD1-4F9A1F9558F2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lexer.Sample", "Examples\Yoakke.Lexer.Sample\Yoakke.Lexer.Sample.csproj", "{F48F5B87-9918-48BF-A0DF-09D4B168E596}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lexer.Sample", "SynKit\Examples\Yoakke.Lexer.Sample\Yoakke.Lexer.Sample.csproj", "{F48F5B87-9918-48BF-A0DF-09D4B168E596}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lexer", "Lexer", "{A6B22275-5966-47BB-87EE-22E0DDE44A0E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Parser", "Parser", "{99830BF4-010D-4B26-88D9-1C9633853E30}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Parser.Sample", "Examples\Yoakke.Parser.Sample\Yoakke.Parser.Sample.csproj", "{CE858304-DC1C-4A7B-AD49-81E8F3CB6F7D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Parser.Sample", "SynKit\Examples\Yoakke.Parser.Sample\Yoakke.Parser.Sample.csproj", "{CE858304-DC1C-4A7B-AD49-81E8F3CB6F7D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Reporting", "Reporting", "{26655C0F-CFB1-4CEC-91BE-AEC1BFF6DC21}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Reporting", "Core\Yoakke.Reporting\Yoakke.Reporting.csproj", "{4B505051-7CE0-4264-B0F4-C5F0ADE14AB4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Reporting", "SynKit\Libraries\Yoakke.Reporting\Yoakke.Reporting.csproj", "{4B505051-7CE0-4264-B0F4-C5F0ADE14AB4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Reporting.Tests", "Tests\Yoakke.Reporting.Tests\Yoakke.Reporting.Tests.csproj", "{0E8166B6-8855-4B9B-B4D9-95C1890D850B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Reporting.Tests", "SynKit\Tests\Yoakke.Reporting.Tests\Yoakke.Reporting.Tests.csproj", "{0E8166B6-8855-4B9B-B4D9-95C1890D850B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Reporting.Sample", "Examples\Yoakke.Reporting.Sample\Yoakke.Reporting.Sample.csproj", "{094A2608-9A68-45D2-B2CF-1BBCEE88086A}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Sample", "Examples\Yoakke.Sample\Yoakke.Sample.csproj", "{94C26FC8-A4E7-435D-91B4-57F75719DC45}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Reporting.Sample", "SynKit\Examples\Yoakke.Reporting.Sample\Yoakke.Reporting.Sample.csproj", "{094A2608-9A68-45D2-B2CF-1BBCEE88086A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SyntaxTree", "SyntaxTree", "{58417641-179E-4F53-9528-234B4E87944E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.SyntaxTree", "Core\Yoakke.SyntaxTree\Yoakke.SyntaxTree.csproj", "{384A70A8-96CE-4C1C-BC5C-BF3341B522E5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.SyntaxTree", "SynKit\Libraries\Yoakke.SyntaxTree\Yoakke.SyntaxTree.csproj", "{384A70A8-96CE-4C1C-BC5C-BF3341B522E5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.SyntaxTree.Generator", "Core\Yoakke.SyntaxTree.Generator\Yoakke.SyntaxTree.Generator.csproj", "{C3B90E58-A8C7-4F79-B8C7-140D0E6687E6}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Symbols", "Core\Yoakke.Symbols\Yoakke.Symbols.csproj", "{80BDC869-2344-4EEC-BB01-A3AC72CA26ED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.SyntaxTree.Generator", "SynKit\Libraries\Yoakke.SyntaxTree.Generator\Yoakke.SyntaxTree.Generator.csproj", "{C3B90E58-A8C7-4F79-B8C7-140D0E6687E6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LanguageServerProtocol", "LanguageServerProtocol", "{C32F06FE-A533-4BD3-B361-2D9BECCDFBDF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lsp.Model.Generator", "Tools\Yoakke.Lsp.Model.Generator\Yoakke.Lsp.Model.Generator.csproj", "{14BA531F-4D06-4507-A3C5-027FB097E970}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lsp.Server.Sample", "Examples\Yoakke.Lsp.Server.Sample\Yoakke.Lsp.Server.Sample.csproj", "{A4D7FE59-C1D4-47AC-9822-A51BC09045BC}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lsp.Server", "Core\Yoakke.Lsp.Server\Yoakke.Lsp.Server.csproj", "{01035D94-6005-47DB-BC9B-0925F98CFA1F}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Lsp.Model", "Core\Yoakke.Lsp.Model\Yoakke.Lsp.Model.csproj", "{7F60E2A0-832A-4FA5-AB69-2B8D6916FAE9}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Text.Tests", "Tests\Yoakke.Text.Tests\Yoakke.Text.Tests.csproj", "{6702EF78-791C-42B5-9775-A39966009150}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Text.Tests", "SynKit\Tests\Yoakke.Text.Tests\Yoakke.Text.Tests.csproj", "{6702EF78-791C-42B5-9775-A39966009150}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BADE4D16-62B1-41F1-9BD7-31901BE84E33}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
-		Directory.Build.props = Directory.Build.props
-		Core\Directory.Build.props = Core\Directory.Build.props
-		Tests\Directory.Build.props = Tests\Directory.Build.props
-		Examples\Directory.Build.props = Examples\Directory.Build.props
-		Core\SourceGenerator.props = Core\SourceGenerator.props
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "C", "C", "{AE60AFB2-F9EE-4850-9F04-7D184B8475A9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.C.Syntax", "Core\Yoakke.C.Syntax\Yoakke.C.Syntax.csproj", "{4A9A90B2-FA50-44D9-9B91-88B0638A7286}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.C.Syntax", "SynKit\Libraries\Yoakke.C.Syntax\Yoakke.C.Syntax.csproj", "{4A9A90B2-FA50-44D9-9B91-88B0638A7286}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.C.Syntax.Tests", "Tests\Yoakke.C.Syntax.Tests\Yoakke.C.Syntax.Tests.csproj", "{74634FE8-0D46-46ED-B32D-AF78DAEE305C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.C.Syntax.Tests", "SynKit\Tests\Yoakke.C.Syntax.Tests\Yoakke.C.Syntax.Tests.csproj", "{74634FE8-0D46-46ED-B32D-AF78DAEE305C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.C.Syntax.Sample", "Examples\Yoakke.C.Syntax.Sample\Yoakke.C.Syntax.Sample.csproj", "{2FDE8C48-D2FB-4B0C-8ADF-EAB8EE7C591D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.C.Syntax.Sample", "SynKit\Examples\Yoakke.C.Syntax.Sample\Yoakke.C.Syntax.Sample.csproj", "{2FDE8C48-D2FB-4B0C-8ADF-EAB8EE7C591D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "X86", "X86", "{091B19BD-789E-4358-A2DE-250DF39C8ADA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Platform.X86", "Core\Yoakke.Platform.X86\Yoakke.Platform.X86.csproj", "{D9966D0F-EF13-435C-8E15-45E980E6586E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Collections", "Shared\Libraries\Yoakke.Collections\Yoakke.Collections.csproj", "{F831F2D0-4BDC-4A30-A064-F31A9B5B3F1B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Platform.X86.Sample", "Examples\Yoakke.Platform.X86.Sample\Yoakke.Platform.X86.Sample.csproj", "{00BEF940-0FE1-4E3F-AF91-1BEC9857262F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Collections.Tests", "Shared\Tests\Yoakke.Collections.Tests\Yoakke.Collections.Tests.csproj", "{4DA71BF1-D45F-4ADE-8088-A01BD4BD412A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Platform.X86.Generator", "Tools\Yoakke.Platform.X86.Generator\Yoakke.Platform.X86.Generator.csproj", "{80B2215B-73FC-41BF-B1CB-886BA8540DDA}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Collections", "Core\Yoakke.Collections\Yoakke.Collections.csproj", "{F831F2D0-4BDC-4A30-A064-F31A9B5B3F1B}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Collections.Tests", "Tests\Yoakke.Collections.Tests\Yoakke.Collections.Tests.csproj", "{4DA71BF1-D45F-4ADE-8088-A01BD4BD412A}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.SyntaxTree.Tests", "Tests\Yoakke.SyntaxTree.Tests\Yoakke.SyntaxTree.Tests.csproj", "{04888C13-EA59-4AC4-9DFE-BEE103AFA006}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.SyntaxTree.Tests", "SynKit\Tests\Yoakke.SyntaxTree.Tests\Yoakke.SyntaxTree.Tests.csproj", "{04888C13-EA59-4AC4-9DFE-BEE103AFA006}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ir", "Ir", "{B042CA2F-FAD5-4148-89C8-3310AF17BC14}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Ir", "Core\Yoakke.Ir\Yoakke.Ir.csproj", "{D9A26C9B-EB6D-4EDB-923B-ED529E4C5A8D}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Ir.Sample", "Examples\Yoakke.Ir.Sample\Yoakke.Ir.Sample.csproj", "{B5C7DD29-4D2C-46B7-B940-FA5C2680C382}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Platforms", "Platforms", "{A482C708-3225-47F3-8DE3-BB354888CC51}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.NugetMaintainer", "Tools\Yoakke.NugetMaintainer\Yoakke.NugetMaintainer.csproj", "{7BD28C2F-18D6-4C3A-9899-469775B001D8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.SyntaxTree.Tests.Tree", "Tests\Yoakke.SyntaxTree.Tests.Tree\Yoakke.SyntaxTree.Tests.Tree.csproj", "{2E1E2A07-9EC8-462D-B001-8AB44F973286}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.SyntaxTree.Tests.Tree", "SynKit\Tests\Yoakke.SyntaxTree.Tests.Tree\Yoakke.SyntaxTree.Tests.Tree.csproj", "{2E1E2A07-9EC8-462D-B001-8AB44F973286}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Polyfill", "Core\Yoakke.Polyfill\Yoakke.Polyfill.csproj", "{94CBD997-6394-4BA3-9AF2-0C2C139E1967}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Polyfill", "Shared\Libraries\Yoakke.Polyfill\Yoakke.Polyfill.csproj", "{94CBD997-6394-4BA3-9AF2-0C2C139E1967}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Text", "Text", "{F2CCC405-5C6C-471E-A4ED-EBB6433D990B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Semantics", "Semantics", "{E9427BFD-E4E1-44B5-B87A-7FE264422129}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Ir.Tests", "Tests\Yoakke.Ir.Tests\Yoakke.Ir.Tests.csproj", "{D559CE92-DB2F-47A2-A419-999C78387250}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utilities", "Utilities", "{9293EB9E-9730-4D48-8DBB-2213E4FCC35F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Streams", "Core\Yoakke.Streams\Yoakke.Streams.csproj", "{26EB1772-19EC-4B9B-93BD-34BB18262E7F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Streams", "Shared\Libraries\Yoakke.Streams\Yoakke.Streams.csproj", "{26EB1772-19EC-4B9B-93BD-34BB18262E7F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Streams.Tests", "Tests\Yoakke.Streams.Tests\Yoakke.Streams.Tests.csproj", "{1764F8E3-A554-4BA9-8025-A13F78B2F22E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Streams.Tests", "Shared\Tests\Yoakke.Streams.Tests\Yoakke.Streams.Tests.csproj", "{1764F8E3-A554-4BA9-8025-A13F78B2F22E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Formal", "Formal", "{15367647-E3BC-427C-BE9A-ED9C1F5D938B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Automata", "Core\Yoakke.Automata\Yoakke.Automata.csproj", "{B266A2BE-86F1-48C2-86C6-83C1D03C5E52}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Automata", "SynKit\Libraries\Yoakke.Automata\Yoakke.Automata.csproj", "{B266A2BE-86F1-48C2-86C6-83C1D03C5E52}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Automata.Sample", "Examples\Yoakke.Automata.Sample\Yoakke.Automata.Sample.csproj", "{6E3AC657-9BDE-4C4A-AB35-27C1909C31D5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Automata.Sample", "SynKit\Examples\Yoakke.Automata.Sample\Yoakke.Automata.Sample.csproj", "{6E3AC657-9BDE-4C4A-AB35-27C1909C31D5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Automata.Tests", "Tests\Yoakke.Automata.Tests\Yoakke.Automata.Tests.csproj", "{CCD5F778-B722-414A-A376-B99E0734C3C7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yoakke.Automata.Tests", "SynKit\Tests\Yoakke.Automata.Tests\Yoakke.Automata.Tests.csproj", "{CCD5F778-B722-414A-A376-B99E0734C3C7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -181,10 +152,6 @@ Global
 		{094A2608-9A68-45D2-B2CF-1BBCEE88086A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{094A2608-9A68-45D2-B2CF-1BBCEE88086A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{094A2608-9A68-45D2-B2CF-1BBCEE88086A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{94C26FC8-A4E7-435D-91B4-57F75719DC45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{94C26FC8-A4E7-435D-91B4-57F75719DC45}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{94C26FC8-A4E7-435D-91B4-57F75719DC45}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{94C26FC8-A4E7-435D-91B4-57F75719DC45}.Release|Any CPU.Build.0 = Release|Any CPU
 		{384A70A8-96CE-4C1C-BC5C-BF3341B522E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{384A70A8-96CE-4C1C-BC5C-BF3341B522E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{384A70A8-96CE-4C1C-BC5C-BF3341B522E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -193,26 +160,6 @@ Global
 		{C3B90E58-A8C7-4F79-B8C7-140D0E6687E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C3B90E58-A8C7-4F79-B8C7-140D0E6687E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C3B90E58-A8C7-4F79-B8C7-140D0E6687E6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{80BDC869-2344-4EEC-BB01-A3AC72CA26ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{80BDC869-2344-4EEC-BB01-A3AC72CA26ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{80BDC869-2344-4EEC-BB01-A3AC72CA26ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{80BDC869-2344-4EEC-BB01-A3AC72CA26ED}.Release|Any CPU.Build.0 = Release|Any CPU
-		{14BA531F-4D06-4507-A3C5-027FB097E970}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{14BA531F-4D06-4507-A3C5-027FB097E970}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{14BA531F-4D06-4507-A3C5-027FB097E970}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{14BA531F-4D06-4507-A3C5-027FB097E970}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A4D7FE59-C1D4-47AC-9822-A51BC09045BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A4D7FE59-C1D4-47AC-9822-A51BC09045BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A4D7FE59-C1D4-47AC-9822-A51BC09045BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A4D7FE59-C1D4-47AC-9822-A51BC09045BC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{01035D94-6005-47DB-BC9B-0925F98CFA1F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{01035D94-6005-47DB-BC9B-0925F98CFA1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{01035D94-6005-47DB-BC9B-0925F98CFA1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{01035D94-6005-47DB-BC9B-0925F98CFA1F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7F60E2A0-832A-4FA5-AB69-2B8D6916FAE9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7F60E2A0-832A-4FA5-AB69-2B8D6916FAE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7F60E2A0-832A-4FA5-AB69-2B8D6916FAE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7F60E2A0-832A-4FA5-AB69-2B8D6916FAE9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6702EF78-791C-42B5-9775-A39966009150}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6702EF78-791C-42B5-9775-A39966009150}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6702EF78-791C-42B5-9775-A39966009150}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -229,18 +176,6 @@ Global
 		{2FDE8C48-D2FB-4B0C-8ADF-EAB8EE7C591D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2FDE8C48-D2FB-4B0C-8ADF-EAB8EE7C591D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2FDE8C48-D2FB-4B0C-8ADF-EAB8EE7C591D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D9966D0F-EF13-435C-8E15-45E980E6586E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D9966D0F-EF13-435C-8E15-45E980E6586E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D9966D0F-EF13-435C-8E15-45E980E6586E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D9966D0F-EF13-435C-8E15-45E980E6586E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{00BEF940-0FE1-4E3F-AF91-1BEC9857262F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{00BEF940-0FE1-4E3F-AF91-1BEC9857262F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{00BEF940-0FE1-4E3F-AF91-1BEC9857262F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{00BEF940-0FE1-4E3F-AF91-1BEC9857262F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{80B2215B-73FC-41BF-B1CB-886BA8540DDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{80B2215B-73FC-41BF-B1CB-886BA8540DDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{80B2215B-73FC-41BF-B1CB-886BA8540DDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{80B2215B-73FC-41BF-B1CB-886BA8540DDA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F831F2D0-4BDC-4A30-A064-F31A9B5B3F1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F831F2D0-4BDC-4A30-A064-F31A9B5B3F1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F831F2D0-4BDC-4A30-A064-F31A9B5B3F1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -253,14 +188,6 @@ Global
 		{04888C13-EA59-4AC4-9DFE-BEE103AFA006}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{04888C13-EA59-4AC4-9DFE-BEE103AFA006}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{04888C13-EA59-4AC4-9DFE-BEE103AFA006}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D9A26C9B-EB6D-4EDB-923B-ED529E4C5A8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D9A26C9B-EB6D-4EDB-923B-ED529E4C5A8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D9A26C9B-EB6D-4EDB-923B-ED529E4C5A8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D9A26C9B-EB6D-4EDB-923B-ED529E4C5A8D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B5C7DD29-4D2C-46B7-B940-FA5C2680C382}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B5C7DD29-4D2C-46B7-B940-FA5C2680C382}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B5C7DD29-4D2C-46B7-B940-FA5C2680C382}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B5C7DD29-4D2C-46B7-B940-FA5C2680C382}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7BD28C2F-18D6-4C3A-9899-469775B001D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7BD28C2F-18D6-4C3A-9899-469775B001D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7BD28C2F-18D6-4C3A-9899-469775B001D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -273,10 +200,6 @@ Global
 		{94CBD997-6394-4BA3-9AF2-0C2C139E1967}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{94CBD997-6394-4BA3-9AF2-0C2C139E1967}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{94CBD997-6394-4BA3-9AF2-0C2C139E1967}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D559CE92-DB2F-47A2-A419-999C78387250}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D559CE92-DB2F-47A2-A419-999C78387250}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D559CE92-DB2F-47A2-A419-999C78387250}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D559CE92-DB2F-47A2-A419-999C78387250}.Release|Any CPU.Build.0 = Release|Any CPU
 		{26EB1772-19EC-4B9B-93BD-34BB18262E7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{26EB1772-19EC-4B9B-93BD-34BB18262E7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{26EB1772-19EC-4B9B-93BD-34BB18262E7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -316,26 +239,15 @@ Global
 		{094A2608-9A68-45D2-B2CF-1BBCEE88086A} = {26655C0F-CFB1-4CEC-91BE-AEC1BFF6DC21}
 		{384A70A8-96CE-4C1C-BC5C-BF3341B522E5} = {58417641-179E-4F53-9528-234B4E87944E}
 		{C3B90E58-A8C7-4F79-B8C7-140D0E6687E6} = {58417641-179E-4F53-9528-234B4E87944E}
-		{80BDC869-2344-4EEC-BB01-A3AC72CA26ED} = {E9427BFD-E4E1-44B5-B87A-7FE264422129}
-		{14BA531F-4D06-4507-A3C5-027FB097E970} = {C32F06FE-A533-4BD3-B361-2D9BECCDFBDF}
-		{A4D7FE59-C1D4-47AC-9822-A51BC09045BC} = {C32F06FE-A533-4BD3-B361-2D9BECCDFBDF}
-		{01035D94-6005-47DB-BC9B-0925F98CFA1F} = {C32F06FE-A533-4BD3-B361-2D9BECCDFBDF}
-		{7F60E2A0-832A-4FA5-AB69-2B8D6916FAE9} = {C32F06FE-A533-4BD3-B361-2D9BECCDFBDF}
 		{6702EF78-791C-42B5-9775-A39966009150} = {F2CCC405-5C6C-471E-A4ED-EBB6433D990B}
 		{4A9A90B2-FA50-44D9-9B91-88B0638A7286} = {AE60AFB2-F9EE-4850-9F04-7D184B8475A9}
 		{74634FE8-0D46-46ED-B32D-AF78DAEE305C} = {AE60AFB2-F9EE-4850-9F04-7D184B8475A9}
 		{2FDE8C48-D2FB-4B0C-8ADF-EAB8EE7C591D} = {AE60AFB2-F9EE-4850-9F04-7D184B8475A9}
 		{091B19BD-789E-4358-A2DE-250DF39C8ADA} = {A482C708-3225-47F3-8DE3-BB354888CC51}
-		{D9966D0F-EF13-435C-8E15-45E980E6586E} = {091B19BD-789E-4358-A2DE-250DF39C8ADA}
-		{00BEF940-0FE1-4E3F-AF91-1BEC9857262F} = {091B19BD-789E-4358-A2DE-250DF39C8ADA}
-		{80B2215B-73FC-41BF-B1CB-886BA8540DDA} = {091B19BD-789E-4358-A2DE-250DF39C8ADA}
 		{F831F2D0-4BDC-4A30-A064-F31A9B5B3F1B} = {9293EB9E-9730-4D48-8DBB-2213E4FCC35F}
 		{4DA71BF1-D45F-4ADE-8088-A01BD4BD412A} = {9293EB9E-9730-4D48-8DBB-2213E4FCC35F}
 		{04888C13-EA59-4AC4-9DFE-BEE103AFA006} = {58417641-179E-4F53-9528-234B4E87944E}
-		{D9A26C9B-EB6D-4EDB-923B-ED529E4C5A8D} = {B042CA2F-FAD5-4148-89C8-3310AF17BC14}
-		{B5C7DD29-4D2C-46B7-B940-FA5C2680C382} = {B042CA2F-FAD5-4148-89C8-3310AF17BC14}
 		{2E1E2A07-9EC8-462D-B001-8AB44F973286} = {58417641-179E-4F53-9528-234B4E87944E}
-		{D559CE92-DB2F-47A2-A419-999C78387250} = {B042CA2F-FAD5-4148-89C8-3310AF17BC14}
 		{26EB1772-19EC-4B9B-93BD-34BB18262E7F} = {9293EB9E-9730-4D48-8DBB-2213E4FCC35F}
 		{1764F8E3-A554-4BA9-8025-A13F78B2F22E} = {9293EB9E-9730-4D48-8DBB-2213E4FCC35F}
 		{B266A2BE-86F1-48C2-86C6-83C1D03C5E52} = {15367647-E3BC-427C-BE9A-ED9C1F5D938B}

@@ -1,9 +1,0 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-  <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)\Core\Yoakke.Lexer\Yoakke.Lexer.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Nullable" Version="1.3.0" PrivateAssets="All" />
-  </ItemGroup>
-</Project>

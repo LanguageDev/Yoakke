@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="$(SolutionDir)\Shared\Libraries\Yoakke.Polyfill\Yoakke.Polyfill.csproj" />
+    <ProjectReference Include="$(SolutionDir)\SynKit\Libraries\Yoakke.Lexer\Yoakke.Lexer.csproj" />
+  </ItemGroup>
+</Project>

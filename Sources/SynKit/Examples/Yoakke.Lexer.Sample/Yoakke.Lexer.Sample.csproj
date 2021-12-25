@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="$(SolutionDir)\SynKit\Libraries\Yoakke.Lexer\Yoakke.Lexer.csproj" />
+    <ProjectReference Include="$(SolutionDir)\SynKit\Libraries\Yoakke.Lexer.Generator\Yoakke.Lexer.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="False" />
+  </ItemGroup>
+</Project>
