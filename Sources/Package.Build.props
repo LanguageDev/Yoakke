@@ -1,13 +1,13 @@
-<!-- Core project settings -->
+<!-- Packaged project settings -->
 <Project>
-  <Import Project="$(MSBuildThisFileDirectory)/../Directory.Build.props" />
+  <Import Project="Shared.Build.props" />
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <PropertyGroup>
-    <DocumentationFile>$(MSBuildProjectDirectory)/doc/$(MSBuildProjectName).xml</DocumentationFile>
+    <DocumentationFile>$(MSBuildProjectDirectory)/bin/doc/$(MSBuildProjectName).xml</DocumentationFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>$(MSBuildProjectName)</PackageId>
     <PackageIcon>YoakkeLogo.png</PackageIcon>

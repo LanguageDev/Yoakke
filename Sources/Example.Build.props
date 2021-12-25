@@ -1,0 +1,9 @@
+<!-- Example/Sample project settings -->
+<Project>
+  <Import Project="Shared.Build.props" />
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+</Project>
