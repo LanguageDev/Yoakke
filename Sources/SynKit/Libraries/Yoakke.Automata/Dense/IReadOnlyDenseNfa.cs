@@ -18,16 +18,16 @@ public interface IReadOnlyDenseNfa<TState, TSymbol>
     : IReadOnlyNfa<TState, TSymbol>,
       IReadOnlyDenseFiniteAutomaton<TState, TSymbol>
 {
-  /// <summary>
-  /// The comparer for symbol intervals.
-  /// </summary>
-  public IntervalComparer<TSymbol> SymbolIntervalComparer { get; }
+    /// <summary>
+    /// The comparer for symbol intervals.
+    /// </summary>
+    public IntervalComparer<TSymbol> SymbolIntervalComparer { get; }
 
-  /// <summary>
-  /// Constructs an equivalent DFA from this NFA.
-  /// </summary>
-  /// <typeparam name="TResultState">The result state type.</typeparam>
-  /// <param name="combiner">The state combiner to use.</param>
-  /// <returns>The constructed DFA.</returns>
-  public new IDenseDfa<TResultState, TSymbol> Determinize<TResultState>(IStateCombiner<TState, TResultState> combiner);
+    /// <summary>
+    /// Constructs an equivalent DFA from this NFA.
+    /// </summary>
+    /// <typeparam name="TResultState">The result state type.</typeparam>
+    /// <param name="combiner">The state combiner to use.</param>
+    /// <returns>The constructed DFA.</returns>
+    public new IDenseDfa<TResultState, TSymbol> Determinize<TResultState>(IStateCombiner<TState, TResultState> combiner);
 }

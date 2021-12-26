@@ -13,11 +13,11 @@ namespace Yoakke.Collections.Intervals;
 /// </summary>
 internal static class Interval
 {
-  /// <summary>
-  /// The valid infinity strings without sign.
-  /// </summary>
-  internal static readonly IReadOnlyList<string> InfinityStrings = new[]
-  {
+    /// <summary>
+    /// The valid infinity strings without sign.
+    /// </summary>
+    internal static readonly IReadOnlyList<string> InfinityStrings = new[]
+    {
             "∞", "oo", "infinity", "infty", string.Empty,
         };
 }

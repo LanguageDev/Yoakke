@@ -14,25 +14,25 @@ namespace System.Collections.Generic.Polyfill;
 /// </summary>
 public static class QueueExtensions
 {
-  /// <summary>
-  /// Removes the object at the beginning of the <see cref="Queue{T}"/>, and copies it to the
-  /// <paramref name="result"/> parameter.
-  /// </summary>
-  /// <typeparam name="T">Specifies the type of elements in the queue.</typeparam>
-  /// <param name="queue">The queue to dequeue from.</param>
-  /// <param name="result">The removed object.</param>
-  /// <returns>True if the object is successfully removed, false if the <see cref="Queue{T}"/> is empty.</returns>
-  public static bool TryDequeue<T>(this Queue<T> queue, [MaybeNullWhen(false)] out T result)
-  {
-    if (queue.Count > 0)
+    /// <summary>
+    /// Removes the object at the beginning of the <see cref="Queue{T}"/>, and copies it to the
+    /// <paramref name="result"/> parameter.
+    /// </summary>
+    /// <typeparam name="T">Specifies the type of elements in the queue.</typeparam>
+    /// <param name="queue">The queue to dequeue from.</param>
+    /// <param name="result">The removed object.</param>
+    /// <returns>True if the object is successfully removed, false if the <see cref="Queue{T}"/> is empty.</returns>
+    public static bool TryDequeue<T>(this Queue<T> queue, [MaybeNullWhen(false)] out T result)
     {
-      result = queue.Dequeue();
-      return true;
+        if (queue.Count > 0)
+        {
+            result = queue.Dequeue();
+            return true;
+        }
+        else
+        {
+            result = default;
+            return false;
+        }
     }
-    else
-    {
-      result = default;
-      return false;
-    }
-  }
 }

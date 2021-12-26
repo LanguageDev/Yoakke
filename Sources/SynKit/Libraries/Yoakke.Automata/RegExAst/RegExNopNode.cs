@@ -14,26 +14,26 @@ namespace Yoakke.Automata.RegExAst;
 /// <typeparam name="TSymbol">The symbol type.</typeparam>
 public record RegExNopNode<TSymbol> : IRegExNode<TSymbol>
 {
-  /// <summary>
-  /// A default instance to use.
-  /// </summary>
-  public static RegExNopNode<TSymbol> Instance { get; } = new();
+    /// <summary>
+    /// A default instance to use.
+    /// </summary>
+    public static RegExNopNode<TSymbol> Instance { get; } = new();
 
-  private RegExNopNode()
-  {
-  }
+    private RegExNopNode()
+    {
+    }
 
-  /// <inheritdoc/>
-  public IRegExNode<TSymbol> Desugar() => this;
+    /// <inheritdoc/>
+    public IRegExNode<TSymbol> Desugar() => this;
 
-  /// <inheritdoc/>
-  public (TState Start, TState End) ThompsonsConstruct<TState>(INfa<TState, TSymbol> nfa, Func<TState> makeState)
-  {
-    var start = makeState();
-    var end = makeState();
+    /// <inheritdoc/>
+    public (TState Start, TState End) ThompsonsConstruct<TState>(INfa<TState, TSymbol> nfa, Func<TState> makeState)
+    {
+        var start = makeState();
+        var end = makeState();
 
-    nfa.AddEpsilonTransition(start, end);
+        nfa.AddEpsilonTransition(start, end);
 
-    return (start, end);
-  }
+        return (start, end);
+    }
 }

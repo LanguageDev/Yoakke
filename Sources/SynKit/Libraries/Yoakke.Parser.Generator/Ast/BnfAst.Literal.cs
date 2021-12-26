@@ -10,44 +10,44 @@ namespace Yoakke.Parser.Generator.Ast;
 
 internal partial class BnfAst
 {
-  /// <summary>
-  /// A literal token match, either by text or by token kind.
-  /// </summary>
-  public class Literal : BnfAst
-  {
     /// <summary>
-    /// The value to match.
+    /// A literal token match, either by text or by token kind.
     /// </summary>
-    public object Value { get; }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Literal"/> class.
-    /// </summary>
-    /// <param name="value">The literal value to match.</param>
-    public Literal(object value)
+    public class Literal : BnfAst
     {
-      this.Value = value;
+        /// <summary>
+        /// The value to match.
+        /// </summary>
+        public object Value { get; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Literal"/> class.
+        /// </summary>
+        /// <param name="value">The literal value to match.</param>
+        public Literal(object value)
+        {
+            this.Value = value;
+        }
+
+        /// <inheritdoc/>
+        protected override BnfAst SubstituteByReferenceImpl(BnfAst find, BnfAst replaceWith) => this;
+
+        /// <inheritdoc/>
+        public override IEnumerable<Call> GetFirstCalls() => Enumerable.Empty<Call>();
+
+        /// <inheritdoc/>
+        public override BnfAst Desugar() => this;
+
+        /// <inheritdoc/>
+        public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens)
+        {
+            if (tokens.EnumType == null) return TypeNames.IToken;
+            else return $"{TypeNames.IToken}<{tokens.EnumType.ToDisplayString()}>";
+        }
+
+        /// <inheritdoc/>
+        public override string ToString() => this.Value is IFieldSymbol field
+            ? field.Name
+            : $"\"{this.Value}\"";
     }
-
-    /// <inheritdoc/>
-    protected override BnfAst SubstituteByReferenceImpl(BnfAst find, BnfAst replaceWith) => this;
-
-    /// <inheritdoc/>
-    public override IEnumerable<Call> GetFirstCalls() => Enumerable.Empty<Call>();
-
-    /// <inheritdoc/>
-    public override BnfAst Desugar() => this;
-
-    /// <inheritdoc/>
-    public override string GetParsedType(RuleSet ruleSet, TokenKindSet tokens)
-    {
-      if (tokens.EnumType == null) return TypeNames.IToken;
-      else return $"{TypeNames.IToken}<{tokens.EnumType.ToDisplayString()}>";
-    }
-
-    /// <inheritdoc/>
-    public override string ToString() => this.Value is IFieldSymbol field
-        ? field.Name
-        : $"\"{this.Value}\"";
-  }
 }

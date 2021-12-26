@@ -14,20 +14,20 @@ namespace Yoakke.Lexer;
 public interface ILexer<out TToken>
     where TToken : IToken
 {
-  /// <summary>
-  /// The current <see cref="Text.Position"/> the <see cref="ILexer{TToken}"/> is at in the source.
-  /// </summary>
-  public Position Position { get; }
+    /// <summary>
+    /// The current <see cref="Text.Position"/> the <see cref="ILexer{TToken}"/> is at in the source.
+    /// </summary>
+    public Position Position { get; }
 
-  /// <summary>
-  /// True, if all of the input has been consumed.
-  /// </summary>
-  public bool IsEnd { get; }
+    /// <summary>
+    /// True, if all of the input has been consumed.
+    /// </summary>
+    public bool IsEnd { get; }
 
-  /// <summary>
-  /// Lexes the next <typeparamref name="TToken"/>. If the source text has been depleted, it should produce some default
-  /// end-signaling <typeparamref name="TToken"/>.
-  /// </summary>
-  /// <returns>The lexed <typeparamref name="TToken"/>.</returns>
-  public TToken Next();
+    /// <summary>
+    /// Lexes the next <typeparamref name="TToken"/>. If the source text has been depleted, it should produce some default
+    /// end-signaling <typeparamref name="TToken"/>.
+    /// </summary>
+    /// <returns>The lexed <typeparamref name="TToken"/>.</returns>
+    public TToken Next();
 }

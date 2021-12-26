@@ -13,15 +13,15 @@ namespace Yoakke.Reporting.Present;
 /// </summary>
 public class NullSyntaxHighlighter : ISyntaxHighlighter
 {
-  /// <summary>
-  /// A default instance for the null syntax highlighter.
-  /// </summary>
-  public static readonly NullSyntaxHighlighter Instance = new();
+    /// <summary>
+    /// A default instance for the null syntax highlighter.
+    /// </summary>
+    public static readonly NullSyntaxHighlighter Instance = new();
 
-  /// <inheritdoc/>
-  public SyntaxHighlightStyle Style { get; set; } = SyntaxHighlightStyle.Default;
+    /// <inheritdoc/>
+    public SyntaxHighlightStyle Style { get; set; } = SyntaxHighlightStyle.Default;
 
-  /// <inheritdoc/>
-  public IReadOnlyList<ColoredToken> GetHighlightingForLine(ISourceFile sourceFile, int line) =>
-      Array.Empty<ColoredToken>();
+    /// <inheritdoc/>
+    public IReadOnlyList<ColoredToken> GetHighlightingForLine(ISourceFile sourceFile, int line) =>
+        Array.Empty<ColoredToken>();
 }

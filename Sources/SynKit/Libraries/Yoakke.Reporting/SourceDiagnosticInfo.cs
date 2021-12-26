@@ -11,14 +11,14 @@ namespace Yoakke.Reporting;
 /// </summary>
 public class SourceDiagnosticInfo : IDiagnosticInfo
 {
-  /// <inheritdoc/>
-  public Severity? Severity { get; set; }
+    /// <inheritdoc/>
+    public Severity? Severity { get; set; }
 
-  /// <inheritdoc/>
-  public string? Message { get; set; }
+    /// <inheritdoc/>
+    public string? Message { get; set; }
 
-  /// <summary>
-  /// The location the diagnostic information refers to.
-  /// </summary>
-  public Location Location { get; set; }
+    /// <summary>
+    /// The location the diagnostic information refers to.
+    /// </summary>
+    public Location Location { get; set; }
 }

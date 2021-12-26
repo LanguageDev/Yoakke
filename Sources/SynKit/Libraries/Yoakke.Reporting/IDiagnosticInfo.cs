@@ -9,13 +9,13 @@ namespace Yoakke.Reporting;
 /// </summary>
 public interface IDiagnosticInfo
 {
-  /// <summary>
-  /// The severity of the information.
-  /// </summary>
-  public Severity? Severity { get; }
+    /// <summary>
+    /// The severity of the information.
+    /// </summary>
+    public Severity? Severity { get; }
 
-  /// <summary>
-  /// The information message.
-  /// </summary>
-  public string? Message { get; }
+    /// <summary>
+    /// The information message.
+    /// </summary>
+    public string? Message { get; }
 }

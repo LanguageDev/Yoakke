@@ -12,26 +12,26 @@ namespace Yoakke.SyntaxTree.Generator;
 /// </summary>
 internal class Visitor
 {
-  /// <summary>
-  /// The visitor class that is annotated.
-  /// </summary>
-  public INamedTypeSymbol VisitorClass { get; }
+    /// <summary>
+    /// The visitor class that is annotated.
+    /// </summary>
+    public INamedTypeSymbol VisitorClass { get; }
 
-  /// <summary>
-  /// A node class to return-type override map.
-  /// </summary>
-  // NOTE: False-positive
+    /// <summary>
+    /// A node class to return-type override map.
+    /// </summary>
+    // NOTE: False-positive
 #pragma warning disable RS1024 // Compare symbols correctly
-  public IDictionary<INamedTypeSymbol, VisitorOverride> Overrides { get; }
-      = new Dictionary<INamedTypeSymbol, VisitorOverride>(SymbolEqualityComparer.Default);
+    public IDictionary<INamedTypeSymbol, VisitorOverride> Overrides { get; }
+        = new Dictionary<INamedTypeSymbol, VisitorOverride>(SymbolEqualityComparer.Default);
 #pragma warning restore RS1024 // Compare symbols correctly
 
-  /// <summary>
-  /// Initializes a new instance of the <see cref="Visitor"/> class.
-  /// </summary>
-  /// <param name="visitorClass">The visitor class that is annotated.</param>
-  public Visitor(INamedTypeSymbol visitorClass)
-  {
-    this.VisitorClass = visitorClass;
-  }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Visitor"/> class.
+    /// </summary>
+    /// <param name="visitorClass">The visitor class that is annotated.</param>
+    public Visitor(INamedTypeSymbol visitorClass)
+    {
+        this.VisitorClass = visitorClass;
+    }
 }

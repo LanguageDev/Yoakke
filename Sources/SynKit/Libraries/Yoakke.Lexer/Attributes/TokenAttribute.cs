@@ -12,17 +12,17 @@ namespace Yoakke.Lexer.Attributes;
 [AttributeUsage(AttributeTargets.Field, AllowMultiple = true)]
 public class TokenAttribute : Attribute
 {
-  /// <summary>
-  /// The text to match the token.
-  /// </summary>
-  public string Text { get; set; }
+    /// <summary>
+    /// The text to match the token.
+    /// </summary>
+    public string Text { get; set; }
 
-  /// <summary>
-  /// Initializes a new instance of the <see cref="TokenAttribute"/> class.
-  /// </summary>
-  /// <param name="text">The text to match.</param>
-  public TokenAttribute(string text)
-  {
-    this.Text = text;
-  }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TokenAttribute"/> class.
+    /// </summary>
+    /// <param name="text">The text to match.</param>
+    public TokenAttribute(string text)
+    {
+        this.Text = text;
+    }
 }

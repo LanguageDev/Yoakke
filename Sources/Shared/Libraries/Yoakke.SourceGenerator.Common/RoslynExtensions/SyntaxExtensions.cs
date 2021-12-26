@@ -14,11 +14,11 @@ namespace Yoakke.SourceGenerator.Common.RoslynExtensions;
 /// </summary>
 public static class SyntaxExtensions
 {
-  /// <summary>
-  /// Checks, if a <see cref="TypeDeclarationSyntax"/> node is partial.
-  /// </summary>
-  /// <param name="syntax">The <see cref="TypeDeclarationSyntax"/> to check.</param>
-  /// <returns>True, if <paramref name="syntax"/> is declared partial.</returns>
-  public static bool IsPartial(this TypeDeclarationSyntax syntax) =>
-      syntax.Modifiers.Any(SyntaxKind.PartialKeyword);
+    /// <summary>
+    /// Checks, if a <see cref="TypeDeclarationSyntax"/> node is partial.
+    /// </summary>
+    /// <param name="syntax">The <see cref="TypeDeclarationSyntax"/> to check.</param>
+    /// <returns>True, if <paramref name="syntax"/> is declared partial.</returns>
+    public static bool IsPartial(this TypeDeclarationSyntax syntax) =>
+        syntax.Modifiers.Any(SyntaxKind.PartialKeyword);
 }

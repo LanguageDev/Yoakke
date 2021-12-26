@@ -13,37 +13,37 @@ namespace Yoakke.Streams;
 /// <typeparam name="T">The item type.</typeparam>
 public class EnumerableStream<T> : IStream<T>
 {
-  /// <inheritdoc/>
-  public bool IsEnd { get; private set; }
+    /// <inheritdoc/>
+    public bool IsEnd { get; private set; }
 
-  private readonly IEnumerator<T> enumerator;
+    private readonly IEnumerator<T> enumerator;
 
-  /// <summary>
-  /// Initializes a new instance of the <see cref="EnumerableStream{T}"/> class.
-  /// </summary>
-  /// <param name="items">The enumerable to wrap.</param>
-  public EnumerableStream(IEnumerable<T> items)
-  {
-    this.enumerator = items.GetEnumerator();
-    this.IsEnd = this.enumerator.MoveNext();
-  }
-
-  /// <inheritdoc/>
-  public bool TryConsume([MaybeNullWhen(false)] out T item)
-  {
-    if (this.IsEnd)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EnumerableStream{T}"/> class.
+    /// </summary>
+    /// <param name="items">The enumerable to wrap.</param>
+    public EnumerableStream(IEnumerable<T> items)
     {
-      item = default;
-      return false;
+        this.enumerator = items.GetEnumerator();
+        this.IsEnd = this.enumerator.MoveNext();
     }
-    else
-    {
-      item = this.enumerator.Current;
-      this.IsEnd = this.enumerator.MoveNext();
-      return true;
-    }
-  }
 
-  /// <inheritdoc/>
-  public int Consume(int amount) => StreamExtensions.Consume(this, amount);
+    /// <inheritdoc/>
+    public bool TryConsume([MaybeNullWhen(false)] out T item)
+    {
+        if (this.IsEnd)
+        {
+            item = default;
+            return false;
+        }
+        else
+        {
+            item = this.enumerator.Current;
+            this.IsEnd = this.enumerator.MoveNext();
+            return true;
+        }
+    }
+
+    /// <inheritdoc/>
+    public int Consume(int amount) => StreamExtensions.Consume(this, amount);
 }

@@ -9,38 +9,38 @@ namespace Yoakke.Reporting.Present;
 /// </summary>
 public enum TokenKind
 {
-  /// <summary>
-  /// A comment.
-  /// </summary>
-  Comment,
+    /// <summary>
+    /// A comment.
+    /// </summary>
+    Comment,
 
-  /// <summary>
-  /// A language keyword.
-  /// </summary>
-  Keyword,
+    /// <summary>
+    /// A language keyword.
+    /// </summary>
+    Keyword,
 
-  /// <summary>
-  /// Some literal.
-  /// </summary>
-  Literal,
+    /// <summary>
+    /// Some literal.
+    /// </summary>
+    Literal,
 
-  /// <summary>
-  /// A name or identifier.
-  /// </summary>
-  Name,
+    /// <summary>
+    /// A name or identifier.
+    /// </summary>
+    Name,
 
-  /// <summary>
-  /// Punctuation token.
-  /// </summary>
-  Punctuation,
+    /// <summary>
+    /// Punctuation token.
+    /// </summary>
+    Punctuation,
 
-  /// <summary>
-  /// An operator.
-  /// </summary>
-  Operator,
+    /// <summary>
+    /// An operator.
+    /// </summary>
+    Operator,
 
-  /// <summary>
-  /// Something else.
-  /// </summary>
-  Other,
+    /// <summary>
+    /// Something else.
+    /// </summary>
+    Other,
 }

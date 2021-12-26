@@ -9,19 +9,19 @@ namespace Yoakke.Reporting.Present;
 /// </summary>
 public interface IDiagnosticsPresenter
 {
-  /// <summary>
-  /// The style to use when presenting.
-  /// </summary>
-  public DiagnosticsStyle Style { get; set; }
+    /// <summary>
+    /// The style to use when presenting.
+    /// </summary>
+    public DiagnosticsStyle Style { get; set; }
 
-  /// <summary>
-  /// The syntax highlighter to use for source code.
-  /// </summary>
-  public ISyntaxHighlighter SyntaxHighlighter { get; set; }
+    /// <summary>
+    /// The syntax highlighter to use for source code.
+    /// </summary>
+    public ISyntaxHighlighter SyntaxHighlighter { get; set; }
 
-  /// <summary>
-  /// Presents the given <see cref="Diagnostics"/> to the user.
-  /// </summary>
-  /// <param name="diagnostic">The diagnostic to present.</param>
-  public void Present(Diagnostics diagnostic);
+    /// <summary>
+    /// Presents the given <see cref="Diagnostics"/> to the user.
+    /// </summary>
+    /// <param name="diagnostic">The diagnostic to present.</param>
+    public void Present(Diagnostics diagnostic);
 }

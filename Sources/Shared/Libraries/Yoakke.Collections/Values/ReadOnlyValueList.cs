@@ -14,73 +14,73 @@ namespace Yoakke.Collections.Values;
 /// <typeparam name="T">The element type.</typeparam>
 public sealed class ReadOnlyValueList<T> : IReadOnlyValueList<T>
 {
-  /// <inheritdoc/>
-  public T this[int index] => this.Underlying[index];
+    /// <inheritdoc/>
+    public T this[int index] => this.Underlying[index];
 
-  /// <inheritdoc/>
-  public int Count => this.Underlying.Count;
+    /// <inheritdoc/>
+    public int Count => this.Underlying.Count;
 
-  /// <summary>
-  /// The underlying wrapped <see cref="IReadOnlyList{T}"/>.
-  /// </summary>
-  public IReadOnlyList<T> Underlying { get; }
+    /// <summary>
+    /// The underlying wrapped <see cref="IReadOnlyList{T}"/>.
+    /// </summary>
+    public IReadOnlyList<T> Underlying { get; }
 
-  /// <summary>
-  /// The <see cref="IEqualityComparer{T}"/> to use.
-  /// </summary>
-  public IEqualityComparer<T> Comparer { get; }
+    /// <summary>
+    /// The <see cref="IEqualityComparer{T}"/> to use.
+    /// </summary>
+    public IEqualityComparer<T> Comparer { get; }
 
-  /// <summary>
-  /// Initializes a new instance of the <see cref="ReadOnlyValueList{T}"/> class.
-  /// </summary>
-  /// <param name="underlying">The underlying <see cref="IReadOnlyList{T}"/> to wrap.</param>
-  /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> to use.</param>
-  public ReadOnlyValueList(IReadOnlyList<T> underlying, IEqualityComparer<T> comparer)
-  {
-    this.Underlying = underlying;
-    this.Comparer = comparer;
-  }
-
-  /// <summary>
-  /// Initializes a new instance of the <see cref="ReadOnlyValueList{T}"/> class.
-  /// </summary>
-  /// <param name="underlying">The underlying <see cref="IReadOnlyList{T}"/> to wrap.</param>
-  public ReadOnlyValueList(IReadOnlyList<T> underlying)
-      : this(underlying, EqualityComparer<T>.Default)
-  {
-  }
-
-  /// <inheritdoc/>
-  public override bool Equals(object? obj) => this.Equals(obj as IReadOnlyList<T>);
-
-  /// <inheritdoc/>
-  public bool Equals(IReadOnlyList<T>? other)
-  {
-    if (other is null || this.Count != other.Count) return false;
-    for (var i = 0; i < this.Count; ++i)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ReadOnlyValueList{T}"/> class.
+    /// </summary>
+    /// <param name="underlying">The underlying <see cref="IReadOnlyList{T}"/> to wrap.</param>
+    /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> to use.</param>
+    public ReadOnlyValueList(IReadOnlyList<T> underlying, IEqualityComparer<T> comparer)
     {
-      if (!this.Comparer.Equals(this[i], other[i])) return false;
+        this.Underlying = underlying;
+        this.Comparer = comparer;
     }
-    return true;
-  }
 
-  /// <inheritdoc/>
-  public bool Equals(IReadOnlyValueList<T>? other) => this.Equals(other as IReadOnlyList<T>);
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ReadOnlyValueList{T}"/> class.
+    /// </summary>
+    /// <param name="underlying">The underlying <see cref="IReadOnlyList{T}"/> to wrap.</param>
+    public ReadOnlyValueList(IReadOnlyList<T> underlying)
+        : this(underlying, EqualityComparer<T>.Default)
+    {
+    }
 
-  /// <inheritdoc/>
-  public override int GetHashCode()
-  {
-    var hash = default(HashCode);
-    for (var i = 0; i < this.Count; ++i) hash.Add(this[i], this.Comparer);
-    return hash.ToHashCode();
-  }
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => this.Equals(obj as IReadOnlyList<T>);
 
-  /// <inheritdoc/>
-  public override string ToString() => $"[ {string.Join(", ", this.Underlying)} ]";
+    /// <inheritdoc/>
+    public bool Equals(IReadOnlyList<T>? other)
+    {
+        if (other is null || this.Count != other.Count) return false;
+        for (var i = 0; i < this.Count; ++i)
+        {
+            if (!this.Comparer.Equals(this[i], other[i])) return false;
+        }
+        return true;
+    }
 
-  /// <inheritdoc/>
-  public IEnumerator<T> GetEnumerator() => this.Underlying.GetEnumerator();
+    /// <inheritdoc/>
+    public bool Equals(IReadOnlyValueList<T>? other) => this.Equals(other as IReadOnlyList<T>);
 
-  /// <inheritdoc/>
-  IEnumerator IEnumerable.GetEnumerator() => (this.Underlying as IEnumerable).GetEnumerator();
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        var hash = default(HashCode);
+        for (var i = 0; i < this.Count; ++i) hash.Add(this[i], this.Comparer);
+        return hash.ToHashCode();
+    }
+
+    /// <inheritdoc/>
+    public override string ToString() => $"[ {string.Join(", ", this.Underlying)} ]";
+
+    /// <inheritdoc/>
+    public IEnumerator<T> GetEnumerator() => this.Underlying.GetEnumerator();
+
+    /// <inheritdoc/>
+    IEnumerator IEnumerable.GetEnumerator() => (this.Underlying as IEnumerable).GetEnumerator();
 }

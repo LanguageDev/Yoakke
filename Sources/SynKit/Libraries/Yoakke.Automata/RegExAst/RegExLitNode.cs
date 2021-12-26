@@ -14,17 +14,17 @@ namespace Yoakke.Automata.RegExAst;
 /// <typeparam name="TSymbol">The symbol type.</typeparam>
 public record RegExLitNode<TSymbol>(TSymbol Symbol) : IRegExNode<TSymbol>
 {
-  /// <inheritdoc/>
-  public IRegExNode<TSymbol> Desugar() => this;
+    /// <inheritdoc/>
+    public IRegExNode<TSymbol> Desugar() => this;
 
-  /// <inheritdoc/>
-  public (TState Start, TState End) ThompsonsConstruct<TState>(INfa<TState, TSymbol> nfa, Func<TState> makeState)
-  {
-    var start = makeState();
-    var end = makeState();
+    /// <inheritdoc/>
+    public (TState Start, TState End) ThompsonsConstruct<TState>(INfa<TState, TSymbol> nfa, Func<TState> makeState)
+    {
+        var start = makeState();
+        var end = makeState();
 
-    nfa.AddTransition(start, this.Symbol, end);
+        nfa.AddTransition(start, this.Symbol, end);
 
-    return (start, end);
-  }
+        return (start, end);
+    }
 }

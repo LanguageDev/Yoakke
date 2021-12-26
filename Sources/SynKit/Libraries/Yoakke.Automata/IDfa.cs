@@ -15,8 +15,8 @@ namespace Yoakke.Automata;
 /// <typeparam name="TSymbol">The symbol type.</typeparam>
 public interface IDfa<TState, TSymbol> : IReadOnlyDfa<TState, TSymbol>, IFiniteAutomaton<TState, TSymbol>
 {
-  /// <summary>
-  /// The initial state of the automaton.
-  /// </summary>
-  public new TState InitialState { get; set; }
+    /// <summary>
+    /// The initial state of the automaton.
+    /// </summary>
+    public new TState InitialState { get; set; }
 }

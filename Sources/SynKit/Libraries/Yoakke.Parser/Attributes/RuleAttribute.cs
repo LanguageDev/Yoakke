@@ -12,17 +12,17 @@ namespace Yoakke.Parser.Attributes;
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
 public class RuleAttribute : Attribute
 {
-  /// <summary>
-  /// The rule in grammar notation.
-  /// </summary>
-  public string Rule { get; set; }
+    /// <summary>
+    /// The rule in grammar notation.
+    /// </summary>
+    public string Rule { get; set; }
 
-  /// <summary>
-  /// Initializes a new instance of the <see cref="RuleAttribute"/> class.
-  /// </summary>
-  /// <param name="rule">The rule in grammar notation.</param>
-  public RuleAttribute(string rule)
-  {
-    this.Rule = rule;
-  }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RuleAttribute"/> class.
+    /// </summary>
+    /// <param name="rule">The rule in grammar notation.</param>
+    public RuleAttribute(string rule)
+    {
+        this.Rule = rule;
+    }
 }

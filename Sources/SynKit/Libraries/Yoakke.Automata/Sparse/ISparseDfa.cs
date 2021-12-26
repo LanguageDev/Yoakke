@@ -18,10 +18,10 @@ public interface ISparseDfa<TState, TSymbol>
       IReadOnlySparseDfa<TState, TSymbol>,
       ISparseFiniteAutomaton<TState, TSymbol>
 {
-  /// <summary>
-  /// Completes this DFA over its alphabet.
-  /// </summary>
-  /// <param name="trap">A default trap state to transition to.</param>
-  /// <returns>True, if this DFA was not completed and needed completion, false otherwise.</returns>
-  public bool Complete(TState trap);
+    /// <summary>
+    /// Completes this DFA over its alphabet.
+    /// </summary>
+    /// <param name="trap">A default trap state to transition to.</param>
+    /// <returns>True, if this DFA was not completed and needed completion, false otherwise.</returns>
+    public bool Complete(TState trap);
 }

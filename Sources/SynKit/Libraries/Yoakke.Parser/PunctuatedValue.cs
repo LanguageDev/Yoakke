@@ -11,24 +11,24 @@ namespace Yoakke.Parser;
 /// <typeparam name="TPunct">The punctuation element type.</typeparam>
 public readonly struct PunctuatedValue<TValue, TPunct>
 {
-  /// <summary>
-  /// The punctuated element.
-  /// </summary>
-  public readonly TValue Value;
+    /// <summary>
+    /// The punctuated element.
+    /// </summary>
+    public readonly TValue Value;
 
-  /// <summary>
-  /// The punctuation that follows the element.
-  /// </summary>
-  public readonly TPunct? Punctuation;
+    /// <summary>
+    /// The punctuation that follows the element.
+    /// </summary>
+    public readonly TPunct? Punctuation;
 
-  /// <summary>
-  /// Initializes a new instance of the <see cref="PunctuatedValue{TValue, TPunct}"/> struct.
-  /// </summary>
-  /// <param name="element">The element that is punctuated.</param>
-  /// <param name="punctuation">The punctuation element that follows the punctuated one.</param>
-  public PunctuatedValue(TValue element, TPunct? punctuation)
-  {
-    this.Value = element;
-    this.Punctuation = punctuation;
-  }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PunctuatedValue{TValue, TPunct}"/> struct.
+    /// </summary>
+    /// <param name="element">The element that is punctuated.</param>
+    /// <param name="punctuation">The punctuation element that follows the punctuated one.</param>
+    public PunctuatedValue(TValue element, TPunct? punctuation)
+    {
+        this.Value = element;
+        this.Punctuation = punctuation;
+    }
 }

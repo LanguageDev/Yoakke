@@ -15,71 +15,71 @@ namespace Yoakke.Lexer;
 /// </summary>
 public class TextReaderCharStream : ICharStream
 {
-  /// <summary>
-  /// The underlying <see cref="TextReader"/>.
-  /// </summary>
-  public TextReader Underlying { get; }
+    /// <summary>
+    /// The underlying <see cref="TextReader"/>.
+    /// </summary>
+    public TextReader Underlying { get; }
 
-  /// <inheritdoc/>
-  public Position Position { get; private set; }
+    /// <inheritdoc/>
+    public Position Position { get; private set; }
 
-  /// <inheritdoc/>
-  public bool IsEnd => !this.TryPeek(out _);
+    /// <inheritdoc/>
+    public bool IsEnd => !this.TryPeek(out _);
 
-  private readonly RingBuffer<char> peek = new();
-  private char prevChar;
+    private readonly RingBuffer<char> peek = new();
+    private char prevChar;
 
-  /// <summary>
-  /// Initializes a new instance of the <see cref="TextReaderCharStream"/> class.
-  /// </summary>
-  /// <param name="underlying">The unerlying <see cref="TextReader"/> to read from.</param>
-  public TextReaderCharStream(TextReader underlying)
-  {
-    this.Underlying = underlying;
-  }
-
-  /// <inheritdoc/>
-  public bool TryPeek(out char ch) => this.TryLookAhead(0, out ch);
-
-  /// <inheritdoc/>
-  public bool TryLookAhead(int offset, out char ch)
-  {
-    while (this.peek.Count <= offset)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TextReaderCharStream"/> class.
+    /// </summary>
+    /// <param name="underlying">The unerlying <see cref="TextReader"/> to read from.</param>
+    public TextReaderCharStream(TextReader underlying)
     {
-      var next = this.Underlying.Read();
-      if (next == -1)
-      {
-        ch = default;
-        return false;
-      }
-      this.peek.AddBack((char)next);
+        this.Underlying = underlying;
     }
-    ch = this.peek[offset];
-    return true;
-  }
 
-  /// <inheritdoc/>
-  public bool TryConsume(out char ch)
-  {
-    if (!this.TryPeek(out ch)) return false;
-    var current = this.peek.RemoveFront();
-    this.Position = NextPosition(this.Position, this.prevChar, current);
-    this.prevChar = current;
-    return true;
-  }
+    /// <inheritdoc/>
+    public bool TryPeek(out char ch) => this.TryLookAhead(0, out ch);
 
-  /// <inheritdoc/>
-  public int Consume(int amount) => StreamExtensions.Consume(this, amount);
+    /// <inheritdoc/>
+    public bool TryLookAhead(int offset, out char ch)
+    {
+        while (this.peek.Count <= offset)
+        {
+            var next = this.Underlying.Read();
+            if (next == -1)
+            {
+                ch = default;
+                return false;
+            }
+            this.peek.AddBack((char)next);
+        }
+        ch = this.peek[offset];
+        return true;
+    }
 
-  private static Position NextPosition(Position pos, char lastChar, char currentChar)
-  {
-    // Windows-style, already advanced line at \r
-    if (lastChar == '\r' && currentChar == '\n') return pos;
-    if (currentChar == '\r' || currentChar == '\n') return pos.Newline();
-    if (char.IsControl(currentChar)) return pos;
-    return pos.Advance();
-  }
+    /// <inheritdoc/>
+    public bool TryConsume(out char ch)
+    {
+        if (!this.TryPeek(out ch)) return false;
+        var current = this.peek.RemoveFront();
+        this.Position = NextPosition(this.Position, this.prevChar, current);
+        this.prevChar = current;
+        return true;
+    }
 
-  /// <inheritdoc/>
-  public void Defer(char item) => throw new NotSupportedException();
+    /// <inheritdoc/>
+    public int Consume(int amount) => StreamExtensions.Consume(this, amount);
+
+    private static Position NextPosition(Position pos, char lastChar, char currentChar)
+    {
+        // Windows-style, already advanced line at \r
+        if (lastChar == '\r' && currentChar == '\n') return pos;
+        if (currentChar == '\r' || currentChar == '\n') return pos.Newline();
+        if (char.IsControl(currentChar)) return pos;
+        return pos.Advance();
+    }
+
+    /// <inheritdoc/>
+    public void Defer(char item) => throw new NotSupportedException();
 }

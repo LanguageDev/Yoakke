@@ -15,15 +15,15 @@ namespace Yoakke.Automata;
 /// <typeparam name="TResultState">The combined state type.</typeparam>
 public interface IStateCombiner<TState, TResultState>
 {
-  /// <summary>
-  /// Retrieves the comparer to be used by the result type.
-  /// </summary>
-  public IEqualityComparer<TResultState> ResultComparer { get; }
+    /// <summary>
+    /// Retrieves the comparer to be used by the result type.
+    /// </summary>
+    public IEqualityComparer<TResultState> ResultComparer { get; }
 
-  /// <summary>
-  /// Combines the given <paramref name="states"/> into a <typeparamref name="TResultState"/>.
-  /// </summary>
-  /// <param name="states">The sequence of states to combine.</param>
-  /// <returns>The combined states.</returns>
-  public TResultState Combine(IEnumerable<TState> states);
+    /// <summary>
+    /// Combines the given <paramref name="states"/> into a <typeparamref name="TResultState"/>.
+    /// </summary>
+    /// <param name="states">The sequence of states to combine.</param>
+    /// <returns>The combined states.</returns>
+    public TResultState Combine(IEnumerable<TState> states);
 }

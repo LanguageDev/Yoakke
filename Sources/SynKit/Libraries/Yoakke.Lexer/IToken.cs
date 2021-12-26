@@ -13,13 +13,13 @@ namespace Yoakke.Lexer;
 /// </summary>
 public interface IToken : IEquatable<IToken>
 {
-  /// <summary>
-  /// The <see cref="Text.Range"/> that the token can be found at in the source.
-  /// </summary>
-  public Range Range { get; }
+    /// <summary>
+    /// The <see cref="Text.Range"/> that the token can be found at in the source.
+    /// </summary>
+    public Range Range { get; }
 
-  /// <summary>
-  /// The text this token was parsed from.
-  /// </summary>
-  public string Text { get; }
+    /// <summary>
+    /// The text this token was parsed from.
+    /// </summary>
+    public string Text { get; }
 }

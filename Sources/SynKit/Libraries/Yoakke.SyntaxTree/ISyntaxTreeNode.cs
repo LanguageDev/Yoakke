@@ -9,16 +9,16 @@ namespace Yoakke.SyntaxTree;
 /// </summary>
 public interface ISyntaxTreeNode
 {
-  /// <summary>
-  /// The number of children this node has.
-  /// </summary>
-  public int ChildCount { get; }
+    /// <summary>
+    /// The number of children this node has.
+    /// </summary>
+    public int ChildCount { get; }
 
-  /// <summary>
-  /// Gets a child of this <see cref="ISyntaxTreeNode"/>.
-  /// </summary>
-  /// <param name="index">The index of the child to get. Must be between 0 (inclusive) and
-  /// <see cref="ChildCount"/> (exclusive).</param>
-  /// <returns>The child with the given <paramref name="index"/> index.</returns>
-  public object GetChild(int index);
+    /// <summary>
+    /// Gets a child of this <see cref="ISyntaxTreeNode"/>.
+    /// </summary>
+    /// <param name="index">The index of the child to get. Must be between 0 (inclusive) and
+    /// <see cref="ChildCount"/> (exclusive).</param>
+    /// <returns>The child with the given <paramref name="index"/> index.</returns>
+    public object GetChild(int index);
 }

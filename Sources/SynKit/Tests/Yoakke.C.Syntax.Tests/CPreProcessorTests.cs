@@ -9,92 +9,92 @@ namespace Yoakke.C.Syntax.Tests;
 
 public class CPreProcessorTests
 {
-  [Theory]
-  [InlineData(
-"a b c",
-"a b c")]
-  [InlineData(
-@"#define FOO
+    [Theory]
+    [InlineData(
+  "a b c",
+  "a b c")]
+    [InlineData(
+  @"#define FOO
 FOO",
-"")]
-  [InlineData(
-@"#define FOO BAR
+  "")]
+    [InlineData(
+  @"#define FOO BAR
 FOO",
-"BAR")]
-  [InlineData(
-@"#define FOO a b c
+  "BAR")]
+    [InlineData(
+  @"#define FOO a b c
 FOO",
-"a b c")]
-  [InlineData(
-@"#define FOO BAR
+  "a b c")]
+    [InlineData(
+  @"#define FOO BAR
 #define BAR QUX
 FOO",
-"QUX")]
-  [InlineData(
-@"#define FOO(x) a x b
+  "QUX")]
+    [InlineData(
+  @"#define FOO(x) a x b
 FOO(abc)",
-"a abc b")]
+  "a abc b")]
 
-  [InlineData(
-@"#define FOO(x) a x b
+    [InlineData(
+  @"#define FOO(x) a x b
 FOO((x, y, z))",
-"a (x, y, z) b")]
-  [InlineData(
-@"#define CAT(a, b) a ## b
+  "a (x, y, z) b")]
+    [InlineData(
+  @"#define CAT(a, b) a ## b
 CAT(ab, 2)
 CAT(L, ""asd"")",
-"ab2 L\"asd\"")]
-  [InlineData(
-@"#define FOO() A
+  "ab2 L\"asd\"")]
+    [InlineData(
+  @"#define FOO() A
 #define LP() (
 #define RP() )
 FOO LP() RP()",
-"FOO ( )")]
-  [InlineData(
-@"#define FOO() A
+  "FOO ( )")]
+    [InlineData(
+  @"#define FOO() A
 #define EXPAND(x) x
 #define LP() (
 #define RP() )
 EXPAND(FOO LP() RP())",
-"A")]
-  [InlineData(
-@"#define FOO(...) __VA_ARGS__
+  "A")]
+    [InlineData(
+  @"#define FOO(...) __VA_ARGS__
 FOO(a, b, c d)",
-"a, b, c d")]
-  [InlineData(
-@"#define FOO(...) #__VA_ARGS__
+  "a, b, c d")]
+    [InlineData(
+  @"#define FOO(...) #__VA_ARGS__
 FOO(a, b, c)",
-"\"a, b, c\"")]
-  [InlineData(
-@"#define FOO(...) #__VA_ARGS__
+  "\"a, b, c\"")]
+    [InlineData(
+  @"#define FOO(...) #__VA_ARGS__
 FOO(a, b,c)",
-"\"a, b,c\"")]
-  [InlineData(
-@"#define FOO(...) #__VA_ARGS__
+  "\"a, b,c\"")]
+    [InlineData(
+  @"#define FOO(...) #__VA_ARGS__
 FOO()",
-"\"\"")]
-  [InlineData(
-@"#define FOO(x, ...) x
+  "\"\"")]
+    [InlineData(
+  @"#define FOO(x, ...) x
 FOO(hello)",
-"hello")]
-  [InlineData(
-@"__COUNTER__
+  "hello")]
+    [InlineData(
+  @"__COUNTER__
 __COUNTER__
 __COUNTER__",
-"0 1 2")]
-  public void TextEquals(string beforePP, string afterPP)
-  {
-    var expectLexer = new CLexer(afterPP);
-    var pp = new CPreProcessor(new CLexer(beforePP))
-        .DefineCounter();
-    while (true)
+  "0 1 2")]
+    public void TextEquals(string beforePP, string afterPP)
     {
-      var expected = expectLexer.Next();
-      var got = pp.Next();
+        var expectLexer = new CLexer(afterPP);
+        var pp = new CPreProcessor(new CLexer(beforePP))
+            .DefineCounter();
+        while (true)
+        {
+            var expected = expectLexer.Next();
+            var got = pp.Next();
 
-      Assert.Equal(expected.Kind, got.Kind);
-      Assert.Equal(expected.LogicalText, got.LogicalText);
-      if (expected.Kind == CTokenType.End) break;
+            Assert.Equal(expected.Kind, got.Kind);
+            Assert.Equal(expected.LogicalText, got.LogicalText);
+            if (expected.Kind == CTokenType.End) break;
+        }
     }
-  }
 }

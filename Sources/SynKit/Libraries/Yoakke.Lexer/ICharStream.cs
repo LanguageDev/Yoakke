@@ -12,8 +12,8 @@ namespace Yoakke.Lexer;
 /// </summary>
 public interface ICharStream : IPeekableStream<char>
 {
-  /// <summary>
-  /// The current <see cref="Text.Position"/> the stream is at.
-  /// </summary>
-  public Position Position { get; }
+    /// <summary>
+    /// The current <see cref="Text.Position"/> the stream is at.
+    /// </summary>
+    public Position Position { get; }
 }

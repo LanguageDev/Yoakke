@@ -12,17 +12,17 @@ namespace Yoakke.Lexer.Attributes;
 [AttributeUsage(AttributeTargets.Field, AllowMultiple = true)]
 public class RegexAttribute : Attribute
 {
-  /// <summary>
-  /// The regex to match the token.
-  /// </summary>
-  public string Regex { get; set; }
+    /// <summary>
+    /// The regex to match the token.
+    /// </summary>
+    public string Regex { get; set; }
 
-  /// <summary>
-  /// Initializes a new instance of the <see cref="RegexAttribute"/> class.
-  /// </summary>
-  /// <param name="regex">The regular expression.</param>
-  public RegexAttribute(string regex)
-  {
-    this.Regex = regex;
-  }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RegexAttribute"/> class.
+    /// </summary>
+    /// <param name="regex">The regular expression.</param>
+    public RegexAttribute(string regex)
+    {
+        this.Regex = regex;
+    }
 }

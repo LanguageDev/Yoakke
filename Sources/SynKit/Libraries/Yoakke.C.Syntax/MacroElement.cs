@@ -9,70 +9,70 @@ namespace Yoakke.C.Syntax;
 /// </summary>
 public abstract class MacroElement
 {
-  /// <summary>
-  /// A literal <see cref="CToken"/> that could refer to an argument.
-  /// </summary>
-  public class Literal : MacroElement
-  {
     /// <summary>
-    /// The <see cref="CToken"/> that might be a one-to-one expansion or a parameter reference.
+    /// A literal <see cref="CToken"/> that could refer to an argument.
     /// </summary>
-    public CToken Token { get; }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Literal"/> class.
-    /// </summary>
-    /// <param name="token">The <see cref="CToken"/> that might be a one-to-one expansion or a parameter reference.</param>
-    public Literal(CToken token)
+    public class Literal : MacroElement
     {
-      this.Token = token;
+        /// <summary>
+        /// The <see cref="CToken"/> that might be a one-to-one expansion or a parameter reference.
+        /// </summary>
+        public CToken Token { get; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Literal"/> class.
+        /// </summary>
+        /// <param name="token">The <see cref="CToken"/> that might be a one-to-one expansion or a parameter reference.</param>
+        public Literal(CToken token)
+        {
+            this.Token = token;
+        }
     }
-  }
-
-  /// <summary>
-  /// An argument that is stringified.
-  /// </summary>
-  public class Stringify : MacroElement
-  {
-    /// <summary>
-    /// The name of the macro argument to stringify.
-    /// </summary>
-    public string Argument { get; }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Stringify"/> class.
+    /// An argument that is stringified.
     /// </summary>
-    /// <param name="argument">The name of the macro argument to stringify.</param>
-    public Stringify(string argument)
+    public class Stringify : MacroElement
     {
-      this.Argument = argument;
+        /// <summary>
+        /// The name of the macro argument to stringify.
+        /// </summary>
+        public string Argument { get; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Stringify"/> class.
+        /// </summary>
+        /// <param name="argument">The name of the macro argument to stringify.</param>
+        public Stringify(string argument)
+        {
+            this.Argument = argument;
+        }
     }
-  }
-
-  /// <summary>
-  /// Two elements that are pasted together to become a single token.
-  /// </summary>
-  public class Paste : MacroElement
-  {
-    /// <summary>
-    /// The first element to paste.
-    /// </summary>
-    public MacroElement Left { get; }
 
     /// <summary>
-    /// The second element to paste.
+    /// Two elements that are pasted together to become a single token.
     /// </summary>
-    public MacroElement Right { get; }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Paste"/> class.
-    /// </summary>
-    /// <param name="left">The first element to paste.</param>
-    /// <param name="right">The second element to paste.</param>
-    public Paste(MacroElement left, MacroElement right)
+    public class Paste : MacroElement
     {
-      this.Left = left;
-      this.Right = right;
+        /// <summary>
+        /// The first element to paste.
+        /// </summary>
+        public MacroElement Left { get; }
+
+        /// <summary>
+        /// The second element to paste.
+        /// </summary>
+        public MacroElement Right { get; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Paste"/> class.
+        /// </summary>
+        /// <param name="left">The first element to paste.</param>
+        /// <param name="right">The second element to paste.</param>
+        public Paste(MacroElement left, MacroElement right)
+        {
+            this.Left = left;
+            this.Right = right;
+        }
     }
-  }
 }

@@ -8,8 +8,8 @@ namespace Yoakke.Lexer;
 /// <typeparam name="TKind">The kind type this <see cref="IToken{TKind}"/> uses. Usually an enumeration type.</typeparam>
 public interface IToken<TKind> : IToken, IEquatable<IToken<TKind>>
 {
-  /// <summary>
-  /// The kind tag of this <see cref="IToken{TKind}"/>.
-  /// </summary>
-  public TKind Kind { get; }
+    /// <summary>
+    /// The kind tag of this <see cref="IToken{TKind}"/>.
+    /// </summary>
+    public TKind Kind { get; }
 }

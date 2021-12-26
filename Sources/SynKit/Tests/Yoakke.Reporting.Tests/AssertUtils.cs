@@ -11,8 +11,8 @@ namespace Yoakke.Reporting.Tests;
 /// </summary>
 public static class AssertUtils
 {
-  public static void AreEqualIgnoreNewlineEncoding(string expected, string got) =>
-      Assert.Equal(NormalizeNewlines(expected), NormalizeNewlines(got));
+    public static void AreEqualIgnoreNewlineEncoding(string expected, string got) =>
+        Assert.Equal(NormalizeNewlines(expected), NormalizeNewlines(got));
 
-  private static string NormalizeNewlines(string s) => s.Replace("\r\n", "\n").Replace('\r', '\n');
+    private static string NormalizeNewlines(string s) => s.Replace("\r\n", "\n").Replace('\r', '\n');
 }

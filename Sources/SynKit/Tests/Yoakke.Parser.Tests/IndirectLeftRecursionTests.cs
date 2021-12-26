@@ -12,40 +12,40 @@ namespace Yoakke.Parser.Tests;
 
 public partial class IndirectLeftRecursionTests
 {
-  internal enum TokenType
-  {
-    [End] End,
-    [Error] Error,
-    [Ignore] [Regex(Regexes.Whitespace)] Whitespace,
+    internal enum TokenType
+    {
+        [End] End,
+        [Error] Error,
+        [Ignore] [Regex(Regexes.Whitespace)] Whitespace,
 
-    [Regex(Regexes.Identifier)] Identifier,
-  }
+        [Regex(Regexes.Identifier)] Identifier,
+    }
 
-  [Lexer(typeof(TokenType))]
-  internal partial class Lexer
-  {
-  }
+    [Lexer(typeof(TokenType))]
+    internal partial class Lexer
+    {
+    }
 
-  [Parser(typeof(TokenType))]
-  internal partial class Parser
-  {
-    [Rule("grouping : group_element")]
-    private static string Ident(string s) => s;
+    [Parser(typeof(TokenType))]
+    internal partial class Parser
+    {
+        [Rule("grouping : group_element")]
+        private static string Ident(string s) => s;
 
-    [Rule("group_element : grouping Identifier")]
-    private static string Group(string group, IToken next) => $"({group}, {next.Text})";
+        [Rule("group_element : grouping Identifier")]
+        private static string Group(string group, IToken next) => $"({group}, {next.Text})";
 
-    [Rule("group_element : Identifier")]
-    private static string Ident(IToken t) => t.Text;
-  }
+        [Rule("group_element : Identifier")]
+        private static string Ident(IToken t) => t.Text;
+    }
 
-  private static string Parse(string source) =>
-      new Parser(new Lexer(source)).ParseGrouping().Ok.Value;
+    private static string Parse(string source) =>
+        new Parser(new Lexer(source)).ParseGrouping().Ok.Value;
 
-  [Theory]
-  [InlineData("a", "a")]
-  [InlineData("(a, b)", "a b")]
-  [InlineData("((a, b), c)", "a b c")]
-  [InlineData("(((a, b), c), d)", "a b c d")]
-  public void Tests(string expected, string input) => Assert.Equal(expected, Parse(input));
+    [Theory]
+    [InlineData("a", "a")]
+    [InlineData("(a, b)", "a b")]
+    [InlineData("((a, b), c)", "a b c")]
+    [InlineData("(((a, b), c), d)", "a b c d")]
+    public void Tests(string expected, string input) => Assert.Equal(expected, Parse(input));
 }

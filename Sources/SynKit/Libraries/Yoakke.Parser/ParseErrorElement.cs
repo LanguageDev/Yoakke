@@ -11,34 +11,34 @@ namespace Yoakke.Parser;
 /// </summary>
 public class ParseErrorElement
 {
-  /// <summary>
-  /// The expected possible inputs.
-  /// </summary>
-  public ISet<object> Expected { get; }
+    /// <summary>
+    /// The expected possible inputs.
+    /// </summary>
+    public ISet<object> Expected { get; }
 
-  /// <summary>
-  /// The context in which the error occurred.
-  /// </summary>
-  public string Context { get; }
+    /// <summary>
+    /// The context in which the error occurred.
+    /// </summary>
+    public string Context { get; }
 
-  /// <summary>
-  /// Initializes a new instance of the <see cref="ParseErrorElement"/> class.
-  /// </summary>
-  /// <param name="expected">The expected input.</param>
-  /// <param name="context">The context in which the error occurred.</param>
-  public ParseErrorElement(object expected, string context)
-      : this(new HashSet<object> { expected }, context)
-  {
-  }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ParseErrorElement"/> class.
+    /// </summary>
+    /// <param name="expected">The expected input.</param>
+    /// <param name="context">The context in which the error occurred.</param>
+    public ParseErrorElement(object expected, string context)
+        : this(new HashSet<object> { expected }, context)
+    {
+    }
 
-  /// <summary>
-  /// Initializes a new instance of the <see cref="ParseErrorElement"/> class.
-  /// </summary>
-  /// <param name="expected">The expected possible inputs.</param>
-  /// <param name="context">The context in which the error occurred.</param>
-  public ParseErrorElement(ISet<object> expected, string context)
-  {
-    this.Expected = expected;
-    this.Context = context;
-  }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ParseErrorElement"/> class.
+    /// </summary>
+    /// <param name="expected">The expected possible inputs.</param>
+    /// <param name="context">The context in which the error occurred.</param>
+    public ParseErrorElement(ISet<object> expected, string context)
+    {
+        this.Expected = expected;
+        this.Context = context;
+    }
 }

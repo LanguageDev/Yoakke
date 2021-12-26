@@ -11,28 +11,28 @@ namespace Yoakke.SyntaxTree.Generator;
 /// </summary>
 internal class VisitorOverride
 {
-  /// <summary>
-  /// The node class this override applies to.
-  /// </summary>
-  public INamedTypeSymbol NodeClass { get; }
+    /// <summary>
+    /// The node class this override applies to.
+    /// </summary>
+    public INamedTypeSymbol NodeClass { get; }
 
-  /// <summary>
-  /// Override for the method name.
-  /// </summary>
-  public string? MethodName { get; set; }
+    /// <summary>
+    /// Override for the method name.
+    /// </summary>
+    public string? MethodName { get; set; }
 
-  /// <summary>
-  /// Override for the method return type.
-  /// Can be either a <see cref="INamedTypeSymbol"/>, or a generic parameter name as a <see cref="string"/>.
-  /// </summary>
-  public object? ReturnType { get; set; }
+    /// <summary>
+    /// Override for the method return type.
+    /// Can be either a <see cref="INamedTypeSymbol"/>, or a generic parameter name as a <see cref="string"/>.
+    /// </summary>
+    public object? ReturnType { get; set; }
 
-  /// <summary>
-  /// Initializes a new instance of the <see cref="VisitorOverride"/> class.
-  /// </summary>
-  /// <param name="nodeClass">The node class this override applies to.</param>
-  public VisitorOverride(INamedTypeSymbol nodeClass)
-  {
-    this.NodeClass = nodeClass;
-  }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="VisitorOverride"/> class.
+    /// </summary>
+    /// <param name="nodeClass">The node class this override applies to.</param>
+    public VisitorOverride(INamedTypeSymbol nodeClass)
+    {
+        this.NodeClass = nodeClass;
+    }
 }

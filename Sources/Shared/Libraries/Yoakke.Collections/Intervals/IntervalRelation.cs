@@ -14,190 +14,190 @@ namespace Yoakke.Collections.Intervals;
 /// <typeparam name="T">The type of the endpoint value.</typeparam>
 public abstract record IntervalRelation<T>
 {
-  /// <summary>
-  /// The lower disjunct part of the relation.
-  /// </summary>
-  public virtual Interval<T> LowerDisjunct => Interval<T>.Empty;
-
-  /// <summary>
-  /// The intersecting part of the relation.
-  /// </summary>
-  public virtual Interval<T> Intersecting => Interval<T>.Empty;
-
-  /// <summary>
-  /// The upper disjunct part of the relation.
-  /// </summary>
-  public virtual Interval<T> UpperDisjunct => Interval<T>.Empty;
-
-  // Alternatives
-
-  /// <summary>
-  /// Represents a disjunct relation of intervals, where the two intervals share no elements and are not touching.
-  /// </summary>
-  public sealed record Disjunct : IntervalRelation<T>
-  {
-    /// <inheritdoc/>
-    public override Interval<T> LowerDisjunct { get; }
-
-    /// <inheritdoc/>
-    public override Interval<T> UpperDisjunct { get; }
+    /// <summary>
+    /// The lower disjunct part of the relation.
+    /// </summary>
+    public virtual Interval<T> LowerDisjunct => Interval<T>.Empty;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Disjunct"/> class.
+    /// The intersecting part of the relation.
     /// </summary>
-    /// <param name="lower">The lower disjunct interval.</param>
-    /// <param name="upper">The upper disjunct interval.</param>
-    public Disjunct(Interval<T> lower, Interval<T> upper)
-    {
-      this.LowerDisjunct = lower;
-      this.UpperDisjunct = upper;
-    }
-  }
-
-  /// <summary>
-  /// Represents a touching relation of intervals, where the two intervals share no elements, but their endpoints touch.
-  /// </summary>
-  public sealed record Touching : IntervalRelation<T>
-  {
-    /// <inheritdoc/>
-    public override Interval<T> LowerDisjunct { get; }
-
-    /// <inheritdoc/>
-    public override Interval<T> UpperDisjunct { get; }
+    public virtual Interval<T> Intersecting => Interval<T>.Empty;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Touching"/> class.
+    /// The upper disjunct part of the relation.
     /// </summary>
-    /// <param name="lower">The lower disjunct interval.</param>
-    /// <param name="upper">The upper disjunct interval.</param>
-    public Touching(Interval<T> lower, Interval<T> upper)
-    {
-      this.LowerDisjunct = lower;
-      this.UpperDisjunct = upper;
-    }
-  }
+    public virtual Interval<T> UpperDisjunct => Interval<T>.Empty;
 
-  /// <summary>
-  /// Represents an overlapping relation of intervals, where the two intervals share elements,
-  /// but neither contain the other.
-  /// </summary>
-  public sealed record Overlapping : IntervalRelation<T>
-  {
-    /// <inheritdoc/>
-    public override Interval<T> LowerDisjunct { get; }
-
-    /// <inheritdoc/>
-    public override Interval<T> Intersecting { get; }
-
-    /// <inheritdoc/>
-    public override Interval<T> UpperDisjunct { get; }
+    // Alternatives
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Overlapping"/> class.
+    /// Represents a disjunct relation of intervals, where the two intervals share no elements and are not touching.
     /// </summary>
-    /// <param name="lower">The lower disjunct interval.</param>
-    /// <param name="intersecting">The intersecting interval.</param>
-    /// <param name="upper">The upper disjunct interval.</param>
-    public Overlapping(Interval<T> lower, Interval<T> intersecting, Interval<T> upper)
+    public sealed record Disjunct : IntervalRelation<T>
     {
-      this.LowerDisjunct = lower;
-      this.Intersecting = intersecting;
-      this.UpperDisjunct = upper;
+        /// <inheritdoc/>
+        public override Interval<T> LowerDisjunct { get; }
+
+        /// <inheritdoc/>
+        public override Interval<T> UpperDisjunct { get; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Disjunct"/> class.
+        /// </summary>
+        /// <param name="lower">The lower disjunct interval.</param>
+        /// <param name="upper">The upper disjunct interval.</param>
+        public Disjunct(Interval<T> lower, Interval<T> upper)
+        {
+            this.LowerDisjunct = lower;
+            this.UpperDisjunct = upper;
+        }
     }
-  }
-
-  /// <summary>
-  /// Represents a containing relation of intervals, where one interval completely contains another, but none
-  /// of the endpoints are equal.
-  /// </summary>
-  public sealed record Containing : IntervalRelation<T>
-  {
-    /// <inheritdoc/>
-    public override Interval<T> LowerDisjunct { get; }
-
-    /// <inheritdoc/>
-    public override Interval<T> Intersecting { get; }
-
-    /// <inheritdoc/>
-    public override Interval<T> UpperDisjunct { get; }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Containing"/> class.
+    /// Represents a touching relation of intervals, where the two intervals share no elements, but their endpoints touch.
     /// </summary>
-    /// <param name="lower">The lower disjunct interval.</param>
-    /// <param name="intersecting">The intersecting interval.</param>
-    /// <param name="upper">The upper disjunct interval.</param>
-    public Containing(Interval<T> lower, Interval<T> intersecting, Interval<T> upper)
+    public sealed record Touching : IntervalRelation<T>
     {
-      this.LowerDisjunct = lower;
-      this.Intersecting = intersecting;
-      this.UpperDisjunct = upper;
+        /// <inheritdoc/>
+        public override Interval<T> LowerDisjunct { get; }
+
+        /// <inheritdoc/>
+        public override Interval<T> UpperDisjunct { get; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Touching"/> class.
+        /// </summary>
+        /// <param name="lower">The lower disjunct interval.</param>
+        /// <param name="upper">The upper disjunct interval.</param>
+        public Touching(Interval<T> lower, Interval<T> upper)
+        {
+            this.LowerDisjunct = lower;
+            this.UpperDisjunct = upper;
+        }
     }
-  }
-
-  /// <summary>
-  /// Represents a starting relation of intervals, where one interval completely contains another, and
-  /// the starting points are equal.
-  /// </summary>
-  public sealed record Starting : IntervalRelation<T>
-  {
-    /// <inheritdoc/>
-    public override Interval<T> Intersecting { get; }
-
-    /// <inheritdoc/>
-    public override Interval<T> UpperDisjunct { get; }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Starting"/> class.
+    /// Represents an overlapping relation of intervals, where the two intervals share elements,
+    /// but neither contain the other.
     /// </summary>
-    /// <param name="intersecting">The intersecting interval.</param>
-    /// <param name="upper">The upper disjunct interval.</param>
-    public Starting(Interval<T> intersecting, Interval<T> upper)
+    public sealed record Overlapping : IntervalRelation<T>
     {
-      this.Intersecting = intersecting;
-      this.UpperDisjunct = upper;
+        /// <inheritdoc/>
+        public override Interval<T> LowerDisjunct { get; }
+
+        /// <inheritdoc/>
+        public override Interval<T> Intersecting { get; }
+
+        /// <inheritdoc/>
+        public override Interval<T> UpperDisjunct { get; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Overlapping"/> class.
+        /// </summary>
+        /// <param name="lower">The lower disjunct interval.</param>
+        /// <param name="intersecting">The intersecting interval.</param>
+        /// <param name="upper">The upper disjunct interval.</param>
+        public Overlapping(Interval<T> lower, Interval<T> intersecting, Interval<T> upper)
+        {
+            this.LowerDisjunct = lower;
+            this.Intersecting = intersecting;
+            this.UpperDisjunct = upper;
+        }
     }
-  }
-
-  /// <summary>
-  /// Represents a finishing relation of intervals, where one interval completely contains another, and
-  /// the finishing points are equal.
-  /// </summary>
-  public sealed record Finishing : IntervalRelation<T>
-  {
-    /// <inheritdoc/>
-    public override Interval<T> LowerDisjunct { get; }
-
-    /// <inheritdoc/>
-    public override Interval<T> Intersecting { get; }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Finishing"/> class.
+    /// Represents a containing relation of intervals, where one interval completely contains another, but none
+    /// of the endpoints are equal.
     /// </summary>
-    /// <param name="lower">The lower disjunct interval.</param>
-    /// <param name="intersecting">The intersecting interval.</param>
-    public Finishing(Interval<T> lower, Interval<T> intersecting)
+    public sealed record Containing : IntervalRelation<T>
     {
-      this.LowerDisjunct = lower;
-      this.Intersecting = intersecting;
-    }
-  }
+        /// <inheritdoc/>
+        public override Interval<T> LowerDisjunct { get; }
 
-  /// <summary>
-  /// Represents an equal relation of intervals, where the two intervals are completely equal.
-  /// </summary>
-  public sealed record Equal : IntervalRelation<T>
-  {
-    /// <inheritdoc/>
-    public override Interval<T> Intersecting { get; }
+        /// <inheritdoc/>
+        public override Interval<T> Intersecting { get; }
+
+        /// <inheritdoc/>
+        public override Interval<T> UpperDisjunct { get; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Containing"/> class.
+        /// </summary>
+        /// <param name="lower">The lower disjunct interval.</param>
+        /// <param name="intersecting">The intersecting interval.</param>
+        /// <param name="upper">The upper disjunct interval.</param>
+        public Containing(Interval<T> lower, Interval<T> intersecting, Interval<T> upper)
+        {
+            this.LowerDisjunct = lower;
+            this.Intersecting = intersecting;
+            this.UpperDisjunct = upper;
+        }
+    }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Equal"/> class.
+    /// Represents a starting relation of intervals, where one interval completely contains another, and
+    /// the starting points are equal.
     /// </summary>
-    /// <param name="intersecting">The intersecting interval.</param>
-    public Equal(Interval<T> intersecting)
+    public sealed record Starting : IntervalRelation<T>
     {
-      this.Intersecting = intersecting;
+        /// <inheritdoc/>
+        public override Interval<T> Intersecting { get; }
+
+        /// <inheritdoc/>
+        public override Interval<T> UpperDisjunct { get; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Starting"/> class.
+        /// </summary>
+        /// <param name="intersecting">The intersecting interval.</param>
+        /// <param name="upper">The upper disjunct interval.</param>
+        public Starting(Interval<T> intersecting, Interval<T> upper)
+        {
+            this.Intersecting = intersecting;
+            this.UpperDisjunct = upper;
+        }
     }
-  }
+
+    /// <summary>
+    /// Represents a finishing relation of intervals, where one interval completely contains another, and
+    /// the finishing points are equal.
+    /// </summary>
+    public sealed record Finishing : IntervalRelation<T>
+    {
+        /// <inheritdoc/>
+        public override Interval<T> LowerDisjunct { get; }
+
+        /// <inheritdoc/>
+        public override Interval<T> Intersecting { get; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Finishing"/> class.
+        /// </summary>
+        /// <param name="lower">The lower disjunct interval.</param>
+        /// <param name="intersecting">The intersecting interval.</param>
+        public Finishing(Interval<T> lower, Interval<T> intersecting)
+        {
+            this.LowerDisjunct = lower;
+            this.Intersecting = intersecting;
+        }
+    }
+
+    /// <summary>
+    /// Represents an equal relation of intervals, where the two intervals are completely equal.
+    /// </summary>
+    public sealed record Equal : IntervalRelation<T>
+    {
+        /// <inheritdoc/>
+        public override Interval<T> Intersecting { get; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Equal"/> class.
+        /// </summary>
+        /// <param name="intersecting">The intersecting interval.</param>
+        public Equal(Interval<T> intersecting)
+        {
+            this.Intersecting = intersecting;
+        }
+    }
 }

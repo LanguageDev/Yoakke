@@ -19,11 +19,11 @@ public interface IDenseDfa<TState, TSymbol>
       IReadOnlyDenseDfa<TState, TSymbol>,
       IDenseFiniteAutomaton<TState, TSymbol>
 {
-  /// <summary>
-  /// Completes this DFA over the given alphabet.
-  /// </summary>
-  /// <param name="alphabet">The alphabet to complete over.</param>
-  /// <param name="trap">A default trap state to transition to.</param>
-  /// <returns>True, if this DFA was not completed and needed completion, false otherwise.</returns>
-  public bool Complete(IEnumerable<Interval<TSymbol>> alphabet, TState trap);
+    /// <summary>
+    /// Completes this DFA over the given alphabet.
+    /// </summary>
+    /// <param name="alphabet">The alphabet to complete over.</param>
+    /// <param name="trap">A default trap state to transition to.</param>
+    /// <returns>True, if this DFA was not completed and needed completion, false otherwise.</returns>
+    public bool Complete(IEnumerable<Interval<TSymbol>> alphabet, TState trap);
 }

@@ -16,28 +16,28 @@ namespace Yoakke.Automata.RegExAst;
 /// <typeparam name="TSymbol">The symbol type.</typeparam>
 public record RegExAnyNode<TSymbol> : IRegExNode<TSymbol>
 {
-  /// <summary>
-  /// The instance to use.
-  /// </summary>
-  public static RegExAnyNode<TSymbol> Instance { get; } = new();
+    /// <summary>
+    /// The instance to use.
+    /// </summary>
+    public static RegExAnyNode<TSymbol> Instance { get; } = new();
 
-  private RegExAnyNode()
-  {
-  }
+    private RegExAnyNode()
+    {
+    }
 
-  /// <inheritdoc/>
-  public IRegExNode<TSymbol> Desugar() => this;
+    /// <inheritdoc/>
+    public IRegExNode<TSymbol> Desugar() => this;
 
-  /// <inheritdoc/>
-  public (TState Start, TState End) ThompsonsConstruct<TState>(INfa<TState, TSymbol> nfa, Func<TState> makeState)
-  {
-    if (nfa is not IDenseNfa<TState, TSymbol> denseNfa) throw new NotSupportedException("Only dense NFAs support wildcards.");
+    /// <inheritdoc/>
+    public (TState Start, TState End) ThompsonsConstruct<TState>(INfa<TState, TSymbol> nfa, Func<TState> makeState)
+    {
+        if (nfa is not IDenseNfa<TState, TSymbol> denseNfa) throw new NotSupportedException("Only dense NFAs support wildcards.");
 
-    var start = makeState();
-    var end = makeState();
+        var start = makeState();
+        var end = makeState();
 
-    denseNfa.AddTransition(start, Interval<TSymbol>.Full, end);
+        denseNfa.AddTransition(start, Interval<TSymbol>.Full, end);
 
-    return (start, end);
-  }
+        return (start, end);
+    }
 }

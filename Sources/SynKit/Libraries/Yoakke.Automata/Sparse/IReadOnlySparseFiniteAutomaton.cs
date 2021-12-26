@@ -15,13 +15,13 @@ namespace Yoakke.Automata.Sparse;
 /// <typeparam name="TSymbol">The symbol type.</typeparam>
 public interface IReadOnlySparseFiniteAutomaton<TState, TSymbol> : IReadOnlyFiniteAutomaton<TState, TSymbol>
 {
-  /// <summary>
-  /// The alphabet of this automaton.
-  /// </summary>
-  public IReadOnlyCollection<TSymbol> Alphabet { get; }
+    /// <summary>
+    /// The alphabet of this automaton.
+    /// </summary>
+    public IReadOnlyCollection<TSymbol> Alphabet { get; }
 
-  /// <summary>
-  /// The transitions of this automaton.
-  /// </summary>
-  public IReadOnlyCollection<Transition<TState, TSymbol>> Transitions { get; }
+    /// <summary>
+    /// The transitions of this automaton.
+    /// </summary>
+    public IReadOnlyCollection<Transition<TState, TSymbol>> Transitions { get; }
 }

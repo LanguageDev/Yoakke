@@ -16,13 +16,13 @@ namespace Yoakke.Automata.Dense;
 /// <typeparam name="TSymbol">The symbol type.</typeparam>
 public interface IReadOnlyDenseFiniteAutomaton<TState, TSymbol> : IReadOnlyFiniteAutomaton<TState, TSymbol>
 {
-  /// <summary>
-  /// The alphabet of this automaton.
-  /// </summary>
-  public IReadOnlyCollection<Interval<TSymbol>> Alphabet { get; }
+    /// <summary>
+    /// The alphabet of this automaton.
+    /// </summary>
+    public IReadOnlyCollection<Interval<TSymbol>> Alphabet { get; }
 
-  /// <summary>
-  /// The transitions of this automaton.
-  /// </summary>
-  public IReadOnlyCollection<Transition<TState, Interval<TSymbol>>> Transitions { get; }
+    /// <summary>
+    /// The transitions of this automaton.
+    /// </summary>
+    public IReadOnlyCollection<Transition<TState, Interval<TSymbol>>> Transitions { get; }
 }
