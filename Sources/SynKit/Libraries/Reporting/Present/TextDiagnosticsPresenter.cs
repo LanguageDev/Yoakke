@@ -106,10 +106,10 @@ public class TextDiagnosticsPresenter : IDiagnosticsPresenter
             if (diagnostic.Severity != null) this.buffer.Write('[');
             this.buffer.Write(diagnostic.Code);
             if (diagnostic.Severity != null) this.buffer.Write(']');
-            if (diagnostic.Message != null) this.buffer.Write(": ");
         }
         if (diagnostic.Message != null)
         {
+            if (diagnostic.Severity != null || diagnostic.Code != null) this.buffer.Write(": ");
             this.buffer.ForegroundColor = this.Style.DefaultColor;
             this.buffer.Write(diagnostic.Message);
         }

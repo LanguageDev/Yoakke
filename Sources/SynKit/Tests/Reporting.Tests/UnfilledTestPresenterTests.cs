@@ -44,6 +44,63 @@ some other line");
     }
 
     [Fact]
+    public void NoSeverity()
+    {
+        var src = new SourceFile(
+            "simple.txt",
+    @"line 1
+prev line
+this is a line of text
+next line
+some other line");
+        var diag = new Diagnostics()
+            .WithCode("E0001")
+            .WithMessage("Some error message")
+            .WithSourceInfo(Loc(src, line: 2, column: 10, length: 4), Severity.Error, "some annotation");
+        var result = new StringWriter();
+        var renderer = new TextDiagnosticsPresenter(result);
+        renderer.Present(diag);
+        AssertUtils.AreEqualIgnoreNewlineEncoding(
+            @"E0001: Some error message
+  ┌─ simple.txt:3:11
+  │
+2 │ prev line
+3 │ this is a line of text
+  │           ^^^^ some annotation
+4 │ next line
+  │
+", result.ToString());
+    }
+
+    [Fact]
+    public void NoErrorCoreAndSeverity()
+    {
+        var src = new SourceFile(
+            "simple.txt",
+    @"line 1
+prev line
+this is a line of text
+next line
+some other line");
+        var diag = new Diagnostics()
+            .WithMessage("Some error message")
+            .WithSourceInfo(Loc(src, line: 2, column: 10, length: 4), Severity.Error, "some annotation");
+        var result = new StringWriter();
+        var renderer = new TextDiagnosticsPresenter(result);
+        renderer.Present(diag);
+        AssertUtils.AreEqualIgnoreNewlineEncoding(
+            @"Some error message
+  ┌─ simple.txt:3:11
+  │
+2 │ prev line
+3 │ this is a line of text
+  │           ^^^^ some annotation
+4 │ next line
+  │
+", result.ToString());
+    }
+
+    [Fact]
     public void NoErrorMessage()
     {
         var src = new SourceFile(
@@ -61,35 +118,7 @@ some other line");
         var renderer = new TextDiagnosticsPresenter(result);
         renderer.Present(diag);
         AssertUtils.AreEqualIgnoreNewlineEncoding(
-            @"[E0001]: Some error message
-  ┌─ simple.txt:3:11
-  │
-2 │ prev line
-3 │ this is a line of text
-  │           ^^^^ some annotation
-4 │ next line
-  │
-", result.ToString());
-    }
-
-    [Fact]
-    public void NoErrorCoreAndMessage()
-    {
-        var src = new SourceFile(
-            "simple.txt",
-    @"line 1
-prev line
-this is a line of text
-next line
-some other line");
-        var diag = new Diagnostics()
-            .WithSeverity(Severity.Error)
-            .WithSourceInfo(Loc(src, line: 2, column: 10, length: 4), Severity.Error, "some annotation");
-        var result = new StringWriter();
-        var renderer = new TextDiagnosticsPresenter(result);
-        renderer.Present(diag);
-        AssertUtils.AreEqualIgnoreNewlineEncoding(
-            @"Some error message
+            @"error[E0001]
   ┌─ simple.txt:3:11
   │
 2 │ prev line
