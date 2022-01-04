@@ -8,8 +8,9 @@
 
   <PropertyGroup>
     <DocumentationFile>$(MSBuildProjectDirectory)/bin/doc/$(MSBuildProjectName).xml</DocumentationFile>
+    <AssemblyName>Yoakke.$(MSBuildProjectName)</AssemblyName>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageId>$(MSBuildProjectName)</PackageId>
+    <PackageId>Yoakke.$(MSBuildProjectName)</PackageId>
     <PackageIcon>YoakkeLogo.png</PackageIcon>
     <Authors>LanguageDev team</Authors>
     <Description>A collection of .NET libraries to help compiler development.</Description>
@@ -21,7 +22,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="$(SolutionDir)\..\.github\resources\YoakkeLogo.png">
+    <None Include="$(SolutionDir)\..\.github\resources\YoakkeLogo.png" Visible="False">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>

@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="$(SolutionDir)\SynKit\Libraries\Lexer\Lexer.csproj" />
+    <ProjectReference Include="$(SolutionDir)\SynKit\Libraries\Lexer.Generator\Lexer.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="False" />
+  </ItemGroup>
+</Project>
