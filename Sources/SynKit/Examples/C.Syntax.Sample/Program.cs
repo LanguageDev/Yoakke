@@ -1,6 +1,6 @@
 using System;
 
-namespace Yoakke.C.Syntax.Sample;
+namespace Yoakke.SynKit.C.Syntax.Sample;
 
 class Program
 {

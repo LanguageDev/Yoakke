@@ -2,7 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
-namespace Yoakke.Parser.Generator.Syntax;
+namespace Yoakke.SynKit.Parser.Generator.Syntax;
 
 /// <summary>
 /// The possible different kinds for a <see cref="BnfToken"/>.

@@ -4,7 +4,7 @@
 
 using Microsoft.CodeAnalysis;
 
-namespace Yoakke.Parser.Generator;
+namespace Yoakke.SynKit.Parser.Generator;
 
 /// <summary>
 /// Diagnostics produced by the parser generator.
@@ -20,7 +20,7 @@ internal static class Diagnostics
         id: "YKPARSERGEN001",
         title: "Identifier is neither a rule, nor a terminal",
         messageFormat: "The identifier {0} matches no usable rule or token-kind to match",
-        category: "Yoakke.Parser.Generator",
+        category: "Yoakke.SynKit.Parser.Generator",
         DiagnosticSeverity.Error,
         isEnabledByDefault: true);
 

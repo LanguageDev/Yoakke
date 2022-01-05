@@ -6,9 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
-using Yoakke.Parser.Generator.Ast;
+using Yoakke.SynKit.Parser.Generator.Ast;
 
-namespace Yoakke.Parser.Generator;
+namespace Yoakke.SynKit.Parser.Generator;
 
 /// <summary>
 /// Utilities for various external desugaring steps for <see cref="Rule"/>s.

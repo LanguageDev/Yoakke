@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using Yoakke.Collections.Intervals;
 
-namespace Yoakke.Automata.Dense;
+namespace Yoakke.SynKit.Automata.Dense;
 
 /// <summary>
 /// Represents a read-only, dense DFA.

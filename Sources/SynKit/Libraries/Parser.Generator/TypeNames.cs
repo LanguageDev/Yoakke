@@ -2,15 +2,16 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
-namespace Yoakke.Parser.Generator;
+namespace Yoakke.SynKit.Parser.Generator;
 
 /// <summary>
 /// Common type-names so we don't have hardcoded strings in the source-generator.
 /// </summary>
 internal static class TypeNames
 {
-    private const string ParserNamespace = "Yoakke.Parser";
-    private const string LexerNamespace = "Yoakke.Lexer";
+    private const string SynKitNamespace = "Yoakke.SynKit";
+    private const string ParserNamespace = $"{SynKitNamespace}.Parser";
+    private const string LexerNamespace = $"{SynKitNamespace}.Lexer";
 
     /// <summary>
     /// System.Collections.Generic.IReadOnlyList.

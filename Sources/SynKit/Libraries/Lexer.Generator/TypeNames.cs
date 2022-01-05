@@ -2,14 +2,15 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
-namespace Yoakke.Lexer.Generator;
+namespace Yoakke.SynKit.Lexer.Generator;
 
 /// <summary>
 /// Common type-names so we don't have hardcoded strings in the source-generator.
 /// </summary>
 internal static class TypeNames
 {
-    private const string LexerNamespace = "Yoakke.Lexer";
+    private const string SynKitNamespace = "Yoakke.SynKit";
+    private const string LexerNamespace = $"{SynKitNamespace}.Lexer";
     private const string StreamsNamespace = "Yoakke.Streams";
 
     /// <summary>
@@ -95,5 +96,5 @@ internal static class TypeNames
     /// <summary>
     /// Text position type.
     /// </summary>
-    public static readonly string Position = "Yoakke.Text.Position";
+    public static readonly string Position = $"{SynKitNamespace}.Text.Position";
 }

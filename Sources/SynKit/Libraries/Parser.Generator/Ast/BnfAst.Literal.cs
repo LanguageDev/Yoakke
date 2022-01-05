@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 
-namespace Yoakke.Parser.Generator.Ast;
+namespace Yoakke.SynKit.Parser.Generator.Ast;
 
 internal partial class BnfAst
 {

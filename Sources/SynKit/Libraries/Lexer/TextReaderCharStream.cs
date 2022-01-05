@@ -6,9 +6,9 @@ using System;
 using System.IO;
 using Yoakke.Collections;
 using Yoakke.Streams;
-using Yoakke.Text;
+using Yoakke.SynKit.Text;
 
-namespace Yoakke.Lexer;
+namespace Yoakke.SynKit.Lexer;
 
 /// <summary>
 /// An <see cref="ICharStream"/> that wraps a <see cref="TextReader"/>.

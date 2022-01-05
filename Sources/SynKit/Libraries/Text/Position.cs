@@ -4,7 +4,7 @@
 
 using System;
 
-namespace Yoakke.Text;
+namespace Yoakke.SynKit.Text;
 
 /// <summary>
 /// Represents 2D position inside some text.

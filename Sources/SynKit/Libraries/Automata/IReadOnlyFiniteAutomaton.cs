@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Yoakke.Automata;
+namespace Yoakke.SynKit.Automata;
 
 /// <summary>
 /// Represents a generic, read-only finite automaton.

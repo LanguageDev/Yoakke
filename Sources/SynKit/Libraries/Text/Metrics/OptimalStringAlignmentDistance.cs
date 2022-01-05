@@ -4,7 +4,7 @@
 
 using System;
 
-namespace Yoakke.Text.Metrics;
+namespace Yoakke.SynKit.Text.Metrics;
 
 /// <summary>
 /// Implements Optimal String Alignment distance.

@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Yoakke.Automata.Dense;
-using Yoakke.Automata.RegExAst;
-using Yoakke.Automata.Sparse;
+using Yoakke.SynKit.Automata.Dense;
+using Yoakke.SynKit.Automata.RegExAst;
+using Yoakke.SynKit.Automata.Sparse;
 using Yoakke.Collections.Dense;
 using Yoakke.Collections.Intervals;
 
-namespace Yoakke.Automata.Sample;
+namespace Yoakke.SynKit.Automata.Sample;
 
 internal class Program
 {

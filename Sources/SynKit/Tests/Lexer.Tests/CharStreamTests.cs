@@ -5,9 +5,9 @@
 using System.IO;
 using Xunit;
 using Yoakke.Streams;
-using Yoakke.Text;
+using Yoakke.SynKit.Text;
 
-namespace Yoakke.Lexer.Tests;
+namespace Yoakke.SynKit.Lexer.Tests;
 
 public class CharStreamTests : TestBase<CharStreamTests.TokenType>
 {

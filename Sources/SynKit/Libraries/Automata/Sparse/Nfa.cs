@@ -8,11 +8,11 @@ using System.Collections.Generic;
 using System.Collections.Generic.Polyfill;
 using System.Linq;
 using System.Text;
-using Yoakke.Automata.Internal;
+using Yoakke.SynKit.Automata.Internal;
 using Yoakke.Collections;
 using Yoakke.Collections.Graphs;
 
-namespace Yoakke.Automata.Sparse;
+namespace Yoakke.SynKit.Automata.Sparse;
 
 /// <summary>
 /// A generic sparse NFA implementation.

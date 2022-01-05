@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Yoakke.Automata.RegExAst;
+namespace Yoakke.SynKit.Automata.RegExAst;
 
 /// <summary>
 /// Makes a regex construct repeat between a range of values.

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Yoakke.Automata.Internal;
+namespace Yoakke.SynKit.Automata.Internal;
 
 /// <summary>
 /// Helper class for producing the DOT code.

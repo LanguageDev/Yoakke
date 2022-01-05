@@ -6,10 +6,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Yoakke.Automata.Dense;
-using Yoakke.Automata.Sparse;
+using Yoakke.SynKit.Automata.Dense;
+using Yoakke.SynKit.Automata.Sparse;
 
-namespace Yoakke.Automata;
+namespace Yoakke.SynKit.Automata;
 
 /// <summary>
 /// Extension functionality for DFAs.

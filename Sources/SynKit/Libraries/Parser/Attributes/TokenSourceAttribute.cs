@@ -4,7 +4,7 @@
 
 using System;
 
-namespace Yoakke.Parser.Attributes;
+namespace Yoakke.SynKit.Parser.Attributes;
 
 /// <summary>
 /// An attribute to mark a field or property as the thing holding onto the token source.

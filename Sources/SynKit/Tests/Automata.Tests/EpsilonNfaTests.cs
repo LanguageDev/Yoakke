@@ -8,9 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
-using Yoakke.Automata.Sparse;
+using Yoakke.SynKit.Automata.Sparse;
 
-namespace Yoakke.Automata.Tests;
+namespace Yoakke.SynKit.Automata.Tests;
 
 public class EpsilonNfaTests : AutomatonTestBase
 {

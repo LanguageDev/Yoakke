@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Yoakke.Automata.Tests;
+namespace Yoakke.SynKit.Automata.Tests;
 
 public abstract class AutomatonTestBase
 {

@@ -4,7 +4,7 @@
 
 using System.Collections.Generic;
 
-namespace Yoakke.C.Syntax.Macros;
+namespace Yoakke.SynKit.C.Syntax.Macros;
 
 /// <summary>
 /// Implementation of __COUNTER__.

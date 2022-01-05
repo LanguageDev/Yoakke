@@ -4,7 +4,7 @@
 
 using System;
 
-namespace Yoakke.Reporting;
+namespace Yoakke.SynKit.Reporting;
 
 /// <summary>
 /// Represents a severity level for the library.

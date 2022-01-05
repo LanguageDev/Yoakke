@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 
-namespace Yoakke.SyntaxTree.Generator;
+namespace Yoakke.SynKit.SyntaxTree.Generator;
 
 /// <summary>
 /// A helper to build a hierarchy of syntax tree nodes.

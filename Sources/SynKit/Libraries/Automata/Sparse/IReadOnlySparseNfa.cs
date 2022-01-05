@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Yoakke.Automata.Sparse;
+namespace Yoakke.SynKit.Automata.Sparse;
 
 /// <summary>
 /// Represents a read-only, sparse NFA.

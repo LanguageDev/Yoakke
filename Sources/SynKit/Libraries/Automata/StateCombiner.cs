@@ -8,7 +8,7 @@ using System.Collections.Generic.Polyfill;
 using System.Linq;
 using System.Text;
 
-namespace Yoakke.Automata;
+namespace Yoakke.SynKit.Automata;
 
 /// <summary>
 /// Utilities for <see cref="IStateCombiner{TState, TResultState}"/>.

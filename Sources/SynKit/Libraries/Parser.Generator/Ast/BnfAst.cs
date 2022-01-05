@@ -4,7 +4,7 @@
 
 using System.Collections.Generic;
 
-namespace Yoakke.Parser.Generator.Ast;
+namespace Yoakke.SynKit.Parser.Generator.Ast;
 
 /// <summary>
 /// Base-class for the grammar syntax-tree nodes.

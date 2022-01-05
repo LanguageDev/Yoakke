@@ -4,7 +4,7 @@
 
 using System;
 
-namespace Yoakke.Text;
+namespace Yoakke.SynKit.Text;
 
 /// <summary>
 /// An 2D interval of text positions with an inclusive starting position and an exclusive ending position.

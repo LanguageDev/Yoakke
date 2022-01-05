@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Yoakke.Automata.RegExAst;
+namespace Yoakke.SynKit.Automata.RegExAst;
 
 /// <summary>
 /// A no-operation regex node. Useful for desugaring.

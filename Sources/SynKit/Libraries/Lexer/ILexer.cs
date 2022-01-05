@@ -2,9 +2,9 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
-using Yoakke.Text;
+using Yoakke.SynKit.Text;
 
-namespace Yoakke.Lexer;
+namespace Yoakke.SynKit.Lexer;
 
 /// <summary>
 /// Represents a general lexer.

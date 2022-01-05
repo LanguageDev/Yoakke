@@ -4,12 +4,12 @@
 
 using System.Collections.Generic;
 using Xunit;
-using Yoakke.Lexer;
-using Yoakke.Lexer.Attributes;
-using Yoakke.Parser.Attributes;
-using IgnoreAttribute = Yoakke.Lexer.Attributes.IgnoreAttribute;
+using Yoakke.SynKit.Lexer;
+using Yoakke.SynKit.Lexer.Attributes;
+using Yoakke.SynKit.Parser.Attributes;
+using IgnoreAttribute = Yoakke.SynKit.Lexer.Attributes.IgnoreAttribute;
 
-namespace Yoakke.Parser.Tests;
+namespace Yoakke.SynKit.Parser.Tests;
 
 // https://github.com/LanguageDev/Yoakke/issues/62
 public partial class Issue62Tests

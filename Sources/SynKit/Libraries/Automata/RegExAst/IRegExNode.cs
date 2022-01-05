@@ -5,9 +5,9 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Yoakke.Automata.Dense;
+using Yoakke.SynKit.Automata.Dense;
 
-namespace Yoakke.Automata.RegExAst;
+namespace Yoakke.SynKit.Automata.RegExAst;
 
 /// <summary>
 /// Represents a regular expression AST node.

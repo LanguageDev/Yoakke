@@ -3,9 +3,9 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System.Collections.Generic;
-using Yoakke.Text;
+using Yoakke.SynKit.Text;
 
-namespace Yoakke.Reporting;
+namespace Yoakke.SynKit.Reporting;
 
 /// <summary>
 /// A single diagnostic information with all relevant things.

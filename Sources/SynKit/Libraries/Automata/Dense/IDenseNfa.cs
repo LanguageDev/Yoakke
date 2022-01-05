@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Yoakke.Automata.Dense;
+namespace Yoakke.SynKit.Automata.Dense;
 
 /// <summary>
 /// Represents a dense NFA.

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Yoakke.C.Syntax;
+namespace Yoakke.SynKit.C.Syntax;
 
 /// <summary>
 /// A <see cref="IMacro"/> that can be defined by the user.

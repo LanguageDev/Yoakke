@@ -4,7 +4,7 @@
 
 using System;
 
-namespace Yoakke.Lexer.Attributes;
+namespace Yoakke.SynKit.Lexer.Attributes;
 
 /// <summary>
 /// An attribute to mark an enum value as an error token type.

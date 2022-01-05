@@ -9,10 +9,10 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Yoakke.Collections;
-using Yoakke.Lexer;
-using Yoakke.Text;
+using Yoakke.SynKit.Lexer;
+using Yoakke.SynKit.Text;
 
-namespace Yoakke.C.Syntax;
+namespace Yoakke.SynKit.C.Syntax;
 
 /// <summary>
 /// A default <see cref="IPreProcessor"/> that tries to mimic what the standard pre-processors do.

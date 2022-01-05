@@ -7,9 +7,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Xunit;
-using Yoakke.SyntaxTree.Attributes;
+using Yoakke.SynKit.SyntaxTree.Attributes;
 
-namespace Yoakke.SyntaxTree.Tests;
+namespace Yoakke.SynKit.SyntaxTree.Tests;
 
 public partial class VisitorWithoutBaseTests
 {

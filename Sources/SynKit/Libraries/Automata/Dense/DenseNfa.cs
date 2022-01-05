@@ -8,13 +8,13 @@ using System.Collections.Generic;
 using System.Collections.Generic.Polyfill;
 using System.Linq;
 using System.Text;
-using Yoakke.Automata.Internal;
+using Yoakke.SynKit.Automata.Internal;
 using Yoakke.Collections;
 using Yoakke.Collections.Dense;
 using Yoakke.Collections.Graphs;
 using Yoakke.Collections.Intervals;
 
-namespace Yoakke.Automata.Dense;
+namespace Yoakke.SynKit.Automata.Dense;
 
 /// <summary>
 /// A generic dense NFA implementation.

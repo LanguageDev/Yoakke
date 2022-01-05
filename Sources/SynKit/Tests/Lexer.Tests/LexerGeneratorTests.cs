@@ -3,10 +3,10 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using Xunit;
-using Yoakke.Lexer.Attributes;
-using IgnoreAttribute = Yoakke.Lexer.Attributes.IgnoreAttribute;
+using Yoakke.SynKit.Lexer.Attributes;
+using IgnoreAttribute = Yoakke.SynKit.Lexer.Attributes.IgnoreAttribute;
 
-namespace Yoakke.Lexer.Tests;
+namespace Yoakke.SynKit.Lexer.Tests;
 
 public partial class LexerGeneratorTests : TestBase<LexerGeneratorTests.TokenType>
 {
@@ -72,8 +72,8 @@ public partial class LexerGeneratorTests : TestBase<LexerGeneratorTests.TokenTyp
     [Fact]
     public void SimpleMultilineSequence()
     {
-        var lexer = new Lexer(@"if    
-asd+b 123 
+        var lexer = new Lexer(@"if
+asd+b 123
 -2 b5");
         Assert.Equal(Token("if", TokenType.KwIf, Range((0, 0), 2)), lexer.Next());
         Assert.Equal(Token("asd", TokenType.Identifier, Range((1, 0), 3)), lexer.Next());
@@ -89,8 +89,8 @@ asd+b 123
     [Fact]
     public void SimpleMultilineSequenceWithNewline()
     {
-        var lexer = new Lexer(@"if    
-asd+b 123 
+        var lexer = new Lexer(@"if
+asd+b 123
 -2 b5
 ");
         Assert.Equal(Token("if", TokenType.KwIf, Range((0, 0), 2)), lexer.Next());

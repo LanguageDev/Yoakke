@@ -1,6 +1,6 @@
-using Yoakke.SyntaxTree.Attributes;
+using Yoakke.SynKit.SyntaxTree.Attributes;
 
-namespace Yoakke.SyntaxTree.Tests.Tree;
+namespace Yoakke.SynKit.SyntaxTree.Tests.Tree;
 
 [SyntaxTree]
 public abstract partial record ExternalAst

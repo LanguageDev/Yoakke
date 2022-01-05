@@ -5,11 +5,11 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Yoakke.Automata.Dense;
+using Yoakke.SynKit.Automata.Dense;
 using Yoakke.Collections.Dense;
 using Yoakke.Collections.Intervals;
 
-namespace Yoakke.Automata.RegExAst;
+namespace Yoakke.SynKit.Automata.RegExAst;
 
 /// <summary>
 /// A literal range match node.

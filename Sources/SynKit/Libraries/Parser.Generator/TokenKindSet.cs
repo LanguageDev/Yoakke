@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 
-namespace Yoakke.Parser.Generator;
+namespace Yoakke.SynKit.Parser.Generator;
 
 /// <summary>
 /// Represents the available token-kinds (terminal kinds) the parser will be able to work with.

@@ -1,13 +1,13 @@
-﻿// Copyright (c) 2021 Yoakke.
+// Copyright (c) 2021 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System;
 using System.Collections.Generic;
-using Yoakke.Reporting.Present;
-using Yoakke.Text;
+using Yoakke.SynKit.Reporting.Present;
+using Yoakke.SynKit.Text;
 
-namespace Yoakke.Reporting.Sample;
+namespace Yoakke.SynKit.Reporting.Sample;
 
 internal class MyHighlighter : ISyntaxHighlighter
 {

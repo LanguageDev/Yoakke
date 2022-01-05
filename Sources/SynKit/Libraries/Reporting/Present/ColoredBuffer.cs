@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace Yoakke.Reporting.Present;
+namespace Yoakke.SynKit.Reporting.Present;
 
 /// <summary>
 /// A simple colored back-buffer to be able to write and recolor text without directly writing to the console.

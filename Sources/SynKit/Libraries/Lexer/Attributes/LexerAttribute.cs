@@ -4,7 +4,7 @@
 
 using System;
 
-namespace Yoakke.Lexer.Attributes;
+namespace Yoakke.SynKit.Lexer.Attributes;
 
 /// <summary>
 /// An attribute to mark a class to generate a lexer for token types.

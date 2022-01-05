@@ -5,7 +5,7 @@
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 
-namespace Yoakke.SyntaxTree.Generator;
+namespace Yoakke.SynKit.SyntaxTree.Generator;
 
 /// <summary>
 /// Description of a single visitor.

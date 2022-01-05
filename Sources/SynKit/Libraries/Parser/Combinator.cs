@@ -4,10 +4,10 @@
 
 using System;
 using System.Collections.Generic;
-using Yoakke.Lexer;
+using Yoakke.SynKit.Lexer;
 using Yoakke.Streams;
 
-namespace Yoakke.Parser;
+namespace Yoakke.SynKit.Parser;
 
 /// <summary>
 /// Parser combinator logic implementation.

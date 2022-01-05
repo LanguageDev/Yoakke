@@ -5,7 +5,7 @@
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 
-namespace Yoakke.Lexer.Generator;
+namespace Yoakke.SynKit.Lexer.Generator;
 
 /// <summary>
 /// Describes a declared lexer.

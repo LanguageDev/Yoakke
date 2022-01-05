@@ -8,7 +8,7 @@ using System.Collections.Generic.Polyfill;
 using System.Linq;
 using System.Text;
 
-namespace Yoakke.Automata.Internal;
+namespace Yoakke.SynKit.Automata.Internal;
 
 /// <summary>
 /// Trivially implementable algorithms, to avoid duplication.

@@ -2,7 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
-namespace Yoakke.Text;
+namespace Yoakke.SynKit.Text;
 
 /// <summary>
 /// Represents a range in some source file.

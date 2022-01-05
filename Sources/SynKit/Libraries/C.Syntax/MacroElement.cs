@@ -2,7 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
-namespace Yoakke.C.Syntax;
+namespace Yoakke.SynKit.C.Syntax;
 
 /// <summary>
 /// An element in a macro body.

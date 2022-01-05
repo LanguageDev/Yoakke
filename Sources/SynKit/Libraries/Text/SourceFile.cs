@@ -8,7 +8,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Yoakke.Text;
+namespace Yoakke.SynKit.Text;
 
 /// <summary>
 /// A source file implementation with <see cref="TextReader"/>s.

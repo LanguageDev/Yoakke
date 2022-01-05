@@ -4,7 +4,7 @@
 
 using Microsoft.CodeAnalysis;
 
-namespace Yoakke.SyntaxTree.Generator;
+namespace Yoakke.SynKit.SyntaxTree.Generator;
 
 /// <summary>
 /// A simple structure describing overrides for a section of the tree visitor.

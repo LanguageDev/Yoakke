@@ -6,7 +6,7 @@ using System;
 using System.Text;
 using Yoakke.Streams;
 
-namespace Yoakke.Lexer;
+namespace Yoakke.SynKit.Lexer;
 
 /// <summary>
 /// Extensions for <see cref="ICharStream"/>.

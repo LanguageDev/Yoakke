@@ -4,7 +4,7 @@
 
 using System;
 
-namespace Yoakke.Lexer.Attributes;
+namespace Yoakke.SynKit.Lexer.Attributes;
 
 /// <summary>
 /// An attribute to define a token type in terms of a literal string to match.

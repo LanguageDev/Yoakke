@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Yoakke.Reporting.Present;
+namespace Yoakke.SynKit.Reporting.Present;
 
 /// <summary>
 /// The style descriptor used unside the presenter.

@@ -9,7 +9,7 @@ using System.Collections.Generic.Polyfill;
 using System.Linq;
 using System.Text;
 
-namespace Yoakke.Automata;
+namespace Yoakke.SynKit.Automata;
 
 /// <summary>
 /// Represents a set of states that result from transformations merging multiple states.

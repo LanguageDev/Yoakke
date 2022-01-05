@@ -4,7 +4,7 @@
 
 using System;
 
-namespace Yoakke.Parser;
+namespace Yoakke.SynKit.Parser;
 
 /// <summary>
 /// Factory methods for <see cref="ParseResult{T}"/>.

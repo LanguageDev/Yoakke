@@ -4,7 +4,7 @@
 
 using System;
 
-namespace Yoakke.Parser.Attributes;
+namespace Yoakke.SynKit.Parser.Attributes;
 
 /// <summary>
 /// An attribute to annotate a right-associative operator.

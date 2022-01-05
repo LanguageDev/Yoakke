@@ -4,7 +4,7 @@
 
 using System;
 
-namespace Yoakke.Lexer.Attributes;
+namespace Yoakke.SynKit.Lexer.Attributes;
 
 /// <summary>
 /// An attribute to annotate the source character stream for the generated lexer.

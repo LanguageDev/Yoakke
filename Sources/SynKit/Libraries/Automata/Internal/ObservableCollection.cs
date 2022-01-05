@@ -7,7 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Yoakke.Automata.Internal;
+namespace Yoakke.SynKit.Automata.Internal;
 
 /// <summary>
 /// Represents an observable collection that wraps an existing collection to publish modification events.

@@ -6,10 +6,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Yoakke.Automata.RegExAst;
+using Yoakke.SynKit.Automata.RegExAst;
 using Yoakke.Collections.Intervals;
 
-namespace Yoakke.Lexer.Generator;
+namespace Yoakke.SynKit.Lexer.Generator;
 
 /// <summary>
 /// A parser that can parse regular expressions into <see cref="IRegExNode{Char}"/>s.

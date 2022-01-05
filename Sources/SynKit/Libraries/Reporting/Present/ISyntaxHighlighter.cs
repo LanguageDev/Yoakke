@@ -3,9 +3,9 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System.Collections.Generic;
-using Yoakke.Text;
+using Yoakke.SynKit.Text;
 
-namespace Yoakke.Reporting.Present;
+namespace Yoakke.SynKit.Reporting.Present;
 
 /// <summary>
 /// An interface to provide custom syntax highlighting for source text.

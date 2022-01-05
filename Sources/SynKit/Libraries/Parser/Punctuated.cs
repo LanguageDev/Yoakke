@@ -6,7 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Yoakke.Parser;
+namespace Yoakke.SynKit.Parser;
 
 /// <summary>
 /// Represents a punctuated sequence of parsed values.

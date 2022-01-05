@@ -4,7 +4,7 @@
 
 using System.IO;
 
-namespace Yoakke.Text;
+namespace Yoakke.SynKit.Text;
 
 /// <summary>
 /// Represents a source file.

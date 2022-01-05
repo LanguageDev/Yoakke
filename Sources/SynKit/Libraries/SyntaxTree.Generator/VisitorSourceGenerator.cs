@@ -12,7 +12,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Yoakke.SourceGenerator.Common;
 using Yoakke.SourceGenerator.Common.RoslynExtensions;
 
-namespace Yoakke.SyntaxTree.Generator;
+namespace Yoakke.SynKit.SyntaxTree.Generator;
 
 /// <summary>
 /// Generator for visitor functionality.
@@ -60,7 +60,7 @@ public class VisitorSourceGenerator : GeneratorBase
     /// Initializes a new instance of the <see cref="VisitorSourceGenerator"/> class.
     /// </summary>
     public VisitorSourceGenerator()
-        : base("Yoakke.SyntaxTree.Generator")
+        : base("Yoakke.SynKit.SyntaxTree.Generator")
     {
     }
 
@@ -75,7 +75,7 @@ public class VisitorSourceGenerator : GeneratorBase
     {
         var receiver = (SyntaxReceiver)syntaxReceiver;
 
-        this.RequireLibrary("Yoakke.SyntaxTree");
+        this.RequireLibrary("Yoakke.SynKit.SyntaxTree");
 
         // Now we build visitor descriptions for classes annotated with visitor attributes
         var visitors = new List<Visitor>();

@@ -3,9 +3,9 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System;
-using Yoakke.Lexer.Attributes;
+using Yoakke.SynKit.Lexer.Attributes;
 
-namespace Yoakke.Lexer.Sample;
+namespace Yoakke.SynKit.Lexer.Sample;
 
 public enum TokenType
 {

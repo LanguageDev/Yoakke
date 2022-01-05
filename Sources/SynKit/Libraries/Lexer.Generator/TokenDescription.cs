@@ -4,7 +4,7 @@
 
 using Microsoft.CodeAnalysis;
 
-namespace Yoakke.Lexer.Generator;
+namespace Yoakke.SynKit.Lexer.Generator;
 
 /// <summary>
 /// A single description of what a token is.

@@ -4,10 +4,10 @@
 
 using System.IO;
 using Xunit;
-using Yoakke.Reporting.Present;
-using Yoakke.Text;
+using Yoakke.SynKit.Reporting.Present;
+using Yoakke.SynKit.Text;
 
-namespace Yoakke.Reporting.Tests;
+namespace Yoakke.SynKit.Reporting.Tests;
 
 public class TextPresenterTests
 {

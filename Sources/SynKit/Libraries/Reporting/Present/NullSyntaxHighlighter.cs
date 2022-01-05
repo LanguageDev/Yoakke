@@ -4,9 +4,9 @@
 
 using System;
 using System.Collections.Generic;
-using Yoakke.Text;
+using Yoakke.SynKit.Text;
 
-namespace Yoakke.Reporting.Present;
+namespace Yoakke.SynKit.Reporting.Present;
 
 /// <summary>
 /// A syntax highlighter that does nothing. Serves as a default.

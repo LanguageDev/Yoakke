@@ -4,7 +4,7 @@
 
 using System.Collections.Generic;
 
-namespace Yoakke.C.Syntax;
+namespace Yoakke.SynKit.C.Syntax;
 
 /// <summary>
 /// The interface of how all C pre-processors should work.

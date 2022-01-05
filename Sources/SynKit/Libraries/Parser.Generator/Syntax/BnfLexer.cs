@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Yoakke.Parser.Generator.Syntax;
+namespace Yoakke.SynKit.Parser.Generator.Syntax;
 
 /// <summary>
 /// The lexer for BNF grammar, producing <see cref="BnfToken"/>s.

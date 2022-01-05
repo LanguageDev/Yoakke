@@ -3,9 +3,9 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using Yoakke.Streams;
-using Yoakke.Text;
+using Yoakke.SynKit.Text;
 
-namespace Yoakke.Lexer;
+namespace Yoakke.SynKit.Lexer;
 
 /// <summary>
 /// A general character stream to read from for lexers.

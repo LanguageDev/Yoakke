@@ -7,9 +7,9 @@ using System.Collections.Generic;
 using System.Collections.Generic.Polyfill;
 using System.IO;
 using System.Linq;
-using Yoakke.Text;
+using Yoakke.SynKit.Text;
 
-namespace Yoakke.Reporting.Present;
+namespace Yoakke.SynKit.Reporting.Present;
 
 /// <summary>
 /// A diagnostic presenter that just writes to a text buffer or console with color.

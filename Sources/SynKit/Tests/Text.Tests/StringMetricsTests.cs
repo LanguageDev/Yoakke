@@ -4,7 +4,7 @@
 
 using Xunit;
 
-namespace Yoakke.Text.Tests;
+namespace Yoakke.SynKit.Text.Tests;
 
 public class StringMetricsTests
 {

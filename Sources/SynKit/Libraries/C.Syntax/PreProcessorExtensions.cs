@@ -3,9 +3,9 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System;
-using Yoakke.C.Syntax.Macros;
+using Yoakke.SynKit.C.Syntax.Macros;
 
-namespace Yoakke.C.Syntax;
+namespace Yoakke.SynKit.C.Syntax;
 
 /// <summary>
 /// Extension functionality for <see cref="IPreProcessor"/>s.

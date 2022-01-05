@@ -4,11 +4,11 @@
 
 using System.Collections.Generic;
 using Xunit;
-using Yoakke.Lexer;
-using Yoakke.Parser.Attributes;
+using Yoakke.SynKit.Lexer;
+using Yoakke.SynKit.Parser.Attributes;
 using Yoakke.Streams;
 
-namespace Yoakke.Parser.Tests;
+namespace Yoakke.SynKit.Parser.Tests;
 
 // https://github.com/LanguageDev/Yoakke/issues/17
 public partial class Issue17Tests

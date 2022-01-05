@@ -4,7 +4,7 @@
 
 using Yoakke.Streams;
 
-namespace Yoakke.Lexer;
+namespace Yoakke.SynKit.Lexer;
 
 /// <summary>
 /// Extensions for an <see cref="ILexer{TToken}"/>.

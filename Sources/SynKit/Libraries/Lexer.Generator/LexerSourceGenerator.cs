@@ -10,13 +10,13 @@ using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Yoakke.Automata;
-using Yoakke.Automata.Dense;
+using Yoakke.SynKit.Automata;
+using Yoakke.SynKit.Automata.Dense;
 using Yoakke.Collections.Intervals;
 using Yoakke.SourceGenerator.Common;
 using Yoakke.SourceGenerator.Common.RoslynExtensions;
 
-namespace Yoakke.Lexer.Generator;
+namespace Yoakke.SynKit.Lexer.Generator;
 
 /// <summary>
 /// Source generator for lexers.
@@ -57,7 +57,7 @@ public class LexerSourceGenerator : GeneratorBase
     /// Initializes a new instance of the <see cref="LexerSourceGenerator"/> class.
     /// </summary>
     public LexerSourceGenerator()
-        : base("Yoakke.Lexer.Generator")
+        : base("Yoakke.SynKit.Lexer.Generator")
     {
     }
 
@@ -72,7 +72,7 @@ public class LexerSourceGenerator : GeneratorBase
     {
         var receiver = (SyntaxReceiver)syntaxReceiver;
 
-        this.RequireLibrary("Yoakke.Lexer");
+        this.RequireLibrary("Yoakke.SynKit.Lexer");
 
         var lexerAttribute = this.LoadSymbol(TypeNames.LexerAttribute);
 
@@ -198,7 +198,7 @@ public {className}(string text) : this(new {TypeNames.StringReader}(text)) {{ }}
         var (genericTypes, genericConstraints) = lexerClass.GetGenericCrud();
         return $@"
 using Yoakke.Streams;
-using Yoakke.Lexer;
+using Yoakke.SynKit.Lexer;
 #pragma warning disable CS0162
 {prefix}
 partial {lexerClass.GetTypeKindName()} {className}{genericTypes} : {TypeNames.ILexer}<{tokenName}> {genericConstraints}

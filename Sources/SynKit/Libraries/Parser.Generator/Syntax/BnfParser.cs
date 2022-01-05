@@ -5,9 +5,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using Yoakke.Parser.Generator.Ast;
+using Yoakke.SynKit.Parser.Generator.Ast;
 
-namespace Yoakke.Parser.Generator.Syntax;
+namespace Yoakke.SynKit.Parser.Generator.Syntax;
 
 /// <summary>
 /// The parser for BNF grammar, that creates the <see cref="BnfAst"/>.

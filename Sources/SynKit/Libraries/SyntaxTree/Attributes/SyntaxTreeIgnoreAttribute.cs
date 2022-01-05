@@ -4,7 +4,7 @@
 
 using System;
 
-namespace Yoakke.SyntaxTree.Attributes;
+namespace Yoakke.SynKit.SyntaxTree.Attributes;
 
 /// <summary>
 /// An attribute to mark a member be ignored by the syntax tree generator.

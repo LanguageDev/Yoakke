@@ -3,11 +3,11 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System;
-using Yoakke.Lexer;
-using Yoakke.Lexer.Attributes;
-using Yoakke.Parser.Attributes;
+using Yoakke.SynKit.Lexer;
+using Yoakke.SynKit.Lexer.Attributes;
+using Yoakke.SynKit.Parser.Attributes;
 
-namespace Yoakke.Parser.Sample;
+namespace Yoakke.SynKit.Parser.Sample;
 
 public enum TokenType
 {

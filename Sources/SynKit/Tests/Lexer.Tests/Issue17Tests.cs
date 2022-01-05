@@ -4,9 +4,9 @@
 
 using System.IO;
 using Xunit;
-using Yoakke.Lexer.Attributes;
+using Yoakke.SynKit.Lexer.Attributes;
 
-namespace Yoakke.Lexer.Tests;
+namespace Yoakke.SynKit.Lexer.Tests;
 
 // https://github.com/LanguageDev/Yoakke/issues/17
 public partial class Issue17Tests

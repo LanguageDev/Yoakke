@@ -1,6 +1,6 @@
 using System;
 
-namespace Yoakke.Lexer;
+namespace Yoakke.SynKit.Lexer;
 
 /// <summary>
 /// Represents an atom in a language grammar as the lowest level element (atom/terminal) of parsing.

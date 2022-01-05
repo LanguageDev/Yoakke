@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Yoakke.Streams;
 
-namespace Yoakke.Parser.Tests;
+namespace Yoakke.SynKit.Parser.Tests;
 
 public class CombinatorTests
 {

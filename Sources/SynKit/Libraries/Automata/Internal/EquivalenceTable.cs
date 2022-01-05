@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using Yoakke.Collections;
 
-namespace Yoakke.Automata.Internal;
+namespace Yoakke.SynKit.Automata.Internal;
 
 /// <summary>
 /// A helper to determine state equivalence.

@@ -2,7 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
-namespace Yoakke.SyntaxTree;
+namespace Yoakke.SynKit.SyntaxTree;
 
 /// <summary>
 /// Interface for all syntax tree nodes.

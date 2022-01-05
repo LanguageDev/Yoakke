@@ -9,12 +9,12 @@ using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Yoakke.Parser.Generator.Ast;
-using Yoakke.Parser.Generator.Syntax;
+using Yoakke.SynKit.Parser.Generator.Ast;
+using Yoakke.SynKit.Parser.Generator.Syntax;
 using Yoakke.SourceGenerator.Common;
 using Yoakke.SourceGenerator.Common.RoslynExtensions;
 
-namespace Yoakke.Parser.Generator;
+namespace Yoakke.SynKit.Parser.Generator;
 
 /// <summary>
 /// A source generator that generates a parser from rule annotations over transformer functions.
@@ -55,7 +55,7 @@ public class ParserSourceGenerator : GeneratorBase
     /// Initializes a new instance of the <see cref="ParserSourceGenerator"/> class.
     /// </summary>
     public ParserSourceGenerator()
-        : base("Yoakke.Parser.Generator")
+        : base("Yoakke.SynKit.Parser.Generator")
     {
     }
 
@@ -70,7 +70,7 @@ public class ParserSourceGenerator : GeneratorBase
     {
         var receiver = (SyntaxReceiver)syntaxReceiver;
 
-        this.RequireLibrary("Yoakke.Parser");
+        this.RequireLibrary("Yoakke.SynKit.Parser");
 
         var parserAttr = this.LoadSymbol(TypeNames.ParserAttribute);
 
@@ -173,9 +173,9 @@ public {className}({TypeNames.IEnumerable}<{tokenType}> tokens) : this(new {Type
         var (prefix, suffix) = parserClass.ContainingSymbol.DeclareInsideExternally();
         var (genericTypes, genericConstraints) = parserClass.GetGenericCrud();
         return $@"
-using Yoakke.Lexer;
+using Yoakke.SynKit.Lexer;
 using Yoakke.Streams;
-{prefix} 
+{prefix}
 partial {parserClass.GetTypeKindName()} {className}{genericTypes} {genericConstraints}
 {{
     {ctors}

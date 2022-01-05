@@ -2,9 +2,9 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
-using Yoakke.Parser.Generator.Ast;
+using Yoakke.SynKit.Parser.Generator.Ast;
 
-namespace Yoakke.Parser.Generator;
+namespace Yoakke.SynKit.Parser.Generator;
 
 /// <summary>
 /// Represents a single BNF rule-definition.

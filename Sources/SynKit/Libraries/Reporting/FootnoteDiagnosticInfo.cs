@@ -2,7 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
-namespace Yoakke.Reporting;
+namespace Yoakke.SynKit.Reporting;
 
 /// <summary>
 /// A footnote diagnostic information.

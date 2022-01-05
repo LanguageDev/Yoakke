@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using Xunit;
-using Yoakke.Text;
-using Kind = Yoakke.C.Syntax.CTokenType;
+using Yoakke.SynKit.Text;
+using Kind = Yoakke.SynKit.C.Syntax.CTokenType;
 
-namespace Yoakke.C.Syntax.Tests;
+namespace Yoakke.SynKit.C.Syntax.Tests;
 
 public class CLexerTests
 {

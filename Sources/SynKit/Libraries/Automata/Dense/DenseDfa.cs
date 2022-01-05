@@ -10,13 +10,13 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
-using Yoakke.Automata.Internal;
+using Yoakke.SynKit.Automata.Internal;
 using Yoakke.Collections;
 using Yoakke.Collections.Dense;
 using Yoakke.Collections.Graphs;
 using Yoakke.Collections.Intervals;
 
-namespace Yoakke.Automata.Dense;
+namespace Yoakke.SynKit.Automata.Dense;
 
 /// <summary>
 /// A generic dense DFA implementation.

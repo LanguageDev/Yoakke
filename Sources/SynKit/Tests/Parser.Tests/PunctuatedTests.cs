@@ -6,13 +6,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
-using Yoakke.Lexer;
-using Yoakke.Lexer.Attributes;
-using Yoakke.Parser.Attributes;
-using IgnoreAttribute = Yoakke.Lexer.Attributes.IgnoreAttribute;
-using Token = Yoakke.Lexer.IToken<Yoakke.Parser.Tests.PunctuatedTests.TokenType>;
+using Yoakke.SynKit.Lexer;
+using Yoakke.SynKit.Lexer.Attributes;
+using Yoakke.SynKit.Parser.Attributes;
+using IgnoreAttribute = Yoakke.SynKit.Lexer.Attributes.IgnoreAttribute;
+using Token = Yoakke.SynKit.Lexer.IToken<Yoakke.SynKit.Parser.Tests.PunctuatedTests.TokenType>;
 
-namespace Yoakke.Parser.Tests;
+namespace Yoakke.SynKit.Parser.Tests;
 
 public partial class PunctuatedTests
 {

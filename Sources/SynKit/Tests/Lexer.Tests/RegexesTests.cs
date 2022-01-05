@@ -4,9 +4,9 @@
 
 using System;
 using Xunit;
-using Yoakke.Lexer.Attributes;
+using Yoakke.SynKit.Lexer.Attributes;
 
-namespace Yoakke.Lexer.Tests;
+namespace Yoakke.SynKit.Lexer.Tests;
 
 public partial class RegexesTests
 {

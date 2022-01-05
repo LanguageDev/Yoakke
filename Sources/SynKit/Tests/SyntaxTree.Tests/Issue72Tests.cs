@@ -3,10 +3,10 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using Xunit;
-using Yoakke.SyntaxTree.Attributes;
-using Yoakke.SyntaxTree.Tests.Tree;
+using Yoakke.SynKit.SyntaxTree.Attributes;
+using Yoakke.SynKit.SyntaxTree.Tests.Tree;
 
-namespace Yoakke.SyntaxTree.Tests;
+namespace Yoakke.SynKit.SyntaxTree.Tests;
 
 // https://github.com/LanguageDev/Yoakke/issues/72
 public partial class Issue72Tests

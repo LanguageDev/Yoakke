@@ -4,7 +4,7 @@
 
 using Microsoft.CodeAnalysis;
 
-namespace Yoakke.SyntaxTree.Generator;
+namespace Yoakke.SynKit.SyntaxTree.Generator;
 
 /// <summary>
 /// Diagnostics for the syntax tree generator.
@@ -20,7 +20,7 @@ internal static class Diagnostics
         id: "YKSYNTAXTREEGEN001",
         title: "Cannot specify both a return type and a generic return type",
         messageFormat: "Cannot specify both a return type and a generic return type for a visitor",
-        category: "Yoakke.SyntaxTree.Generator",
+        category: "Yoakke.SynKit.SyntaxTree.Generator",
         DiagnosticSeverity.Error,
         isEnabledByDefault: true);
 
@@ -31,7 +31,7 @@ internal static class Diagnostics
         id: "YKSYNTAXTREEGEN002",
         title: "Generic type not defined",
         messageFormat: "The class '{0}' does not define a generic parameter named '{1}'",
-        category: "Yoakke.SyntaxTree.Generator",
+        category: "Yoakke.SynKit.SyntaxTree.Generator",
         DiagnosticSeverity.Error,
         isEnabledByDefault: true);
 

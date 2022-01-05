@@ -1,4 +1,4 @@
-namespace Yoakke.C.Syntax;
+namespace Yoakke.SynKit.C.Syntax;
 
 /// <summary>
 /// Different token kinds for a C token.

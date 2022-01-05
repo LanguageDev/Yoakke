@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Yoakke.Text.Tests;
+namespace Yoakke.SynKit.Text.Tests;
 
 public class RangeTests
 {

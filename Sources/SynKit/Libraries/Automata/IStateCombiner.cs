@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Yoakke.Automata;
+namespace Yoakke.SynKit.Automata;
 
 /// <summary>
 /// A combiner that can combine states and produce new ones for finite automata algorithms.

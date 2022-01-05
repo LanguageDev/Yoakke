@@ -5,7 +5,7 @@
 using System.Collections.Generic;
 using Xunit;
 
-namespace Yoakke.C.Syntax.Tests;
+namespace Yoakke.SynKit.C.Syntax.Tests;
 
 public class CPreProcessorTests
 {

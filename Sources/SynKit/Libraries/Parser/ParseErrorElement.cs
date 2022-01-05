@@ -4,7 +4,7 @@
 
 using System.Collections.Generic;
 
-namespace Yoakke.Parser;
+namespace Yoakke.SynKit.Parser;
 
 /// <summary>
 /// A single error case of parsing.

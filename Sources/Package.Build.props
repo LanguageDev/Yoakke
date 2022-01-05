@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <DocumentationFile>$(MSBuildProjectDirectory)/bin/doc/$(MSBuildProjectName).xml</DocumentationFile>
+    <DocumentationFile>$(MSBuildProjectDirectory)/bin/doc/Yoakke.$(MSBuildProjectName).xml</DocumentationFile>
     <AssemblyName>Yoakke.$(MSBuildProjectName)</AssemblyName>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>Yoakke.$(MSBuildProjectName)</PackageId>

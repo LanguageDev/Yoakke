@@ -3,9 +3,9 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using Xunit;
-using Yoakke.SyntaxTree.Attributes;
+using Yoakke.SynKit.SyntaxTree.Attributes;
 
-namespace Yoakke.SyntaxTree.Tests;
+namespace Yoakke.SynKit.SyntaxTree.Tests;
 
 public partial class GenericVisitorTests
 {

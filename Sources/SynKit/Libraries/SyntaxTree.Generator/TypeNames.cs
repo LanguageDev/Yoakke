@@ -2,14 +2,15 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
-namespace Yoakke.SyntaxTree.Generator;
+namespace Yoakke.SynKit.SyntaxTree.Generator;
 
 /// <summary>
 /// Common type-name constants.
 /// </summary>
 internal static class TypeNames
 {
-    private const string AstNamespace = "Yoakke.SyntaxTree";
+    private const string SynKitNamespace = "Yoakke.SynKit";
+    private const string AstNamespace = $"{SynKitNamespace}.SyntaxTree";
 
     /// <summary>
     /// System.ArgumentOutOfRangeException.

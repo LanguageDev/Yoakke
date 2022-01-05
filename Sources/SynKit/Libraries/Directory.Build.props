@@ -1,3 +1,9 @@
 <Project>
   <Import Project="$(SolutionDir)\Package.Build.props" />
+
+  <PropertyGroup>
+    <DocumentationFile>$(MSBuildProjectDirectory)/bin/doc/Yoakke.SynKit.$(MSBuildProjectName).xml</DocumentationFile>
+    <AssemblyName>Yoakke.SynKit.$(MSBuildProjectName)</AssemblyName>
+    <PackageId>Yoakke.SynKit.$(MSBuildProjectName)</PackageId>
+  </PropertyGroup>
 </Project>

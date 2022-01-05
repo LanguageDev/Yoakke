@@ -6,11 +6,11 @@ using System;
 using System.IO;
 using System.Polyfill;
 using System.Text;
-using Yoakke.Lexer;
+using Yoakke.SynKit.Lexer;
 using Yoakke.Streams;
-using Yoakke.Text;
+using Yoakke.SynKit.Text;
 
-namespace Yoakke.C.Syntax;
+namespace Yoakke.SynKit.C.Syntax;
 
 /// <summary>
 /// A lexer that lexes C source tokens, including preprocessor directives.

@@ -4,7 +4,7 @@
 
 using Xunit;
 
-namespace Yoakke.Lexer.Tests;
+namespace Yoakke.SynKit.Lexer.Tests;
 
 public class TokenTests : TestBase<int>
 {

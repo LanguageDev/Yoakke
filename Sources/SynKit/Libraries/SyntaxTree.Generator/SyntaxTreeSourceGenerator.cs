@@ -10,7 +10,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Yoakke.SourceGenerator.Common;
 using Yoakke.SourceGenerator.Common.RoslynExtensions;
 
-namespace Yoakke.SyntaxTree.Generator;
+namespace Yoakke.SynKit.SyntaxTree.Generator;
 
 /// <summary>
 /// Generator for syntax tree functionality.
@@ -37,7 +37,7 @@ public class SyntaxTreeSourceGenerator : GeneratorBase
     /// Initializes a new instance of the <see cref="SyntaxTreeSourceGenerator"/> class.
     /// </summary>
     public SyntaxTreeSourceGenerator()
-        : base("Yoakke.SyntaxTree.Generator")
+        : base("Yoakke.SynKit.SyntaxTree.Generator")
     {
     }
 
@@ -52,7 +52,7 @@ public class SyntaxTreeSourceGenerator : GeneratorBase
     {
         var receiver = (SyntaxReceiver)syntaxReceiver;
 
-        this.RequireLibrary("Yoakke.SyntaxTree");
+        this.RequireLibrary("Yoakke.SynKit.SyntaxTree");
 
         // We collect out ast nodes
         // NOTE: False positive since 3.3.2 update

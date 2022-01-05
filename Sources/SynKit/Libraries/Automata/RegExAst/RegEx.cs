@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using Yoakke.Collections.Intervals;
 
-namespace Yoakke.Automata.RegExAst;
+namespace Yoakke.SynKit.Automata.RegExAst;
 
 /// <summary>
 /// Factory methods for <see cref="IRegExNode{TSymbol}"/>s.

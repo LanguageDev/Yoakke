@@ -1,8 +1,8 @@
 using System.Linq;
 using Xunit;
-using Yoakke.Automata.Sparse;
+using Yoakke.SynKit.Automata.Sparse;
 
-namespace Yoakke.Automata.Tests;
+namespace Yoakke.SynKit.Automata.Tests;
 
 public class DfaTests : AutomatonTestBase
 {

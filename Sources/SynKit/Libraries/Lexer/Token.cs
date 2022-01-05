@@ -3,9 +3,9 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System;
-using Range = Yoakke.Text.Range;
+using Range = Yoakke.SynKit.Text.Range;
 
-namespace Yoakke.Lexer;
+namespace Yoakke.SynKit.Lexer;
 
 /// <summary>
 /// A default implementation for <see cref="IToken{TKind}"/>.

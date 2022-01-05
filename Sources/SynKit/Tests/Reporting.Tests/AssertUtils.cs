@@ -4,7 +4,7 @@
 
 using Xunit;
 
-namespace Yoakke.Reporting.Tests;
+namespace Yoakke.SynKit.Reporting.Tests;
 
 /// <summary>
 /// Assertion helpers.
