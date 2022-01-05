@@ -38,12 +38,16 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BADE4D16-62B1-41F1-9BD7-31901BE84E33}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
-		Benchmark.Build.props = Benchmark.Build.props
-		Example.Build.props = Example.Build.props
-		Package.Build.props = Package.Build.props
-		Shared.Build.props = Shared.Build.props
-		SourceGenerator.Build.props = SourceGenerator.Build.props
-		Test.Build.props = Test.Build.props
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Props", "Props", "{60ED8207-3517-46AB-9231-A04B08DC65A2}"
+	ProjectSection(SolutionItems) = preProject
+		Props\Benchmark.Build.props = Props\Benchmark.Build.props
+		Props\Example.Build.props = Props\Example.Build.props
+		Props\Package.Build.props = Props\Package.Build.props
+		Props\Shared.Build.props = Props\Shared.Build.props
+		Props\SourceGenerator.Build.props = Props\SourceGenerator.Build.props
+		Props\Test.Build.props = Props\Test.Build.props
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "C.Syntax", "SynKit\Libraries\C.Syntax\C.Syntax.csproj", "{4A9A90B2-FA50-44D9-9B91-88B0638A7286}"

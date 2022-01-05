@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="$(SolutionDir)\SourceGenerator.Build.props" />
+  <Import Project="$(SolutionDir)\Props\SourceGenerator.Build.props" />
 
   <ItemGroup>
     <Compile Include="$(SolutionDir)/Shared\Libraries/Collections/**/*.cs" Link="Collections" />
