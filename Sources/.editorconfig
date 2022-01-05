@@ -13,7 +13,7 @@ indent_size = 2
 [*.cs]
 
 indent_size = 4
-file_header_template = Copyright (c) 2021 Yoakke.\nLicensed under the Apache License, Version 2.0.\nSource repository: https://github.com/LanguageDev/Yoakke
+file_header_template = Copyright (c) 2021-2022 Yoakke.\nLicensed under the Apache License, Version 2.0.\nSource repository: https://github.com/LanguageDev/Yoakke
 
 # this. qualification
 dotnet_style_qualification_for_field = true:warning
