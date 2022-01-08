@@ -87,6 +87,17 @@
         "doc",
         "infra"
       ]
+    },
+    {
+      "login": "ForNeVeR",
+      "name": "Friedrich von Never",
+      "avatar_url": "https://avatars.githubusercontent.com/u/92793?v=4",
+      "profile": "https://fornever.me/",
+      "contributions": [
+        "bug",
+        "ideas",
+        "userTesting"
+      ]
     }
   ],
   "contributorsPerLine": 7,
