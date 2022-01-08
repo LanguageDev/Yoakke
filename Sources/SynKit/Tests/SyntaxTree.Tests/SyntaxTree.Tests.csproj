@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="$(SolutionDir)\SynKit\Libraries\SyntaxTree\SyntaxTree.csproj" />
+    <ProjectReference Include="$(SolutionDir)\SynKit\Libraries\SyntaxTree.Generator\SyntaxTree.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="False" />
+    <ProjectReference Include="$(SolutionDir)\SynKit\Tests\SyntaxTree.Tests.Tree\SyntaxTree.Tests.Tree.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="$(SolutionDir)\Props\SourceGenerator.Build.props" />
+
+  <ItemGroup>
+    <Compile Include="$(SolutionDir)/Shared\Libraries/Collections/**/*.cs" Link="Collections" />
+    <Compile Remove="$(SolutionDir)/Shared\Libraries/Collections/obj/**/*.cs" />
+
+    <Compile Include="$(SolutionDir)/SynKit\Libraries/Automata/**/*.cs" Link="Automata" />
+    <Compile Remove="$(SolutionDir)/SynKit\Libraries/Automata/obj/**/*.cs" />
+  </ItemGroup>
+</Project>

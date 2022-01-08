@@ -1,0 +1,30 @@
+<!-- Packaged project settings -->
+<Project>
+  <Import Project="Shared.Build.props" />
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DocumentationFile>$(MSBuildProjectDirectory)/bin/doc/Yoakke.$(MSBuildProjectName).xml</DocumentationFile>
+    <AssemblyName>Yoakke.$(MSBuildProjectName)</AssemblyName>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>Yoakke.$(MSBuildProjectName)</PackageId>
+    <PackageIcon>YoakkeLogo.png</PackageIcon>
+    <Authors>LanguageDev team</Authors>
+    <Description>A collection of .NET libraries to help compiler development.</Description>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageTags>Yoakke, library, framework, infrastructure, lexer, parser, compiler, interpreter</PackageTags>
+    <Copyright>Copyright (c) 2021 LanguageDev team</Copyright>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/LanguageDev/Yoakke</RepositoryUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="$(SolutionDir)\..\.github\resources\YoakkeLogo.png" Visible="False">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+</Project>

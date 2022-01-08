@@ -1,0 +1,12 @@
+<!-- Shared settings among all props files -->
+<Project>
+  <PropertyGroup>
+    <!-- Language-level settings -->
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+
+    <!-- Analysis -->
+    <AnalysisLevel>latest</AnalysisLevel>
+    <WarningLevel>9999</WarningLevel>
+  </PropertyGroup>
+</Project>

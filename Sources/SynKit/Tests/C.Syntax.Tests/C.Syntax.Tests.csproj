@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="$(SolutionDir)\SynKit\Libraries\C.Syntax\C.Syntax.csproj" />
+  </ItemGroup>
+</Project>
