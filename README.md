@@ -32,33 +32,22 @@ If you are experiencing build issues when using Visual Studio around Source Gene
 
 ## What components are there?
 
-- Lexing: Lexers can be defined completely declaratively, as regular expression annotations - inspired by [Logos](https://github.com/maciejhirsz/logos) - over token types. Do not worry, the regular expressions are compiled into _Deterministic Finite Automatas_, so the resulting code is a lot more efficient, than your average RegEx engine.
-- Parsing: Parsers are defined using a BNF-like notation as annotations over methods that produce the syntax node for the appropriate rule - inspired by [rply](https://github.com/alex/rply/). The generated parser is a recursive descent one, but supports automatic transformation of direct left-recursion and precedence tables.
-- Syntax trees: ASTs usually are a pain to implement because of all the crud that goes on with them in C#. With an annotation you can generate equality and hash implementations for AST nodes, or define visitors for them.
-- Symbols: While lexical symbols are not too complex to implement, most compilers will need the same abstractions for it. Hence, this is also provided in a small library.
-- Error reporting: Nice error messages on console are a pain. You have to align arrows, properly color text segments, number lines and so on. Fortunately, there is a component that provides you a nice fluent API - inspired by the beautiful [codespan](https://github.com/brendanzab/codespan) library - to generate a message, render it however you want to. You can even create a custom syntax-highlighter for source lines!
-- Language Server: [The Language Server Protocol](https://microsoft.github.io/language-server-protocol/) defines a generic way for language tools to communicate with text editors. A library already implements the protocol, you just need to provide your own handler for events!
+The most usable component is probably the syntax toolkit, called [SynKit](https://github.com/LanguageDev/Yoakke/tree/master/Sources/SynKit). There are many more components planned, see the next section for the roadmap.
 
 ## Library roadmap
 
 This is a list of the libraries that are planned for implementation, along with their status:
 
-| Library                                     | Status | Nuget ![Nuget](https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/NuGet_project_logo.svg/16px-NuGet_project_logo.svg.png)  | Notes |
-| ------------------------------------------- | :------: | ---- | ----- |
-| Lexer                                       | 🆗      | [![Nuget version (Yoakke.Lexer)](https://img.shields.io/nuget/v/Yoakke.Lexer.svg?logo=nuget&style=flat-square&logoColor=white&labelColor=004880&logoWidth=18&label=Yoakke.Lexer)](https://www.nuget.org/packages/Yoakke.Lexer) <br /> [![Nuget version (Yoakke.Lexer.Generator)](https://img.shields.io/nuget/v/Yoakke.Lexer.Generator.svg?logo=nuget&style=flat-square&logoColor=white&labelColor=004880&logoWidth=18&label=Yoakke.Lexer.Generator)](https://www.nuget.org/packages/Yoakke.Lexer.Generator) |       |
-| Parser                                      | 🆗      | [![Nuget version (Yoakke.Parser)](https://img.shields.io/nuget/v/Yoakke.Parser.svg?logo=nuget&style=flat-square&logoColor=white&labelColor=004880&logoWidth=18&label=Yoakke.Parser)](https://www.nuget.org/packages/Yoakke.Parser)<br /> [![Nuget version (Yoakke.Parser.Generator)](https://img.shields.io/nuget/v/Yoakke.Parser.Generator.svg?logo=nuget&style=flat-square&logoColor=white&labelColor=004880&logoWidth=18&label=Yoakke.Parser.Generator)](https://www.nuget.org/packages/Yoakke.Parser.Generator) |       |
-| Error message reporting                     | 🆗      | [![Nuget version (Yoakke.Reporting)](https://img.shields.io/nuget/v/Yoakke.Reporting.svg?logo=nuget&style=flat-square&logoColor=white&labelColor=004880&logoWidth=18&label=Yoakke.Reporting)](https://www.nuget.org/packages/Yoakke.Reporting) |       |
-| AST generator, visitor                      | 🆗      | [![Nuget version (Yoakke.SyntaxTree)](https://img.shields.io/nuget/v/Yoakke.SyntaxTree.svg?logo=nuget&style=flat-square&logoColor=white&labelColor=004880&logoWidth=18&label=Yoakke.SyntaxTree)](https://www.nuget.org/packages/Yoakke.SyntaxTree) <br /> [![Nuget version (Yoakke.SyntaxTree.Generator)](https://img.shields.io/nuget/v/Yoakke.SyntaxTree.Generator.svg?logo=nuget&style=flat-square&logoColor=white&labelColor=004880&logoWidth=18&label=Yoakke.SyntaxTree.Generator)](https://www.nuget.org/packages/Yoakke.SyntaxTree.Generator) |       |
-| Lexical symbols                             | 🆗      | [![Nuget version (Yoakke.Symbols)](https://img.shields.io/nuget/v/Yoakke.Symbols.svg?logo=nuget&style=flat-square&logoColor=white&labelColor=004880&logoWidth=18&label=Yoakke.Symbols)](https://www.nuget.org/packages/Yoakke.Symbols) |       |
-| Language server protocol                    | 🚧      | [![Nuget version (Yoakke.Lsp.Model)](https://img.shields.io/nuget/v/Yoakke.Lsp.Model.svg?logo=nuget&style=flat-square&logoColor=white&labelColor=004880&logoWidth=18&label=Yoakke.Lsp.Model)](https://www.nuget.org/packages/Yoakke.Lsp.Model) <br /> [![Nuget version (Yoakke.Lsp.Server)](https://img.shields.io/nuget/v/Yoakke.Lsp.Server.svg?logo=nuget&style=flat-square&logoColor=white&labelColor=004880&logoWidth=18&label=Yoakke.Lsp.Server)](https://www.nuget.org/packages/Yoakke.Lsp.Server) |       |
-| C syntax <br /> (pre-processor, lexer, parser)     | 🚧      | [![Nuget version (Yoakke.C.Syntax)](https://img.shields.io/nuget/v/Yoakke.C.Syntax.svg?logo=nuget&style=flat-square&logoColor=white&labelColor=004880&logoWidth=18&label=Yoakke.C.Syntax)](https://www.nuget.org/packages/Yoakke.C.Syntax) |       |
-| Type-system                                 | 📝      |      |       |
-| Virtual Machine                             | 📝      |      |       |
-| X86 Assembly                                | 🚧      | [![Nuget version (Yoakke.Platform.X86)](https://img.shields.io/nuget/v/Yoakke.Platform.X86.svg?logo=nuget&style=flat-square&logoColor=white&labelColor=004880&logoWidth=18&label=Yoakke.Platform.X86)](https://www.nuget.org/packages/Yoakke.Platform.X86)|       |
-| Debugger                                    | 📝      |      |       |
-| Dependency system <br /> (incremental compilation) | 📝      |      |       |
-| Debug adapter protocol                      | 📝      |      |       |
+- SynKit (🆗): A syntax toolkit to cover most syntax needs
+  - Lexer (🆗)
+  - Parser (🆗)
+  - Error reporting (🆗)
+- Language Server Protocol (📝)
+- Custom IR and VM (📝)
+- Native backends (📝)
+- C front-end (🚧)
 
+Legend
 - Done: ✅
 - Consider mostly done: 🆗
 - Work in progress: 🚧
