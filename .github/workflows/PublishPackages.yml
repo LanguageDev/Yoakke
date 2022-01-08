@@ -20,6 +20,6 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: Yoakke
-        path: Sources/Core/**/*${{ github.event.release.tag_name }}.nupkg
+        path: Sources/**/*${{ github.event.release.tag_name }}.nupkg
     - name: Upload to NuGet.org
-      run: dotnet nuget push Sources/Core/**/*${{ github.event.release.tag_name }}.nupkg --api-key ${{ secrets.NUGET_TOKEN }} --source https://api.nuget.org/v3/index.json --no-symbols true
+      run: dotnet nuget push Sources/**/*${{ github.event.release.tag_name }}.nupkg --api-key ${{ secrets.NUGET_TOKEN }} --source https://api.nuget.org/v3/index.json --no-symbols true
