@@ -23,6 +23,6 @@ jobs:
     - name: Build and package
       run: dotnet build Sources/Yoakke.sln --configuration Release /p:VersionPrefix=${{ steps.current-time.outputs.formattedTime }} /p:VersionSuffix=nightly /p:PackageReleaseNotes="Nightly build"
     - name: Clean up NuGet.org packages
-      run: dotnet run --project Sources/Tools/NugetMaintainer/NugetMaintainer.csproj -- --local-root Sources --prefix Yoakke --owner LanguageDev --api-key ${{ secrets.NUGET_TOKEN }} --nightly-suffix nightly --timestamp ${{ steps.current-time.outputs.formattedTime }} --timestamp-format yyyy.M.d-H.m.s- --lookbehind-days 3 --delay-between-requests 5
+      run: dotnet run --project Sources/Tools/NugetMaintainer/NugetMaintainer.csproj -- --local-root Sources --prefix Yoakke --owner LanguageDev --api-key ${{ secrets.NUGET_TOKEN }} --nightly-suffix nightly --timestamp ${{ steps.current-time.outputs.formattedTime }} --timestamp-format yyyy.M.d-H.m.s- --lookbehind-days 3 --delay-between-requests 15
     - name: Upload to NuGet.org
       run: dotnet nuget push Sources/**/*${{ steps.current-time.outputs.formattedTime }}-nightly.nupkg --api-key ${{ secrets.NUGET_TOKEN }} --source https://api.nuget.org/v3/index.json --no-symbols true
