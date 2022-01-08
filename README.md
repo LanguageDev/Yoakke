@@ -12,7 +12,7 @@
 <a href="https://docs.microsoft.com/en-us/dotnet/csharp/"><img src="https://img.shields.io/badge/language-C%23-%23178600" title="Go To C# Documentation"></a>
 <a href="https://www.nuget.org/packages?q=Yoakke+owner%3ALanguageDev"><img src="https://img.shields.io/nuget/v/Yoakke.Lexer.svg?logo=nuget" title="Go To Nuget Package" /></a>
 <a href="https://languagedev.github.io/Yoakke"><img src="https://github.com/LanguageDev/Yoakke/blob/master/.github/resources/DocfxBadge.svg?raw=true" title="Go To Docfx Documentation"></a><!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-12-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-13-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 ## What is Yoakke?
@@ -100,6 +100,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="http://furesoft.ml/"><img src="https://avatars.githubusercontent.com/u/4117602?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Chris</b></sub></a><br /><a href="https://github.com/LanguageDev/Yoakke/issues?q=author%3Afuresoft" title="Bug reports">🐛</a> <a href="#ideas-furesoft" title="Ideas, Planning, & Feedback">🤔</a></td>
     <td align="center"><a href="https://github.com/sharwell"><img src="https://avatars.githubusercontent.com/u/1408396?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Sam Harwell</b></sub></a><br /><a href="https://github.com/LanguageDev/Yoakke/issues?q=author%3Asharwell" title="Bug reports">🐛</a></td>
     <td align="center"><a href="https://coletobin.com"><img src="https://avatars.githubusercontent.com/u/11381599?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Cole Tobin</b></sub></a><br /><a href="https://github.com/LanguageDev/Yoakke/commits?author=colejohnson66" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://bandism.net/"><img src="https://avatars.githubusercontent.com/u/22633385?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Ikko Ashimine</b></sub></a><br /><a href="https://github.com/LanguageDev/Yoakke/commits?author=eltociear" title="Documentation">📖</a></td>
   </tr>
 </table>
 
