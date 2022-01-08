@@ -87,6 +87,16 @@
         "doc",
         "infra"
       ]
+    },
+    {
+      "login": "kant2002",
+      "name": "Andrii Kurdiumov",
+      "avatar_url": "https://avatars.githubusercontent.com/u/4257079?v=4",
+      "profile": "https://codevision.medium.com/",
+      "contributions": [
+        "code",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
