@@ -5,7 +5,7 @@
         {
           "src": "../../",
           "files": [
-            "Sources/Core/**.csproj"
+            "Sources/**.csproj"
           ]
         }
       ],
