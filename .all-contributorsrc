@@ -3,12 +3,12 @@
   "projectOwner": "LanguageDev",
   "repoType": "github",
   "repoHost": "https://github.com",
-  "files": [
-    "README.md"
-  ],
+  "files": ["README.md"],
   "imageSize": 100,
   "commit": true,
   "commitConvention": "none",
+  "badgeTemplate": "[![All Contributors](https://img.shields.io/badge/all_contributors-<%= contributors.length %>-orange.svg)](#contributors)",
+  "contributorTemplate": "<a href=\"<%= contributor.profile %>\"><img src=\"<%= contributor.avatar_url %>\" width=\"<%= options.imageSize %>px;\" alt=\"\"/><br /><sub><b><%= contributor.name %></b></sub></a>",
   "contributors": [
     {
       "login": "LPeter1997",
@@ -30,7 +30,7 @@
       "login": "WhiteBlackGoose",
       "name": "WhiteBlackGoose",
       "avatar_url": "https://avatars.githubusercontent.com/u/31178401?v=4",
-      "profile": "https://angouri.org/",
+      "profile": "https://github.com/WhiteBlackGoose",
       "contributions": [
         "infra",
         "doc"
@@ -50,7 +50,7 @@
       "login": "skneko",
       "name": "Neko",
       "avatar_url": "https://avatars.githubusercontent.com/u/13376606?v=4",
-      "profile": "http://skneko.moe/",
+      "profile": "https://github.com/skneko",
       "contributions": [
         "ideas",
         "code",
@@ -92,7 +92,7 @@
       "login": "kant2002",
       "name": "Andrii Kurdiumov",
       "avatar_url": "https://avatars.githubusercontent.com/u/4257079?v=4",
-      "profile": "https://codevision.medium.com/",
+      "profile": "https://github.com/kant2002",
       "contributions": [
         "code",
         "test"
@@ -102,7 +102,7 @@
       "login": "ForNeVeR",
       "name": "Friedrich von Never",
       "avatar_url": "https://avatars.githubusercontent.com/u/92793?v=4",
-      "profile": "https://fornever.me/",
+      "profile": "https://github.com/ForNeVeR",
       "contributions": [
         "bug",
         "ideas",
@@ -113,7 +113,7 @@
       "login": "furesoft",
       "name": "Chris",
       "avatar_url": "https://avatars.githubusercontent.com/u/4117602?v=4",
-      "profile": "http://furesoft.ml/",
+      "profile": "https://github.com/furesoft",
       "contributions": [
         "bug",
         "ideas"
@@ -132,7 +132,7 @@
       "login": "colejohnson66",
       "name": "Cole Tobin",
       "avatar_url": "https://avatars.githubusercontent.com/u/11381599?v=4",
-      "profile": "https://coletobin.com",
+      "profile": "https://github.com/colejohnson66",
       "contributions": [
         "doc"
       ]
@@ -141,7 +141,7 @@
       "login": "eltociear",
       "name": "Ikko Ashimine",
       "avatar_url": "https://avatars.githubusercontent.com/u/22633385?v=4",
-      "profile": "https://bandism.net/",
+      "profile": "https://github.com/eltociear",
       "contributions": [
         "doc"
       ]
