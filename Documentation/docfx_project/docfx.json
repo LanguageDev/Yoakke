@@ -6,6 +6,16 @@
           "src": "../../",
           "files": [
             "Sources/**.csproj"
+          ],
+          "exclude": [
+            "**/Examples/**",
+            "**/Benchmarks/**",
+            "**/Tests/**",
+            "**/*.Tests/**",
+            "**/*.Tests.*/**",
+            "**/*.Example/**",
+            "**/*.Sample/**",
+            "**/*.Benchmarks/**"
           ]
         }
       ],
