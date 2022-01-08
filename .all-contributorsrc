@@ -87,6 +87,16 @@
         "doc",
         "infra"
       ]
+    },
+    {
+      "login": "furesoft",
+      "name": "Chris",
+      "avatar_url": "https://avatars.githubusercontent.com/u/4117602?v=4",
+      "profile": "http://furesoft.ml/",
+      "contributions": [
+        "bug",
+        "ideas"
+      ]
     }
   ],
   "contributorsPerLine": 7,
