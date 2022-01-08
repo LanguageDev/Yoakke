@@ -87,6 +87,15 @@
         "doc",
         "infra"
       ]
+    },
+    {
+      "login": "sharwell",
+      "name": "Sam Harwell",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1408396?v=4",
+      "profile": "https://github.com/sharwell",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
