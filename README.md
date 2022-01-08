@@ -107,6 +107,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/FP5i"><img src="https://avatars.githubusercontent.com/u/11299637?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Péter Fónad</b></sub></a><br /><a href="https://github.com/LanguageDev/Yoakke/commits?author=FP5i" title="Documentation">📖</a> <a href="#infra-FP5i" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
   </tr>
   <tr>
+    <td align="center"><a href="https://github.com/sharwell"><img src="https://avatars.githubusercontent.com/u/1408396?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Sam Harwell</b></sub></a><br /><a href="https://github.com/LanguageDev/Yoakke/issues?q=author%3Asharwell" title="Bug reports">🐛</a></td>
     <td align="center"><a href="https://coletobin.com"><img src="https://avatars.githubusercontent.com/u/11381599?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Cole Tobin</b></sub></a><br /><a href="https://github.com/LanguageDev/Yoakke/commits?author=colejohnson66" title="Documentation">📖</a></td>
   </tr>
 </table>
