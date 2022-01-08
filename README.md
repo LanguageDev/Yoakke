@@ -13,7 +13,7 @@
 <a href="https://docs.microsoft.com/en-us/dotnet/csharp/"><img src="https://img.shields.io/badge/language-C%23-%23178600" title="Go To C# Documentation"></a>
 <a href="https://www.nuget.org/packages?q=Yoakke+owner%3ALanguageDev"><img src="https://img.shields.io/nuget/v/Yoakke.Lexer.svg?logo=nuget" title="Go To Nuget Package" /></a>
 <a href="https://languagedev.github.io/Yoakke"><img src="https://github.com/LanguageDev/Yoakke/blob/master/.github/resources/DocfxBadge.svg?raw=true" title="Go To Docfx Documentation"></a><!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-7-orange.svg)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-8-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 	
 ## What is Yoakke?
@@ -105,6 +105,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/hantatsang"><img src="https://avatars.githubusercontent.com/u/11912225?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Sang</b></sub></a><br /><a href="https://github.com/LanguageDev/Yoakke/commits?author=hantatsang" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/lucyelle"><img src="https://avatars.githubusercontent.com/u/35396043?v=4?s=100" width="100px;" alt=""/><br /><sub><b>lucyelle</b></sub></a><br /><a href="https://github.com/LanguageDev/Yoakke/commits?author=lucyelle" title="Documentation">📖</a></td>
     <td align="center"><a href="https://github.com/FP5i"><img src="https://avatars.githubusercontent.com/u/11299637?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Péter Fónad</b></sub></a><br /><a href="https://github.com/LanguageDev/Yoakke/commits?author=FP5i" title="Documentation">📖</a> <a href="#infra-FP5i" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="http://furesoft.ml/"><img src="https://avatars.githubusercontent.com/u/4117602?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Chris</b></sub></a><br /><a href="https://github.com/LanguageDev/Yoakke/issues?q=author%3Afuresoft" title="Bug reports">🐛</a> <a href="#ideas-furesoft" title="Ideas, Planning, & Feedback">🤔</a></td>
   </tr>
 </table>
 
