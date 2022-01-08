@@ -89,6 +89,16 @@
       ]
     },
     {
+      "login": "furesoft",
+      "name": "Chris",
+      "avatar_url": "https://avatars.githubusercontent.com/u/4117602?v=4",
+      "profile": "http://furesoft.ml/",
+      "contributions": [
+        "bug",
+        "ideas"
+      ]
+    },
+    {
       "login": "sharwell",
       "name": "Sam Harwell",
       "avatar_url": "https://avatars.githubusercontent.com/u/1408396?v=4",
