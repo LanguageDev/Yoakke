@@ -25,7 +25,7 @@ public class ParseError
     public object? Got { get; }
 
     /// <summary>
-    /// The position where the error occured.
+    /// The position where the error occurred.
     /// </summary>
     public IComparable Position { get; }
 
@@ -34,7 +34,7 @@ public class ParseError
     /// </summary>
     /// <param name="expected">The expected input.</param>
     /// <param name="got">The item that was found.</param>
-    /// <param name="position">The position where the error occured.</param>
+    /// <param name="position">The position where the error occurred.</param>
     /// <param name="context">The context in which the error occurred.</param>
     public ParseError(object expected, object? got, IComparable position, string context)
         : this(new Dictionary<string, ParseErrorElement> { { context, new ParseErrorElement(expected, context) } }, got, position)
