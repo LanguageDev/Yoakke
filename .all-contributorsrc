@@ -96,6 +96,15 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "colejohnson66",
+      "name": "Cole Tobin",
+      "avatar_url": "https://avatars.githubusercontent.com/u/11381599?v=4",
+      "profile": "https://coletobin.com",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
