@@ -17,7 +17,11 @@ jobs:
       uses: actions/checkout@v2
     - id: commits-happened
       name: Check if commits happened in the last 72 hours
-      run: if([string]::IsNullOrWhitespace((git log master --since="1 hours ago") -join '')) { Exit 1 }
+      run: |
+        if([string]::IsNullOrWhitespace((git log master --since="72 hours ago") -join '')) {
+          Echo "No recent commits, skipping nightly build"
+          Exit 1
+        }
   deployment:
     runs-on: windows-latest
     needs: check
