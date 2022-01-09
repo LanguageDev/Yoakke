@@ -11,6 +11,9 @@ jobs:
     outputs:
       status: ${{ join(steps.*.conclusion) }}
     steps:
+    - id: clone-repo
+      name: Clone the repo
+      uses: actions/checkout@v2
     - id: commits-happened
       name: Check if commits happened in the last 72 hours
       run: if([string]::IsNullOrWhitespace((git log master --since="1 hours ago") -join '')) { Exit 1 }
