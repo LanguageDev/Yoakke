@@ -17,7 +17,7 @@ jobs:
   deployment:
     runs-on: windows-latest
     needs: check
-    if: !contains(needs.check.outputs.status, 'failure')
+    if: "!contains(needs.check.outputs.status, 'failure')"
     steps:
     - name: Clone the repo
       uses: actions/checkout@v2
