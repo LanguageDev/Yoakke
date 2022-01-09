@@ -10,7 +10,7 @@
 <!-- Badges -->
 <a href="https://github.com/LanguageDev/Yoakke/actions"><img src="https://github.com/LanguageDev/Yoakke/actions/workflows/RunTests.yml/badge.svg" title="Go To GitHub Actions"></a>
 <a href="https://docs.microsoft.com/en-us/dotnet/csharp/"><img src="https://img.shields.io/badge/language-C%23-%23178600" title="Go To C# Documentation"></a>
-<a href="https://www.nuget.org/packages?q=Yoakke+owner%3ALanguageDev"><img src="https://img.shields.io/nuget/v/Yoakke.Lexer.svg?logo=nuget" title="Go To Nuget Package" /></a>
+<a href="https://www.nuget.org/packages?q=Yoakke+owner%3ALanguageDev"><img src="https://img.shields.io/nuget/v/Yoakke.SynKit.Lexer.svg?logo=nuget" title="Go To Nuget Package" /></a>
 <a href="https://languagedev.github.io/Yoakke"><img src="https://github.com/LanguageDev/Yoakke/blob/master/.github/resources/DocfxBadge.svg?raw=true" title="Go To Docfx Documentation"></a><!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-13-orange.svg)](#contributors)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
