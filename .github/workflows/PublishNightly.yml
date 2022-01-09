@@ -7,6 +7,7 @@ on:
 
 jobs:
   check:
+    runs-on: windows-latest
     outputs:
       status: ${{ join(steps.*.conclusion) }}
     steps:
