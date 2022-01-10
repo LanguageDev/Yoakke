@@ -59,7 +59,29 @@ partial {{ TypeKind }} {{ TypeName }}
             case {{ state }}:
                 switch (currentChar)
                 {
-                {{- # TODO -}}
+                {{- # Go through each destination state -}}
+                {{ for dest in state.Destinations }}
+                    {{- # Go through each interval from state to dest, those will be the case labels -}}
+                    {{ intervals = GetIntervals(state, dest) }}
+                    {{ for interval in intervals }}
+                        case
+                        {{ if interval.Start == null && interval.End == null }}
+                            char ch
+                        {{ else if interval.End == null }}
+                            >= '{{ string.escape(interval.Start) }}'
+                        {{ else if interval.Start == null }}
+                            <= '{{ string.escape(interval.End) }}'
+                        {{ else }}
+                            >= '{{ string.escape(interval.Start) }}' and <= '{{ string.escape(interval.End) }}'
+                        {{ end }}
+                        :
+                    {{ end }}
+
+                    {{- # Handle the transition -}}
+                    currentState = dest;
+                    {{- # TODO -}}
+                    break;
+                {{ end }}
                 default: goto end_loop;
                 }
                 break;
