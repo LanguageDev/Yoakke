@@ -1,0 +1,92 @@
+using Yoakke.Streams;
+using Yoakke.SynKit.Lexer;
+using Yoakke.SynKit.Text;
+
+#pragma warning disable CS0162
+
+{{- # Namespace start -}}
+{{ if Namespace != null }} namespace {{ Namespace }} { {{ end }}
+
+{{- # Type start -}}
+partial {{ TypeKind }} {{ TypeName }}
+
+{{- # Generic types -}}
+{{ if array.size(GenericArgs) > 0 }}
+    <{{- array.join(GenericArgs, ", ") -}}>
+{{ end }}
+
+{{- # Base type and open brace -}}
+: ILexer<Token<{{ TokenType }}>> {
+
+    {{- # Lexer properties -}}
+    public Position Position => this.{{ SourceName }}.Position;
+    public bool IsEnd {{ get; private set; }}
+
+    {{- # Lexer constructors -}}
+    {{ if ImplicitConstructor }}
+    public ICharStream {{ SourceName }} {{ get; }}
+
+    public {{ TypeName }}(ICharStream source) { this.{{ SourceName }} = source; }
+    public {{ TypeName }}(TextReader reader) : this(new TextReaderCharStream(reader)) { }
+    public {{ TypeName }}(string text) : this(new StringReader(text)) { }
+    {{ end }}
+
+    {{- # Token parsing implementation -}}
+    public Token<{{ TokenType }}> Next()
+    {
+    begin:
+        if (this.{{ SourceName }}.IsEnd)
+        {
+            this.IsEnd = true;
+            return this.{{ SourceName }}.ConsumeToken({{ TokenType }}.{{ EndTokenName }});
+        }
+
+        var currentState = {{ StartStateName }};
+        var currentOffset = 0;
+
+        {{ TokenType }}? lastTokenType = null;
+        var lastOffset = 0;
+
+        while (true)
+        {
+            if (!this.{{ SourceName }}.TryLookAhead(currentOffset, out var currentChar)) break;
+            ++currentOffset;
+
+            {{- # State transition -}}
+            switch (currentState)
+            {
+            {{ for state in States }}
+            case {{ state }}:
+                switch (currentChar)
+                {
+                {{- # TODO -}}
+                default: goto end_loop;
+                }
+                break;
+            {{ end }}
+            }
+        }
+
+    end_loop:
+        if (lastOffset > 0)
+        {
+            if (lastTokenType is null)
+            {
+                this.{{ SourceName }}.Consume(lastOffset);
+                goto begin;
+            }
+            return this.{{ SourceName }}.ConsumeToken(lastTokenType.Value, lastOffset);
+        }
+        else
+        {
+            return this.{{ SourceName }}.ConsumeToken({{ TokenType }}.{{ ErrorTokenName }}, 1);
+        }
+    }
+
+{{- # Type end -}}
+}
+
+{{- # Namespace end -}}
+{{ if Namespace != null }} } {{ end }}
+
+#pragma warning restore CS0162
