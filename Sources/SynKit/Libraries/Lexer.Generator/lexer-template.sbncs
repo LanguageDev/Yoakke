@@ -79,7 +79,14 @@ partial {{ TypeKind }} {{ TypeName }}
 
                     {{- # Handle the transition -}}
                     currentState = dest;
-                    {{- # TODO -}}
+                    {{ if dest.IsAccepting }}
+                        lastOffset = currentOffset;
+                        {{ if dest.Ignore }}
+                            lastTokenType = null;
+                        {{ else }}
+                            lastTokenType = {{ TokenType }}.{{ dest.Name }};
+                        {{ end }}
+                    {{end}}
                     break;
                 {{ end }}
                 default: goto end_loop;
