@@ -14,7 +14,7 @@
     <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
   </ItemGroup>
 
-  <!-- Embed all resource (template and cs template) files -->
+  <!-- Embed all Scriban template files -->
   <ItemGroup>
     <Content Include="$(MSBuildProjectDirectory)\Templates\**\*.*">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
@@ -22,6 +22,7 @@
       <IncludeInPackage>true</IncludeInPackage>
     </Content>
 
+    <!-- Embed all source files that will be re-emitted by the generator -->
     <Content Include="$(MSBuildProjectDirectory)\Sources\**\*.*">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>true</CopyToOutputDirectory>
