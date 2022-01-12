@@ -15,6 +15,7 @@ using Yoakke.SynKit.Automata.Dense;
 using Yoakke.Collections.Intervals;
 using Yoakke.SourceGenerator.Common;
 using Yoakke.SourceGenerator.Common.RoslynExtensions;
+using Yoakke.SynKit.Lexer.Generator.Model;
 
 namespace Yoakke.SynKit.Lexer.Generator;
 
@@ -251,8 +252,8 @@ end_loop:
 ";
     }
 
-    private (IDenseDfa<StateSet<int>, char> Dfa, Dictionary<StateSet<int>, TokenDescription> StateToToken)?
-        BuildDfa(LexerDescription description)
+    private (IDenseDfa<StateSet<int>, char> Dfa, Dictionary<StateSet<int>, TokenModel> StateToToken)?
+        BuildDfa(LexerModel description)
     {
         var rnd = new Random();
         var occupiedStates = new HashSet<int>();
@@ -266,7 +267,7 @@ end_loop:
         }
 
         // Store which token corresponds to which end state
-        var tokenToNfaState = new Dictionary<TokenDescription, int>();
+        var tokenToNfaState = new Dictionary<TokenModel, int>();
         // Construct the NFA from the regexes
         var nfa = new DenseNfa<int, char>();
         var initialState = MakeState();
@@ -300,7 +301,7 @@ end_loop:
         var dfa = nfa.Determinize();
         var minDfa = dfa.Minimize(StateCombiner<int>.DefaultSetCombiner, dfa.AcceptingStates);
         // Now we have to figure out which new accepting states correspond to which token
-        var dfaStateToToken = new Dictionary<StateSet<int>, TokenDescription>();
+        var dfaStateToToken = new Dictionary<StateSet<int>, TokenModel>();
         // We go in the order of each token because this ensures the precedence in which order the tokens were declared
         foreach (var token in description.Tokens)
         {
@@ -316,7 +317,7 @@ end_loop:
         return (minDfa, dfaStateToToken);
     }
 
-    private LexerDescription? ExtractLexerDescription(INamedTypeSymbol lexerClass, INamedTypeSymbol tokenKind)
+    private LexerModel? ExtractLexerDescription(INamedTypeSymbol lexerClass, INamedTypeSymbol tokenKind)
     {
         var sourceAttr = this.LoadSymbol(TypeNames.CharSourceAttribute);
         var regexAttr = this.LoadSymbol(TypeNames.RegexAttribute);
@@ -325,7 +326,7 @@ end_loop:
         var errorAttr = this.LoadSymbol(TypeNames.ErrorAttribute);
         var ignoreAttr = this.LoadSymbol(TypeNames.IgnoreAttribute);
 
-        var result = new LexerDescription();
+        var result = new LexerModel();
 
         // Search for the source field in the lexer class
         var sourceField = lexerClass.GetMembers()

@@ -5,12 +5,12 @@
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 
-namespace Yoakke.SynKit.Lexer.Generator;
+namespace Yoakke.SynKit.Lexer.Generator.Model;
 
 /// <summary>
 /// Describes a declared lexer.
 /// </summary>
-internal class LexerDescription
+internal class LexerModel
 {
     /// <summary>
     /// The symbol containing the source character stream.
@@ -28,7 +28,7 @@ internal class LexerDescription
     public IFieldSymbol? EndSymbol { get; set; }
 
     /// <summary>
-    /// The list of <see cref="TokenDescription"/>s.
+    /// The list of <see cref="TokenModel"/>s.
     /// </summary>
-    public IList<TokenDescription> Tokens { get; } = new List<TokenDescription>();
+    public IList<TokenModel> Tokens { get; } = new List<TokenModel>();
 }
