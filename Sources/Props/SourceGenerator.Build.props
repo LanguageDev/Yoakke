@@ -16,14 +16,14 @@
 
   <!-- Embed all Scriban template files -->
   <ItemGroup>
-    <Content Include="$(MSBuildProjectDirectory)\Templates\**\*.*">
+    <Content Include="$(MSBuildProjectDirectory)\Templates\**\*.*" Visible="false">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>true</CopyToOutputDirectory>
       <IncludeInPackage>true</IncludeInPackage>
     </Content>
 
     <!-- Embed all source files that will be re-emitted by the generator -->
-    <Content Include="$(MSBuildProjectDirectory)\Sources\**\*.*">
+    <Content Include="$(MSBuildProjectDirectory)\Sources\**\*.*" Visible="false">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>true</CopyToOutputDirectory>
       <IncludeInPackage>true</IncludeInPackage>
