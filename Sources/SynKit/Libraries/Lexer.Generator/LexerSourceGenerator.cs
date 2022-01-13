@@ -16,6 +16,8 @@ using Yoakke.Collections.Intervals;
 using Yoakke.SourceGenerator.Common;
 using Yoakke.SourceGenerator.Common.RoslynExtensions;
 using Yoakke.SynKit.Lexer.Generator.Model;
+using System.IO;
+using System.Reflection;
 
 namespace Yoakke.SynKit.Lexer.Generator;
 
@@ -71,6 +73,16 @@ public class LexerSourceGenerator : GeneratorBase
     /// <inheritdoc/>
     protected override void GenerateCode(ISyntaxReceiver syntaxReceiver)
     {
+        // Debugger.Launch();
+
+        var assembly = Assembly.GetExecutingAssembly();
+        var sourcesToInject = assembly
+            .GetManifestResourceNames()
+            .Where(m => m.StartsWith("Sources."));
+        this.InjectSources(sourcesToInject
+            .Select(s => (s, new StreamReader(assembly.GetManifestResourceStream(s)).ReadToEnd()))
+            .ToList());
+
         var receiver = (SyntaxReceiver)syntaxReceiver;
 
         this.RequireLibrary("Yoakke.SynKit.Lexer");
@@ -79,7 +91,7 @@ public class LexerSourceGenerator : GeneratorBase
 
         foreach (var syntax in receiver.CandidateTypes)
         {
-            var model = this.Context.Compilation.GetSemanticModel(syntax.SyntaxTree);
+            var model = this.Compilation.GetSemanticModel(syntax.SyntaxTree);
             var symbol = model.GetDeclaredSymbol(syntax) as INamedTypeSymbol;
             if (symbol is null) continue;
             // Filter classes without the lexer attributes

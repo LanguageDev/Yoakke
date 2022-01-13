@@ -8,9 +8,4 @@
     <Compile Include="$(SolutionDir)/SynKit\Libraries/Automata/**/*.cs" Link="Automata" Visible="False" />
     <Compile Remove="$(SolutionDir)/SynKit\Libraries/Automata/obj/**/*.cs" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Sources\" />
-    <Folder Include="Templates\" />
-  </ItemGroup>
 </Project>

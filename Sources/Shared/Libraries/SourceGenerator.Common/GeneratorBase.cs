@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Yoakke.SourceGenerator.Common.RoslynExtensions;
 
@@ -20,6 +21,9 @@ public abstract class GeneratorBase : ISourceGenerator
     /// The current <see cref="GeneratorExecutionContext"/>.
     /// </summary>
     protected GeneratorExecutionContext Context { get; private set; }
+
+    // TODO: Doc
+    protected Compilation? Compilation { get; private set; }
 
     private readonly string libraryName;
     private readonly Dictionary<string, INamedTypeSymbol> symbolCache;
@@ -45,6 +49,7 @@ public abstract class GeneratorBase : ISourceGenerator
         if (!this.IsOwnSyntaxReceiver(context.SyntaxReceiver)) return;
 
         this.Context = context;
+        this.Compilation = context.Compilation;
 
         this.GenerateCode(context.SyntaxReceiver);
     }
@@ -96,7 +101,7 @@ public abstract class GeneratorBase : ISourceGenerator
     {
         if (!this.symbolCache.TryGetValue(name, out var value))
         {
-            value = this.Context.Compilation.GetTypeByMetadataName(name);
+            value = this.Compilation!.GetTypeByMetadataName(name);
             if (value is null) throw new ArgumentException("can't load symbol with name", nameof(name));
             this.symbolCache.Add(name, value);
         }
@@ -110,6 +115,19 @@ public abstract class GeneratorBase : ISourceGenerator
     /// <param name="text">The contents of the file to add.</param>
     protected void AddSource(string fileName, string text) => this.Context.AddSource(SanitizeFileName(fileName), text);
 
+    // TODO: Doc
+    protected void InjectSources(IEnumerable<(string Name, string Text)> sources)
+    {
+        foreach (var (fileName, text) in sources) this.AddSource(fileName, text);
+        if (   this.Compilation is CSharpCompilation cSharpCompilation
+            && cSharpCompilation.SyntaxTrees.Length > 0
+            && cSharpCompilation.SyntaxTrees[0].Options is CSharpParseOptions options)
+        {
+            this.Compilation = this.Compilation
+                .AddSyntaxTrees(sources.Select(s => CSharpSyntaxTree.ParseText(s.Text, options)));
+        }
+    }
+
     /// <summary>
     /// Requires a library to be referenced by the user.
     /// If it is not found, a <see cref="Diagnostic"/> error is raised.
@@ -118,7 +136,7 @@ public abstract class GeneratorBase : ISourceGenerator
     /// <returns>True, if the library was found.</returns>
     protected bool RequireLibrary(string name)
     {
-        if (!this.Context.Compilation.ReferencedAssemblyNames.Any(ai => ai.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
+        if (!this.Compilation!.ReferencedAssemblyNames.Any(ai => ai.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
         {
             this.Report(Diagnostics.RequiredLibraryNotReferenced, name);
             return false;
