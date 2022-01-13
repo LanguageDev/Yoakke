@@ -146,7 +146,29 @@ public class LexerSourceGenerator : GeneratorBase
             throw new InvalidOperationException($"Template parse error: {template.Messages}");
         }
 
-        var result = template.Render(model: transitionsByState, memberRenamer: member => member.Name);
+        var model = new
+        {
+            Namespace = lexerClass.ContainingNamespace.Name,
+            TypeKind = lexerClass.GetTypeKindName(),
+            TypeName = lexerClass.Name,
+            TokenType = tokenKind.ToDisplayString(),
+            GenericArgs = lexerClass.TypeArguments.Select(t => t.Name).ToList(),
+            SourceName = "CharStream", /* TODO */
+            EndTokenName = description.EndSymbol!.Name,
+            ErrorTokenName = description.ErrorSymbol!.Name,
+            States = transitionsByState.Select(kv => new
+            {
+                Id = dfaStateIdents[kv.Key],
+                Destinations = kv.Value.Select(kv2 => new
+                {
+                    Id = dfaStateIdents[kv2.Key],
+                    IsAccepting = dfaStateToToken.ContainsKey(kv2.Key),
+                    Ignore = dfaStateToToken.TryGetValue(kv2.Key, out var t) && t.Ignore,
+                }),
+            }),
+        };
+
+        var result = template.Render(model: model, memberRenamer: member => member.Name);
         result = SyntaxFactory
             .ParseCompilationUnit(result)
             .NormalizeWhitespace()
