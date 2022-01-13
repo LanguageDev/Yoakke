@@ -1,3 +1,6 @@
+using System;
+using System.CodeDom.Compiler;
+using System.IO;
 using Yoakke.Streams;
 using Yoakke.SynKit.Lexer;
 using Yoakke.SynKit.Text;
@@ -10,6 +13,7 @@ using Yoakke.SynKit.Text;
 {{- # TODO: Nesting types and generic args -}}
 
 {{- # Type start -}}
+[GeneratedCode("Yoakke.SynKit.Lexer.Generator")]
 partial {{ TypeKind }} {{ TypeName }}
 
 {{- # Generic types -}}
@@ -22,7 +26,7 @@ partial {{ TypeKind }} {{ TypeName }}
 
     {{- # Lexer properties -}}
     public Position Position => this.{{ SourceName }}.Position;
-    public bool IsEnd {{ get; private set; }}
+    public bool IsEnd { get; private set; }
 
     {{- # Lexer constructors -}}
     {{ if ImplicitConstructor }}
@@ -95,6 +99,7 @@ partial {{ TypeKind }} {{ TypeName }}
                 }
                 break;
             {{ end }}
+            default: throw new InvalidOperationException("Illegal state!");
             }
         }
 

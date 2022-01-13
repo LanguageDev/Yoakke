@@ -18,6 +18,8 @@ using Yoakke.SourceGenerator.Common.RoslynExtensions;
 using Yoakke.SynKit.Lexer.Generator.Model;
 using System.IO;
 using System.Reflection;
+using Scriban;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace Yoakke.SynKit.Lexer.Generator;
 
@@ -107,10 +109,6 @@ public class LexerSourceGenerator : GeneratorBase
     {
         if (!this.RequireDeclarableInside(lexerClass)) return null;
 
-        var enumName = tokenKind.ToDisplayString();
-        var tokenName = $"{TypeNames.Token}<{enumName}>";
-        var className = lexerClass.Name;
-
         // Extract the lexer from the attributes
         var description = this.ExtractLexerDescription(lexerClass, tokenKind);
         if (description is null) return null;
@@ -135,133 +133,29 @@ public class LexerSourceGenerator : GeneratorBase
                         group => group.Key,
                         group => group.Select(t => t.Symbol).ToList()));
 
-        // For each state we need to build the transition table
-        var transitionTable = new StringBuilder();
-        transitionTable.AppendLine("switch (currentState) {");
-        foreach (var (state, toMap) in transitionsByState)
-        {
-            transitionTable.AppendLine($"case {dfaStateIdents[state]}:");
-            // For the current state we need transitions to a new state based on the current character
-            transitionTable.AppendLine("switch (currentChar) {");
-            foreach (var (destState, intervals) in toMap)
-            {
-                // In the library it is rational to have an interval like ('a'; 'b'), but in practice
-                // this means that this transition might as well not exist, as these are discrete values,
-                // there can't be anything in between
-                var caseLabels = intervals.Select(MakeCase).OfType<string>();
-                if (!caseLabels.Any()) continue;
-
-                foreach (var caseLabel in caseLabels) transitionTable.AppendLine($"case {caseLabel}:");
-
-                transitionTable.AppendLine($"currentState = {dfaStateIdents[destState]};");
-                if (dfaStateToToken.TryGetValue(destState, out var token))
-                {
-                    // The destination is an accepting state, save it
-                    transitionTable.AppendLine("lastOffset = currentOffset;");
-                    if (token.Ignore)
-                    {
-                        // Ignore means clear out the token type
-                        transitionTable.AppendLine("lastTokenType = null;");
-                    }
-                    else
-                    {
-                        // Save token type
-                        transitionTable.AppendLine($"lastTokenType = {enumName}.{token.Symbol!.Name};");
-                    }
-                }
-
-                transitionTable.AppendLine("break;");
-            }
-            // Add a default arm to break out of the loop on non-matching character
-            transitionTable.AppendLine("default: goto end_loop;");
-            transitionTable.AppendLine("}");
-            transitionTable.AppendLine("break;");
-        }
-
-        // We add blanks to the states not present that simply go to the end state
-        var anyBlank = false;
-        foreach (var state in dfa.States.Except(transitionsByState.Keys))
-        {
-            transitionTable.AppendLine($"case {dfaStateIdents[state]}:");
-            anyBlank = true;
-        }
-        if (anyBlank) transitionTable.AppendLine("goto end_loop;");
-
-        // Add a default arm to panic on illegal state
-        transitionTable.AppendLine($"default: throw new {TypeNames.InvalidOperationException}();");
-        transitionTable.AppendLine("}");
-
         // TODO: Consuming a single character on error might not be the best strategy
         // Also we might want to report if there was a token type that was being matched, while the error occurred
 
-        var ctors = string.Empty;
-        if (lexerClass.HasNoUserDefinedCtors() && description.SourceSymbol is null)
-        {
-            ctors = $@"
-public {TypeNames.ICharStream} CharStream {{ get; }}
+        var assembly = Assembly.GetExecutingAssembly();
+        var templateText = new StreamReader(assembly.GetManifestResourceStream("Templates.lexer.sbncs")).ReadToEnd();
+        var template = Template.Parse(templateText);
 
-public {className}({TypeNames.ICharStream} source) {{ this.CharStream = source; }}
-public {className}({TypeNames.TextReader} reader) : this(new {TypeNames.TextReaderCharStream}(reader)) {{ }}
-public {className}(string text) : this(new {TypeNames.StringReader}(text)) {{ }}
-";
+        if (template.HasErrors)
+        {
+            var errors = string.Join(" | ", template.Messages.Select(x => x.Message));
+            throw new InvalidOperationException($"Template parse error: {template.Messages}");
         }
 
-        var sourceField = description.SourceSymbol?.Name ?? "CharStream";
-        var (prefix, suffix) = lexerClass.ContainingSymbol.DeclareInsideExternally();
-        var (genericTypes, genericConstraints) = lexerClass.GetGenericCrud();
-        return $@"
-using Yoakke.Streams;
-using Yoakke.SynKit.Lexer;
-#pragma warning disable CS0162
-{prefix}
-partial {lexerClass.GetTypeKindName()} {className}{genericTypes} : {TypeNames.ILexer}<{tokenName}> {genericConstraints}
-{{
-    public {TypeNames.Position} Position => this.{sourceField}.Position;
+        var result = template.Render(model: transitionsByState, memberRenamer: member => member.Name);
+        result = SyntaxFactory
+            .ParseCompilationUnit(result)
+            .NormalizeWhitespace()
+            .GetText()
+            .ToString();
 
-    public bool IsEnd {{ get; private set; }}
+        Debugger.Launch();
 
-    {ctors}
-
-    public {tokenName} Next()
-    {{
-begin:
-        if (this.{sourceField}.IsEnd)
-        {{
-            this.IsEnd = true;
-            return this.{sourceField}.ConsumeToken({enumName}.{description.EndSymbol!.Name}, 0);
-        }}
-
-        var currentState = {dfaStateIdents[dfa.InitialState]};
-        var currentOffset = 0;
-
-        {enumName}? lastTokenType = null;
-        var lastOffset = 0;
-
-        while (true)
-        {{
-            if (!this.{sourceField}.TryLookAhead(currentOffset, out var currentChar)) break;
-            ++currentOffset;
-            {transitionTable}
-        }}
-end_loop:
-        if (lastOffset > 0)
-        {{
-            if (lastTokenType is null)
-            {{
-                this.{sourceField}.Consume(lastOffset);
-                goto begin;
-            }}
-            return this.{sourceField}.ConsumeToken(lastTokenType.Value, lastOffset);
-        }}
-        else
-        {{
-            return this.{sourceField}.ConsumeToken({enumName}.{description.ErrorSymbol!.Name}, 1);
-        }}
-    }}
-}}
-{suffix}
-#pragma warning restore CS0162
-";
+        return result;
     }
 
     private (IDenseDfa<StateSet<int>, char> Dfa, Dictionary<StateSet<int>, TokenModel> StateToToken)?
@@ -405,22 +299,6 @@ end_loop:
         return result;
     }
 
-    private static string? MakeCase(Interval<char> interval)
-    {
-        var (lower, upper) = ToInclusive(interval);
-
-        if (lower != null && upper != null && lower.Value > upper.Value) return null;
-
-        return (lower, upper) switch
-        {
-            (char l, char h) when l == h => $"'{Escape(l)}'",
-            (char l, char h) => $">= '{Escape(l)}' and <= '{Escape(h)}'",
-            (char l, null) => $">= '{Escape(l)}'",
-            (null, char h) => $"<= '{Escape(h)}'",
-            (null, null) => "char ch",
-        };
-    }
-
     private static (char? Lower, char? Upper) ToInclusive(Interval<char> interval)
     {
         char? lower = interval.Lower switch
@@ -439,15 +317,4 @@ end_loop:
         };
         return (lower, upper);
     }
-
-    private static string Escape(char ch) => ch switch
-    {
-        '\'' => @"\'",
-        '\n' => @"\n",
-        '\r' => @"\r",
-        '\t' => @"\t",
-        '\0' => @"\0",
-        '\\' => @"\\",
-        _ => ch.ToString(),
-    };
 }
