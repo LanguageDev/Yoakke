@@ -7,47 +7,47 @@ using Yoakke.SynKit.Text;
 
 #pragma warning disable CS0162
 
-{{- # Namespace start -}}
+{{ # Namespace start }}
 {{ if Namespace != null }} namespace {{ Namespace }} { {{ end }}
 
-{{- # TODO: Nesting types and generic args -}}
+{{ # TODO: Nesting types and generic args }}
 
-{{- # Type start -}}
-[GeneratedCode("Yoakke.SynKit.Lexer.Generator")]
+{{ # Type start }}
+[GeneratedCode("Yoakke.SynKit.Lexer.Generator", "{{ LibraryVersion }}")]
 partial {{ TypeKind }} {{ TypeName }}
 
-{{- # Generic types -}}
+{{ # Generic types }}
 {{ if array.size(GenericArgs) > 0 }}
-    <{{- array.join(GenericArgs, ", ") -}}>
+    <{{ array.join(GenericArgs, ", ") }}>
 {{ end }}
 
-{{- # Base type and open brace -}}
+{{ # Base type and open brace }}
 : ILexer<Token<{{ TokenType }}>> {
 
-    {{- # Lexer properties -}}
+    {{ # Lexer properties }}
     public Position Position => this.{{ SourceName }}.Position;
     public bool IsEnd { get; private set; }
 
-    {{- # Lexer constructors -}}
+    {{ # Lexer constructors }}
     {{ if ImplicitConstructor }}
-    public ICharStream {{ SourceName }} {{ get; }}
+    public ICharStream {{ SourceName }} { get; }
 
     public {{ TypeName }}(ICharStream source) { this.{{ SourceName }} = source; }
     public {{ TypeName }}(TextReader reader) : this(new TextReaderCharStream(reader)) { }
     public {{ TypeName }}(string text) : this(new StringReader(text)) { }
     {{ end }}
 
-    {{- # Token parsing implementation -}}
+    {{ # Token parsing implementation }}
     public Token<{{ TokenType }}> Next()
     {
     begin:
         if (this.{{ SourceName }}.IsEnd)
         {
             this.IsEnd = true;
-            return this.{{ SourceName }}.ConsumeToken({{ TokenType }}.{{ EndTokenName }});
+            return this.{{ SourceName }}.ConsumeToken({{ TokenType }}.{{ EndTokenName }}, 0);
         }
 
-        var currentState = {{ StartStateName }};
+        var currentState = {{ InitialState.Id }};
         var currentOffset = 0;
 
         {{ TokenType }}? lastTokenType = null;
@@ -58,39 +58,40 @@ partial {{ TypeKind }} {{ TypeName }}
             if (!this.{{ SourceName }}.TryLookAhead(currentOffset, out var currentChar)) break;
             ++currentOffset;
 
-            {{- # State transition -}}
+            {{ # State transition }}
             switch (currentState)
             {
             {{ for state in States }}
-            case {{ state }}:
+            case {{ state.Id }}:
                 switch (currentChar)
                 {
-                {{- # Go through each destination state -}}
+                {{ # Go through each destination state }}
                 {{ for dest in state.Destinations }}
-                    {{- # Go through each interval from state to dest, those will be the case labels -}}
-                    {{ intervals = GetIntervals(state, dest) }}
-                    {{ for interval in intervals }}
+                    {{ # Go through each interval from state to dest, those will be the case labels }}
+                    {{ for interval in dest.Intervals }}
                         case
                         {{ if interval.Start == null && interval.End == null }}
                             char ch
-                        {{ else if interval.End == null }}
-                            >= '{{ string.escape(interval.Start) }}'
                         {{ else if interval.Start == null }}
+                            >= '{{ string.escape(interval.Start) }}'
+                        {{ else if interval.End == null }}
                             <= '{{ string.escape(interval.End) }}'
+                        {{ else if interval.Start == interval.End }}
+                            '{{ string.escape(interval.Start) }}'
                         {{ else }}
                             >= '{{ string.escape(interval.Start) }}' and <= '{{ string.escape(interval.End) }}'
                         {{ end }}
                         :
                     {{ end }}
 
-                    {{- # Handle the transition -}}
-                    currentState = dest;
+                    {{ # Handle the transition }}
+                    currentState = {{ dest.Id }};
                     {{ if dest.IsAccepting }}
                         lastOffset = currentOffset;
                         {{ if dest.Ignore }}
                             lastTokenType = null;
                         {{ else }}
-                            lastTokenType = {{ TokenType }}.{{ dest.Name }};
+                            lastTokenType = {{ TokenType }}.{{ dest.Token }};
                         {{ end }}
                     {{end}}
                     break;
@@ -99,7 +100,7 @@ partial {{ TypeKind }} {{ TypeName }}
                 }
                 break;
             {{ end }}
-            default: throw new InvalidOperationException("Illegal state!");
+            default: goto end_loop;
             }
         }
 
@@ -119,12 +120,12 @@ partial {{ TypeKind }} {{ TypeName }}
         }
     }
 
-{{- # Type end -}}
+{{ # Type end }}
 }
 
-{{- # TODO: Nesting types end -}}
+{{ # TODO: Nesting types end }}
 
-{{- # Namespace end -}}
+{{ # Namespace end }}
 {{ if Namespace != null }} } {{ end }}
 
 #pragma warning restore CS0162

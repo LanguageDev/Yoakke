@@ -148,23 +148,42 @@ public class LexerSourceGenerator : GeneratorBase
 
         var model = new
         {
-            Namespace = lexerClass.ContainingNamespace.Name,
+            LibraryVersion = assembly.GetName().Version.ToString(),
+            Namespace = lexerClass.ContainingNamespace?.ToDisplayString(),
             TypeKind = lexerClass.GetTypeKindName(),
             TypeName = lexerClass.Name,
             TokenType = tokenKind.ToDisplayString(),
             GenericArgs = lexerClass.TypeArguments.Select(t => t.Name).ToList(),
+            ImplicitConstructor = true, /* TODO */
             SourceName = "CharStream", /* TODO */
             EndTokenName = description.EndSymbol!.Name,
             ErrorTokenName = description.ErrorSymbol!.Name,
+            InitialState = new
+            {
+                Id = dfaStateIdents[dfa.InitialState],
+            },
             States = transitionsByState.Select(kv => new
             {
                 Id = dfaStateIdents[kv.Key],
-                Destinations = kv.Value.Select(kv2 => new
-                {
-                    Id = dfaStateIdents[kv2.Key],
-                    IsAccepting = dfaStateToToken.ContainsKey(kv2.Key),
-                    Ignore = dfaStateToToken.TryGetValue(kv2.Key, out var t) && t.Ignore,
-                }),
+                Destinations = kv.Value
+                    .Select(kv2 => new
+                    {
+                        Id = dfaStateIdents[kv2.Key],
+                        Token = dfaStateToToken[kv2.Key].Symbol.Name,
+                        IsAccepting = dfaStateToToken.ContainsKey(kv2.Key),
+                        Ignore = dfaStateToToken.TryGetValue(kv2.Key, out var t) && t.Ignore,
+                        Intervals = kv2.Value
+                            .Select(ToInclusive)
+                            .Where(iv => iv.Lower is null || iv.Upper is null || iv.Lower <= iv.Upper)
+                            .Select(iv => new
+                            {
+                                Start = iv.Lower,
+                                End = iv.Upper,
+                            })
+                            .ToList(),
+                    })
+                    .Where(d => d.Intervals.Count > 0)
+                    .ToList(),
             }),
         };
 
@@ -175,7 +194,7 @@ public class LexerSourceGenerator : GeneratorBase
             .GetText()
             .ToString();
 
-        Debugger.Launch();
+        // Debugger.Launch();
 
         return result;
     }
