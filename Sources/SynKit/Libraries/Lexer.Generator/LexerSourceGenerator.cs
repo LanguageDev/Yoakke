@@ -78,7 +78,7 @@ public class LexerSourceGenerator : GeneratorBase
         var assembly = Assembly.GetExecutingAssembly();
         var sourcesToInject = assembly
             .GetManifestResourceNames()
-            .Where(m => m.StartsWith("Sources."));
+            .Where(m => m.StartsWith("InjectedSources."));
         this.InjectSources(sourcesToInject
             .Select(s => (s, new StreamReader(assembly.GetManifestResourceStream(s)).ReadToEnd()))
             .ToList());
@@ -91,7 +91,7 @@ public class LexerSourceGenerator : GeneratorBase
 
         foreach (var syntax in receiver.CandidateTypes)
         {
-            var model = this.Compilation.GetSemanticModel(syntax.SyntaxTree);
+            var model = this.Compilation!.GetSemanticModel(syntax.SyntaxTree);
             var symbol = model.GetDeclaredSymbol(syntax) as INamedTypeSymbol;
             if (symbol is null) continue;
             // Filter classes without the lexer attributes

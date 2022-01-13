@@ -8,4 +8,14 @@
     <Compile Include="$(SolutionDir)/SynKit\Libraries/Automata/**/*.cs" Link="Automata" Visible="False" />
     <Compile Remove="$(SolutionDir)/SynKit\Libraries/Automata/obj/**/*.cs" />
   </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="InjectedSources\CharSourceAttribute.cs" />
+    <EmbeddedResource Include="InjectedSources\EndAttribute.cs" />
+    <EmbeddedResource Include="InjectedSources\ErrorAttribute.cs" />
+    <EmbeddedResource Include="InjectedSources\IgnoreAttribute.cs" />
+    <EmbeddedResource Include="InjectedSources\LexerAttribute.cs" />
+    <EmbeddedResource Include="InjectedSources\RegexAttribute.cs" />
+    <EmbeddedResource Include="InjectedSources\TokenAttribute.cs" />
+  </ItemGroup>
 </Project>

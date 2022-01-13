@@ -20,8 +20,8 @@
       <LogicalName>Templates.%(Filename)%(Extension)</LogicalName>
     </EmbeddedResource>
     <!-- Embed all source files that will be re-emitted by the generator -->
-    <EmbeddedResource Include="$(MSBuildProjectDirectory)\Sources\**\*.*">
-      <LogicalName>Sources.%(Filename)%(Extension)</LogicalName>
+    <EmbeddedResource Include="$(MSBuildProjectDirectory)\InjectedSources\**\*.*">
+      <LogicalName>InjectedSources.%(Filename)%(Extension)</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
 
