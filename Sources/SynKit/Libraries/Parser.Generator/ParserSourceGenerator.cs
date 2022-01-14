@@ -171,12 +171,12 @@ public {className}({TypeNames.IEnumerable}<{tokenType}> tokens) : this(new {Type
         }
 
         var (prefix, suffix) = parserClass.ContainingSymbol.DeclareInsideExternally();
-        var (genericTypes, genericConstraints) = parserClass.GetGenericCrud();
+        var genericTypes = parserClass.GetGenericCrud();
         return $@"
 using Yoakke.SynKit.Lexer;
 using Yoakke.Streams;
 {prefix}
-partial {parserClass.GetTypeKindName()} {className}{genericTypes} {genericConstraints}
+partial {parserClass.GetTypeKindName()} {className}{genericTypes}
 {{
     {ctors}
 
