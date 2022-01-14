@@ -10,7 +10,7 @@ namespace Yoakke.SynKit.Lexer.Attributes;
 /// An attribute to mark a class to generate a lexer for token types.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
-public class LexerAttribute : Attribute
+internal class LexerAttribute : Attribute
 {
     /// <summary>
     /// The enumeration type that is annotated with token attributes.

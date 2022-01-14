@@ -10,6 +10,6 @@ namespace Yoakke.SynKit.Lexer.Attributes;
 /// An attribute to annotate the source character stream for the generated lexer.
 /// </summary>
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
-public class CharSourceAttribute : Attribute
+internal class CharSourceAttribute : Attribute
 {
 }

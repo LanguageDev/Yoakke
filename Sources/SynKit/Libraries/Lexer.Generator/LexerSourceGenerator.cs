@@ -75,7 +75,7 @@ public class LexerSourceGenerator : GeneratorBase
     /// <inheritdoc/>
     protected override void GenerateCode(ISyntaxReceiver syntaxReceiver)
     {
-        // Debugger.Launch();
+        var receiver = (SyntaxReceiver)syntaxReceiver;
 
         var assembly = Assembly.GetExecutingAssembly();
         var sourcesToInject = assembly
@@ -84,8 +84,6 @@ public class LexerSourceGenerator : GeneratorBase
         this.InjectSources(sourcesToInject
             .Select(s => (s, new StreamReader(assembly.GetManifestResourceStream(s)).ReadToEnd()))
             .ToList());
-
-        var receiver = (SyntaxReceiver)syntaxReceiver;
 
         this.RequireLibrary("Yoakke.SynKit.Lexer");
 
