@@ -10,7 +10,7 @@ namespace Yoakke.SynKit.SyntaxTree.Attributes;
 /// An attribute to denote the generation of a visitor.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = true)]
-public class VisitorAttribute : Attribute
+internal class VisitorAttribute : Attribute
 {
     /// <summary>
     /// The type of the node the visitor visits.

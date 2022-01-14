@@ -102,7 +102,7 @@ public abstract class GeneratorBase : ISourceGenerator
         if (!this.symbolCache.TryGetValue(name, out var value))
         {
             value = this.Compilation!.GetTypeByMetadataName(name);
-            if (value is null) throw new ArgumentException("can't load symbol with name", nameof(name));
+            if (value is null) throw new ArgumentException($"can't load symbol with name {name}", nameof(name));
             this.symbolCache.Add(name, value);
         }
         return value;

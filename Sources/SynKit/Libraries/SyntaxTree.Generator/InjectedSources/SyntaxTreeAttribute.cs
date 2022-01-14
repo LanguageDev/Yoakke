@@ -10,6 +10,6 @@ namespace Yoakke.SynKit.SyntaxTree.Attributes;
 /// An attribute to annotate that the given node is part of a syntax tree.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = false, Inherited = true)]
-public class SyntaxTreeAttribute : Attribute
+internal class SyntaxTreeAttribute : Attribute
 {
 }

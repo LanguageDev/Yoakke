@@ -13,6 +13,8 @@ using Yoakke.SynKit.Parser.Generator.Ast;
 using Yoakke.SynKit.Parser.Generator.Syntax;
 using Yoakke.SourceGenerator.Common;
 using Yoakke.SourceGenerator.Common.RoslynExtensions;
+using System.IO;
+using System.Reflection;
 
 namespace Yoakke.SynKit.Parser.Generator;
 
@@ -70,13 +72,21 @@ public class ParserSourceGenerator : GeneratorBase
     {
         var receiver = (SyntaxReceiver)syntaxReceiver;
 
+        var assembly = Assembly.GetExecutingAssembly();
+        var sourcesToInject = assembly
+            .GetManifestResourceNames()
+            .Where(m => m.StartsWith("InjectedSources."));
+        this.InjectSources(sourcesToInject
+            .Select(s => (s, new StreamReader(assembly.GetManifestResourceStream(s)).ReadToEnd()))
+            .ToList());
+
         this.RequireLibrary("Yoakke.SynKit.Parser");
 
         var parserAttr = this.LoadSymbol(TypeNames.ParserAttribute);
 
         foreach (var syntax in receiver.CandidateTypes)
         {
-            var model = this.Context.Compilation.GetSemanticModel(syntax.SyntaxTree);
+            var model = this.Compilation!.GetSemanticModel(syntax.SyntaxTree);
             var symbol = model.GetDeclaredSymbol(syntax) as INamedTypeSymbol;
             if (symbol is null) continue;
             // Filter classes without the parser attributes

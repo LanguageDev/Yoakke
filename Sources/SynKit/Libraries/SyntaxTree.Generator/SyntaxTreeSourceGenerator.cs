@@ -3,7 +3,9 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -52,6 +54,14 @@ public class SyntaxTreeSourceGenerator : GeneratorBase
     {
         var receiver = (SyntaxReceiver)syntaxReceiver;
 
+        var assembly = Assembly.GetExecutingAssembly();
+        var sourcesToInject = assembly
+            .GetManifestResourceNames()
+            .Where(m => m.StartsWith("InjectedSources."));
+        this.InjectSources(sourcesToInject
+            .Select(s => (s, new StreamReader(assembly.GetManifestResourceStream(s)).ReadToEnd()))
+            .ToList());
+
         this.RequireLibrary("Yoakke.SynKit.SyntaxTree");
 
         // We collect out ast nodes
@@ -61,7 +71,7 @@ public class SyntaxTreeSourceGenerator : GeneratorBase
 #pragma warning restore RS1024 // Compare symbols correctly
         foreach (var syntax in receiver.CandidateTypes)
         {
-            var model = this.Context.Compilation.GetSemanticModel(syntax.SyntaxTree);
+            var model = this.Compilation!.GetSemanticModel(syntax.SyntaxTree);
             var symbol = model.GetDeclaredSymbol(syntax) as INamedTypeSymbol;
             if (!this.IsSyntaxTreeNode(symbol!)) continue;
             if (!this.RequireDeclarableInside(symbol!)) continue;
