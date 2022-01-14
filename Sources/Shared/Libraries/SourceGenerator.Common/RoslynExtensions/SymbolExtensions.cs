@@ -126,6 +126,19 @@ public static class SymbolExtensions
         return (typeParams, constraints.ToString());
     }
 
+    // TODO: Doc
+    public static IEnumerable<INamedTypeSymbol> GetContainingTypeChain(this INamedTypeSymbol symbol)
+    {
+        static IEnumerable<INamedTypeSymbol> GetContainingTypeChainImpl(INamedTypeSymbol? symbol)
+        {
+            if (symbol is null) yield break;
+            foreach (var item in GetContainingTypeChainImpl(symbol.ContainingType)) yield return item;
+            yield return symbol;
+        }
+
+        return GetContainingTypeChainImpl(symbol.ContainingType);
+    }
+
     /// <summary>
     /// Checks, if a <see cref="ISymbol"/> implements a given interface.
     /// </summary>

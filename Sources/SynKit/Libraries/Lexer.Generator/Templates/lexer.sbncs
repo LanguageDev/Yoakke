@@ -10,15 +10,22 @@ using Yoakke.SynKit.Text;
 {{ # Namespace start }}
 {{ if Namespace != null }} namespace {{ Namespace }} { {{ end }}
 
-{{ # TODO: Nesting types and generic args }}
+{{ # Containing types and their generic args }}
+{{ for containerType in ContainingTypes }}
+    partial {{ containerType.Kind }} {{ containerType.Name }}
+    {{ if array.size(containerType.GenericArgs) > 0 }}
+        <{{ array.join(containerType.GenericArgs, ", ") }}>
+    {{ end }}
+    {
+{{ end }}
 
 {{ # Type start }}
 [GeneratedCode("Yoakke.SynKit.Lexer.Generator", "{{ LibraryVersion }}")]
-partial {{ TypeKind }} {{ TypeName }}
+partial {{ LexerType.Kind }} {{ LexerType.Name }}
 
 {{ # Generic types }}
-{{ if array.size(GenericArgs) > 0 }}
-    <{{ array.join(GenericArgs, ", ") }}>
+{{ if array.size(LexerType.GenericArgs) > 0 }}
+    <{{ array.join(LexerType.GenericArgs, ", ") }}>
 {{ end }}
 
 {{ # Base type and open brace }}
@@ -32,9 +39,9 @@ partial {{ TypeKind }} {{ TypeName }}
     {{ if ImplicitConstructor }}
     public ICharStream {{ SourceName }} { get; }
 
-    public {{ TypeName }}(ICharStream source) { this.{{ SourceName }} = source; }
-    public {{ TypeName }}(TextReader reader) : this(new TextReaderCharStream(reader)) { }
-    public {{ TypeName }}(string text) : this(new StringReader(text)) { }
+    public {{ LexerType.Name }}(ICharStream source) { this.{{ SourceName }} = source; }
+    public {{ LexerType.Name }}(TextReader reader) : this(new TextReaderCharStream(reader)) { }
+    public {{ LexerType.Name }}(string text) : this(new StringReader(text)) { }
     {{ end }}
 
     {{ # Token parsing implementation }}
@@ -72,9 +79,9 @@ partial {{ TypeKind }} {{ TypeName }}
                         case
                         {{ if interval.Start == null && interval.End == null }}
                             char ch
-                        {{ else if interval.Start == null }}
-                            >= '{{ string.escape(interval.Start) }}'
                         {{ else if interval.End == null }}
+                            >= '{{ string.escape(interval.Start) }}'
+                        {{ else if interval.Start == null }}
                             <= '{{ string.escape(interval.End) }}'
                         {{ else if interval.Start == interval.End }}
                             '{{ string.escape(interval.Start) }}'
@@ -123,7 +130,8 @@ partial {{ TypeKind }} {{ TypeName }}
 {{ # Type end }}
 }
 
-{{ # TODO: Nesting types end }}
+{{ # Containing types close }}
+{{ for containerType in ContainingTypes }} } {{ end }}
 
 {{ # Namespace end }}
 {{ if Namespace != null }} } {{ end }}
