@@ -5,7 +5,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Generic.Polyfill;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -75,6 +77,14 @@ public class VisitorSourceGenerator : GeneratorBase
     {
         var receiver = (SyntaxReceiver)syntaxReceiver;
 
+        var assembly = Assembly.GetExecutingAssembly();
+        var sourcesToInject = assembly
+            .GetManifestResourceNames()
+            .Where(m => m.StartsWith("InjectedSources."));
+        this.InjectSources(sourcesToInject
+            .Select(s => (s, new StreamReader(assembly.GetManifestResourceStream(s)).ReadToEnd()))
+            .ToList());
+
         this.RequireLibrary("Yoakke.SynKit.SyntaxTree");
 
         // Now we build visitor descriptions for classes annotated with visitor attributes
@@ -82,7 +92,7 @@ public class VisitorSourceGenerator : GeneratorBase
         var visitorAttr = this.LoadSymbol(TypeNames.VisitorAttribute);
         foreach (var syntax in receiver.CandidateTypes)
         {
-            var model = this.Context.Compilation.GetSemanticModel(syntax.SyntaxTree);
+            var model = this.Compilation!.GetSemanticModel(syntax.SyntaxTree);
             var symbol = model.GetDeclaredSymbol(syntax) as INamedTypeSymbol;
             var attrs = symbol!.GetAttributes<VisitorAttribute>(visitorAttr);
             if (attrs.Count == 0) continue;
