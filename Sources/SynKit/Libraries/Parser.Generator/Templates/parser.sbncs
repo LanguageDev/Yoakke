@@ -63,23 +63,135 @@ allocate_var() = 'a{{ var_cnt++ }}'
                 {{ resultVar }} = {{ firstVar }}.Error;
             }
         {{ when 'Alt' }}
-            {{ # TODO }}
+            {{ first = true }}
+            {{ for element in node.Elements }}
+                {{ altVar }} = {{ generate_parser(rule, element, lastIndex) }}
+                {{ if first }}
+                    {{ first = false }}
+                    {{ resultVar }} = {{ altVar }};
+                {{ else }}
+                    {{ resultVar }} = {{ resultVar }} | {{ altVar }};
+                {{ end }}
+            {{ end }}
         {{ when 'Seq' }}
-            {{ # TODO }}
+            {{ varStack = [] }}
+            {{ prevVar = generate_parser(rule, node.Elements[0], lastIndex) }}
+            {{ array.add(varStack, prevVar) }}
+            {{ resultSeq = prevVar + '.Ok.Value' }}
+            {{ for i in 1..<varStack.size }}
+                {{ # The close brace comes at the end }}
+                if ({{ prevVar }}.IsOk)
+                {
+                {{ nextVar = generate_parser(rule, node.Elements[i], prevVar + '.Ok.Offset') }}
+                {{ nextVar }} = {{ nextVar }} | {{ prevVar }}.Ok.FurthestError;
+                {{ prevVar = nextVar }}
+                {{ array.add(varStack, prevVar) }}
+                {{ resultSeq = resultSeq + ', ' + prevVar + '.Ok.Value' }}
+            {{ end }}
+            {{ # Unify last }}
+            if ({{ prevVar }}.IsOk)
+            {
+                {{ resultVar }} = ParseResult.Ok(({{ resultSeq }}), {{ prevVar }}.Ok.Offset, {{ prevVar }}.Ok.FurthestError);
+            }
+            else
+            {
+                {{ resultVar }} = {{ prevVar }}.Error;
+            }
+            {{ # Close nesting and errors }}
+            {{ for i in (varStack.size - 1)..0 reversed }}
+                }
+                else
+                {
+                    {{ resultVar }} = {{ varStack[i] }}.Error;
+                }
+            {{ end }}
         {{ when 'Opt' }}
-            {{ # TODO }}
+            {{ subVar = generate_parser(rule, node.Subexpr, lastIndex) }}
+            if ({{ subVar }}.IsOk)
+            {
+                {{ resultVar }} = ParseResult.Ok({{ subVar }}.Ok.Value, {{ subVar }}.Ok.Offset, {{ subVar }}.Ok.FurthestError);
+            }
+            else
+            {
+                {{ resultVar }} = ParseResult.Ok(default({{ node.ParsedType }}), {{ lastIndex }}, {{ subVar }}.Error);
+            }
         {{ when 'Group' }}
-            {{ # TODO }}
+            {{ subVar = generate_parser(rule, node.Subexpr, lastIndex) }}
+            {{ resultVar }} = {{ subVar }};
         {{ when 'Rep0' }}
-            {{ # TODO }}
+            {{ elementType = node.Subexpr.ParsedType }}
+            {{ listVar = allocate_var() }}
+            {{ indexVar = allocate_var() }}
+            {{ errVar = allocate_var() }}
+            var {{ listVar }} = new List<{{ elementType }}>();
+            var {{ indexVar }} = {{ lastIndex }};
+            ParseError? {{ errVar }} = null;
+            while (true)
+            {
+                {{ subVar = generate_parser(rule, node.Subexpr, indexVar) }}
+                if ({{ subVar }}.IsError)
+                {
+                    {{ errVar }} = {{ errVar }} | {{ subVar }}.Error;
+                    break;
+                }
+                {{ indexVar }} = {{ subVar }}.Ok.Offset;
+                {{ listVar }}.Add({{ subVar }}.Ok.Value);
+                {{ errVar }} = {{ errVar }} | {{ subVar }}.Ok.FurthestError;
+            }
+            {{ resultVar }} = ParseResult.Ok({{ listVar }}, {{ indexVar }}, {{ errVar }});
         {{ when 'Rep1' }}
-            {{ # TODO }}
+            {{ elementType = node.Subexpr.ParsedType }}
+            {{ listVar = allocate_var() }}
+            {{ indexVar = allocate_var() }}
+            {{ errVar = allocate_var() }}
+            {{ firstVar = generate_parser(rule, node.Subexpr, lastIndex) }}
+            if ({{ firstVar }}.IsOk)
+            {
+                var {{ listVar }} = new List<{{ elementType }}>();
+                {{ listVar }}.Add({{ firstVar }}.Ok.Value);
+                var {{ indexVar }} = {{ firstVar }}.Ok.Offset;
+                ParseError? {{ errVar }} = null;
+                while (true)
+                {
+                    {{ subVar = generate_parser(rule, node.Subexpr, indexVar) }}
+                    if ({{ subVar }}.IsError)
+                    {
+                        {{ errVar }} = {{ errVar }} | {{ subVar }}.Error;
+                        break;
+                    }
+                    {{ indexVar }} = {{ subVar }}.Ok.Offset;
+                    {{ listVar }}.Add({{ subVar }}.Ok.Value);
+                    {{ errVar }} = {{ errVar }} | {{ subVar }}.Ok.FurthestError;
+                }
+                {{ resultVar }} = ParseResult.Ok((IReadOnlyList<{{ elementType }}>){{ listVar }}, {{ indexVar }}, {{ errVar }});
+            }
+            else
+            {
+                {{ resultVar }} = {{ firstVar }}.Error;
+            }
         {{ when 'Call' }}
-            {{ # TODO }}
+            {{ resultVar }} = parse{{ node.Rule }}({{ lastIndex }});
+            {{ # TODO: Add back the error heuristic }}
         {{ when 'Text' }}
-            {{ # TODO }}
+            {{ resultTok = allocate_var() }}
+            if (this.{{ SourceName }}.TryLookAhead({{ lastIndex }}, out var {{ resultTok }}) && {{ resultTok }}.Text == "{{ node.Value }}")
+            {
+                {{ resultVar }} = ParseResult.Ok({{ resultTok }}, {{ lastIndex }} + 1);
+            }
+            else
+            {
+                {{ resultVar }} = ParseResult.Error("{{ node.Value }}", {{ resultTok }}, {{ resultTok }}.Range.Start, "{{ rule.Name }}");
+            }
         {{ when 'Token' }}
-            {{ # TODO }}
+            {{ resultTok = allocate_var() }}
+            if (this.{{ SourceName }}.TryLookAhead({{ lastIndex }}, out var {{ resultTok }}) && {{ resultTok }}.Kind.Equals({{ TokenType }}.{{ node.Value }}))
+            {
+                {{ resultVar }} = ParseResult.Ok({{ resultTok }}, {{ lastIndex }} + 1);
+            }
+            else
+            {
+                {{ resultVar }} = ParseResult.Error({{ TokenType }}.{{ node.Value }}, {{ resultTok }}, {{ resultTok }}.Range.Start, "{{ rule.Name }}");
+            }
     {{ end }}
     ret {{ resultVar }}
 {{ end }}
