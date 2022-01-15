@@ -1,5 +1,6 @@
 using System;
 using System.CodeDom.Compiler;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Yoakke.Streams;
 using Yoakke.SynKit.Lexer;
@@ -12,6 +13,76 @@ using Yoakke.SynKit.Text;
 #pragma warning disable CS8604
 #pragma warning disable CS8619
 #pragma warning disable CS8632
+
+{{
+var_cnt = 0
+allocate_var() = 'a{{ var_cnt++ }}'
+}}
+
+{{ # Functionality to generate the parser based on the AST nodes }}
+{{ func generate_parser(rule node, lastIndex) }}
+    {{ resultVar = allocate_var() }}
+    ParseResult<{{ node.ParsedType }}> {{ resultVar }};
+    {{ case node.Type }}
+        {{ when 'Placeholder' }}
+            {{ resultVar }} = placeholder;
+        {{ when 'Transform' }}
+            {{ subVar = generate_parser(rule, node.Subexpr, lastIndex) }}
+            if ({{ subVar }}.IsOk)
+            {
+                var {{ generate_binder(node.Subexpr) }} = {{ subVar }}.Ok.Value;
+                {{ args = regex.replace(generate_binder(node.Subexpr), '[()]', '') }}
+                {{ resultVar }} = ParseResult.Ok({{node.Method.Name}}({{ args }}), {{ subVar }}.Ok.Offset, {{ subVar }}.Ok.FurthestError);
+            }
+            else
+            {
+                {{ resultVar }} = {{ subVar }}.Error;
+            }
+        {{ when 'FoldLeft' }}
+            {{ firstVar = generate_parser(rule, fold.First, lastIndex) }}
+            if ({{ firstVar }}.IsOk)
+            {
+                var placeholder = {{ firstVar }};
+                {{ resultVar }} = {{ firstVar }}.Ok;
+                while (true)
+                {
+                    {{ secondVar = generate_parser(rule, fold.Second, lastIndex) }}
+                    if ({{ secondVar }}.IsOk)
+                    {
+                        placeholder = {{ secondVar }};
+                        {{ resultVar }} = {{ secondVar }}.Ok;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                {{ resultVar }} = {{ firstVar }}.Error;
+            }
+        {{ when 'Alt' }}
+            {{ # TODO }}
+        {{ when 'Seq' }}
+            {{ # TODO }}
+        {{ when 'Opt' }}
+            {{ # TODO }}
+        {{ when 'Group' }}
+            {{ # TODO }}
+        {{ when 'Rep0' }}
+            {{ # TODO }}
+        {{ when 'Rep1' }}
+            {{ # TODO }}
+        {{ when 'Call' }}
+            {{ # TODO }}
+        {{ when 'Text' }}
+            {{ # TODO }}
+        {{ when 'Token' }}
+            {{ # TODO }}
+    {{ end }}
+    ret {{ resultVar }}
+{{ end }}
 
 {{ # Namespace start }}
 {{ if Namespace != null }} namespace {{ Namespace }} { {{ end }}
@@ -45,7 +116,44 @@ partial {{ ParserType.Kind }} {{ ParserType.Name }}
     public {{ ParserType.Name }}(IEnumerable<{{ TokenType }}> tokens) : this(new EnumerableStream<{{ TokenType }}>(tokens)) { }
     {{ end }}
 
-    {{ # TODO: Parser methods }}
+    {{ # Parser methods }}
+    {{ for rule in ParserRules }}
+        {{ # For public API rules we add a public Try... and a regular parser method }}
+        {{ if rule.PublicApi }}
+            public bool TryParse{{ rule.Name }}([MaybeNullWhen(false)] out {{ rule.ParsedType }} value)
+            {
+                var result = parse{{ rule.Name }}(0);
+                if (result.IsOk)
+                {
+                    value = result.Ok.Value;
+                    this.{{ SourceName }}.Consume(result.Ok.Offset);
+                    return true;
+                }
+                else
+                {
+                    value = default;
+                    return false;
+                }
+            }
+
+            public ParseResult<{{ rule.ParsedType }}> Parse{{ rule.Name }}()
+            {
+                var result = parse{{ rule.Name }}(0);
+                if (result.IsOk) this.{{ SourceName }}.Consume(result.Ok.Offset);
+                {{ # Try to consume one so the parser won't get stuck }}
+                {{ # TODO: Maybe let the user do this or be smarter about it? }}
+                else this.{{ SourceName }}.Consume(1);
+                return result;
+            }
+        {{ end }}
+
+        {{ # Define a private method for the rule that parses from a given offset }}
+        private ParseResult<{{ rule.ParsedType }}> parse{{ rule.Name }}(int offset)
+        {
+            {{ resultName = generate_parser(rule, rule.Ast, 'offset') }}
+            return {{ resultName }};
+        }
+    {{ end }}
 
 {{ # Type end }}
 }
