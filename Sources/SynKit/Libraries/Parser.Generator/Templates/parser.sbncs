@@ -1,0 +1,64 @@
+using System;
+using System.CodeDom.Compiler;
+using System.IO;
+using Yoakke.Streams;
+using Yoakke.SynKit.Lexer;
+using Yoakke.SynKit.Parser;
+using Yoakke.SynKit.Text;
+
+#nullable enable
+#pragma warning disable CS8600
+#pragma warning disable CS8602
+#pragma warning disable CS8604
+#pragma warning disable CS8619
+#pragma warning disable CS8632
+
+{{ # Namespace start }}
+{{ if Namespace != null }} namespace {{ Namespace }} { {{ end }}
+
+{{ # Containing types and their generic args }}
+{{ for containerType in ContainingTypes }}
+    partial {{ containerType.Kind }} {{ containerType.Name }}
+    {{ if array.size(containerType.GenericArgs) > 0 }}
+        <{{ array.join(containerType.GenericArgs, ", ") }}>
+    {{ end }}
+    {
+{{ end }}
+
+{{ # Type start }}
+[GeneratedCode("Yoakke.SynKit.Lexer.Generator", "{{ LibraryVersion }}")]
+partial {{ ParserType.Kind }} {{ ParserType.Name }}
+
+{{ # Generic types }}
+{{ if array.size(ParserType.GenericArgs) > 0 }}
+    <{{ array.join(ParserType.GenericArgs, ", ") }}>
+{{ end }}
+
+{{ # Open brace }}
+{
+    {{ # Parser constructors }}
+    {{ if ImplicitConstructor }}
+    public IPeekableStream<{{ TokenType }}> {{ SourceName }} { get; }
+
+    public {{ ParserType.Name }}(IPeekableStream<{{ TokenType }}> source) { this.{{ SourceName }} = source; }
+    public {{ ParserType.Name }}(ILexer<{{ TokenType }}> lexer) : this(lexer.ToStream().ToBuffered()) { }
+    public {{ ParserType.Name }}(IEnumerable<{{ TokenType }}> tokens) : this(new EnumerableStream<{{ TokenType }}>(tokens)) { }
+    {{ end }}
+
+    {{ # TODO: Parser methods }}
+
+{{ # Type end }}
+}
+
+{{ # Containing types close }}
+{{ for containerType in ContainingTypes }} } {{ end }}
+
+{{ # Namespace end }}
+{{ if Namespace != null }} } {{ end }}
+
+#pragma warning restore CS8632
+#pragma warning restore CS8619
+#pragma warning restore CS8604
+#pragma warning restore CS8602
+#pragma warning restore CS8600
+#nullable restore
