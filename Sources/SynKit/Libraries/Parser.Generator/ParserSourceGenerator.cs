@@ -16,6 +16,8 @@ using Yoakke.SourceGenerator.Common.RoslynExtensions;
 using System.IO;
 using System.Reflection;
 using Scriban;
+using Microsoft.CodeAnalysis.CSharp;
+using System.Diagnostics;
 
 namespace Yoakke.SynKit.Parser.Generator;
 
@@ -103,6 +105,8 @@ public class ParserSourceGenerator : GeneratorBase
     {
         if (!this.RequireDeclarableInside(parserClass)) return null;
 
+        // Debugger.Launch();
+
         var tokenSourceAttr = this.LoadSymbol(TypeNames.TokenSourceAttribute);
         var parserAttr = parserClass.GetAttribute<ParserAttribute>(this.LoadSymbol(TypeNames.ParserAttribute));
 
@@ -118,7 +122,7 @@ public class ParserSourceGenerator : GeneratorBase
         if (!this.CheckRuleSet()) return null;
 
         var assembly = Assembly.GetExecutingAssembly();
-        var templateText = new StreamReader(assembly.GetManifestResourceStream("Templates.lexer.sbncs")).ReadToEnd();
+        var templateText = new StreamReader(assembly.GetManifestResourceStream("Templates.parser.sbncs")).ReadToEnd();
         var template = Template.Parse(templateText);
 
         if (template.HasErrors)
@@ -127,8 +131,30 @@ public class ParserSourceGenerator : GeneratorBase
             throw new InvalidOperationException($"Template parse error: {template.Messages}");
         }
 
+        var tokenType = "IToken";
+        if (parserAttr.TokenType is not null) tokenType = $"IToken<{parserAttr.TokenType.ToDisplayString()}>";
+
         var model = new
         {
+            LibraryVersion = assembly.GetName().Version.ToString(),
+            Namespace = parserClass.ContainingNamespace?.ToDisplayString(),
+            ContainingTypes = parserClass
+                .GetContainingTypeChain()
+                .Select(c => new
+                {
+                    Kind = c.GetTypeKindName(),
+                    Name = c.Name,
+                    GenericArgs = c.TypeArguments.Select(t => t.Name).ToList(),
+                }),
+            ParserType = new
+            {
+                Kind = parserClass.GetTypeKindName(),
+                Name = parserClass.Name,
+                GenericArgs = parserClass.TypeArguments.Select(t => t.Name).ToList(),
+            },
+            TokenType = tokenType,
+            ImplicitConstructor = parserClass.HasNoUserDefinedCtors() && source is null,
+            SourceName = this.sourceField,
         };
 
         var result = template.Render(model: model, memberRenamer: member => member.Name);
