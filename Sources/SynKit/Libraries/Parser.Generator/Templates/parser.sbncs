@@ -171,7 +171,13 @@ allocate_var() = 'a{{ var_cnt++ }}'
             }
         {{ when 'Call' }}
             {{ resultVar }} = parse{{ node.Rule }}({{ lastIndex }});
-            {{ # TODO: Add back the error heuristic }}
+            {{ peekVar = allocate_var() }})
+            {{ # Error heuristic }}
+            {{ # If the parse didn't advance anything, replace the expected element with this rule call }}
+            if ({{ resultVar }}.IsError && (!this.{{ SourceName }}.TryLookAhead({{ lastIndex }}, out var {{ peekVar }} || ReferenceEquals({{ peekVar }}, {{ resultVar }}.Error.Got))))
+            {
+                {{ resultVar }} = ParseResult.Error("{{ node.Rule }}", {{ resultVar }}.Error.Got, {{ resultVar }}.Error.Position, "{{ rule }}"));
+            }
         {{ when 'Text' }}
             {{ resultTok = allocate_var() }}
             if (this.{{ SourceName }}.TryLookAhead({{ lastIndex }}, out var {{ resultTok }}) && {{ resultTok }}.Text == "{{ node.Value }}")
