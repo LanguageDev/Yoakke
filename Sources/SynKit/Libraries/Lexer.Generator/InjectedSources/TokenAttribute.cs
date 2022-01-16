@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021-2022 Yoakke.
+// Copyright (c) 2021-2022 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -10,7 +10,7 @@ namespace Yoakke.SynKit.Lexer.Attributes;
 /// An attribute to define a token type in terms of a literal string to match.
 /// </summary>
 [AttributeUsage(AttributeTargets.Field, AllowMultiple = true)]
-public class TokenAttribute : Attribute
+internal class TokenAttribute : Attribute
 {
     /// <summary>
     /// The text to match the token.

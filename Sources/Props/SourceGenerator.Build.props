@@ -15,17 +15,28 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Embed all Scriban template files -->
+    <EmbeddedResource Include="$(MSBuildProjectDirectory)\Templates\**\*.*">
+      <LogicalName>Templates.%(Filename)%(Extension)</LogicalName>
+    </EmbeddedResource>
+    <!-- Embed all source files that will be re-emitted by the generator -->
+    <EmbeddedResource Include="$(MSBuildProjectDirectory)\InjectedSources\**\*.*">
+      <LogicalName>InjectedSources.%(Filename)%(Extension)</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
     <!-- Compile-time and analysis dependencies -->
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.9.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.2" PrivateAssets="All"/>
     <PackageReference Include="Nullable" Version="1.3.0" PrivateAssets="All"/>
 
     <!-- Source-generator abstractions -->
-    <Compile Include="$(SolutionDir)/Shared/Libraries/SourceGenerator.Common/**/*.cs" Link="SourceGenerator.Common" />
+    <Compile Include="$(SolutionDir)/Shared/Libraries/SourceGenerator.Common/**/*.cs" Link="SourceGenerator.Common" Visible="False" />
     <Compile Remove="$(SolutionDir)/Shared/Libraries/SourceGenerator.Common/obj/**/*.cs" />
 
     <!-- Run-time polyfill libraries -->
-    <Compile Include="$(SolutionDir)/Shared/Libraries/Polyfill/**/*.cs" Link="Polyfill" />
+    <Compile Include="$(SolutionDir)/Shared/Libraries/Polyfill/**/*.cs" Link="Polyfill" Visible="False" />
     <Compile Remove="$(SolutionDir)/Shared/Libraries/Polyfill/obj/**/*.cs" />
 
     <PackageReference Include="System.Memory" Version="4.5.4" PrivateAssets="all" GeneratePathProperty="true" />
@@ -39,6 +50,9 @@
 
     <PackageReference Include="IsExternalInit" Version="1.0.1" PrivateAssets="all" GeneratePathProperty="true" />
     <None Include="$(PkgIsExternalInit)\lib\netstandard2.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+
+    <PackageReference Include="Scriban" Version="5.0.0" PrivateAssets="all" GeneratePathProperty="true" />
+    <None Include="$(PkgScriban)\lib\netstandard2.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -51,6 +65,7 @@
       <TargetPathWithTargetPlatformMoniker Include="$(PkgIndexRange)\lib\netstandard2.0\*.dll" IncludeRuntimeDependency="false" />
       <TargetPathWithTargetPlatformMoniker Include="$(PkgMicrosoft_Bcl_HashCode)\lib\netstandard2.0\*.dll" IncludeRuntimeDependency="false" />
       <TargetPathWithTargetPlatformMoniker Include="$(PkgIsExternalInit)\lib\netstandard2.0\*.dll" IncludeRuntimeDependency="false" />
+      <TargetPathWithTargetPlatformMoniker Include="$(PkgScriban)\lib\netstandard2.0\*.dll" IncludeRuntimeDependency="false" />
     </ItemGroup>
   </Target>
 </Project>

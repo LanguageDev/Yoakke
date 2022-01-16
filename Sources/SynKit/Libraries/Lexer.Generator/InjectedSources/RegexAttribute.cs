@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021-2022 Yoakke.
+// Copyright (c) 2021-2022 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -10,7 +10,7 @@ namespace Yoakke.SynKit.Lexer.Attributes;
 /// An attribute to define a token type in terms of a regular expression.
 /// </summary>
 [AttributeUsage(AttributeTargets.Field, AllowMultiple = true)]
-public class RegexAttribute : Attribute
+internal class RegexAttribute : Attribute
 {
     /// <summary>
     /// The regex to match the token.

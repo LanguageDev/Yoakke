@@ -13,6 +13,11 @@ using Yoakke.SynKit.Parser.Generator.Ast;
 using Yoakke.SynKit.Parser.Generator.Syntax;
 using Yoakke.SourceGenerator.Common;
 using Yoakke.SourceGenerator.Common.RoslynExtensions;
+using System.IO;
+using System.Reflection;
+using Scriban;
+using Microsoft.CodeAnalysis.CSharp;
+using System.Diagnostics;
 
 namespace Yoakke.SynKit.Parser.Generator;
 
@@ -46,7 +51,6 @@ public class ParserSourceGenerator : GeneratorBase
     }
 
     private RuleSet? ruleSet;
-    private int varIndex;
     private TokenKindSet? tokenKinds;
     private INamedTypeSymbol? parserType;
     private string sourceField = string.Empty;
@@ -70,13 +74,21 @@ public class ParserSourceGenerator : GeneratorBase
     {
         var receiver = (SyntaxReceiver)syntaxReceiver;
 
+        var assembly = Assembly.GetExecutingAssembly();
+        var sourcesToInject = assembly
+            .GetManifestResourceNames()
+            .Where(m => m.StartsWith("InjectedSources."));
+        this.InjectSources(sourcesToInject
+            .Select(s => (s, new StreamReader(assembly.GetManifestResourceStream(s)).ReadToEnd()))
+            .ToList());
+
         this.RequireLibrary("Yoakke.SynKit.Parser");
 
         var parserAttr = this.LoadSymbol(TypeNames.ParserAttribute);
 
         foreach (var syntax in receiver.CandidateTypes)
         {
-            var model = this.Context.Compilation.GetSemanticModel(syntax.SyntaxTree);
+            var model = this.Compilation!.GetSemanticModel(syntax.SyntaxTree);
             var symbol = model.GetDeclaredSymbol(syntax) as INamedTypeSymbol;
             if (symbol is null) continue;
             // Filter classes without the parser attributes
@@ -106,97 +118,133 @@ public class ParserSourceGenerator : GeneratorBase
         this.parserType = parserClass;
         if (!this.CheckRuleSet()) return null;
 
-        var className = parserClass.Name;
+        var assembly = Assembly.GetExecutingAssembly();
+        var templateText = new StreamReader(assembly.GetManifestResourceStream("Templates.parser.sbncs")).ReadToEnd();
+        var template = Template.Parse(templateText);
 
-        var parserMethods = new StringBuilder();
-        foreach (var rule in this.ruleSet.Rules)
+        if (template.HasErrors)
         {
-            var key = ToPascalCase(rule.Key);
+            var errors = string.Join(" | ", template.Messages.Select(x => x.Message));
+            throw new InvalidOperationException($"Template parse error: {template.Messages}");
+        }
 
-            // TODO: Check if the return types are all compatible
-            var parsedType = rule.Value.Ast.GetParsedType(this.ruleSet, this.tokenKinds);
-            var returnType = GetReturnType(parsedType);
+        var tokenType = "IToken";
+        if (parserAttr.TokenType is not null) tokenType = $"IToken<{parserAttr.TokenType.ToDisplayString()}>";
 
-            if (rule.Value.PublicApi)
+        var model = new
+        {
+            LibraryVersion = assembly.GetName().Version.ToString(),
+            Namespace = parserClass.ContainingNamespace?.ToDisplayString(),
+            ContainingTypes = parserClass
+                .GetContainingTypeChain()
+                .Select(c => new
+                {
+                    Kind = c.GetTypeKindName(),
+                    Name = c.Name,
+                    GenericArgs = c.TypeArguments.Select(t => t.Name).ToList(),
+                }),
+            ParserType = new
             {
-                // Part of public API
+                Kind = parserClass.GetTypeKindName(),
+                Name = parserClass.Name,
+                GenericArgs = parserClass.TypeArguments.Select(t => t.Name).ToList(),
+            },
+            TokenType = tokenType,
+            ImplicitConstructor = parserClass.HasNoUserDefinedCtors() && source is null,
+            SourceName = this.sourceField,
+            ParserRules = this.ruleSet.Rules.Select(r => new
+            {
+                PublicApi = r.Value.PublicApi,
+                Name = r.Value.VisualName,
+                MethodName = ToPascalCase(r.Key),
+                Ast = this.TranslateAst(r.Value.Ast),
+            }),
+        };
 
-                // Implement a try... pattern method
-                parserMethods.AppendLine($"public bool TryParse{key}([{TypeNames.MaybeNullWhen}(false)] out {parsedType} value) {{");
-                parserMethods.AppendLine($"    var result = parse{key}(0);");
-                // Failure case
-                parserMethods.AppendLine("    if (result.IsError) {");
-                parserMethods.AppendLine("        value = default;");
-                parserMethods.AppendLine("        return false;");
-                parserMethods.AppendLine("    }");
-                // Success case
-                parserMethods.AppendLine("    value = result.Ok.Value;");
-                parserMethods.AppendLine($"    this.{this.sourceField}.Consume(result.Ok.Offset);");
-                parserMethods.AppendLine("    return true;");
-                parserMethods.AppendLine("}");
+        var result = template.Render(model: model, memberRenamer: member => member.Name);
+        result = SyntaxFactory
+            .ParseCompilationUnit(result)
+            .NormalizeWhitespace()
+            .GetText()
+            .ToString();
 
-                // Implement a regular parse-result method
-                parserMethods.AppendLine($"public {returnType} Parse{key}() {{");
-                parserMethods.AppendLine($"    var result = parse{key}(0);");
-                parserMethods.AppendLine("    if (result.IsOk) {");
-                parserMethods.AppendLine($"        this.{this.sourceField}.Consume(result.Ok.Offset);");
-                parserMethods.AppendLine("    } else {");
-                // Try to consume one so the parser won't get stuck
-                // TODO: Maybe let the user do this or be smarter about it?
-                parserMethods.AppendLine($"        this.{this.sourceField}.Consume(1);");
-                parserMethods.AppendLine("    }");
-                parserMethods.AppendLine("    return result;");
-                parserMethods.AppendLine("}");
-            }
+        // Debugger.Launch();
 
-            // Implement a private method
-            parserMethods.AppendLine($"private {returnType} parse{key}(int offset) {{");
-            parserMethods.AppendLine(this.GenerateRuleParser(rule.Value));
-            parserMethods.AppendLine("}");
-        }
-
-        // Deduce what ctors to generate
-        var ctors = string.Empty;
-        if (parserClass.HasNoUserDefinedCtors() && source is null)
-        {
-            var tokenType = TypeNames.IToken;
-            if (parserAttr.TokenType is not null) tokenType = $"{TypeNames.IToken}<{parserAttr.TokenType.ToDisplayString()}>";
-            ctors = $@"
-public {TypeNames.IPeekableStream}<{tokenType}> TokenStream {{ get; }}
-
-public {className}({TypeNames.IPeekableStream}<{tokenType}> source) {{ this.TokenStream = source; }}
-public {className}({TypeNames.ILexer}<{tokenType}> lexer) : this(lexer.ToStream().ToBuffered()) {{ }}
-public {className}({TypeNames.IEnumerable}<{tokenType}> tokens) : this(new {TypeNames.EnumerableStream}<{tokenType}>(tokens).ToBuffered()) {{ }}
-";
-        }
-
-        var (prefix, suffix) = parserClass.ContainingSymbol.DeclareInsideExternally();
-        var (genericTypes, genericConstraints) = parserClass.GetGenericCrud();
-        return $@"
-using Yoakke.SynKit.Lexer;
-using Yoakke.Streams;
-{prefix}
-partial {parserClass.GetTypeKindName()} {className}{genericTypes} {genericConstraints}
-{{
-    {ctors}
-
-#nullable enable
-#pragma warning disable CS8600
-#pragma warning disable CS8602
-#pragma warning disable CS8604
-#pragma warning disable CS8619
-#pragma warning disable CS8632
-        {parserMethods}
-#pragma warning restore CS8632
-#pragma warning restore CS8619
-#pragma warning restore CS8604
-#pragma warning restore CS8602
-#pragma warning restore CS8600
-#nullable restore
-}}
-{suffix}
-";
+        return result;
     }
+
+    private object TranslateAst(BnfAst ast) => ast switch
+    {
+        BnfAst.Placeholder p => new
+        {
+            Type = "Placeholder",
+            ParsedType = ast.GetParsedType(this.ruleSet!, this.tokenKinds!),
+        },
+        BnfAst.Transform t => new
+        {
+            Type = "Transform",
+            ParsedType = ast.GetParsedType(this.ruleSet!, this.tokenKinds!),
+            Subexpr = this.TranslateAst(t.Subexpr),
+            MethodName = t.Method.Name,
+        },
+        BnfAst.FoldLeft f => new
+        {
+            Type = "FoldLeft",
+            ParsedType = ast.GetParsedType(this.ruleSet!, this.tokenKinds!),
+            First = this.TranslateAst(f.First),
+            Second = this.TranslateAst(f.Second),
+        },
+        BnfAst.Alt a => new
+        {
+            Type = "Alt",
+            ParsedType = ast.GetParsedType(this.ruleSet!, this.tokenKinds!),
+            Elements = a.Elements.Select(this.TranslateAst).ToList(),
+        },
+        BnfAst.Seq s => new
+        {
+            Type = "Seq",
+            ParsedType = ast.GetParsedType(this.ruleSet!, this.tokenKinds!),
+            Elements = s.Elements.Select(this.TranslateAst).ToList(),
+        },
+        BnfAst.Opt o => new
+        {
+            Type = "Opt",
+            ParsedType = ast.GetParsedType(this.ruleSet!, this.tokenKinds!),
+            Subexpr = this.TranslateAst(o.Subexpr),
+        },
+        BnfAst.Group g => new
+        {
+            Type = "Group",
+            ParsedType = ast.GetParsedType(this.ruleSet!, this.tokenKinds!),
+            Subexpr = this.TranslateAst(g.Subexpr),
+        },
+        BnfAst.Rep0 r => new
+        {
+            Type = "Rep0",
+            ParsedType = ast.GetParsedType(this.ruleSet!, this.tokenKinds!),
+            Subexpr = this.TranslateAst(r.Subexpr),
+        },
+        BnfAst.Rep1 r => new
+        {
+            Type = "Rep1",
+            ParsedType = ast.GetParsedType(this.ruleSet!, this.tokenKinds!),
+            Subexpr = this.TranslateAst(r.Subexpr),
+        },
+        BnfAst.Call c => new
+        {
+            Type = "Call",
+            ParsedType = ast.GetParsedType(this.ruleSet!, this.tokenKinds!),
+            RuleName = c.Name,
+            RuleMethodName = ToPascalCase(c.Name),
+        },
+        BnfAst.Literal lit => new
+        {
+            Type = lit.Value is string ? "Text" : "Token",
+            ParsedType = ast.GetParsedType(this.ruleSet!, this.tokenKinds!),
+            Value = lit.Value,
+        },
+        _ => throw new ArgumentOutOfRangeException(nameof(ast)),
+    };
 
     /* Sanity-checks */
 
@@ -231,239 +279,6 @@ partial {parserClass.GetTypeKindName()} {className}{genericTypes} {genericConstr
         // It is an unknown reference, report it
         this.Report(Diagnostics.UnknownRuleIdentifier, referenceName);
         return false;
-    }
-
-    /* Code-generation */
-
-    private string GenerateRuleParser(Rule rule)
-    {
-        var code = new StringBuilder();
-        // By default we are at "index"
-        var resultVar = this.GenerateBnf(code, rule, rule.Ast, "offset");
-        code.AppendLine($"return {resultVar};");
-        return code.ToString();
-    }
-
-    private string GenerateBnf(StringBuilder code, Rule rule, BnfAst node, string lastIndex)
-    {
-        var parsedType = node.GetParsedType(this.ruleSet!, this.tokenKinds!);
-        var resultType = GetReturnType(parsedType);
-        var resultVar = this.AllocateVarName();
-        code.AppendLine($"{resultType} {resultVar};");
-
-        switch (node)
-        {
-        case BnfAst.Placeholder:
-        {
-            code.AppendLine($"{resultVar} = placeholder;");
-            break;
-        }
-
-        case BnfAst.Transform transform:
-        {
-            var subVar = this.GenerateBnf(code, rule, transform.Subexpr, lastIndex);
-            var binder = this.GetTopLevelPattern(transform.Subexpr);
-            var flattenedValues = FlattenBind(binder);
-            var call = $"{transform.Method.Name}({flattenedValues})";
-            code.AppendLine($"if ({subVar}.IsOk) {{");
-            code.AppendLine($"    var {binder} = {subVar}.Ok.Value;");
-            code.AppendLine($"    {resultVar} = {TypeNames.ParseResult}.Ok({call}, {subVar}.Ok.Offset, {subVar}.Ok.FurthestError);");
-            code.AppendLine("} else {");
-            code.AppendLine($"    {resultVar} = {subVar}.Error;");
-            code.AppendLine("}");
-            break;
-        }
-
-        case BnfAst.FoldLeft fold:
-        {
-            var firstVar = this.GenerateBnf(code, rule, fold.First, lastIndex);
-            code.AppendLine($"if ({firstVar}.IsOk) {{");
-            code.AppendLine($"    var placeholder = {firstVar};");
-            code.AppendLine($"    {resultVar} = {firstVar}.Ok;");
-            code.AppendLine("    while (true) {");
-
-            var secondVar = this.GenerateBnf(code, rule, fold.Second, lastIndex);
-            code.AppendLine($"if ({secondVar}.IsOk) {{");
-            code.AppendLine($"    placeholder = {secondVar};");
-            code.AppendLine($"    {resultVar} = {secondVar}.Ok;");
-            code.AppendLine("} else {");
-            code.AppendLine("    break;");
-            code.AppendLine("}");
-
-            code.AppendLine("    }");
-            code.AppendLine("} else {");
-            code.AppendLine($"    {resultVar} = {firstVar}.Error;");
-            code.AppendLine("}");
-            break;
-        }
-
-        case BnfAst.Alt alt:
-        {
-            var first = true;
-            foreach (var element in alt.Elements)
-            {
-                var altVar = this.GenerateBnf(code, rule, element, lastIndex);
-                if (first)
-                {
-                    // First, just keep that
-                    code.AppendLine($"{resultVar} = {altVar};");
-                    first = false;
-                }
-                else
-                {
-                    // Pick the one that got the furthest
-                    code.AppendLine($"{resultVar} = {resultVar} | {altVar};");
-                }
-            }
-            break;
-        }
-
-        case BnfAst.Seq seq:
-        {
-            var varStack = new Stack<string>();
-            var prevVar = this.GenerateBnf(code, rule, seq.Elements[0], lastIndex);
-            varStack.Push(prevVar);
-            var resultSeq = new StringBuilder($"{prevVar}.Ok.Value");
-            for (var i = 1; i < seq.Elements.Count; ++i)
-            {
-                code.AppendLine($"if ({prevVar}.IsOk) {{");
-                var nextVar = this.GenerateBnf(code, rule, seq.Elements[i], $"{prevVar}.Ok.Offset");
-                // Update it with the error
-                code.AppendLine($"{nextVar} = {nextVar} | {prevVar}.Ok.FurthestError;");
-                prevVar = nextVar;
-                varStack.Push(prevVar);
-                resultSeq.Append($", {prevVar}.Ok.Value");
-            }
-            // Unify last
-            code.AppendLine($"if ({prevVar}.IsOk) {{");
-            code.AppendLine($"    {resultVar} = {TypeNames.ParseResult}.Ok(({resultSeq}), {prevVar}.Ok.Offset, {prevVar}.Ok.FurthestError);");
-            code.AppendLine("} else {");
-            varStack.Pop();
-            code.AppendLine($"    {resultVar} = {prevVar}.Error;");
-            code.AppendLine("}");
-            // Close nesting and errors
-            while (varStack.TryPop(out var top))
-            {
-                code.AppendLine("} else {");
-                code.AppendLine($"    {resultVar} = {top}.Error;");
-                code.AppendLine("}");
-            }
-            break;
-        }
-
-        case BnfAst.Opt opt:
-        {
-            var subVar = this.GenerateBnf(code, rule, opt.Subexpr, lastIndex);
-            code.AppendLine($"if ({subVar}.IsOk) {resultVar} = {TypeNames.ParseResult}.Ok<{parsedType}>({subVar}.Ok.Value, {subVar}.Ok.Offset, {subVar}.Ok.FurthestError);");
-            code.AppendLine($"else {resultVar} = {TypeNames.ParseResult}.Ok(default({parsedType}), {lastIndex}, {subVar}.Error);");
-            break;
-        }
-
-        case BnfAst.Group grp:
-        {
-            var subVar = this.GenerateBnf(code, rule, grp.Subexpr, lastIndex);
-            code.AppendLine($"{resultVar} = {subVar};");
-            break;
-        }
-
-        case BnfAst.Rep0 r0:
-        {
-            var elementType = r0.Subexpr.GetParsedType(this.ruleSet!, this.tokenKinds!);
-            var listVar = this.AllocateVarName();
-            var indexVar = this.AllocateVarName();
-            var errVar = this.AllocateVarName();
-            code.AppendLine($"var {listVar} = new {TypeNames.List}<{elementType}>();");
-            code.AppendLine($"var {indexVar} = {lastIndex};");
-            code.AppendLine($"{TypeNames.ParseError} {errVar} = null;");
-            code.AppendLine("while (true) {");
-            var subVar = this.GenerateBnf(code, rule, r0.Subexpr, indexVar);
-            code.AppendLine($"    if ({subVar}.IsError) {{");
-            code.AppendLine($"        {errVar} = {errVar} | {subVar}.Error;");
-            code.AppendLine("        break;");
-            code.AppendLine("    }");
-            code.AppendLine($"    {indexVar} = {subVar}.Ok.Offset;");
-            code.AppendLine($"    {listVar}.Add({subVar}.Ok.Value);");
-            code.AppendLine($"    {errVar} = {errVar} | {subVar}.Ok.FurthestError;");
-            code.AppendLine("}");
-            code.AppendLine($"{resultVar} = {TypeNames.ParseResult}.Ok(({parsedType}){listVar}, {indexVar}, {errVar});");
-            break;
-        }
-
-        case BnfAst.Rep1 r1:
-        {
-            var elementType = r1.Subexpr.GetParsedType(this.ruleSet!, this.tokenKinds!);
-            var listVar = this.AllocateVarName();
-            var indexVar = this.AllocateVarName();
-            var errVar = this.AllocateVarName();
-            var firstVar = this.GenerateBnf(code, rule, r1.Subexpr, lastIndex);
-            code.AppendLine($"if ({firstVar}.IsOk) {{");
-            code.AppendLine($"    var {listVar} = new {TypeNames.List}<{elementType}>();");
-            code.AppendLine($"    {listVar}.Add({firstVar}.Ok.Value);");
-            code.AppendLine($"    var {indexVar} = {firstVar}.Ok.Offset;");
-            code.AppendLine($"    {TypeNames.ParseError} {errVar} = null;");
-            code.AppendLine("    while (true) {");
-            var subVar = this.GenerateBnf(code, rule, r1.Subexpr, indexVar);
-            code.AppendLine($"        if ({subVar}.IsError) {{");
-            code.AppendLine($"            {errVar} = {errVar} | {subVar}.Error;");
-            code.AppendLine("            break;");
-            code.AppendLine("        }");
-            code.AppendLine($"        {indexVar} = {subVar}.Ok.Offset;");
-            code.AppendLine($"        {listVar}.Add({subVar}.Ok.Value);");
-            code.AppendLine($"        {errVar} = {errVar} | {subVar}.Ok.FurthestError;");
-            code.AppendLine("    }");
-            code.AppendLine($"    {resultVar} = {TypeNames.ParseResult}.Ok(({parsedType}){listVar}, {indexVar}, {errVar});");
-            code.AppendLine("} else {");
-            code.AppendLine($"    {resultVar} = {firstVar}.Error;");
-            code.AppendLine("}");
-            break;
-        }
-
-        case BnfAst.Call call:
-        {
-            // TODO: Check if it even exists
-            var calledRule = this.ruleSet!.GetRule(call.Name);
-            var peekVar = this.AllocateVarName();
-            var key = ToPascalCase(call.Name);
-            code.AppendLine($"{resultVar} = parse{key}({lastIndex});");
-            // HEURISTIC: If the parse didn't advance anything, replace error
-            code.AppendLine($"if ({resultVar}.IsError && (!this.{this.sourceField}.TryLookAhead({lastIndex}, out var {peekVar}) || ReferenceEquals({peekVar}, {resultVar}.Error.Got))) {{");
-            code.AppendLine($"    {resultVar} = {TypeNames.ParseResult}.Error(\"{calledRule.VisualName}\", {resultVar}.Error.Got, {resultVar}.Error.Position, \"{rule.VisualName}\");");
-            code.AppendLine("}");
-            break;
-        }
-
-        case BnfAst.Literal lit:
-        {
-            var resultTok = this.AllocateVarName();
-            if (lit.Value is string)
-            {
-                // Match text
-                code.AppendLine($"if (this.{this.sourceField}.TryLookAhead({lastIndex}, out var {resultTok}) && {resultTok}.Text == \"{lit.Value}\") {{");
-                code.AppendLine($"    {resultVar} = {TypeNames.ParseResult}.Ok(({parsedType}){resultTok}, {lastIndex} + 1);");
-                code.AppendLine("} else {");
-                code.AppendLine($"    this.{this.sourceField}.TryLookAhead({lastIndex}, out var got);");
-                code.AppendLine($"    {resultVar} = {TypeNames.ParseResult}.Error(\"{lit.Value}\", got, {resultTok}.Range.Start, \"{rule.VisualName}\");");
-                code.AppendLine("}");
-            }
-            else
-            {
-                // Match token type
-                var tokenType = this.tokenKinds!.EnumType!.ToDisplayString();
-                var tokVariant = $"{tokenType}.{((IFieldSymbol)lit.Value).Name}";
-                code.AppendLine($"if (this.{this.sourceField}.TryLookAhead({lastIndex}, out var {resultTok}) && {resultTok}.Kind.Equals({tokVariant})) {{");
-                code.AppendLine($"    {resultVar} = {TypeNames.ParseResult}.Ok({resultTok}, {lastIndex} + 1);");
-                code.AppendLine("} else {");
-                code.AppendLine($"    this.{this.sourceField}.TryLookAhead({lastIndex}, out var got);");
-                code.AppendLine($"    {resultVar} = {TypeNames.ParseResult}.Error({tokVariant}, got, {resultTok}.Range.Start, \"{rule.VisualName}\");");
-                code.AppendLine("}");
-            }
-            break;
-        }
-
-        default: throw new InvalidOperationException();
-        }
-
-        return resultVar;
     }
 
     private RuleSet ExtractRuleSet(INamedTypeSymbol symbol)
@@ -511,24 +326,6 @@ partial {parserClass.GetTypeKindName()} {className}{genericTypes} {genericConstr
         result.Desugar();
         return result;
     }
-
-    // Returns the nested binder expression like ((a, b), (c, (d, e)))
-    private string GetTopLevelPattern(BnfAst ast) => ast switch
-    {
-        BnfAst.Alt alt => $"{this.GetTopLevelPattern(alt.Elements[0])}",
-        BnfAst.Seq seq => $"({string.Join(", ", seq.Elements.Select(this.GetTopLevelPattern))})",
-        BnfAst.Transform
-     or BnfAst.Call
-     or BnfAst.Opt
-     or BnfAst.Group
-     or BnfAst.Rep0
-     or BnfAst.Rep1
-     or BnfAst.Literal
-     or BnfAst.Placeholder => this.AllocateVarName(),
-        _ => throw new InvalidOperationException(),
-    };
-
-    private string AllocateVarName() => $"a{this.varIndex++}";
 
     private static string ToPascalCase(string str)
     {

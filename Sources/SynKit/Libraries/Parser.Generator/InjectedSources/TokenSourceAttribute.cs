@@ -10,6 +10,6 @@ namespace Yoakke.SynKit.Parser.Attributes;
 /// An attribute to mark a field or property as the thing holding onto the token source.
 /// </summary>
 [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-public class TokenSourceAttribute : Attribute
+internal class TokenSourceAttribute : Attribute
 {
 }

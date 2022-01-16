@@ -10,7 +10,7 @@ namespace Yoakke.SynKit.Parser.Attributes;
 /// An attribute to mark a class as a parser with rule methods inside.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
-public class ParserAttribute : Attribute
+internal class ParserAttribute : Attribute
 {
     /// <summary>
     /// The token kind type to use as a parser element.

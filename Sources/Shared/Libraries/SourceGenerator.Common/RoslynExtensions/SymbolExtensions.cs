@@ -25,10 +25,12 @@ public static class SymbolExtensions
     /// <returns>The code-friendly name of the type kind.</returns>
     public static string GetTypeKindName(this ITypeSymbol symbol) => symbol.TypeKind switch
     {
-        TypeKind.Class => symbol.IsRecord ? "record" : "class",
-        TypeKind.Struct => "struct",
+        TypeKind.Class when symbol.IsRecord => "record class",
+        TypeKind.Class when !symbol.IsRecord => "class",
+        TypeKind.Struct when symbol.IsRecord => "record struct",
+        TypeKind.Struct when !symbol.IsRecord => "struct",
         TypeKind.Interface => "interface",
-        _ => throw new NotSupportedException(),
+        _ => throw new ArgumentOutOfRangeException(nameof(symbol)),
     };
 
     /// <summary>
@@ -77,8 +79,8 @@ public static class SymbolExtensions
                 if (!type.IsPartial()) throw new InvalidOperationException("Non-partial type nesting");
                 DeclareInsideExternallyRec(symbol.ContainingSymbol);
 
-                var (genericTypes, genericConstraints) = type.GetGenericCrud();
-                prefixBuilder!.AppendLine($"partial {type.GetTypeKindName()} {type.Name}{genericTypes} {genericConstraints} {{");
+                var genericTypes = type.GetGenericCrud();
+                prefixBuilder!.AppendLine($"partial {type.GetTypeKindName()} {type.Name}{genericTypes} {{");
                 suffixBuilder!.AppendLine("}");
                 return;
             }
@@ -101,29 +103,23 @@ public static class SymbolExtensions
     /// </summary>
     /// <param name="symbol">The type symbol to get the crud for.</param>
     /// <returns>The pair of type parameter list and generic constraints as strings.</returns>
-    public static (string TypeParameters, string Constraints) GetGenericCrud(this INamedTypeSymbol symbol)
+    public static string GetGenericCrud(this INamedTypeSymbol symbol)
     {
-        if (symbol.TypeParameters.Length == 0) return (string.Empty, string.Empty);
+        if (symbol.TypeParameters.Length == 0) return string.Empty;
+        return $"<{string.Join(", ", symbol.TypeParameters.Select(p => p.Name))}>";
+    }
 
-        var typeParams = $"<{string.Join(", ", symbol.TypeParameters.Select(p => p.Name))}>";
-
-        var constraints = new StringBuilder();
-        foreach (var param in symbol.TypeParameters)
+    // TODO: Doc
+    public static IEnumerable<INamedTypeSymbol> GetContainingTypeChain(this INamedTypeSymbol symbol)
+    {
+        static IEnumerable<INamedTypeSymbol> GetContainingTypeChainImpl(INamedTypeSymbol? symbol)
         {
-            // First type constraints
-            var constraintList = param.ConstraintTypes.Select(t => t.ToDisplayString()).ToList();
-
-            // Then all other
-            if (param.HasConstructorConstraint) constraintList.Add("new()");
-            if (param.HasNotNullConstraint) constraintList.Add("notnull");
-            if (param.HasReferenceTypeConstraint) constraintList.Add("class");
-            if (param.HasUnmanagedTypeConstraint) constraintList.Add("unmanaged");
-            if (param.HasValueTypeConstraint) constraintList.Add("struct");
-
-            if (constraintList.Count > 0) constraints.AppendLine($"where {param.Name} : {string.Join(", ", constraintList)}");
+            if (symbol is null) yield break;
+            foreach (var item in GetContainingTypeChainImpl(symbol.ContainingType)) yield return item;
+            yield return symbol;
         }
 
-        return (typeParams, constraints.ToString());
+        return GetContainingTypeChainImpl(symbol.ContainingType);
     }
 
     /// <summary>

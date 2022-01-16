@@ -15,6 +15,11 @@ using Yoakke.SynKit.Automata.Dense;
 using Yoakke.Collections.Intervals;
 using Yoakke.SourceGenerator.Common;
 using Yoakke.SourceGenerator.Common.RoslynExtensions;
+using Yoakke.SynKit.Lexer.Generator.Model;
+using System.IO;
+using System.Reflection;
+using Scriban;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace Yoakke.SynKit.Lexer.Generator;
 
@@ -72,13 +77,21 @@ public class LexerSourceGenerator : GeneratorBase
     {
         var receiver = (SyntaxReceiver)syntaxReceiver;
 
+        var assembly = Assembly.GetExecutingAssembly();
+        var sourcesToInject = assembly
+            .GetManifestResourceNames()
+            .Where(m => m.StartsWith("InjectedSources."));
+        this.InjectSources(sourcesToInject
+            .Select(s => (s, new StreamReader(assembly.GetManifestResourceStream(s)).ReadToEnd()))
+            .ToList());
+
         this.RequireLibrary("Yoakke.SynKit.Lexer");
 
         var lexerAttribute = this.LoadSymbol(TypeNames.LexerAttribute);
 
         foreach (var syntax in receiver.CandidateTypes)
         {
-            var model = this.Context.Compilation.GetSemanticModel(syntax.SyntaxTree);
+            var model = this.Compilation!.GetSemanticModel(syntax.SyntaxTree);
             var symbol = model.GetDeclaredSymbol(syntax) as INamedTypeSymbol;
             if (symbol is null) continue;
             // Filter classes without the lexer attributes
@@ -93,10 +106,6 @@ public class LexerSourceGenerator : GeneratorBase
     private string? GenerateImplementation(INamedTypeSymbol lexerClass, INamedTypeSymbol tokenKind)
     {
         if (!this.RequireDeclarableInside(lexerClass)) return null;
-
-        var enumName = tokenKind.ToDisplayString();
-        var tokenName = $"{TypeNames.Token}<{enumName}>";
-        var className = lexerClass.Name;
 
         // Extract the lexer from the attributes
         var description = this.ExtractLexerDescription(lexerClass, tokenKind);
@@ -122,137 +131,84 @@ public class LexerSourceGenerator : GeneratorBase
                         group => group.Key,
                         group => group.Select(t => t.Symbol).ToList()));
 
-        // For each state we need to build the transition table
-        var transitionTable = new StringBuilder();
-        transitionTable.AppendLine("switch (currentState) {");
-        foreach (var (state, toMap) in transitionsByState)
-        {
-            transitionTable.AppendLine($"case {dfaStateIdents[state]}:");
-            // For the current state we need transitions to a new state based on the current character
-            transitionTable.AppendLine("switch (currentChar) {");
-            foreach (var (destState, intervals) in toMap)
-            {
-                // In the library it is rational to have an interval like ('a'; 'b'), but in practice
-                // this means that this transition might as well not exist, as these are discrete values,
-                // there can't be anything in between
-                var caseLabels = intervals.Select(MakeCase).OfType<string>();
-                if (!caseLabels.Any()) continue;
-
-                foreach (var caseLabel in caseLabels) transitionTable.AppendLine($"case {caseLabel}:");
-
-                transitionTable.AppendLine($"currentState = {dfaStateIdents[destState]};");
-                if (dfaStateToToken.TryGetValue(destState, out var token))
-                {
-                    // The destination is an accepting state, save it
-                    transitionTable.AppendLine("lastOffset = currentOffset;");
-                    if (token.Ignore)
-                    {
-                        // Ignore means clear out the token type
-                        transitionTable.AppendLine("lastTokenType = null;");
-                    }
-                    else
-                    {
-                        // Save token type
-                        transitionTable.AppendLine($"lastTokenType = {enumName}.{token.Symbol!.Name};");
-                    }
-                }
-
-                transitionTable.AppendLine("break;");
-            }
-            // Add a default arm to break out of the loop on non-matching character
-            transitionTable.AppendLine("default: goto end_loop;");
-            transitionTable.AppendLine("}");
-            transitionTable.AppendLine("break;");
-        }
-
-        // We add blanks to the states not present that simply go to the end state
-        var anyBlank = false;
-        foreach (var state in dfa.States.Except(transitionsByState.Keys))
-        {
-            transitionTable.AppendLine($"case {dfaStateIdents[state]}:");
-            anyBlank = true;
-        }
-        if (anyBlank) transitionTable.AppendLine("goto end_loop;");
-
-        // Add a default arm to panic on illegal state
-        transitionTable.AppendLine($"default: throw new {TypeNames.InvalidOperationException}();");
-        transitionTable.AppendLine("}");
-
         // TODO: Consuming a single character on error might not be the best strategy
         // Also we might want to report if there was a token type that was being matched, while the error occurred
 
-        var ctors = string.Empty;
-        if (lexerClass.HasNoUserDefinedCtors() && description.SourceSymbol is null)
-        {
-            ctors = $@"
-public {TypeNames.ICharStream} CharStream {{ get; }}
+        var assembly = Assembly.GetExecutingAssembly();
+        var templateText = new StreamReader(assembly.GetManifestResourceStream("Templates.lexer.sbncs")).ReadToEnd();
+        var template = Template.Parse(templateText);
 
-public {className}({TypeNames.ICharStream} source) {{ this.CharStream = source; }}
-public {className}({TypeNames.TextReader} reader) : this(new {TypeNames.TextReaderCharStream}(reader)) {{ }}
-public {className}(string text) : this(new {TypeNames.StringReader}(text)) {{ }}
-";
+        if (template.HasErrors)
+        {
+            var errors = string.Join(" | ", template.Messages.Select(x => x.Message));
+            throw new InvalidOperationException($"Template parse error: {template.Messages}");
         }
 
-        var sourceField = description.SourceSymbol?.Name ?? "CharStream";
-        var (prefix, suffix) = lexerClass.ContainingSymbol.DeclareInsideExternally();
-        var (genericTypes, genericConstraints) = lexerClass.GetGenericCrud();
-        return $@"
-using Yoakke.Streams;
-using Yoakke.SynKit.Lexer;
-#pragma warning disable CS0162
-{prefix}
-partial {lexerClass.GetTypeKindName()} {className}{genericTypes} : {TypeNames.ILexer}<{tokenName}> {genericConstraints}
-{{
-    public {TypeNames.Position} Position => this.{sourceField}.Position;
+        var model = new
+        {
+            LibraryVersion = assembly.GetName().Version.ToString(),
+            Namespace = lexerClass.ContainingNamespace?.ToDisplayString(),
+            ContainingTypes = lexerClass
+                .GetContainingTypeChain()
+                .Select(c => new
+                {
+                    Kind = c.GetTypeKindName(),
+                    Name = c.Name,
+                    GenericArgs = c.TypeArguments.Select(t => t.Name).ToList(),
+                }),
+            LexerType = new
+            {
+                Kind = lexerClass.GetTypeKindName(),
+                Name = lexerClass.Name,
+                GenericArgs = lexerClass.TypeArguments.Select(t => t.Name).ToList(),
+            },
+            TokenType = tokenKind.ToDisplayString(),
+            ImplicitConstructor = lexerClass.HasNoUserDefinedCtors() && description.SourceSymbol is null,
+            SourceName = description.SourceSymbol?.Name ?? "CharStream",
+            EndTokenName = description.EndSymbol!.Name,
+            ErrorTokenName = description.ErrorSymbol!.Name,
+            InitialState = new
+            {
+                Id = dfaStateIdents[dfa.InitialState],
+            },
+            States = transitionsByState
+                .Select(kv => new
+                {
+                    Id = dfaStateIdents[kv.Key],
+                    Destinations = kv.Value
+                        .Select(kv2 => new
+                        {
+                            Id = dfaStateIdents[kv2.Key],
+                            Token = dfaStateToToken.TryGetValue(kv2.Key, out var t) ? t.Symbol.Name : null,
+                            IsAccepting = t is not null,
+                            Ignore = t?.Ignore ?? false,
+                            Intervals = kv2.Value
+                                .Select(ToInclusive)
+                                .Where(iv => iv.Lower is null || iv.Upper is null || iv.Lower <= iv.Upper)
+                                .Select(iv => new
+                                {
+                                    Start = iv.Lower,
+                                    End = iv.Upper,
+                                })
+                                .ToList(),
+                        })
+                        .Where(d => d.Intervals.Count > 0)
+                        .ToList(),
+                }).ToList(),
+        };
 
-    public bool IsEnd {{ get; private set; }}
+        var result = template.Render(model: model, memberRenamer: member => member.Name);
+        result = SyntaxFactory
+            .ParseCompilationUnit(result)
+            .NormalizeWhitespace()
+            .GetText()
+            .ToString();
 
-    {ctors}
-
-    public {tokenName} Next()
-    {{
-begin:
-        if (this.{sourceField}.IsEnd)
-        {{
-            this.IsEnd = true;
-            return this.{sourceField}.ConsumeToken({enumName}.{description.EndSymbol!.Name}, 0);
-        }}
-
-        var currentState = {dfaStateIdents[dfa.InitialState]};
-        var currentOffset = 0;
-
-        {enumName}? lastTokenType = null;
-        var lastOffset = 0;
-
-        while (true)
-        {{
-            if (!this.{sourceField}.TryLookAhead(currentOffset, out var currentChar)) break;
-            ++currentOffset;
-            {transitionTable}
-        }}
-end_loop:
-        if (lastOffset > 0)
-        {{
-            if (lastTokenType is null)
-            {{
-                this.{sourceField}.Consume(lastOffset);
-                goto begin;
-            }}
-            return this.{sourceField}.ConsumeToken(lastTokenType.Value, lastOffset);
-        }}
-        else
-        {{
-            return this.{sourceField}.ConsumeToken({enumName}.{description.ErrorSymbol!.Name}, 1);
-        }}
-    }}
-}}
-{suffix}
-#pragma warning restore CS0162
-";
+        return result;
     }
 
-    private (IDenseDfa<StateSet<int>, char> Dfa, Dictionary<StateSet<int>, TokenDescription> StateToToken)?
-        BuildDfa(LexerDescription description)
+    private (IDenseDfa<StateSet<int>, char> Dfa, Dictionary<StateSet<int>, TokenModel> StateToToken)?
+        BuildDfa(LexerModel description)
     {
         var rnd = new Random();
         var occupiedStates = new HashSet<int>();
@@ -266,7 +222,7 @@ end_loop:
         }
 
         // Store which token corresponds to which end state
-        var tokenToNfaState = new Dictionary<TokenDescription, int>();
+        var tokenToNfaState = new Dictionary<TokenModel, int>();
         // Construct the NFA from the regexes
         var nfa = new DenseNfa<int, char>();
         var initialState = MakeState();
@@ -300,7 +256,7 @@ end_loop:
         var dfa = nfa.Determinize();
         var minDfa = dfa.Minimize(StateCombiner<int>.DefaultSetCombiner, dfa.AcceptingStates);
         // Now we have to figure out which new accepting states correspond to which token
-        var dfaStateToToken = new Dictionary<StateSet<int>, TokenDescription>();
+        var dfaStateToToken = new Dictionary<StateSet<int>, TokenModel>();
         // We go in the order of each token because this ensures the precedence in which order the tokens were declared
         foreach (var token in description.Tokens)
         {
@@ -316,7 +272,7 @@ end_loop:
         return (minDfa, dfaStateToToken);
     }
 
-    private LexerDescription? ExtractLexerDescription(INamedTypeSymbol lexerClass, INamedTypeSymbol tokenKind)
+    private LexerModel? ExtractLexerDescription(INamedTypeSymbol lexerClass, INamedTypeSymbol tokenKind)
     {
         var sourceAttr = this.LoadSymbol(TypeNames.CharSourceAttribute);
         var regexAttr = this.LoadSymbol(TypeNames.RegexAttribute);
@@ -325,7 +281,7 @@ end_loop:
         var errorAttr = this.LoadSymbol(TypeNames.ErrorAttribute);
         var ignoreAttr = this.LoadSymbol(TypeNames.IgnoreAttribute);
 
-        var result = new LexerDescription();
+        var result = new LexerModel();
 
         // Search for the source field in the lexer class
         var sourceField = lexerClass.GetMembers()
@@ -392,22 +348,6 @@ end_loop:
         return result;
     }
 
-    private static string? MakeCase(Interval<char> interval)
-    {
-        var (lower, upper) = ToInclusive(interval);
-
-        if (lower != null && upper != null && lower.Value > upper.Value) return null;
-
-        return (lower, upper) switch
-        {
-            (char l, char h) when l == h => $"'{Escape(l)}'",
-            (char l, char h) => $">= '{Escape(l)}' and <= '{Escape(h)}'",
-            (char l, null) => $">= '{Escape(l)}'",
-            (null, char h) => $"<= '{Escape(h)}'",
-            (null, null) => "char ch",
-        };
-    }
-
     private static (char? Lower, char? Upper) ToInclusive(Interval<char> interval)
     {
         char? lower = interval.Lower switch
@@ -426,15 +366,4 @@ end_loop:
         };
         return (lower, upper);
     }
-
-    private static string Escape(char ch) => ch switch
-    {
-        '\'' => @"\'",
-        '\n' => @"\n",
-        '\r' => @"\r",
-        '\t' => @"\t",
-        '\0' => @"\0",
-        '\\' => @"\\",
-        _ => ch.ToString(),
-    };
 }

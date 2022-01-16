@@ -4,12 +4,12 @@
 
 using Microsoft.CodeAnalysis;
 
-namespace Yoakke.SynKit.Lexer.Generator;
+namespace Yoakke.SynKit.Lexer.Generator.Model;
 
 /// <summary>
 /// A single description of what a token is.
 /// </summary>
-internal class TokenDescription
+internal class TokenModel
 {
     /// <summary>
     /// The symbol that defines the token type.
@@ -27,12 +27,12 @@ internal class TokenDescription
     public bool Ignore { get; }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="TokenDescription"/> class.
+    /// Initializes a new instance of the <see cref="TokenModel"/> class.
     /// </summary>
     /// <param name="symbol">The corresponding token type symbol.</param>
     /// <param name="regex">The regex that matches this token.</param>
     /// <param name="ignore">True, if this token should be ignored, when matched.</param>
-    public TokenDescription(IFieldSymbol symbol, string regex, bool ignore)
+    public TokenModel(IFieldSymbol symbol, string regex, bool ignore)
     {
         this.Symbol = symbol;
         this.Regex = regex;

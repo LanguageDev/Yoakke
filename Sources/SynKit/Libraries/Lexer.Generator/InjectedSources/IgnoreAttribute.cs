@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021-2022 Yoakke.
+// Copyright (c) 2021-2022 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -10,6 +10,6 @@ namespace Yoakke.SynKit.Lexer.Attributes;
 /// An attribute to mark an enum value to be an ignored token type.
 /// </summary>
 [AttributeUsage(AttributeTargets.Field)]
-public class IgnoreAttribute : Attribute
+internal class IgnoreAttribute : Attribute
 {
 }
