@@ -19,8 +19,24 @@ var_cnt = 0
 allocate_var() = 'a{{ var_cnt++ }}'
 }}
 
+{{ # Generates a binder for rule AST nodes }}
+{{ func generate_binder(node) }}
+    {{ case node.Type }}
+        {{ when 'Alt' }}
+            {{ ret generate_binder(node.Elements[0]) }}
+        {{ when 'Seq' }}
+            {{ elements = [] }}
+            {{ for e in node.Elements }}
+                {{ elements = array.add(elements, generate_binder(element)) }}
+            {{ end }}
+            {{ ret '(' + array.join(elements, ', ') + ')' }}
+        {{ else }}
+            {{ ret allocate_var() }}
+    {{ end }}
+{{ end }}
+
 {{ # Functionality to generate the parser based on the AST nodes }}
-{{ func generate_parser(rule node, lastIndex) }}
+{{ func generate_parser(rule, node, lastIndex) }}
     {{ resultVar = allocate_var() }}
     ParseResult<{{ node.ParsedType }}> {{ resultVar }};
     {{ case node.Type }}
@@ -76,7 +92,7 @@ allocate_var() = 'a{{ var_cnt++ }}'
         {{ when 'Seq' }}
             {{ varStack = [] }}
             {{ prevVar = generate_parser(rule, node.Elements[0], lastIndex) }}
-            {{ array.add(varStack, prevVar) }}
+            {{ varStack = array.add(varStack, prevVar) }}
             {{ resultSeq = prevVar + '.Ok.Value' }}
             {{ for i in 1..<varStack.size }}
                 {{ # The close brace comes at the end }}
@@ -85,7 +101,7 @@ allocate_var() = 'a{{ var_cnt++ }}'
                 {{ nextVar = generate_parser(rule, node.Elements[i], prevVar + '.Ok.Offset') }}
                 {{ nextVar }} = {{ nextVar }} | {{ prevVar }}.Ok.FurthestError;
                 {{ prevVar = nextVar }}
-                {{ array.add(varStack, prevVar) }}
+                {{ varStack = array.add(varStack, prevVar) }}
                 {{ resultSeq = resultSeq + ', ' + prevVar + '.Ok.Value' }}
             {{ end }}
             {{ # Unify last }}
