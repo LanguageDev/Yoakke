@@ -51,7 +51,6 @@ public class ParserSourceGenerator : GeneratorBase
     }
 
     private RuleSet? ruleSet;
-    private int varIndex;
     private TokenKindSet? tokenKinds;
     private INamedTypeSymbol? parserType;
     private string sourceField = string.Empty;
@@ -105,8 +104,6 @@ public class ParserSourceGenerator : GeneratorBase
     {
         if (!this.RequireDeclarableInside(parserClass)) return null;
 
-        // Debugger.Launch();
-
         var tokenSourceAttr = this.LoadSymbol(TypeNames.TokenSourceAttribute);
         var parserAttr = parserClass.GetAttribute<ParserAttribute>(this.LoadSymbol(TypeNames.ParserAttribute));
 
@@ -155,6 +152,13 @@ public class ParserSourceGenerator : GeneratorBase
             TokenType = tokenType,
             ImplicitConstructor = parserClass.HasNoUserDefinedCtors() && source is null,
             SourceName = this.sourceField,
+            ParserRules = this.ruleSet.Rules.Select(r => new
+            {
+                PublicApi = r.Value.PublicApi,
+                Name = r.Value.VisualName,
+                MethodName = ToPascalCase(r.Key),
+                Ast = this.TranslateAst(r.Value.Ast),
+            }),
         };
 
         var result = template.Render(model: model, memberRenamer: member => member.Name);
@@ -164,8 +168,83 @@ public class ParserSourceGenerator : GeneratorBase
             .GetText()
             .ToString();
 
+        // Debugger.Launch();
+
         return result;
     }
+
+    private object TranslateAst(BnfAst ast) => ast switch
+    {
+        BnfAst.Placeholder p => new
+        {
+            Type = "Placeholder",
+            ParsedType = ast.GetParsedType(this.ruleSet!, this.tokenKinds!),
+        },
+        BnfAst.Transform t => new
+        {
+            Type = "Transform",
+            ParsedType = ast.GetParsedType(this.ruleSet!, this.tokenKinds!),
+            Subexpr = this.TranslateAst(t.Subexpr),
+            MethodName = t.Method.Name,
+        },
+        BnfAst.FoldLeft f => new
+        {
+            Type = "FoldLeft",
+            ParsedType = ast.GetParsedType(this.ruleSet!, this.tokenKinds!),
+            First = this.TranslateAst(f.First),
+            Second = this.TranslateAst(f.Second),
+        },
+        BnfAst.Alt a => new
+        {
+            Type = "Alt",
+            ParsedType = ast.GetParsedType(this.ruleSet!, this.tokenKinds!),
+            Elements = a.Elements.Select(this.TranslateAst).ToList(),
+        },
+        BnfAst.Seq s => new
+        {
+            Type = "Seq",
+            ParsedType = ast.GetParsedType(this.ruleSet!, this.tokenKinds!),
+            Elements = s.Elements.Select(this.TranslateAst).ToList(),
+        },
+        BnfAst.Opt o => new
+        {
+            Type = "Opt",
+            ParsedType = ast.GetParsedType(this.ruleSet!, this.tokenKinds!),
+            Subexpr = this.TranslateAst(o.Subexpr),
+        },
+        BnfAst.Group g => new
+        {
+            Type = "Group",
+            ParsedType = ast.GetParsedType(this.ruleSet!, this.tokenKinds!),
+            Subexpr = this.TranslateAst(g.Subexpr),
+        },
+        BnfAst.Rep0 r => new
+        {
+            Type = "Rep0",
+            ParsedType = ast.GetParsedType(this.ruleSet!, this.tokenKinds!),
+            Subexpr = this.TranslateAst(r.Subexpr),
+        },
+        BnfAst.Rep1 r => new
+        {
+            Type = "Rep1",
+            ParsedType = ast.GetParsedType(this.ruleSet!, this.tokenKinds!),
+            Subexpr = this.TranslateAst(r.Subexpr),
+        },
+        BnfAst.Call c => new
+        {
+            Type = "Call",
+            ParsedType = ast.GetParsedType(this.ruleSet!, this.tokenKinds!),
+            RuleName = c.Name,
+            RuleMethodName = ToPascalCase(c.Name),
+        },
+        BnfAst.Literal lit => new
+        {
+            Type = lit.Value is string ? "Text" : "Token",
+            ParsedType = ast.GetParsedType(this.ruleSet!, this.tokenKinds!),
+            Value = lit.Value,
+        },
+        _ => throw new ArgumentOutOfRangeException(nameof(ast)),
+    };
 
     /* Sanity-checks */
 
