@@ -49,6 +49,14 @@ public class LexerSourceGenerator : IIncrementalGenerator
         public string Text { get; set; } = string.Empty;
     }
 
+    private record class Symbols(
+        INamedTypeSymbol CharSourceAttribute,
+        INamedTypeSymbol RegexAttribute,
+        INamedTypeSymbol TokenAttribute,
+        INamedTypeSymbol EndAttribute,
+        INamedTypeSymbol ErrorAttribute,
+        INamedTypeSymbol IgnoreAttribute);
+
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         // Inject source code
@@ -144,6 +152,9 @@ public class LexerSourceGenerator : IIncrementalGenerator
         IEnumerable<TypeDeclarationSyntax> types,
         CancellationToken cancellationToken)
     {
+        // Load the attributes
+        var symbols = LoadSymbols(compilation);
+
         // List to hold the results
         var models = new List<(string Name, object Model)>();
 
@@ -156,7 +167,8 @@ public class LexerSourceGenerator : IIncrementalGenerator
             var semanticModel = compilation.GetSemanticModel(typeDeclSyntax.SyntaxTree);
             if (semanticModel.GetDeclaredSymbol(typeDeclSyntax, cancellationToken) is not INamedTypeSymbol declaredSymbol) continue;
 
-            var model = GetModelToGenerate(declaredSymbol, cancellationToken);
+            // Generate the model
+            var model = GetModelToGenerate(symbols, declaredSymbol, cancellationToken);
             models.Add((declaredSymbol.ToDisplayString(), model));
         }
 
@@ -183,7 +195,17 @@ public class LexerSourceGenerator : IIncrementalGenerator
         return sources;
     }
 
+    private static Symbols LoadSymbols(Compilation compilation) => new(
+        CharSourceAttribute: compilation.GetTypeByMetadataName("Yoakke.SynKit.Lexer.Attributes.CharSourceAttribute") ?? throw new InvalidOperationException(),
+        RegexAttribute: compilation.GetTypeByMetadataName("Yoakke.SynKit.Lexer.Attributes.RegexAttribute") ?? throw new InvalidOperationException(),
+        TokenAttribute: compilation.GetTypeByMetadataName("Yoakke.SynKit.Lexer.Attributes.TokenAttribute") ?? throw new InvalidOperationException(),
+        EndAttribute: compilation.GetTypeByMetadataName("Yoakke.SynKit.Lexer.Attributes.EndAttribute") ?? throw new InvalidOperationException(),
+        ErrorAttribute: compilation.GetTypeByMetadataName("Yoakke.SynKit.Lexer.Attributes.ErrorAttribute") ?? throw new InvalidOperationException(),
+        IgnoreAttribute: compilation.GetTypeByMetadataName("Yoakke.SynKit.Lexer.Attributes.IgnoreAttribute") ?? throw new InvalidOperationException()
+    );
+
     private static object GetModelToGenerate(
+        Symbols symbols,
         INamedTypeSymbol symbol,
         CancellationToken cancellationToken)
     {
