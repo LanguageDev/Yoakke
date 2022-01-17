@@ -95,10 +95,14 @@ public class LexerSourceGenerator : IIncrementalGenerator
             (spc, source) => Execute(source.Left, source.Right!, spc));
     }
 
-    private static bool IsSyntaxTargetForGeneration(SyntaxNode node, CancellationToken ct) =>
+    private static bool IsSyntaxTargetForGeneration(
+        SyntaxNode node,
+        CancellationToken cancellationToken) =>
         node is TypeDeclarationSyntax typeDeclSyntax && typeDeclSyntax.AttributeLists.Count > 0;
 
-    private static TypeDeclarationSyntax? GetSemanticTargetForGeneration(GeneratorSyntaxContext context, CancellationToken ct)
+    private static TypeDeclarationSyntax? GetSemanticTargetForGeneration(
+        GeneratorSyntaxContext context,
+        CancellationToken cancellationToken)
     {
         // TODO
         throw new NotImplementedException();
@@ -122,17 +126,66 @@ public class LexerSourceGenerator : IIncrementalGenerator
         if (models.Count == 0) return;
 
         // Otherwise we generate each lexer with the Scriban template
-        foreach (var model in models)
-        {
-            // TODO
-            throw new NotImplementedException();
-            // context.AddSource(..., SourceText.From(...));
-        }
+        var sources = GenerateSourceFromModels(models, context.CancellationToken);
+
+        // Finally add all sources
+        foreach (var (name, text) in sources) context.AddSource(name, SourceText.From(text));
     }
 
-    private static IReadOnlyList<object> GetModelsToGenerate(
+    private static IReadOnlyList<(string Name, object Model)> GetModelsToGenerate(
         Compilation compilation,
         IEnumerable<TypeDeclarationSyntax> types,
+        CancellationToken cancellationToken)
+    {
+        // List to hold the results
+        var models = new List<(string Name, object Model)>();
+
+        foreach (var typeDeclSyntax in types)
+        {
+            // If the operation is canceled, abort here
+            cancellationToken.ThrowIfCancellationRequested();
+
+            // Get the declared symbol
+            var semanticModel = compilation.GetSemanticModel(typeDeclSyntax.SyntaxTree);
+            if (semanticModel.GetDeclaredSymbol(typeDeclSyntax, cancellationToken) is not INamedTypeSymbol declaredSymbol) continue;
+
+            var model = GetModelToGenerate(declaredSymbol, cancellationToken);
+            models.Add((declaredSymbol.ToDisplayString(), model));
+        }
+
+        return models;
+    }
+
+    private static IReadOnlyList<(string Name, string Text)> GenerateSourceFromModels(
+        IEnumerable<(string Name, object Model)> models,
+        CancellationToken cancellationToken)
+    {
+        // List of generated sources
+        var sources = new List<(string Name, string Text)>();
+
+        foreach (var (name, model) in models)
+        {
+            // If the operation is canceled, abort here
+            cancellationToken.ThrowIfCancellationRequested();
+
+            // Generate source code
+            var source = GenerateSource(model, cancellationToken);
+            sources.Add((name, source));
+        }
+
+        return sources;
+    }
+
+    private static object GetModelToGenerate(
+        INamedTypeSymbol symbol,
+        CancellationToken cancellationToken)
+    {
+        // TODO
+        throw new NotImplementedException();
+    }
+
+    private static string GenerateSource(
+        object model,
         CancellationToken cancellationToken)
     {
         // TODO
