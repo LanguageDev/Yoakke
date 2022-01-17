@@ -23,6 +23,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Text;
 using System.Threading;
 using System.Collections.Immutable;
+using Yoakke.SynKit.Lexer.Attributes;
 
 namespace Yoakke.SynKit.Lexer.Generator;
 
@@ -33,30 +34,17 @@ namespace Yoakke.SynKit.Lexer.Generator;
 [Generator]
 public class LexerSourceGenerator : IIncrementalGenerator
 {
-    private class SyntaxReceiver : ISyntaxReceiver
-    {
-        public IList<TypeDeclarationSyntax> CandidateTypes { get; } = new List<TypeDeclarationSyntax>();
-
-        public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
-        {
-            if (syntaxNode is TypeDeclarationSyntax typeDeclSyntax && typeDeclSyntax.AttributeLists.Count > 0)
-            {
-                this.CandidateTypes.Add(typeDeclSyntax);
-            }
-        }
-    }
-
-    private class LexerAttribute
+    private class LexerAttributeModel
     {
         public INamedTypeSymbol? TokenType { get; set; }
     }
 
-    private class RegexAttribute
+    private class RegexAttributeModel
     {
         public string Regex { get; set; } = string.Empty;
     }
 
-    private class TokenAttribute
+    private class TokenAttributeModel
     {
         public string Text { get; set; } = string.Empty;
     }
@@ -74,7 +62,9 @@ public class LexerSourceGenerator : IIncrementalGenerator
             {
                 ctx.AddSource(
                     source,
-                    SourceText.From(new StreamReader(assembly.GetManifestResourceStream(source)).ReadToEnd()));
+                    SourceText.From(
+                        new StreamReader(assembly.GetManifestResourceStream(source)).ReadToEnd(),
+                        Encoding.UTF8));
             }
         });
 
@@ -104,8 +94,25 @@ public class LexerSourceGenerator : IIncrementalGenerator
         GeneratorSyntaxContext context,
         CancellationToken cancellationToken)
     {
-        // TODO
-        throw new NotImplementedException();
+        var typeDeclSyntax = (TypeDeclarationSyntax)context.Node;
+
+        // loop through all the attributes on the method
+        foreach (var attributeListSyntax in typeDeclSyntax.AttributeLists)
+        {
+            foreach (var attributeSyntax in attributeListSyntax.Attributes)
+            {
+                if (context.SemanticModel.GetSymbolInfo(attributeSyntax, cancellationToken).Symbol is not IMethodSymbol attributeSymbol) continue;
+
+                var attributeContainingTypeSymbol = attributeSymbol.ContainingType;
+                var fullName = attributeContainingTypeSymbol.ToDisplayString();
+
+                // Is the attribute the [EnumExtensions] attribute?
+                if (fullName == typeof(LexerAttribute).FullName) return typeDeclSyntax;
+            }
+        }
+
+        // we didn't find the attribute we were looking for
+        return null;
     }
 
     private static void Execute(
@@ -129,7 +136,7 @@ public class LexerSourceGenerator : IIncrementalGenerator
         var sources = GenerateSourceFromModels(models, context.CancellationToken);
 
         // Finally add all sources
-        foreach (var (name, text) in sources) context.AddSource(name, SourceText.From(text));
+        foreach (var (name, text) in sources) context.AddSource(name, SourceText.From(text, Encoding.UTF8));
     }
 
     private static IReadOnlyList<(string Name, object Model)> GetModelsToGenerate(
@@ -181,7 +188,7 @@ public class LexerSourceGenerator : IIncrementalGenerator
         CancellationToken cancellationToken)
     {
         // TODO
-        throw new NotImplementedException();
+        throw new NotImplementedException("Got to extracting model!");
     }
 
     private static string GenerateSource(
@@ -189,6 +196,6 @@ public class LexerSourceGenerator : IIncrementalGenerator
         CancellationToken cancellationToken)
     {
         // TODO
-        throw new NotImplementedException();
+        throw new NotImplementedException("Got to generate source!");
     }
 }
