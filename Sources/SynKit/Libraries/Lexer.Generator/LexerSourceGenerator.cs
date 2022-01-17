@@ -96,7 +96,7 @@ public class LexerSourceGenerator : IIncrementalGenerator
     {
         var typeDeclSyntax = (TypeDeclarationSyntax)context.Node;
 
-        // loop through all the attributes on the method
+        // Loop through all the attributes on the method
         foreach (var attributeListSyntax in typeDeclSyntax.AttributeLists)
         {
             foreach (var attributeSyntax in attributeListSyntax.Attributes)
@@ -106,7 +106,7 @@ public class LexerSourceGenerator : IIncrementalGenerator
                 var attributeContainingTypeSymbol = attributeSymbol.ContainingType;
                 var fullName = attributeContainingTypeSymbol.ToDisplayString();
 
-                // Is the attribute the [EnumExtensions] attribute?
+                // Is the attribute the searched attribute
                 if (fullName == typeof(LexerAttribute).FullName) return typeDeclSyntax;
             }
         }
