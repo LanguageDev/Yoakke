@@ -3,6 +3,7 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using Microsoft.CodeAnalysis;
+using Yoakke.SynKit.Automata.RegExAst;
 
 namespace Yoakke.SynKit.Lexer.Generator.Model;
 
@@ -14,5 +15,5 @@ namespace Yoakke.SynKit.Lexer.Generator.Model;
 /// <param name="Ignore">True, if the token-type should be ignored while lexing.</param>
 internal record class TokenModel(
     IFieldSymbol Symbol,
-    string Regex,
+    IRegExNode<char> Regex,
     bool Ignore);

@@ -24,6 +24,7 @@ using Microsoft.CodeAnalysis.Text;
 using System.Threading;
 using System.Collections.Immutable;
 using Yoakke.SynKit.Lexer.Attributes;
+using Scriban.Runtime;
 
 namespace Yoakke.SynKit.Lexer.Generator;
 
@@ -144,13 +145,19 @@ public class LexerSourceGenerator : IIncrementalGenerator
         if (models.Count == 0) return;
 
         // Otherwise we translate each model to a Scriban model
-        var scribanModels = models.Select(m => ToScribanModel(m, context.CancellationToken));
+        var scribanModels = models
+            .Select(m => (GenerationModel: m, ScribanModel: ToScribanModel(m, context.CancellationToken)))
+            .Where(m => m.ScribanModel is not null);
 
         // Otherwise we generate each lexer with the Scriban template
-        var sources = GenerateSources(scribanModels, context.CancellationToken);
+        var sources = GenerateSources(scribanModels!, context.CancellationToken);
 
         // Finally add all sources
-        foreach (var (name, text) in sources) context.AddSource(name, SourceText.From(text, Encoding.UTF8));
+        foreach (var (genModel, text) in sources)
+        {
+            var sourceName = SanitizeFileName($"{genModel.LexerType.ToDisplayString()}.Generated.cs");
+            context.AddSource(sourceName, SourceText.From(text, Encoding.UTF8));
+        }
     }
 
     private static IReadOnlyList<LexerModel> GetGenerationModels(
@@ -184,24 +191,24 @@ public class LexerSourceGenerator : IIncrementalGenerator
         return models;
     }
 
-    private static IReadOnlyList<(string Name, string Text)> GenerateSources(
-        IEnumerable<(string Name, object Model)> models,
+    private static IReadOnlyList<(LexerModel GenerationModel, string Text)> GenerateSources(
+        IEnumerable<(LexerModel GenerationModel, object ScribanModel)> models,
         CancellationToken cancellationToken)
     {
         // List of generated sources
-        var sources = new List<(string Name, string Text)>();
+        var sources = new List<(LexerModel GenerationModel, string Text)>();
 
         // Load the Scriban template
         var template = LoadScribanTemplate();
 
-        foreach (var (name, model) in models)
+        foreach (var (genModel, sbnModel) in models)
         {
             // If the operation is canceled, abort here
             cancellationToken.ThrowIfCancellationRequested();
 
             // Generate source code
-            var source = GenerateSource(template, model, cancellationToken);
-            sources.Add((name, source));
+            var source = GenerateSource(template, sbnModel, cancellationToken);
+            sources.Add((genModel, source));
         }
 
         return sources;
@@ -241,6 +248,16 @@ public class LexerSourceGenerator : IIncrementalGenerator
         INamedTypeSymbol lexerSymbol,
         CancellationToken cancellationToken)
     {
+        // Check, if the lexer class can have external code injected (all elements in the chain are partial)
+        if (!lexerSymbol.CanDeclareInsideExternally())
+        {
+            context.ReportDiagnostic(Diagnostic.Create(
+                descriptor: Diagnostics.NotPartialType,
+                location: lexerSymbol.Locations.FirstOrDefault(),
+                messageArgs: new[] { lexerSymbol.Name }));
+            return null;
+        }
+
         // We extract all information from the lexer attribute
         if (!lexerSymbol.TryGetAttribute(symbols.LexerAttribute, out LexerAttributeModel? lexerAttribute)) return null;
 
@@ -267,6 +284,7 @@ public class LexerSourceGenerator : IIncrementalGenerator
         IFieldSymbol? endVariant = null;
         IFieldSymbol? errorVariant = null;
         var tokens = new List<TokenModel>();
+        var regexParser = new RegExParser();
 
         // Go through all enum members
         // Assign each in the proper category
@@ -310,15 +328,30 @@ public class LexerSourceGenerator : IIncrementalGenerator
             // Add all token attributes
             var regexAttribs = member.GetAttributes<RegexAttributeModel>(symbols.RegexAttribute);
             var tokenAttribs = member.GetAttributes<TokenAttributeModel>(symbols.TokenAttribute);
-            foreach (var attr in regexAttribs)
+            try
             {
-                hasAttribute = true;
-                tokens.Add(new(member, attr.Regex, ignore));
+                foreach (var attr in regexAttribs)
+                {
+                    hasAttribute = true;
+                    var regex = regexParser.Parse(attr.Regex);
+                    tokens.Add(new(member, regex, ignore));
+                }
+                foreach (var attr in tokenAttribs)
+                {
+                    hasAttribute = true;
+                    var regex = regexParser.Parse(RegExParser.Escape(attr.Text));
+                    tokens.Add(new(member, regex, ignore));
+                }
             }
-            foreach (var attr in tokenAttribs)
+            catch (Exception ex)
             {
-                hasAttribute = true;
-                tokens.Add(new(member, RegExParser.Escape(attr.Text), ignore));
+                // TODO: The API is a bit bad here, we shouldn't catch a geneic exception, we should be able
+                // to ask the parsed result what the error was
+                context.ReportDiagnostic(Diagnostic.Create(
+                    descriptor: Diagnostics.RegexParseError,
+                    location: member.Locations.FirstOrDefault(),
+                    messageArgs: new[] { ex.Message }));
+                return null;
             }
 
             // Warn, if the enum variant is not meaningful
@@ -343,18 +376,180 @@ public class LexerSourceGenerator : IIncrementalGenerator
 
         // We have succeeded
         return new(
+            LexerType: lexerSymbol,
+            TokenType: tokenType,
             SourceField: sourceField,
             ErrorVariant: errorVariant,
             EndVariant: endVariant,
             Tokens: tokens);
     }
 
-    private static (string Name, object Model) ToScribanModel(
+    private static object? ToScribanModel(
         LexerModel lexerModel,
         CancellationToken cancellationToken)
     {
-        // TODO
-        throw new NotImplementedException("Got to scriban model translation!");
+        // Constructing the DFA
+        // This RNG assigns a random number for each state
+        // This is to avoid hash-attacking ourselves
+        var rnd = new Random();
+        var occupiedStates = new HashSet<int>();
+        int MakeState()
+        {
+            while (true)
+            {
+                var s = rnd.Next();
+                if (occupiedStates.Add(s)) return s;
+            }
+        }
+
+        // Helper for intervals
+        static (char? Lower, char? Upper) ToInclusive(Interval<char> interval)
+        {
+            char? lower = interval.Lower switch
+            {
+                LowerBound<char>.Inclusive i => i.Value,
+                LowerBound<char>.Exclusive e => (char)(e.Value + 1),
+                LowerBound<char>.Unbounded => null,
+                _ => throw new ArgumentOutOfRangeException(),
+            };
+            char? upper = interval.Upper switch
+            {
+                UpperBound<char>.Inclusive i => i.Value,
+                UpperBound<char>.Exclusive e => (char)(e.Value - 1),
+                UpperBound<char>.Unbounded => null,
+                _ => throw new ArgumentOutOfRangeException(),
+            };
+            return (lower, upper);
+        }
+
+        // Check if should terminate
+        cancellationToken.ThrowIfCancellationRequested();
+
+        // Store which token corresponds to which end state
+        var tokenToNfaState = new Dictionary<TokenModel, int>();
+        // Construct the NFA from the regexes
+        var nfa = new DenseNfa<int, char>();
+        var initialState = MakeState();
+        nfa.InitialStates.Add(initialState);
+        var regexParser = new RegExParser();
+        foreach (var token in lexerModel.Tokens)
+        {
+            // Desugar the regex
+            var regex = token.Regex.Desugar();
+            // Construct it into the NFA
+            var (start, end) = regex.ThompsonsConstruct(nfa, MakeState);
+            // Wire the initial state to the start of the construct
+            nfa.AddEpsilonTransition(initialState, start);
+            // Mark the state as accepting
+            nfa.AcceptingStates.Add(end);
+            // Save the final state as a state that accepts this token
+            tokenToNfaState.Add(token, end);
+        }
+
+        // Check if should terminate
+        cancellationToken.ThrowIfCancellationRequested();
+
+        // TODO: Determinization should accept a cancellation token, it's a potentially long process
+        // Determinize it
+        var dfa = nfa.Determinize();
+
+        // Check if should terminate
+        cancellationToken.ThrowIfCancellationRequested();
+
+        // TODO: Minimization should accept a cancellation token, it's a potentially long process
+        // Minimize it
+        var minDfa = dfa.Minimize(StateCombiner<int>.DefaultSetCombiner, dfa.AcceptingStates);
+
+        // Check if should terminate
+        cancellationToken.ThrowIfCancellationRequested();
+
+        // Now we have to figure out which new accepting states correspond to which token
+        var dfaStateToToken = new Dictionary<StateSet<int>, TokenModel>();
+        // We go in the order of each token because this ensures the precedence in which order the tokens were declared
+        foreach (var token in lexerModel.Tokens)
+        {
+            var nfaAccepting = tokenToNfaState[token];
+            var dfaAccepting = minDfa.AcceptingStates.Where(dfaState => dfaState.Contains(nfaAccepting));
+            foreach (var dfaState in dfaAccepting)
+            {
+                // This check ensures the unambiguous accepting states
+                if (!dfaStateToToken.ContainsKey(dfaState)) dfaStateToToken.Add(dfaState, token);
+            }
+        }
+
+        // Allocate unique numbers for each DFA state as we have the hierarchical numbers from determinization
+        var dfaStateIdents = new Dictionary<StateSet<int>, int>();
+        foreach (var state in dfa.States) dfaStateIdents.Add(state, dfaStateIdents.Count);
+
+        // Check if should terminate
+        cancellationToken.ThrowIfCancellationRequested();
+
+        // Group the transitions by source and destination states
+        var transitionsByState = dfa.Transitions
+            .GroupBy(t => t.Source)
+            .ToDictionary(
+                group => group.Key,
+                group => group
+                    .GroupBy(t => t.Destination)
+                    .ToDictionary(
+                        group => group.Key,
+                        group => group.Select(t => t.Symbol).ToList()));
+
+        // Check if should terminate
+        cancellationToken.ThrowIfCancellationRequested();
+
+        return new
+        {
+            LibraryVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString(),
+            Namespace = lexerModel.LexerType.ContainingNamespace?.ToDisplayString(),
+            ContainingTypes = lexerModel.LexerType
+                .GetContainingTypeChain()
+                .Select(c => new
+                {
+                    Kind = c.GetTypeKindName(),
+                    Name = c.Name,
+                    GenericArgs = c.TypeArguments.Select(t => t.Name).ToList(),
+                }),
+            LexerType = new
+            {
+                Kind = lexerModel.LexerType.GetTypeKindName(),
+                Name = lexerModel.LexerType.Name,
+                GenericArgs = lexerModel.LexerType.TypeArguments.Select(t => t.Name).ToList(),
+            },
+            TokenType = lexerModel.TokenType.ToDisplayString(),
+            ImplicitConstructor = lexerModel.LexerType.HasNoUserDefinedCtors() && lexerModel.SourceField is null,
+            SourceName = lexerModel.SourceField?.Name ?? "CharStream",
+            EndTokenName = lexerModel.EndVariant.Name,
+            ErrorTokenName = lexerModel.ErrorVariant.Name,
+            InitialState = new
+            {
+                Id = dfaStateIdents[dfa.InitialState],
+            },
+            States = transitionsByState
+                .Select(kv => new
+                {
+                    Id = dfaStateIdents[kv.Key],
+                    Destinations = kv.Value
+                        .Select(kv2 => new
+                        {
+                            Id = dfaStateIdents[kv2.Key],
+                            Token = dfaStateToToken.TryGetValue(kv2.Key, out var t) ? t.Symbol.Name : null,
+                            IsAccepting = t is not null,
+                            Ignore = t?.Ignore ?? false,
+                            Intervals = kv2.Value
+                                .Select(ToInclusive)
+                                .Where(iv => iv.Lower is null || iv.Upper is null || iv.Lower <= iv.Upper)
+                                .Select(iv => new
+                                {
+                                    Start = iv.Lower,
+                                    End = iv.Upper,
+                                })
+                                .ToList(),
+                        })
+                        .Where(d => d.Intervals.Count > 0)
+                        .ToList(),
+                }).ToList(),
+        };
     }
 
     private static string GenerateSource(
@@ -362,7 +557,24 @@ public class LexerSourceGenerator : IIncrementalGenerator
         object model,
         CancellationToken cancellationToken)
     {
-        // TODO
-        throw new NotImplementedException("Got to generate source!");
+        var context = new TemplateContext()
+        {
+            CancellationToken = cancellationToken,
+            MemberRenamer = member => member.Name,
+        };
+        var scriptObj = new ScriptObject();
+        scriptObj.Import(model, renamer: member => member.Name);
+        context.PushGlobal(scriptObj);
+        var result = template.Render(context);
+        result = SyntaxFactory
+            .ParseCompilationUnit(result)
+            .NormalizeWhitespace()
+            .GetText()
+            .ToString();
+        return result;
     }
+
+    private static string SanitizeFileName(string str) => str
+        .Replace("<", "_lt_")
+        .Replace(">", "_gt_");
 }

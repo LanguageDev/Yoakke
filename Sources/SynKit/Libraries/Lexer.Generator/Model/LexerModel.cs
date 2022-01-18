@@ -15,7 +15,9 @@ namespace Yoakke.SynKit.Lexer.Generator.Model;
 /// <param name="EndVariant">The symbol used to define an end token type.</param>
 /// <param name="Tokens">The list of <see cref="TokenModel"/>s.</param>
 internal record class LexerModel(
+    INamedTypeSymbol LexerType,
+    INamedTypeSymbol TokenType,
     ISymbol? SourceField,
     IFieldSymbol ErrorVariant,
-    IFieldSymbol? EndVariant,
+    IFieldSymbol EndVariant,
     IReadOnlyList<TokenModel> Tokens);

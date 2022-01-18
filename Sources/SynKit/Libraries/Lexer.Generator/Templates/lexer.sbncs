@@ -7,6 +7,9 @@ using Yoakke.SynKit.Text;
 
 #pragma warning disable CS0162
 
+// TODO: Consuming a single character on error might not be the best strategy
+// Also we might want to report if there was a token type that was being matched, while the error occurred
+
 {{ # Namespace start }}
 {{ if Namespace != null }} namespace {{ Namespace }} { {{ end }}
 
