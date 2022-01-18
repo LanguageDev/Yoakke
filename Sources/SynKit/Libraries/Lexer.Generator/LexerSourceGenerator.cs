@@ -85,8 +85,10 @@ public class LexerSourceGenerator : IIncrementalGenerator
                 transform: GetSemanticTargetForGeneration)
             // Discard null
             .Where(m => m is not null);
+
         // Combine the collected type declarations with the compilation
         var compilationAndDecls = context.CompilationProvider.Combine(typeDeclarations.Collect());
+
         // Generate the sources
         context.RegisterSourceOutput(
             compilationAndDecls,
@@ -119,7 +121,7 @@ public class LexerSourceGenerator : IIncrementalGenerator
             }
         }
 
-        // we didn't find the attribute we were looking for
+        // We didn't find the attribute we were looking for
         return null;
     }
 
@@ -135,19 +137,22 @@ public class LexerSourceGenerator : IIncrementalGenerator
         var distinctTypes = types.Distinct();
 
         // Convert each type to the proper model
-        var models = GetModelsToGenerate(compilation, distinctTypes, context.CancellationToken);
+        var models = GetGenerationModels(compilation, distinctTypes, context.CancellationToken);
 
         // If no models remain, we return
         if (models.Count == 0) return;
 
+        // Otherwise we translate each model to a Scriban model
+        var scribanModels = models.Select(ToScribanModel);
+
         // Otherwise we generate each lexer with the Scriban template
-        var sources = GenerateSourceFromModels(models, context.CancellationToken);
+        var sources = GenerateSources(scribanModels, context.CancellationToken);
 
         // Finally add all sources
         foreach (var (name, text) in sources) context.AddSource(name, SourceText.From(text, Encoding.UTF8));
     }
 
-    private static IReadOnlyList<(string Name, object Model)> GetModelsToGenerate(
+    private static IReadOnlyList<LexerModel> GetGenerationModels(
         Compilation compilation,
         IEnumerable<TypeDeclarationSyntax> types,
         CancellationToken cancellationToken)
@@ -156,7 +161,7 @@ public class LexerSourceGenerator : IIncrementalGenerator
         var symbols = LoadSymbols(compilation);
 
         // List to hold the results
-        var models = new List<(string Name, object Model)>();
+        var models = new List<LexerModel>();
 
         foreach (var typeDeclSyntax in types)
         {
@@ -168,19 +173,22 @@ public class LexerSourceGenerator : IIncrementalGenerator
             if (semanticModel.GetDeclaredSymbol(typeDeclSyntax, cancellationToken) is not INamedTypeSymbol declaredSymbol) continue;
 
             // Generate the model
-            var model = GetModelToGenerate(symbols, declaredSymbol, cancellationToken);
-            models.Add((declaredSymbol.ToDisplayString(), model));
+            var model = GetGenerationModel(symbols, declaredSymbol, cancellationToken);
+            models.Add(model);
         }
 
         return models;
     }
 
-    private static IReadOnlyList<(string Name, string Text)> GenerateSourceFromModels(
+    private static IReadOnlyList<(string Name, string Text)> GenerateSources(
         IEnumerable<(string Name, object Model)> models,
         CancellationToken cancellationToken)
     {
         // List of generated sources
         var sources = new List<(string Name, string Text)>();
+
+        // Load the Scriban template
+        var template = LoadScribanTemplate();
 
         foreach (var (name, model) in models)
         {
@@ -188,7 +196,7 @@ public class LexerSourceGenerator : IIncrementalGenerator
             cancellationToken.ThrowIfCancellationRequested();
 
             // Generate source code
-            var source = GenerateSource(model, cancellationToken);
+            var source = GenerateSource(template, model, cancellationToken);
             sources.Add((name, source));
         }
 
@@ -204,7 +212,22 @@ public class LexerSourceGenerator : IIncrementalGenerator
         IgnoreAttribute: compilation.GetTypeByMetadataName("Yoakke.SynKit.Lexer.Attributes.IgnoreAttribute") ?? throw new InvalidOperationException()
     );
 
-    private static object GetModelToGenerate(
+    private static Template LoadScribanTemplate()
+    {
+        var assembly = Assembly.GetExecutingAssembly();
+        var text = new StreamReader(assembly.GetManifestResourceStream("InjectedSources.lexer.sbncs")).ReadToEnd();
+        var template = Template.Parse(text);
+
+        if (template.HasErrors)
+        {
+            var errors = string.Join(" | ", template.Messages.Select(x => x.Message));
+            throw new InvalidOperationException($"Template parse error: {template.Messages}");
+        }
+
+        return template;
+    }
+
+    private static LexerModel GetGenerationModel(
         Symbols symbols,
         INamedTypeSymbol symbol,
         CancellationToken cancellationToken)
@@ -214,10 +237,17 @@ public class LexerSourceGenerator : IIncrementalGenerator
     }
 
     private static string GenerateSource(
+        Template template,
         object model,
         CancellationToken cancellationToken)
     {
         // TODO
         throw new NotImplementedException("Got to generate source!");
+    }
+
+    private static (string Name, object Model) ToScribanModel(LexerModel lexerModel)
+    {
+        // TODO
+        throw new NotImplementedException("Got to scriban model translation!");
     }
 }
