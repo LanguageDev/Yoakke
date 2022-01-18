@@ -250,10 +250,13 @@ public class LexerSourceGenerator : IIncrementalGenerator
         // From this we get to know the token type, which we inspect for the fields
         // Check, if it's even an enumeration type
         var tokenType = lexerAttribute!.TokenType;
-        if (tokenType?.TypeKind != TypeKind.Enum)
+        if (tokenType is null) return null;
+        if (tokenType.TypeKind != TypeKind.Enum)
         {
-            // TODO
-            // context.ReportDiagnostic();
+            context.ReportDiagnostic(Diagnostic.Create(
+                descriptor: Diagnostics.NotAnEnumType,
+                location: tokenType.Locations.FirstOrDefault(),
+                messageArgs: new[] { tokenType.Name, lexerSymbol.Name }));
             return null;
         }
 
