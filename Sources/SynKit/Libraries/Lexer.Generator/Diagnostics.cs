@@ -40,7 +40,7 @@ internal static class Diagnostics
     public static readonly DiagnosticDescriptor TokenTypeNotDefined = new(
         id: "YKLEXERGEN004",
         title: "Fundamental token type not defined",
-        messageFormat: "There has been no {0} token type defined using the attribute {1} in enum {2}",
+        messageFormat: "There has been no {0} token type defined in enum {1}",
         category: "Lexer generation",
         defaultSeverity: DiagnosticSeverity.Error,
         isEnabledByDefault: true);

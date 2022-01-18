@@ -144,7 +144,7 @@ public class LexerSourceGenerator : IIncrementalGenerator
         if (models.Count == 0) return;
 
         // Otherwise we translate each model to a Scriban model
-        var scribanModels = models.Select(ToScribanModel);
+        var scribanModels = models.Select(m => ToScribanModel(m, context.CancellationToken));
 
         // Otherwise we generate each lexer with the Scriban template
         var sources = GenerateSources(scribanModels, context.CancellationToken);
@@ -223,7 +223,7 @@ public class LexerSourceGenerator : IIncrementalGenerator
     private static Template LoadScribanTemplate()
     {
         var assembly = Assembly.GetExecutingAssembly();
-        var text = new StreamReader(assembly.GetManifestResourceStream("InjectedSources.lexer.sbncs")).ReadToEnd();
+        var text = new StreamReader(assembly.GetManifestResourceStream("Templates.lexer.sbncs")).ReadToEnd();
         var template = Template.Parse(text);
 
         if (template.HasErrors)
@@ -241,11 +241,8 @@ public class LexerSourceGenerator : IIncrementalGenerator
         INamedTypeSymbol lexerSymbol,
         CancellationToken cancellationToken)
     {
-        // Check, if we should cancel
-        cancellationToken.ThrowIfCancellationRequested();
-
         // We extract all information from the lexer attribute
-        if (lexerSymbol.TryGetAttribute(symbols.LexerAttribute, out LexerAttributeModel? lexerAttribute)) return null;
+        if (!lexerSymbol.TryGetAttribute(symbols.LexerAttribute, out LexerAttributeModel? lexerAttribute)) return null;
 
         // From this we get to know the token type, which we inspect for the fields
         // Check, if it's even an enumeration type
@@ -266,11 +263,95 @@ public class LexerSourceGenerator : IIncrementalGenerator
             .GetMembers()
             .FirstOrDefault(f => f.HasAttribute(symbols.CharSourceAttribute));
 
-        // TODO
-        throw new NotImplementedException();
+        // Time to collect out all the other lexer members
+        IFieldSymbol? endVariant = null;
+        IFieldSymbol? errorVariant = null;
+        var tokens = new List<TokenModel>();
+
+        // Go through all enum members
+        // Assign each in the proper category
+        foreach (var member in tokenType.GetMembers().OfType<IFieldSymbol>())
+        {
+            var hasAttribute = false;
+
+            if (member.HasAttribute(symbols.EndAttribute))
+            {
+                // End token
+                hasAttribute = true;
+                if (endVariant is not null)
+                {
+                    context.ReportDiagnostic(Diagnostic.Create(
+                        descriptor: Diagnostics.TokenTypeAlreadyDefined,
+                        location: member.Locations.FirstOrDefault(),
+                        messageArgs: new[] { endVariant.Name, "end", tokenType.Name }));
+                    return null;
+                }
+                endVariant = member;
+            }
+
+            if (member.HasAttribute(symbols.ErrorAttribute))
+            {
+                // Error token
+                hasAttribute = true;
+                if (errorVariant is not null)
+                {
+                    context.ReportDiagnostic(Diagnostic.Create(
+                        descriptor: Diagnostics.TokenTypeAlreadyDefined,
+                        location: member.Locations.FirstOrDefault(),
+                        messageArgs: new[] { errorVariant.Name, "error", tokenType.Name }));
+                    return null;
+                }
+                errorVariant = member;
+            }
+
+            // Determine if should be ignored
+            var ignore = member.HasAttribute(symbols.IgnoreAttribute);
+
+            // Add all token attributes
+            var regexAttribs = member.GetAttributes<RegexAttributeModel>(symbols.RegexAttribute);
+            var tokenAttribs = member.GetAttributes<TokenAttributeModel>(symbols.TokenAttribute);
+            foreach (var attr in regexAttribs)
+            {
+                hasAttribute = true;
+                tokens.Add(new(member, attr.Regex, ignore));
+            }
+            foreach (var attr in tokenAttribs)
+            {
+                hasAttribute = true;
+                tokens.Add(new(member, RegExParser.Escape(attr.Text), ignore));
+            }
+
+            // Warn, if the enum variant is not meaningful
+            if (!hasAttribute)
+            {
+                context.ReportDiagnostic(Diagnostic.Create(
+                    descriptor: Diagnostics.NoAttributeForTokenType,
+                    location: member.Locations.FirstOrDefault(),
+                    messageArgs: new[] { member.Name, tokenType.Name }));
+            }
+        }
+
+        // Check, if either of the required attributes are not defined
+        if (endVariant is null || errorVariant is null)
+        {
+            context.ReportDiagnostic(Diagnostic.Create(
+                    descriptor: Diagnostics.TokenTypeNotDefined,
+                    location: tokenType.Locations.FirstOrDefault(),
+                    messageArgs: new[] { endVariant is null ? "end" : "error", tokenType.Name }));
+            return null;
+        }
+
+        // We have succeeded
+        return new(
+            SourceField: sourceField,
+            ErrorVariant: errorVariant,
+            EndVariant: endVariant,
+            Tokens: tokens);
     }
 
-    private static (string Name, object Model) ToScribanModel(LexerModel lexerModel)
+    private static (string Name, object Model) ToScribanModel(
+        LexerModel lexerModel,
+        CancellationToken cancellationToken)
     {
         // TODO
         throw new NotImplementedException("Got to scriban model translation!");
