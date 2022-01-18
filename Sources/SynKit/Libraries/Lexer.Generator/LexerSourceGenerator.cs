@@ -50,6 +50,7 @@ public class LexerSourceGenerator : IIncrementalGenerator
     }
 
     private record class Symbols(
+        INamedTypeSymbol LexerAttribute,
         INamedTypeSymbol CharSourceAttribute,
         INamedTypeSymbol RegexAttribute,
         INamedTypeSymbol TokenAttribute,
@@ -137,7 +138,7 @@ public class LexerSourceGenerator : IIncrementalGenerator
         var distinctTypes = types.Distinct();
 
         // Convert each type to the proper model
-        var models = GetGenerationModels(compilation, distinctTypes, context.CancellationToken);
+        var models = GetGenerationModels(compilation, context, distinctTypes, context.CancellationToken);
 
         // If no models remain, we return
         if (models.Count == 0) return;
@@ -154,6 +155,7 @@ public class LexerSourceGenerator : IIncrementalGenerator
 
     private static IReadOnlyList<LexerModel> GetGenerationModels(
         Compilation compilation,
+        SourceProductionContext context,
         IEnumerable<TypeDeclarationSyntax> types,
         CancellationToken cancellationToken)
     {
@@ -173,7 +175,9 @@ public class LexerSourceGenerator : IIncrementalGenerator
             if (semanticModel.GetDeclaredSymbol(typeDeclSyntax, cancellationToken) is not INamedTypeSymbol declaredSymbol) continue;
 
             // Generate the model
-            var model = GetGenerationModel(symbols, declaredSymbol, cancellationToken);
+            var model = GetGenerationModel(context, symbols, declaredSymbol, cancellationToken);
+            if (model is null) continue;
+
             models.Add(model);
         }
 
@@ -204,13 +208,17 @@ public class LexerSourceGenerator : IIncrementalGenerator
     }
 
     private static Symbols LoadSymbols(Compilation compilation) => new(
-        CharSourceAttribute: compilation.GetTypeByMetadataName("Yoakke.SynKit.Lexer.Attributes.CharSourceAttribute") ?? throw new InvalidOperationException(),
-        RegexAttribute: compilation.GetTypeByMetadataName("Yoakke.SynKit.Lexer.Attributes.RegexAttribute") ?? throw new InvalidOperationException(),
-        TokenAttribute: compilation.GetTypeByMetadataName("Yoakke.SynKit.Lexer.Attributes.TokenAttribute") ?? throw new InvalidOperationException(),
-        EndAttribute: compilation.GetTypeByMetadataName("Yoakke.SynKit.Lexer.Attributes.EndAttribute") ?? throw new InvalidOperationException(),
-        ErrorAttribute: compilation.GetTypeByMetadataName("Yoakke.SynKit.Lexer.Attributes.ErrorAttribute") ?? throw new InvalidOperationException(),
-        IgnoreAttribute: compilation.GetTypeByMetadataName("Yoakke.SynKit.Lexer.Attributes.IgnoreAttribute") ?? throw new InvalidOperationException()
+        LexerAttribute: LoadRequiredSymbol(compilation, typeof(LexerAttribute)),
+        CharSourceAttribute: LoadRequiredSymbol(compilation, typeof(CharSourceAttribute)),
+        RegexAttribute: LoadRequiredSymbol(compilation, typeof(RegexAttribute)),
+        TokenAttribute: LoadRequiredSymbol(compilation, typeof(TokenAttribute)),
+        EndAttribute: LoadRequiredSymbol(compilation, typeof(EndAttribute)),
+        ErrorAttribute: LoadRequiredSymbol(compilation, typeof(ErrorAttribute)),
+        IgnoreAttribute: LoadRequiredSymbol(compilation, typeof(IgnoreAttribute))
     );
+
+    private static INamedTypeSymbol LoadRequiredSymbol(Compilation compilation, Type type) =>
+        compilation.GetTypeByMetadataName(type.FullName) ?? throw new InvalidOperationException($"could not load type {type.FullName}");
 
     private static Template LoadScribanTemplate()
     {
@@ -227,13 +235,42 @@ public class LexerSourceGenerator : IIncrementalGenerator
         return template;
     }
 
-    private static LexerModel GetGenerationModel(
+    private static LexerModel? GetGenerationModel(
+        SourceProductionContext context,
         Symbols symbols,
-        INamedTypeSymbol symbol,
+        INamedTypeSymbol lexerSymbol,
         CancellationToken cancellationToken)
     {
+        // Check, if we should cancel
+        cancellationToken.ThrowIfCancellationRequested();
+
+        // We extract all information from the lexer attribute
+        if (lexerSymbol.TryGetAttribute(symbols.LexerAttribute, out LexerAttributeModel? lexerAttribute)) return null;
+
+        // From this we get to know the token type, which we inspect for the fields
+        // Check, if it's even an enumeration type
+        var tokenType = lexerAttribute!.TokenType;
+        if (tokenType?.TypeKind != TypeKind.Enum)
+        {
+            // TODO
+            // context.ReportDiagnostic();
+            return null;
+        }
+
+        // The source field is easy to extract from the lexer class
+        // It is optional, so a null is acceptable here
+        var sourceField = lexerSymbol
+            .GetMembers()
+            .FirstOrDefault(f => f.HasAttribute(symbols.CharSourceAttribute));
+
         // TODO
-        throw new NotImplementedException("Got to extracting model!");
+        throw new NotImplementedException();
+    }
+
+    private static (string Name, object Model) ToScribanModel(LexerModel lexerModel)
+    {
+        // TODO
+        throw new NotImplementedException("Got to scriban model translation!");
     }
 
     private static string GenerateSource(
@@ -243,11 +280,5 @@ public class LexerSourceGenerator : IIncrementalGenerator
     {
         // TODO
         throw new NotImplementedException("Got to generate source!");
-    }
-
-    private static (string Name, object Model) ToScribanModel(LexerModel lexerModel)
-    {
-        // TODO
-        throw new NotImplementedException("Got to scriban model translation!");
     }
 }

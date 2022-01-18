@@ -9,33 +9,10 @@ namespace Yoakke.SynKit.Lexer.Generator.Model;
 /// <summary>
 /// A single description of what a token is.
 /// </summary>
-internal class TokenModel
-{
-    /// <summary>
-    /// The symbol that defines the token type.
-    /// </summary>
-    public IFieldSymbol Symbol { get; }
-
-    /// <summary>
-    /// The regex that matches the token.
-    /// </summary>
-    public string Regex { get; }
-
-    /// <summary>
-    /// True, if the token-type should be ignored while lexing.
-    /// </summary>
-    public bool Ignore { get; }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TokenModel"/> class.
-    /// </summary>
-    /// <param name="symbol">The corresponding token type symbol.</param>
-    /// <param name="regex">The regex that matches this token.</param>
-    /// <param name="ignore">True, if this token should be ignored, when matched.</param>
-    public TokenModel(IFieldSymbol symbol, string regex, bool ignore)
-    {
-        this.Symbol = symbol;
-        this.Regex = regex;
-        this.Ignore = ignore;
-    }
-}
+/// <param name="Symbol">The symbol that defines the token type.</param>
+/// <param name="Regex">The regex that matches the token.</param>
+/// <param name="Ignore">True, if the token-type should be ignored while lexing.</param>
+internal record class TokenModel(
+    IFieldSymbol Symbol,
+    string Regex,
+    bool Ignore);
