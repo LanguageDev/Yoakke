@@ -80,13 +80,7 @@ public class LexerSourceGenerator : IIncrementalGenerator
 
         // Incremental pipeline
         var typeDeclarations = context.SyntaxProvider
-            .CreateSyntaxProvider(
-                // Filter for type declarations with at least one attribute
-                predicate: IsSyntaxTargetForGeneration,
-                // Transform to either the semantic value or null, if not the right attribute
-                transform: GetSemanticTargetForGeneration)
-            // Discard null
-            .Where(m => m is not null);
+            .CreateAttributedSyntaxProvider<TypeDeclarationSyntax>(typeof(LexerAttribute));
 
         // Combine the collected type declarations with the compilation
         var compilationAndDecls = context.CompilationProvider.Combine(typeDeclarations.Collect());
@@ -95,36 +89,6 @@ public class LexerSourceGenerator : IIncrementalGenerator
         context.RegisterSourceOutput(
             compilationAndDecls,
             (spc, source) => Execute(source.Left, source.Right!, spc));
-    }
-
-    private static bool IsSyntaxTargetForGeneration(
-        SyntaxNode node,
-        CancellationToken cancellationToken) =>
-        node is TypeDeclarationSyntax typeDeclSyntax && typeDeclSyntax.AttributeLists.Count > 0;
-
-    private static TypeDeclarationSyntax? GetSemanticTargetForGeneration(
-        GeneratorSyntaxContext context,
-        CancellationToken cancellationToken)
-    {
-        var typeDeclSyntax = (TypeDeclarationSyntax)context.Node;
-
-        // Loop through all the attributes on the method
-        foreach (var attributeListSyntax in typeDeclSyntax.AttributeLists)
-        {
-            foreach (var attributeSyntax in attributeListSyntax.Attributes)
-            {
-                if (context.SemanticModel.GetSymbolInfo(attributeSyntax, cancellationToken).Symbol is not IMethodSymbol attributeSymbol) continue;
-
-                var attributeContainingTypeSymbol = attributeSymbol.ContainingType;
-                var fullName = attributeContainingTypeSymbol.ToDisplayString();
-
-                // Is the attribute the searched attribute
-                if (fullName == typeof(LexerAttribute).FullName) return typeDeclSyntax;
-            }
-        }
-
-        // We didn't find the attribute we were looking for
-        return null;
     }
 
     private static void Execute(
