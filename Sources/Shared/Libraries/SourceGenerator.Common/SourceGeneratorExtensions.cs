@@ -3,9 +3,14 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text;
 using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Text;
 
 namespace Yoakke.SourceGenerator.Common;
 
@@ -14,6 +19,31 @@ namespace Yoakke.SourceGenerator.Common;
 /// </summary>
 public static class SourceGeneratorExtensions
 {
+    /// <summary>
+    /// Registers a post-initialization step for the source generator context to add some embedded resources to the
+    /// compilation.
+    /// </summary>
+    /// <param name="context">The source generator context.</param>
+    /// <param name="prefix">The prefix of the embedded sources to add.</param>
+    public static void RegisterEmbeddedSourceCodeInjection(
+        this IncrementalGeneratorInitializationContext context,
+        string prefix)
+    {
+        var assembly = Assembly.GetExecutingAssembly();
+        var sourcesToInject = assembly
+            .GetManifestResourceNames()
+            .Where(m => m.StartsWith(prefix));
+        context.RegisterPostInitializationOutput(ctx =>
+        {
+            foreach (var source in sourcesToInject)
+            {
+                ctx.AddSource(
+                    source,
+                    SourceText.From(assembly.ReadManifestResourceText(source), Encoding.UTF8));
+            }
+        });
+    }
+
     /// <summary>
     /// Loads a required type from a compilation. Throws, if the type could not be loaded.
     /// </summary>

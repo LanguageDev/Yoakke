@@ -8,5 +8,8 @@
     <!-- Analysis -->
     <AnalysisLevel>latest</AnalysisLevel>
     <WarningLevel>9999</WarningLevel>
+
+    <!-- Root namespace -->
+    <RootNamespace>Yoakke.$(MSBuildProjectName)</RootNamespace>
   </PropertyGroup>
 </Project>

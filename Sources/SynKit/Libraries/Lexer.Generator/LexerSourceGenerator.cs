@@ -62,22 +62,8 @@ public class LexerSourceGenerator : IIncrementalGenerator
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         // Inject source code
-        var assembly = Assembly.GetExecutingAssembly();
-        var sourcesToInject = assembly
-            .GetManifestResourceNames()
-            .Where(m => m.StartsWith("InjectedSources."));
-        context.RegisterPostInitializationOutput(ctx =>
-        {
-            foreach (var source in sourcesToInject)
-            {
-                ctx.AddSource(
-                    source,
-                    SourceText.From(
-                        new StreamReader(assembly.GetManifestResourceStream(source)).ReadToEnd(),
-                        Encoding.UTF8));
-            }
-        });
-
+        context.RegisterEmbeddedSourceCodeInjection("InjectedSources.");
+        
         // Incremental pipeline
         var typeDeclarations = context.SyntaxProvider
             .CreateAttributedSyntaxProvider<TypeDeclarationSyntax>(typeof(LexerAttribute));
@@ -191,7 +177,7 @@ public class LexerSourceGenerator : IIncrementalGenerator
     private static Template LoadScribanTemplate()
     {
         var assembly = Assembly.GetExecutingAssembly();
-        var text = new StreamReader(assembly.GetManifestResourceStream("Templates.lexer.sbncs")).ReadToEnd();
+        var text = assembly.ReadManifestResourceText("Templates.lexer.sbncs");
         var template = Template.Parse(text);
 
         if (template.HasErrors)

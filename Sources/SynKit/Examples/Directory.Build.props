@@ -1,3 +1,8 @@
 <Project>
   <Import Project="..\..\Props\Example.Build.props" />
+
+  <PropertyGroup>
+    <!-- Root namespace -->
+    <RootNamespace>Yoakke.SynKit.$(MSBuildProjectName)</RootNamespace>
+  </PropertyGroup>
 </Project>
