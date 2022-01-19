@@ -179,17 +179,14 @@ public class LexerSourceGenerator : IIncrementalGenerator
     }
 
     private static Symbols LoadSymbols(Compilation compilation) => new(
-        LexerAttribute: LoadRequiredSymbol(compilation, typeof(LexerAttribute)),
-        CharSourceAttribute: LoadRequiredSymbol(compilation, typeof(CharSourceAttribute)),
-        RegexAttribute: LoadRequiredSymbol(compilation, typeof(RegexAttribute)),
-        TokenAttribute: LoadRequiredSymbol(compilation, typeof(TokenAttribute)),
-        EndAttribute: LoadRequiredSymbol(compilation, typeof(EndAttribute)),
-        ErrorAttribute: LoadRequiredSymbol(compilation, typeof(ErrorAttribute)),
-        IgnoreAttribute: LoadRequiredSymbol(compilation, typeof(IgnoreAttribute))
+        LexerAttribute: compilation.GetRequiredType(typeof(LexerAttribute)),
+        CharSourceAttribute: compilation.GetRequiredType(typeof(CharSourceAttribute)),
+        RegexAttribute: compilation.GetRequiredType(typeof(RegexAttribute)),
+        TokenAttribute: compilation.GetRequiredType(typeof(TokenAttribute)),
+        EndAttribute: compilation.GetRequiredType(typeof(EndAttribute)),
+        ErrorAttribute: compilation.GetRequiredType(typeof(ErrorAttribute)),
+        IgnoreAttribute: compilation.GetRequiredType(typeof(IgnoreAttribute))
     );
-
-    private static INamedTypeSymbol LoadRequiredSymbol(Compilation compilation, Type type) =>
-        compilation.GetTypeByMetadataName(type.FullName) ?? throw new InvalidOperationException($"could not load type {type.FullName}");
 
     private static Template LoadScribanTemplate()
     {

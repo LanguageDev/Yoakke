@@ -14,6 +14,26 @@ namespace Yoakke.SourceGenerator.Common;
 /// </summary>
 public static class SourceGeneratorExtensions
 {
+    /// <summary>
+    /// Loads a required type from a compilation. Throws, if the type could not be loaded.
+    /// </summary>
+    /// <param name="compilation">The compilation to load the type from.</param>
+    /// <param name="type">The type to load.</param>
+    /// <returns>The loaded type symbol.</returns>
+    public static INamedTypeSymbol GetRequiredType(
+        this Compilation compilation,
+        Type type) =>
+           compilation.GetTypeByMetadataName(type.FullName)
+        ?? throw new InvalidOperationException($"could not load type {type.Name}");
+
+    /// <summary>
+    /// Creates a syntax provider that looks for syntax nodes with a given attribute.
+    /// </summary>
+    /// <typeparam name="T">The exact syntax node type to search for.</typeparam>
+    /// <param name="syntaxValueProvider">The syntax value provider to register on.</param>
+    /// <param name="attributeType">The attribute type to search for.</param>
+    /// <returns>The values provider with the syntax nodes attributed with an attribute of type
+    /// <paramref name="attributeType"/>.</returns>
     public static IncrementalValuesProvider<T> CreateAttributedSyntaxProvider<T>(
         this SyntaxValueProvider syntaxValueProvider,
         Type attributeType)
