@@ -555,24 +555,8 @@ public class LexerSourceGenerator : IIncrementalGenerator
     private static string GenerateSource(
         Template template,
         object model,
-        CancellationToken cancellationToken)
-    {
-        var context = new TemplateContext()
-        {
-            CancellationToken = cancellationToken,
-            MemberRenamer = member => member.Name,
-        };
-        var scriptObj = new ScriptObject();
-        scriptObj.Import(model, renamer: member => member.Name);
-        context.PushGlobal(scriptObj);
-        var result = template.Render(context);
-        result = SyntaxFactory
-            .ParseCompilationUnit(result)
-            .NormalizeWhitespace()
-            .GetText()
-            .ToString();
-        return result;
-    }
+        CancellationToken cancellationToken) =>
+        template.Render(model: model, format: true, cancellationToken: cancellationToken);
 
     private static string SanitizeFileName(string str) => str
         .Replace("<", "_lt_")
