@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Yoakke.SynKit.Parser.Generator.Ast;
+using Yoakke.SynKit.Parser.Generator.Model;
 
 namespace Yoakke.SynKit.Parser.Generator.Syntax;
 

@@ -5,7 +5,7 @@
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 
-namespace Yoakke.SynKit.Parser.Generator;
+namespace Yoakke.SynKit.Parser.Generator.Model;
 
 /// <summary>
 /// A single entry in the precedence-table.
