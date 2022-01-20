@@ -149,7 +149,9 @@ public class LexerSourceGenerator : IIncrementalGenerator
         var sources = new List<(LexerModel GenerationModel, string Text)>();
 
         // Load the Scriban template
-        var template = LoadScribanTemplate();
+        var template = Assembly
+            .GetExecutingAssembly()
+            .ReadManifestResourceScribanTemplate("Templates.lexer.sbncs");
 
         foreach (var (genModel, sbnModel) in models)
         {
@@ -173,21 +175,6 @@ public class LexerSourceGenerator : IIncrementalGenerator
         ErrorAttribute: compilation.GetRequiredType(typeof(ErrorAttribute)),
         IgnoreAttribute: compilation.GetRequiredType(typeof(IgnoreAttribute))
     );
-
-    private static Template LoadScribanTemplate()
-    {
-        var assembly = Assembly.GetExecutingAssembly();
-        var text = assembly.ReadManifestResourceText("Templates.lexer.sbncs");
-        var template = Template.Parse(text);
-
-        if (template.HasErrors)
-        {
-            var errors = string.Join(" | ", template.Messages.Select(x => x.Message));
-            throw new InvalidOperationException($"Template parse error: {template.Messages}");
-        }
-
-        return template;
-    }
 
     private static LexerModel? GetGenerationModel(
         SourceProductionContext context,

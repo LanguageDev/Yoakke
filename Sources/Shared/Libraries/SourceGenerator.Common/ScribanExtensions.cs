@@ -2,6 +2,9 @@
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
+using System;
+using System.Linq;
+using System.Reflection;
 using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -15,6 +18,27 @@ namespace Yoakke.SourceGenerator.Common;
 /// </summary>
 public static class ScribanExtensions
 {
+    /// <summary>
+    /// Reads a Scriban template from an embedded resource from an assembly.
+    /// Throws, if the template has errors.
+    /// </summary>
+    /// <param name="assembly">The assembly to load the template from.</param>
+    /// <param name="name">The name of the template to load.</param>
+    /// <returns>The loaded Scriban template.</returns>
+    public static Template ReadManifestResourceScribanTemplate(this Assembly assembly, string name)
+    {
+        var text = assembly.ReadManifestResourceText(name);
+        var template = Template.Parse(text);
+
+        if (template.HasErrors)
+        {
+            var errors = string.Join(" | ", template.Messages.Select(x => x.Message));
+            throw new InvalidOperationException($"Template parse error: {template.Messages}");
+        }
+
+        return template;
+    }
+
     /// <summary>
     /// Renders the template with a given model.
     /// </summary>
