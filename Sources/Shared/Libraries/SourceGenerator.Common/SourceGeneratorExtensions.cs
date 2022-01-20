@@ -3,12 +3,16 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 
@@ -76,6 +80,86 @@ public static class SourceGeneratorExtensions
             // Discard null
             .Where(m => m is not null)!;
 
+    /// <summary>
+    /// Registers a two-phase source output step:
+    ///  1) Loads an extra type using <paramref name="loadExtra"/>, this is the extra context object for the next step.
+    ///  2) Transforms each syntax value into a generational model type using <paramref name="toGenerationModel"/>.
+    ///  3) Transforms each generational model to a Scriban model using <paramref name="toScribanModel"/>.
+    ///  4) Loads the Scriban template using <paramref name="loadScribanTemplate"/>.
+    ///  5) Generates and adds the source of each rendered Scriban template to the compilation.
+    /// </summary>
+    /// <typeparam name="TSyntax">The syntax node type.</typeparam>
+    /// <typeparam name="TGenerationModel">The generation model type.</typeparam>
+    /// <typeparam name="TExtra">The type of the extra member passed in for model conversion.</typeparam>
+    /// <param name="context">The generator initialization context to register on.</param>
+    /// <param name="values">The incremental values provider connected to this generational step.</param>
+    /// <param name="loadExtra">The function that loads extra context for the generation model transformation.</param>
+    /// <param name="toGenerationModel">The function doing the generational model transformation.</param>
+    /// <param name="toScribanModel">The function doing the Scriban model transformation.</param>
+    /// <param name="loadScribanTemplate">The function loading the scriban template.</param>
+    public static void RegisterTwoPhaseSourceOutput<TSyntax, TGenerationModel, TExtra>(
+        this IncrementalGeneratorInitializationContext context,
+        IncrementalValuesProvider<TSyntax> values,
+        Func<Compilation, TExtra> loadExtra,
+        Func<SourceProductionContext, TExtra, ISymbol, CancellationToken, TGenerationModel?> toGenerationModel,
+        Func<TGenerationModel, CancellationToken, object?> toScribanModel,
+        Func<Compilation, Scriban.Template> loadScribanTemplate)
+        where TSyntax : MemberDeclarationSyntax
+    {
+        // Combine the collected syntaxes with the compilation
+        var compilationAndSyntax = context.CompilationProvider.Combine(values.Collect());
+
+        // Generate the sources
+        context.RegisterSourceOutput(
+            compilationAndSyntax,
+            (spc, source) =>
+            {
+                var compilation = source.Left;
+                var syntaxes = source.Right;
+
+                // Do nothing on empty
+                if (syntaxes.IsDefaultOrEmpty) return;
+
+                // [LoggerMessage] does this, so we imitate
+                var distinctSyntaxes = syntaxes.Distinct();
+
+                // Load extra context
+                var extra = loadExtra(compilation);
+
+                // Convert each type to the proper model
+                var models = GetGenerationModels(
+                    compilation,
+                    spc,
+                    distinctSyntaxes,
+                    extra,
+                    toGenerationModel,
+                    spc.CancellationToken);
+
+                // If no models remain, we return
+                if (models.Count == 0) return;
+
+                // Otherwise we translate each model to a Scriban model
+                var scribanModels = models
+                    .Select(m => (
+                        Name: m.DeclaredSymbol.ToDisplayString(),
+                        ScribanModel: toScribanModel(m.GenerationModel, spc.CancellationToken)))
+                    .Where(m => m.ScribanModel is not null);
+
+                // Load the Scriban template
+                var template = loadScribanTemplate(compilation);
+
+                // We generate each source text with the Scriban template
+                var sources = GenerateSources(template, scribanModels!, spc.CancellationToken);
+
+                // Finally add all sources
+                foreach (var (name, text) in sources)
+                {
+                    var sourceName = SanitizeFileName($"{name}.Generated.cs");
+                    spc.AddSource(sourceName, SourceText.From(text, Encoding.UTF8));
+                }
+            });
+    }
+
     private static bool IsSyntaxTargetForGeneration<T>(SyntaxNode node)
         where T : MemberDeclarationSyntax =>
         node is T tSyntax && tSyntax.AttributeLists.Count > 0;
@@ -107,4 +191,62 @@ public static class SourceGeneratorExtensions
         // We didn't find the attribute we were looking for
         return null;
     }
+
+    private static IReadOnlyList<(TGenerationModel GenerationModel, ISymbol DeclaredSymbol)>
+        GetGenerationModels<TSyntax, TExtra, TGenerationModel>(
+        Compilation compilation,
+        SourceProductionContext context,
+        IEnumerable<TSyntax> syntaxes,
+        TExtra extra,
+        Func<SourceProductionContext, TExtra, ISymbol, CancellationToken, TGenerationModel?> toGenerationModel,
+        CancellationToken cancellationToken)
+        where TSyntax : MemberDeclarationSyntax
+    {
+        // List to hold the results
+        var models = new List<(TGenerationModel GenerationModel, ISymbol DeclaredSymbol)>();
+
+        foreach (var syntax in syntaxes)
+        {
+            // If the operation is canceled, abort here
+            cancellationToken.ThrowIfCancellationRequested();
+
+            // Get the declared symbol
+            var semanticModel = compilation.GetSemanticModel(syntax.SyntaxTree);
+            var symbol = semanticModel.GetDeclaredSymbol(syntax, cancellationToken);
+            if (symbol is null) continue;
+
+            // Generate the model
+            var model = toGenerationModel(context, extra, symbol, cancellationToken);
+            if (model is null) continue;
+
+            models.Add((model, symbol));
+        }
+
+        return models;
+    }
+
+    private static IReadOnlyList<(TGenerationModel GenerationModel, string Text)> GenerateSources<TGenerationModel>(
+        Scriban.Template template,
+        IEnumerable<(TGenerationModel GenerationModel, object ScribanModel)> models,
+        CancellationToken cancellationToken)
+    {
+        // List of generated sources
+        var sources = new List<(TGenerationModel GenerationModel, string Text)>();
+
+        foreach (var (genModel, sbnModel) in models)
+        {
+            // If the operation is canceled, abort here
+            cancellationToken.ThrowIfCancellationRequested();
+
+            // Generate source code
+            var source = template.Render(model: sbnModel, format: true, cancellationToken);
+            sources.Add((genModel, source));
+        }
+
+        return sources;
+    }
+
+    private static string SanitizeFileName(string str) => str
+        .Replace("<", "_lt_")
+        .Replace(">", "_gt_");
 }

@@ -68,102 +68,15 @@ public class LexerSourceGenerator : IIncrementalGenerator
         var typeDeclarations = context.SyntaxProvider
             .CreateAttributedSyntaxProvider<TypeDeclarationSyntax>(typeof(LexerAttribute));
 
-        // Combine the collected type declarations with the compilation
-        var compilationAndDecls = context.CompilationProvider.Combine(typeDeclarations.Collect());
-
         // Generate the sources
-        context.RegisterSourceOutput(
-            compilationAndDecls,
-            (spc, source) => Execute(source.Left, source.Right!, spc));
-    }
-
-    private static void Execute(
-        Compilation compilation,
-        ImmutableArray<TypeDeclarationSyntax> types,
-        SourceProductionContext context)
-    {
-        // Do nothing on empty
-        if (types.IsDefaultOrEmpty) return;
-
-        // [LoggerMessage] does this, so we imitate
-        var distinctTypes = types.Distinct();
-
-        // Convert each type to the proper model
-        var models = GetGenerationModels(compilation, context, distinctTypes, context.CancellationToken);
-
-        // If no models remain, we return
-        if (models.Count == 0) return;
-
-        // Otherwise we translate each model to a Scriban model
-        var scribanModels = models
-            .Select(m => (GenerationModel: m, ScribanModel: ToScribanModel(m, context.CancellationToken)))
-            .Where(m => m.ScribanModel is not null);
-
-        // Otherwise we generate each lexer with the Scriban template
-        var sources = GenerateSources(scribanModels!, context.CancellationToken);
-
-        // Finally add all sources
-        foreach (var (genModel, text) in sources)
-        {
-            var sourceName = SanitizeFileName($"{genModel.LexerType.ToDisplayString()}.Generated.cs");
-            context.AddSource(sourceName, SourceText.From(text, Encoding.UTF8));
-        }
-    }
-
-    private static IReadOnlyList<LexerModel> GetGenerationModels(
-        Compilation compilation,
-        SourceProductionContext context,
-        IEnumerable<TypeDeclarationSyntax> types,
-        CancellationToken cancellationToken)
-    {
-        // Load the attributes
-        var symbols = LoadSymbols(compilation);
-
-        // List to hold the results
-        var models = new List<LexerModel>();
-
-        foreach (var typeDeclSyntax in types)
-        {
-            // If the operation is canceled, abort here
-            cancellationToken.ThrowIfCancellationRequested();
-
-            // Get the declared symbol
-            var semanticModel = compilation.GetSemanticModel(typeDeclSyntax.SyntaxTree);
-            if (semanticModel.GetDeclaredSymbol(typeDeclSyntax, cancellationToken) is not INamedTypeSymbol declaredSymbol) continue;
-
-            // Generate the model
-            var model = GetGenerationModel(context, symbols, declaredSymbol, cancellationToken);
-            if (model is null) continue;
-
-            models.Add(model);
-        }
-
-        return models;
-    }
-
-    private static IReadOnlyList<(LexerModel GenerationModel, string Text)> GenerateSources(
-        IEnumerable<(LexerModel GenerationModel, object ScribanModel)> models,
-        CancellationToken cancellationToken)
-    {
-        // List of generated sources
-        var sources = new List<(LexerModel GenerationModel, string Text)>();
-
-        // Load the Scriban template
-        var template = Assembly
-            .GetExecutingAssembly()
-            .ReadManifestResourceScribanTemplate("Templates.lexer.sbncs");
-
-        foreach (var (genModel, sbnModel) in models)
-        {
-            // If the operation is canceled, abort here
-            cancellationToken.ThrowIfCancellationRequested();
-
-            // Generate source code
-            var source = GenerateSource(template, sbnModel, cancellationToken);
-            sources.Add((genModel, source));
-        }
-
-        return sources;
+        context.RegisterTwoPhaseSourceOutput(
+            values: typeDeclarations,
+            loadExtra: LoadSymbols,
+            toGenerationModel: GetGenerationModel,
+            toScribanModel: ToScribanModel,
+            loadScribanTemplate: _ => Assembly
+                .GetExecutingAssembly()
+                .ReadEmbeddedScribanTemplate("Templates.lexer.sbncs"));
     }
 
     private static Symbols LoadSymbols(Compilation compilation) => new(
@@ -179,9 +92,12 @@ public class LexerSourceGenerator : IIncrementalGenerator
     private static LexerModel? GetGenerationModel(
         SourceProductionContext context,
         Symbols symbols,
-        INamedTypeSymbol lexerSymbol,
+        ISymbol symbol,
         CancellationToken cancellationToken)
     {
+        // If it's not even a named type symbol, return
+        if (symbol is not INamedTypeSymbol lexerSymbol) return null;
+
         // Check, if the lexer class can have external code injected (all elements in the chain are partial)
         if (!lexerSymbol.CanDeclareInsideExternally())
         {
@@ -485,14 +401,4 @@ public class LexerSourceGenerator : IIncrementalGenerator
                 }).ToList(),
         };
     }
-
-    private static string GenerateSource(
-        Template template,
-        object model,
-        CancellationToken cancellationToken) =>
-        template.Render(model: model, format: true, cancellationToken: cancellationToken);
-
-    private static string SanitizeFileName(string str) => str
-        .Replace("<", "_lt_")
-        .Replace(">", "_gt_");
 }

@@ -25,7 +25,7 @@ public static class ScribanExtensions
     /// <param name="assembly">The assembly to load the template from.</param>
     /// <param name="name">The name of the template to load.</param>
     /// <returns>The loaded Scriban template.</returns>
-    public static Template ReadManifestResourceScribanTemplate(this Assembly assembly, string name)
+    public static Template ReadEmbeddedScribanTemplate(this Assembly assembly, string name)
     {
         var text = assembly.ReadManifestResourceText(name);
         var template = Template.Parse(text);
