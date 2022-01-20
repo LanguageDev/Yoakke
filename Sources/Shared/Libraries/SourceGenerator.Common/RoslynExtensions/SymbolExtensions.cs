@@ -61,54 +61,6 @@ public static class SymbolExtensions
         return false;
     }
 
-    /// <summary>
-    /// Builds up code that is required to define something inside an <see cref="ISymbol"/>.
-    /// </summary>
-    /// <param name="symbol">The <see cref="ISymbol"/> to build up the code for.</param>
-    /// <returns>A pair of prefix and suffix text, that is enough to write declarations inside <paramref name="symbol"/>.</returns>
-    public static (string Prefix, string Suffix) DeclareInsideExternally(this ISymbol symbol)
-    {
-        var prefixBuilder = new StringBuilder();
-        var suffixBuilder = new StringBuilder();
-
-        void DeclareInsideExternallyRec(ISymbol symbol)
-        {
-            if (symbol is null) return;
-            if (symbol is INamedTypeSymbol type)
-            {
-                if (!type.IsPartial()) throw new InvalidOperationException("Non-partial type nesting");
-                DeclareInsideExternallyRec(symbol.ContainingSymbol);
-
-                var genericTypes = type.GetGenericCrud();
-                prefixBuilder!.AppendLine($"partial {type.GetTypeKindName()} {type.Name}{genericTypes} {{");
-                suffixBuilder!.AppendLine("}");
-                return;
-            }
-            if (symbol is INamespaceSymbol ns)
-            {
-                prefixBuilder!.AppendLine($"namespace {ns.ToDisplayString()} {{");
-                suffixBuilder!.AppendLine("}");
-                return;
-            }
-            throw new InvalidOperationException("Unknown symbol to nest in");
-        }
-
-        DeclareInsideExternallyRec(symbol);
-        return (prefixBuilder.ToString(), suffixBuilder.ToString());
-    }
-
-    /// <summary>
-    /// Retrieves the generic crud needed for a type definition.
-    /// Useful for partial types.
-    /// </summary>
-    /// <param name="symbol">The type symbol to get the crud for.</param>
-    /// <returns>The pair of type parameter list and generic constraints as strings.</returns>
-    public static string GetGenericCrud(this INamedTypeSymbol symbol)
-    {
-        if (symbol.TypeParameters.Length == 0) return string.Empty;
-        return $"<{string.Join(", ", symbol.TypeParameters.Select(p => p.Name))}>";
-    }
-
     // TODO: Doc
     public static IEnumerable<INamedTypeSymbol> GetContainingTypeChain(this INamedTypeSymbol symbol)
     {
