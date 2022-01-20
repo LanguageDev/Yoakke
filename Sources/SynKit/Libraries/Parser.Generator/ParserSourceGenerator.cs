@@ -103,7 +103,7 @@ public class ParserSourceGenerator : IIncrementalGenerator
             .FirstOrDefault();
 
         var tokenKinds = new TokenKindSet(parserAttr!.TokenType);
-        var result = new RuleSet();
+        var ruleSet = new RuleSet();
 
         // Go through the methods in declaration order
         foreach (var method in parserSymbol
@@ -131,25 +131,28 @@ public class ParserSourceGenerator : IIncrementalGenerator
 
                 if (precedenceTable.Count > 0)
                 {
-                    result.AddPrecedence(name, precedenceTable!, method);
+                    ruleSet.AddPrecedence(name, precedenceTable!, method);
                     precedenceTable.Clear();
                 }
 
                 if (ast is null) continue;
 
                 var rule = new Rule(name, new BnfAst.Transform(ast, method)) { VisualName = name };
-                result.Add(rule);
+                ruleSet.Add(rule);
             }
         }
 
-        // TODO: Do sanity checks
+        ruleSet.Desugar();
 
-        result.Desugar();
-        return new(
+        var model = new ParserModel(
             ParserType: parserSymbol,
             SourceField: source,
-            RuleSet: result,
+            RuleSet: ruleSet,
             TokenKinds: tokenKinds);
+
+        if (!CheckRuleSet(context, model)) return null;
+
+        return model;
     }
 
     private static object? ToScribanModel(
@@ -278,5 +281,46 @@ public class ParserSourceGenerator : IIncrementalGenerator
         return result.ToString();
     }
 
-    // TODO: Add back sanity checks!
+    /* Sanity-checks */
+
+    private static bool CheckRuleSet(SourceProductionContext context, ParserModel model) =>
+        model.RuleSet.Rules.Values.All(r => CheckRule(context, model, r));
+
+    private static bool CheckRule(SourceProductionContext context, ParserModel model, Rule rule) =>
+        CheckBnfAst(context, model, rule.Ast);
+
+    // For now we only check if all references are valid (referencing existing rules) or not
+    private static bool CheckBnfAst(SourceProductionContext context, ParserModel model, BnfAst ast) => ast switch
+    {
+        BnfAst.Alt alt => alt.Elements.All(e => CheckBnfAst(context,model, e)),
+        BnfAst.Seq seq => seq.Elements.All(e => CheckBnfAst(context, model, e)),
+        BnfAst.FoldLeft foldl => CheckBnfAst(context, model, foldl.First) && CheckBnfAst(context, model, foldl.Second),
+        BnfAst.Opt opt => CheckBnfAst(context, model, opt.Subexpr),
+        BnfAst.Group grp => CheckBnfAst(context,model, grp.Subexpr),
+        BnfAst.Rep0 rep0 => CheckBnfAst(context,model, rep0.Subexpr),
+        BnfAst.Rep1 rep1 => CheckBnfAst(context, model, rep1.Subexpr),
+        BnfAst.Transform tr => CheckBnfAst(context, model, tr.Subexpr),
+        BnfAst.Call call => CheckReferenceValidity(context, model, call.Name),
+        BnfAst.Literal or BnfAst.Placeholder => true,
+        _ => throw new InvalidOperationException(),
+    };
+
+    private static bool CheckReferenceValidity(
+        SourceProductionContext context,
+        ParserModel model,
+        string referenceName)
+    {
+        // If the rule-set has such method, we are in the clear
+        if (model.RuleSet.Rules.ContainsKey(referenceName)) return true;
+        // If there is such a terminal, also OK
+        if (model.TokenKinds.Fields.ContainsKey(referenceName)) return true;
+        // As a last-effort, check for a "parse<ReferenceName>" in the type definition
+        if (model.ParserType.GetMembers($"parse{referenceName}").Length > 0) return true;
+        // It is an unknown reference, report it
+        context.ReportDiagnostic(Diagnostic.Create(
+            descriptor: Diagnostics.UnknownRuleIdentifier,
+            location: null,
+            messageArgs: new[] { referenceName }));
+        return false;
+    }
 }
