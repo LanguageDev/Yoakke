@@ -351,15 +351,7 @@ public class LexerSourceGenerator : IIncrementalGenerator
         return new
         {
             LibraryVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString(),
-            Namespace = lexerModel.LexerType.ContainingNamespace?.ToDisplayString(),
-            ContainingTypes = lexerModel.LexerType
-                .GetContainingTypeChain()
-                .Select(c => new
-                {
-                    Kind = c.GetTypeKindName(),
-                    Name = c.Name,
-                    GenericArgs = c.TypeArguments.Select(t => t.Name).ToList(),
-                }),
+            TypeEnclosure = lexerModel.LexerType.GetTypeEnclosure(),
             LexerType = new
             {
                 Kind = lexerModel.LexerType.GetTypeKindName(),

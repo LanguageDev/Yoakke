@@ -74,6 +74,48 @@ public static class SymbolExtensions
         return GetContainingTypeChainImpl(symbol.ContainingType);
     }
 
+    // TODO: Doc
+    public static TypeEnclosure GetTypeEnclosure(this INamedTypeSymbol symbol)
+    {
+        var prefixBuilder = new StringBuilder();
+        var suffixBuilder = new StringBuilder();
+
+        // Namespace open
+        if (symbol.ContainingNamespace is not null)
+        {
+            prefixBuilder
+                .Append("namespace ")
+                .AppendLine(symbol.ContainingNamespace.ToDisplayString())
+                .AppendLine("{");
+        }
+
+        // Containing types
+        foreach (var containingType in symbol.GetContainingTypeChain())
+        {
+            prefixBuilder
+                .Append("partial ")
+                .Append(containingType.GetTypeKindName())
+                .Append(' ')
+                .Append(containingType.Name);
+            if (containingType.TypeParameters.Length != 0)
+            {
+                prefixBuilder
+                    .Append('<')
+                    .Append(string.Join(", ", containingType.TypeParameters.Select(t => t.Name)))
+                    .Append('>');
+            }
+            prefixBuilder
+                .AppendLine()
+                .AppendLine("{");
+            suffixBuilder.AppendLine("}");
+        }
+
+        // Namespace close
+        if (symbol.ContainingNamespace is not null) suffixBuilder.AppendLine("}");
+
+        return new(prefixBuilder.ToString(), suffixBuilder.ToString());
+    }
+
     /// <summary>
     /// Checks, if a <see cref="ISymbol"/> implements a given interface.
     /// </summary>

@@ -220,17 +220,8 @@ allocate_var() = 'a' + var_cnt++
     {{ ret $resultVar }}
 {{ end }}
 
-{{ # Namespace start }}
-{{ if Namespace != null }} namespace {{ Namespace }} { {{ end }}
-
-{{ # Containing types and their generic args }}
-{{ for containerType in ContainingTypes }}
-    partial {{ containerType.Kind }} {{ containerType.Name }}
-    {{ if array.size(containerType.GenericArgs) > 0 }}
-        <{{ array.join(containerType.GenericArgs, ", ") }}>
-    {{ end }}
-    {
-{{ end }}
+{{ # Enclosure }}
+{{ TypeEnclosure.Prefix }}
 
 {{ # Type start }}
 [GeneratedCode("Yoakke.SynKit.Lexer.Generator", "{{ LibraryVersion }}")]
@@ -294,11 +285,8 @@ partial {{ ParserType.Kind }} {{ ParserType.Name }}
 {{ # Type end }}
 }
 
-{{ # Containing types close }}
-{{ for containerType in ContainingTypes }} } {{ end }}
-
-{{ # Namespace end }}
-{{ if Namespace != null }} } {{ end }}
+{{ # Enclosure }}
+{{ TypeEnclosure.Suffix }}
 
 #pragma warning restore CS8632
 #pragma warning restore CS8619

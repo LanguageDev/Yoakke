@@ -160,15 +160,7 @@ public class ParserSourceGenerator : IIncrementalGenerator
         CancellationToken cancellationToken) => new
     {
         LibraryVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString(),
-        Namespace = parserModel.ParserType.ContainingNamespace?.ToDisplayString(),
-        ContainingTypes = parserModel.ParserType
-            .GetContainingTypeChain()
-            .Select(c => new
-            {
-                Kind = c.GetTypeKindName(),
-                Name = c.Name,
-                GenericArgs = c.TypeArguments.Select(t => t.Name).ToList(),
-            }),
+        TypeEnclosure = parserModel.ParserType.GetTypeEnclosure(),
         ParserType = new
         {
             Kind = parserModel.ParserType.GetTypeKindName(),
