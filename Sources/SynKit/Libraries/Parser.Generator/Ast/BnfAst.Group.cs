@@ -3,6 +3,7 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System.Collections.Generic;
+using Yoakke.SynKit.Parser.Generator.Model;
 
 namespace Yoakke.SynKit.Parser.Generator.Ast;
 

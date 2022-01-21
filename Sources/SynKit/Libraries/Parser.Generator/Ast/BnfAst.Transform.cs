@@ -5,6 +5,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
+using Yoakke.SynKit.Parser.Generator.Model;
+using RuleSet = Yoakke.SynKit.Parser.Generator.Model.RuleSet;
 
 namespace Yoakke.SynKit.Parser.Generator.Ast;
 

@@ -10,25 +10,14 @@ namespace Yoakke.SynKit.Lexer.Generator.Model;
 /// <summary>
 /// Describes a declared lexer.
 /// </summary>
-internal class LexerModel
-{
-    /// <summary>
-    /// The symbol containing the source character stream.
-    /// </summary>
-    public ISymbol? SourceSymbol { get; set; }
-
-    /// <summary>
-    /// The symbol used to define an error/unknown token type.
-    /// </summary>
-    public IFieldSymbol? ErrorSymbol { get; set; }
-
-    /// <summary>
-    /// The symbol used to define an end token type.
-    /// </summary>
-    public IFieldSymbol? EndSymbol { get; set; }
-
-    /// <summary>
-    /// The list of <see cref="TokenModel"/>s.
-    /// </summary>
-    public IList<TokenModel> Tokens { get; } = new List<TokenModel>();
-}
+/// <param name="SourceField">The symbol containing the source character stream.</param>
+/// <param name="ErrorVariant">The symbol used to define an error/unknown token type.</param>
+/// <param name="EndVariant">The symbol used to define an end token type.</param>
+/// <param name="Tokens">The list of <see cref="TokenModel"/>s.</param>
+internal record class LexerModel(
+    INamedTypeSymbol LexerType,
+    INamedTypeSymbol TokenType,
+    ISymbol? SourceField,
+    IFieldSymbol ErrorVariant,
+    IFieldSymbol EndVariant,
+    IReadOnlyList<TokenModel> Tokens);

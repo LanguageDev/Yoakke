@@ -1,5 +1,7 @@
 <!-- Source Generator project settings -->
 <Project>
+  <Import Project="Shared.Build.props" />
+
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>preview</LangVersion>
@@ -26,10 +28,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Compile-time and analysis dependencies -->
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.9.0" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.2" PrivateAssets="All"/>
-    <PackageReference Include="Nullable" Version="1.3.0" PrivateAssets="All"/>
+    <!-- Source generator dependencies -->
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.0.1" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.3" PrivateAssets="All" />
+
+    <!-- Compile-time dependencies -->
+    <PackageReference Include="Nullable" Version="1.3.0" PrivateAssets="All" />
 
     <!-- Source-generator abstractions -->
     <Compile Include="$(SolutionDir)/Shared/Libraries/SourceGenerator.Common/**/*.cs" Link="SourceGenerator.Common" Visible="False" />

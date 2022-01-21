@@ -4,7 +4,7 @@
 
 using Yoakke.SynKit.Parser.Generator.Ast;
 
-namespace Yoakke.SynKit.Parser.Generator;
+namespace Yoakke.SynKit.Parser.Generator.Model;
 
 /// <summary>
 /// Represents a single BNF rule-definition.

@@ -4,6 +4,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Yoakke.SynKit.Parser.Generator.Model;
 
 namespace Yoakke.SynKit.Parser.Generator.Ast;
 

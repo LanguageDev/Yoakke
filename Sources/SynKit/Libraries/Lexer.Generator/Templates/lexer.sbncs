@@ -7,17 +7,11 @@ using Yoakke.SynKit.Text;
 
 #pragma warning disable CS0162
 
-{{ # Namespace start }}
-{{ if Namespace != null }} namespace {{ Namespace }} { {{ end }}
+// TODO: Consuming a single character on error might not be the best strategy
+// Also we might want to report if there was a token type that was being matched, while the error occurred
 
-{{ # Containing types and their generic args }}
-{{ for containerType in ContainingTypes }}
-    partial {{ containerType.Kind }} {{ containerType.Name }}
-    {{ if array.size(containerType.GenericArgs) > 0 }}
-        <{{ array.join(containerType.GenericArgs, ", ") }}>
-    {{ end }}
-    {
-{{ end }}
+{{ # Enclosure }}
+{{ TypeEnclosure.Prefix }}
 
 {{ # Type start }}
 [GeneratedCode("Yoakke.SynKit.Lexer.Generator", "{{ LibraryVersion }}")]
@@ -130,10 +124,7 @@ partial {{ LexerType.Kind }} {{ LexerType.Name }}
 {{ # Type end }}
 }
 
-{{ # Containing types close }}
-{{ for containerType in ContainingTypes }} } {{ end }}
-
-{{ # Namespace end }}
-{{ if Namespace != null }} } {{ end }}
+{{ # Enclosure }}
+{{ TypeEnclosure.Suffix }}
 
 #pragma warning restore CS0162
