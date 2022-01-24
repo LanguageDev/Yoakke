@@ -227,7 +227,7 @@ public sealed class DenseDfa<TState, TSymbol> : IDenseDfa<TState, TSymbol>
         writer.WriteInitialStates(new[] { this.InitialState });
 
         // Transitions
-        var tupleComparer = new TupleEqualityComparer<TState, TState>(this.StateComparer, this.StateComparer);
+        var tupleComparer = EqualityComparers.CreateTuple(this.StateComparer, this.StateComparer);
         var transitionsByState = this.Transitions.GroupBy(t => (t.Source, t.Destination), tupleComparer);
         foreach (var group in transitionsByState)
         {

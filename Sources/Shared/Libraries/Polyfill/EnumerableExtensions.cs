@@ -10,6 +10,31 @@ namespace System.Collections.Generic.Polyfill;
 public static class EnumerableExtensions
 {
     /// <summary>
+    /// Attempts to retrieve the non-enumerated count of the enumerablr.
+    /// </summary>
+    /// <typeparam name="TSource">The enumerable element type.</typeparam>
+    /// <param name="source">The enumerable to get the count of.</param>
+    /// <param name="count">The count gets written here, if succeeded.</param>
+    /// <returns>True, if the count was retrieved successfully.</returns>
+    public static bool TryGetNonEnumeratedCount<TSource>(this IEnumerable<TSource> source, out int count)
+    {
+        if (source is ICollection<TSource> collectionoft)
+        {
+            count = collectionoft.Count;
+            return true;
+        }
+
+        if (source is ICollection collection)
+        {
+            count = collection.Count;
+            return true;
+        }
+
+        count = 0;
+        return false;
+    }
+
+    /// <summary>
     /// Creates a <see cref="HashSet{T}"/> from an <see cref="IEnumerable{T}"/> using the
     /// <paramref name="comparer"/> to compare keys.
     /// </summary>

@@ -323,7 +323,7 @@ public sealed class DenseNfa<TState, TSymbol> : IDenseNfa<TState, TSymbol>
         writer.WriteInitialStates(this.InitialStates);
 
         // Transitions
-        var tupleComparer = new TupleEqualityComparer<TState, TState>(this.StateComparer, this.StateComparer);
+        var tupleComparer = EqualityComparers.CreateTuple(this.StateComparer, this.StateComparer);
         var transitionsByState = this.Transitions.GroupBy(t => (t.Source, t.Destination), tupleComparer);
         var remainingEpsilon = this.epsilonTransitions.EpsilonTransitionMap
             .ToDictionary(kv => kv.Key, kv => kv.Value.ToHashSet(this.StateComparer), this.StateComparer);

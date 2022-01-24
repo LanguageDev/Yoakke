@@ -29,7 +29,7 @@ internal class EquivalenceTable<TState, TSymbol>
     public EquivalenceTable(IReadOnlyDfa<TState, TSymbol> automaton)
     {
         this.automaton = automaton;
-        var tupleComparer = new TupleEqualityComparer<TState, TState>(automaton.StateComparer, automaton.StateComparer);
+        var tupleComparer = EqualityComparers.CreateTuple(automaton.StateComparer, automaton.StateComparer);
         this.table = new(tupleComparer);
         this.trapTable = new(automaton.StateComparer);
         this.states = automaton.States.ToList();
