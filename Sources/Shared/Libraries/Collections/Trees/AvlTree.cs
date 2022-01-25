@@ -27,6 +27,17 @@ public static class AvlTree
         where TNode : class, BinaryTree.INode<TNode>;
 
     /// <summary>
+    /// A structure describing the result of a deletion.
+    /// </summary>
+    /// <typeparam name="TNode">The node implementation type.</typeparam>
+    /// <param name="Root">The root of the tree, if any.</param>
+    /// <param name="Deleted">The deleted node, if any.</param>
+    public record struct Deletion<TNode>(
+        TNode? Root,
+        TNode? Deleted = null)
+        where TNode : class, BinaryTree.INode<TNode>;
+
+    /// <summary>
     /// Performs insertion on an AVL tree.
     /// </summary>
     /// <typeparam name="TNode">The node implementation type.</typeparam>
@@ -123,5 +134,61 @@ public static class AvlTree
 
         // We are done
         return new(Root: root, Inserted: inserted);
+    }
+
+    public static Deletion<TNode> Delete<TNode, TKey>(
+        TNode? root,
+        TKey key,
+        Func<TNode, TKey> keySelector,
+        IComparer<TKey> keyComparer)
+        where TNode : class, BalancedTree.IHeight<TNode>
+    {
+        // If the root is null, we couldn't find it
+        if (root is null) return new(Root: null);
+
+        // Compare keys to see which way go down
+        var cmp = keyComparer.Compare(key, keySelector(root));
+        TNode deleted;
+        if (cmp < 0)
+        {
+            // The key is in the left subtree
+            var deletion = Delete(root.Left, key, keySelector, keyComparer);
+            // If nothing is deleted, early return
+            if (deletion.Deleted is null) return new(Root: root);
+            // Otherwise update
+            deleted = deletion.Deleted;
+            root.Left = deletion.Root;
+        }
+        else if (cmp > 0)
+        {
+            // The key is in the right subtree
+            var deletion = Delete(root.Right, key, keySelector, keyComparer);
+            // If nothing is deleted, early return
+            if (deletion.Deleted is null) return new(Root: root);
+            // Otherwise update
+            deleted = deletion.Deleted;
+            root.Right = deletion.Root;
+        }
+        else
+        {
+            // The key is in this node
+            deleted = root;
+            if (root.Left is null || root.Right is null)
+            {
+                // 0 or 1 child case
+                root = root.Left ?? root.Right;
+            }
+            else
+            {
+                // 2 children
+                // Get the in-order successor of root
+                var temp = BinaryTree.Min(root.Right);
+                // TODO: Bring temporary up to root, delete from the right subtree
+                throw new NotImplementedException();
+            }
+        }
+
+        // TODO: Balance
+        throw new NotImplementedException();
     }
 }
