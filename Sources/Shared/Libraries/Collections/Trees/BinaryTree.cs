@@ -138,6 +138,6 @@ public static class BinaryTree
         var t2 = x.Right;
         x.Right = root;
         root.Left = t2;
-        return root;
+        return x;
     }
 }
