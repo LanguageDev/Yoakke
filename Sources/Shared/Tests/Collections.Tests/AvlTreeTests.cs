@@ -14,6 +14,7 @@ namespace Yoakke.Collections.Tests;
 
 public class AvlTreeTests
 {
+#if false
     private class Node : BalancedTree.IHeight<Node>, IEquatable<Node>
     {
         public int Key { get; set; }
@@ -256,4 +257,5 @@ public class AvlTreeTests
                 },
             }.UpdateHeight());
     }
+#endif
 }

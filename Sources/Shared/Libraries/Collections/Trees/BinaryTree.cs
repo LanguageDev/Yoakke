@@ -14,12 +14,33 @@ namespace Yoakke.Collections.Trees;
 public static class BinaryTree
 {
     /// <summary>
+    /// An enumeration describing the two children of a node.
+    /// </summary>
+    public enum Child
+    {
+        /// <summary>
+        /// The left child.
+        /// </summary>
+        Left,
+
+        /// <summary>
+        /// The right child.
+        /// </summary>
+        Right,
+    }
+
+    /// <summary>
     /// Interface for simple binary tree nodes.
     /// </summary>
     /// <typeparam name="TNode">The node implementation type.</typeparam>
     public interface INode<TNode>
         where TNode : class, INode<TNode>
     {
+        /// <summary>
+        /// The parent of this node.
+        /// </summary>
+        public TNode? Parent { get; }
+
         /// <summary>
         /// The left child of this node.
         /// </summary>
@@ -32,57 +53,62 @@ public static class BinaryTree
     }
 
     /// <summary>
-    /// Retrieves the minimum value that can be found in the subtree (meaning the leftmost leaf).
+    /// A simple base class for nodes that implements the left-right-parent update logic.
     /// </summary>
     /// <typeparam name="TNode">The node implementation type.</typeparam>
-    /// <param name="node">The root of the subtree to search in.</param>
-    /// <returns>The minimum (leftmost) node.</returns>
-    public static TNode Min<TNode>(TNode node)
-        where TNode : class, INode<TNode>
+    public abstract class NodeBase<TNode> : INode<TNode>
+        where TNode : NodeBase<TNode>
     {
-        for (; node.Left is not null; node = node.Left) ;
-        return node;
+        /// <inheritdoc/>
+        public TNode? Parent { get; private set; } = null;
+
+        /// <inheritdoc/>
+        public TNode? Left
+        {
+            get => this.left;
+            set
+            {
+                this.left = value;
+                if (value is not null) value.Parent = (TNode)this;
+            }
+        }
+
+        /// <inheritdoc/>
+        public TNode? Right
+        {
+            get => this.right;
+            set
+            {
+                this.right = value;
+                if (value is not null) value.Parent = (TNode)this;
+            }
+        }
+
+        private TNode? left;
+        private TNode? right;
     }
 
     /// <summary>
-    /// Retrieves the maximum value that can be found in the subtree (meaning the rightmost leaf).
+    /// Represents the result of a tree-search.
     /// </summary>
     /// <typeparam name="TNode">The node implementation type.</typeparam>
-    /// <param name="node">The root of the subtree to search in.</param>
-    /// <returns>The maximum (rightmost) node.</returns>
-    public static TNode Max<TNode>(TNode node)
-        where TNode : class, INode<TNode>
-    {
-        for (; node.Right is not null; node = node.Right) ;
-        return node;
-    }
+    /// <param name="Found">The exact match found.</param>
+    /// <param name="Hint">The hint for insertion, if an exact match is not found.</param>
+    public record struct SearchResult<TNode>(TNode? Found, (TNode Node, Child Child)? Hint)
+        where TNode : class, INode<TNode>;
 
     /// <summary>
-    /// Retrieves the predecessor of a given node (the largest value that is smaller, meaning the rightmost element
-    /// in the left subtree) that can be found in the subtree.
+    /// Represents the result of an insertion.
     /// </summary>
     /// <typeparam name="TNode">The node implementation type.</typeparam>
-    /// <param name="node">The node to get the predecessor of.</param>
-    /// <returns>The predecessor of the node, if any.</returns>
-    public static TNode? Predecessor<TNode>(TNode node)
-        where TNode : class, INode<TNode> => node.Left is null
-        ? null
-        : Max(node.Left);
+    /// <param name="Root">The root of the tree.</param>
+    /// <param name="Inserted">The inserted node, if any.</param>
+    /// <param name="Existing">The existing node that blocked the insertion, if any.</param>
+    public record struct InsertResult<TNode>(TNode Root, TNode? Inserted, TNode? Existing)
+        where TNode : class, INode<TNode>;
 
     /// <summary>
-    /// Retrieves the successor of a given node (the smallest value that is larger, meaning the leftmost element
-    /// in the right subtree) that can be found in the subtree.
-    /// </summary>
-    /// <typeparam name="TNode">The node implementation type.</typeparam>
-    /// <param name="node">The node to get the successor of.</param>
-    /// <returns>The successor of the node, if any.</returns>
-    public static TNode? Successor<TNode>(TNode node)
-        where TNode : class, INode<TNode> => node.Right is null
-        ? null
-        : Min(node.Right);
-
-    /// <summary>
-    /// Finds a node with a given key.
+    /// Searches for a node with a given key.
     /// </summary>
     /// <typeparam name="TNode">The node implementation type.</typeparam>
     /// <typeparam name="TKey">The key type.</typeparam>
@@ -90,23 +116,76 @@ public static class BinaryTree
     /// <param name="key">The key to search for.</param>
     /// <param name="keySelector">The key selector.</param>
     /// <param name="comparer">The key comparer.</param>
-    /// <returns>The node with the given key, or null, if not found.</returns>
-    public static TNode? Find<TNode, TKey>(
+    /// <returns>The results of the search as a <see cref="SearchResult{TNode}"/>.</returns>
+    public static SearchResult<TNode> Search<TNode, TKey>(
         TNode? root,
         TKey key,
         Func<TNode, TKey> keySelector,
         IComparer<TKey> comparer)
         where TNode : class, INode<TNode>
     {
+        (TNode Node, Child Child)? hint = null;
         while (root is not null)
         {
             var rootKey = keySelector(root);
             var cmp = comparer.Compare(key, rootKey);
-            if (cmp < 0) root = root.Left;
-            else if (cmp > 0) root = root.Right;
-            else return root;
+            if (cmp < 0)
+            {
+                hint = (root, Child.Left);
+                root = root.Left;
+            }
+            else if (cmp > 0)
+            {
+                hint = (root, Child.Right);
+                root = root.Right;
+            }
+            else
+            {
+                return new(Found: root, Hint: null);
+            }
         }
-        return null;
+        return new(Found: null, Hint: hint);
+    }
+
+    /// <summary>
+    /// Inserts a new node into the binary tree.
+    /// </summary>
+    /// <typeparam name="TNode">The node implementation type.</typeparam>
+    /// <typeparam name="TKey">The key type.</typeparam>
+    /// <param name="root">The root of the subtree to insert into.</param>
+    /// <param name="key">The key to insert with.</param>
+    /// <param name="keySelector">The key selector.</param>
+    /// <param name="comparer">The key comparer.</param>
+    /// <param name="makeNode">The node factory.</param>
+    /// <returns>The results of the insertion as an <see cref="InsertResult{TNode}"/>.</returns>
+    public static InsertResult<TNode> Insert<TNode, TKey>(
+        TNode? root,
+        TKey key,
+        Func<TNode, TKey> keySelector,
+        IComparer<TKey> comparer,
+        Func<TKey, TNode> makeNode)
+        where TNode : class, INode<TNode>
+    {
+        // Try a search
+        var (found, hint) = Search(
+            root: root,
+            key: key,
+            keySelector: keySelector,
+            comparer: comparer);
+        // If found, we don't do an insertion
+        if (found is not null) return new(Root: root!, Inserted: null, Existing: found);
+        // If there's a hint, use it
+        if (hint is not null)
+        {
+            var h = hint.Value;
+            var newNode = makeNode(key);
+            if (h.Child == Child.Left) h.Node.Left = newNode;
+            else h.Node.Right = newNode;
+            return new(Root: root!, Inserted: newNode, Existing: null);
+        }
+        // Otherwise, this has to be a new root
+        var newRoot = makeNode(key);
+        return new(Root: newRoot, Inserted: newRoot, Existing: null);
     }
 
     /// <summary>
