@@ -56,8 +56,8 @@ public static class BalancedTree
         where TNode : class, IHeight<TNode>
     {
         root = BinaryTree.RotateLeft(root);
-        UpdateHeight(root);
         UpdateHeight(root.Left!);
+        UpdateHeight(root);
         return root;
     }
 

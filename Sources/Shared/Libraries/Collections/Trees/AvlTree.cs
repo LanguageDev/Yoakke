@@ -49,7 +49,7 @@ public static class AvlTree
         {
             // Insertion into an empty tree is trivial, we just make it as the new root
             root = makeNode(key);
-            return new(Root: root);
+            return new(Root: root, Inserted: root);
         }
 
         // We compare the root key to the inserted one
@@ -63,6 +63,7 @@ public static class AvlTree
             if (insertion.Existing is not null) return new(Root: root, Existing: insertion.Existing);
             // Store inserted
             inserted = insertion.Inserted!;
+            root.Left = insertion.Root;
         }
         else if (cmp > 0)
         {
@@ -72,6 +73,7 @@ public static class AvlTree
             if (insertion.Existing is not null) return new(Root: root, Existing: insertion.Existing);
             // Store inserted
             inserted = insertion.Inserted!;
+            root.Right = insertion.Root;
         }
         else
         {
