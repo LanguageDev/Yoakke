@@ -9,9 +9,9 @@ using System.Text;
 namespace Yoakke.Collections.Trees;
 
 /// <summary>
-/// Utilities to handle tree nodes as a binary tree.
+/// Utilities to handle tree nodes as a binary search tree.
 /// </summary>
-public static class BinaryTree
+public static class BinarySearchTree
 {
     /// <summary>
     /// An enumeration describing the two children of a node.
@@ -39,7 +39,7 @@ public static class BinaryTree
         /// <summary>
         /// The parent of this node.
         /// </summary>
-        public TNode? Parent { get; }
+        public TNode? Parent { get; set; }
 
         /// <summary>
         /// The left child of this node.
@@ -60,7 +60,7 @@ public static class BinaryTree
         where TNode : NodeBase<TNode>
     {
         /// <inheritdoc/>
-        public TNode? Parent { get; private set; } = null;
+        public TNode? Parent { get; set; }
 
         /// <inheritdoc/>
         public TNode? Left
@@ -106,6 +106,70 @@ public static class BinaryTree
     /// <param name="Existing">The existing node that blocked the insertion, if any.</param>
     public record struct InsertResult<TNode>(TNode Root, TNode? Inserted, TNode? Existing)
         where TNode : class, INode<TNode>;
+
+    /// <summary>
+    /// Retrieves the minimum (leftmost leaf) of a given subtree.
+    /// </summary>
+    /// <typeparam name="TNode">The node implementation type.</typeparam>
+    /// <param name="root">The root of the subtree.</param>
+    /// <returns>The minimum of the subtree with root <paramref name="root"/>.</returns>
+    public static TNode Minimum<TNode>(TNode root)
+        where TNode : class, INode<TNode>
+    {
+        for (; root.Left is not null; root = root.Left) ;
+        return root;
+    }
+
+    /// <summary>
+    /// Retrieves the maximum (rightmost leaf) of a given subtree.
+    /// </summary>
+    /// <typeparam name="TNode">The node implementation type.</typeparam>
+    /// <param name="root">The root of the subtree.</param>
+    /// <returns>The maximum of the subtree with root <paramref name="root"/>.</returns>
+    public static TNode Maximum<TNode>(TNode root)
+        where TNode : class, INode<TNode>
+    {
+        for (; root.Right is not null; root = root.Right) ;
+        return root;
+    }
+
+    /// <summary>
+    /// Retrieves the in-order predecessor of a given node.
+    /// </summary>
+    /// <typeparam name="TNode">The node implementation type.</typeparam>
+    /// <param name="node">The node to get the predecessor of.</param>
+    /// <returns>The predecessor of <paramref name="node"/>.</returns>
+    public static TNode? Predecessor<TNode>(TNode node)
+        where TNode : class, INode<TNode>
+    {
+        if (node.Left is not null) return Maximum(node.Left);
+        var y = node.Parent;
+        while (y is not null && ReferenceEquals(node, y.Left))
+        {
+            node = y;
+            y = y.Parent;
+        }
+        return y;
+    }
+
+    /// <summary>
+    /// Retrieves the in-order successor of a given node.
+    /// </summary>
+    /// <typeparam name="TNode">The node implementation type.</typeparam>
+    /// <param name="node">The node to get the successor of.</param>
+    /// <returns>The successor of <paramref name="node"/>.</returns>
+    public static TNode? Successor<TNode>(TNode node)
+        where TNode : class, INode<TNode>
+    {
+        if (node.Right is not null) return Minimum(node.Right);
+        var y = node.Parent;
+        while (y is not null && ReferenceEquals(node, y.Right))
+        {
+            node = y;
+            y = y.Parent;
+        }
+        return y;
+    }
 
     /// <summary>
     /// Searches for a node with a given key.
@@ -186,6 +250,58 @@ public static class BinaryTree
         // Otherwise, this has to be a new root
         var newRoot = makeNode(key);
         return new(Root: newRoot, Inserted: newRoot, Existing: null);
+    }
+
+    /// <summary>
+    /// Deletes a node from the binary tree.
+    /// </summary>
+    /// <typeparam name="TNode">The node implementation type.</typeparam>
+    /// <param name="root">The root of the tree.</param>
+    /// <param name="node">The node to delete.</param>
+    /// <returns>The new root of the tree.</returns>
+    public static TNode? Delete<TNode>(TNode? root, TNode node)
+        where TNode : class, INode<TNode>
+    {
+        void Shift(TNode u, TNode? v)
+        {
+            if (u.Parent is null)
+            {
+                root = v;
+                if (v is not null) v.Parent = null;
+            }
+            else if (ReferenceEquals(u, u.Parent.Left))
+            {
+                u.Parent.Left = v;
+            }
+            else
+            {
+                u.Parent.Right = v;
+            }
+        }
+
+        if (node.Left is null)
+        {
+            // 0 or 1 child
+            Shift(node, node.Right);
+        }
+        else if (node.Right is null)
+        {
+            // 0 or 1 child
+            Shift(node, node.Left);
+        }
+        else
+        {
+            // 2 children
+            var y = Successor(node);
+            if (!ReferenceEquals(y.Parent, node))
+            {
+                Shift(y, y.Right);
+                y.Right = node.Right;
+            }
+            Shift(node, y);
+            y.Left = node.Left;
+        }
+        return root;
     }
 
     /// <summary>
