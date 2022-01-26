@@ -441,4 +441,106 @@ public class AvlTreeTests
                 },
             }.UpdateHeight()));
     }
+
+    [Fact]
+    public void DeleteGFromEcfbdga()
+    {
+        var set = new AvlSet
+        {
+            Root = new Node('e')
+            {
+                Left = new('c')
+                {
+                    Left = new('b')
+                    {
+                        Left = new('a'),
+                    },
+                    Right = new('d'),
+                },
+                Right = new('f')
+                {
+                    Right = new('g'),
+                },
+            }.UpdateHeight()
+        };
+        ValidateTree(set.Root);
+        Assert.True(set.Delete('g'));
+        ValidateTree(set.Root);
+        Assert.True(Node.TreeEq(
+            set.Root,
+            new Node('c')
+            {
+                Left = new('b')
+                {
+                    Left = new('a'),
+                },
+                Right = new('e')
+                {
+                    Left = new('d'),
+                    Right = new('f'),
+                },
+            }.UpdateHeight()));
+    }
+
+    [Fact]
+    public void DeleteTwoRotations()
+    {
+        var set = new AvlSet
+        {
+            Root = new Node(5)
+            {
+                Left = new(2)
+                {
+                    Left = new(1),
+                    Right = new(3)
+                    {
+                        Right = new(4),
+                    },
+                },
+                Right = new(8)
+                {
+                    Left = new(7)
+                    {
+                        Left = new(6),
+                    },
+                    Right = new(10)
+                    {
+                        Left = new(9),
+                        Right = new(11)
+                        {
+                            Right = new(12),
+                        },
+                    }
+                },
+            }.UpdateHeight()
+        };
+        ValidateTree(set.Root);
+        Assert.True(set.Delete(1));
+        ValidateTree(set.Root);
+        Assert.True(Node.TreeEq(
+            set.Root,
+            new Node(8)
+            {
+                Left = new(5)
+                {
+                    Left = new(3)
+                    {
+                        Left = new(2),
+                        Right = new(4),
+                    },
+                    Right = new(7)
+                    {
+                        Left = new(6),
+                    }
+                },
+                Right = new(10)
+                {
+                    Left = new(9),
+                    Right = new(11)
+                    {
+                        Right = new(12),
+                    },
+                },
+            }.UpdateHeight()));
+    }
 }
