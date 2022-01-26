@@ -159,20 +159,82 @@ public static class AvlTree
 
         // There was a node inserted
         root = insertion.Root;
-        var node = insertion.Inserted;
 
         // We start walking up the tree, updating the heights
         // If we find a node that needs rebalancing, we rebalance it, then stop
-        while (node is not null)
+        for (var n = insertion.Inserted; n is not null; n = n.Parent)
         {
-            UpdateHeight(node);
-            var rebalance = Rebalance(node);
-            if (ReferenceEquals(node, root)) root = rebalance.Root;
+            UpdateHeight(n);
+            var rebalance = Rebalance(n);
+            if (ReferenceEquals(n, root)) root = rebalance.Root;
             if (rebalance.Rebalanced) break;
-            node = node.Parent;
         }
 
         // We are done
         return new(Root: root, Inserted: insertion.Inserted);
+    }
+
+    /// <summary>
+    /// Deletes a node from the AVL tree.
+    /// </summary>
+    /// <typeparam name="TNode">The node implementation type.</typeparam>
+    /// <param name="root">The root of the tree.</param>
+    /// <param name="node">The node to delete.</param>
+    /// <returns>The new root of the tree.</returns>
+    public static TNode? Delete<TNode>(TNode? root, TNode node)
+        where TNode : class, INode<TNode>
+    {
+        // NOTE: Mostly copied from BST.Delete
+        void Shift(TNode u, TNode? v)
+        {
+            if (u.Parent is null)
+            {
+                root = v;
+                if (v is not null) v.Parent = null;
+            }
+            else if (ReferenceEquals(u, u.Parent.Left))
+            {
+                u.Parent.Left = v;
+            }
+            else
+            {
+                u.Parent.Right = v;
+            }
+        }
+
+        if (node.Left is null)
+        {
+            // 0 or 1 child
+            Shift(node, node.Right);
+            // Update upwards
+            for (var n = node.Parent; n is not null; n = n.Parent)
+            {
+                UpdateHeight(n);
+                var rebalance = Rebalance(n);
+                if (ReferenceEquals(n, root)) root = rebalance.Root;
+            }
+        }
+        else if (node.Right is null)
+        {
+            // TODO
+            throw new NotImplementedException();
+            // 0 or 1 child
+            Shift(node, node.Left);
+        }
+        else
+        {
+            // TODO
+            throw new NotImplementedException();
+            // 2 children
+            var y = BinarySearchTree.Successor(node);
+            if (!ReferenceEquals(y.Parent, node))
+            {
+                Shift(y, y.Right);
+                y.Right = node.Right;
+            }
+            Shift(node, y);
+            y.Left = node.Left;
+        }
+        return root;
     }
 }

@@ -50,6 +50,18 @@ public class AvlTreeTests
             this.Root = insertion.Root;
             return true;
         }
+
+        public bool Delete(int k)
+        {
+            var search = BinarySearchTree.Search(
+                root: this.Root,
+                key: k,
+                keySelector: n => n.Key,
+                keyComparer: Comparer<int>.Default);
+            if (search.Found is null) return false;
+            this.Root = AvlTree.Delete(root: this.Root, search.Found);
+            return true;
+        }
     }
 
     private static Node InsertCase1Root => new Node(20)
@@ -98,6 +110,7 @@ public class AvlTreeTests
         static void ValidateHeight(TNode? n)
         {
             if (n is null) return;
+            Assert.Equal(Height(n), n.Height);
             var balance = Height(n.Left) - Height(n.Right);
             Assert.True(-1 <= balance && balance <= 1);
             ValidateHeight(n.Left);
@@ -281,6 +294,150 @@ public class AvlTreeTests
                         Left = new(21),
                         Right = new(30),
                     },
+                },
+            }.UpdateHeight()));
+    }
+
+    [Fact]
+    public void DeleteAFromBcad()
+    {
+        var set = new AvlSet
+        {
+            Root = new Node('b')
+            {
+                Left = new('a'),
+                Right = new('c')
+                {
+                    Right = new('d'),
+                },
+            }.UpdateHeight()
+        };
+        ValidateTree(set.Root);
+        Assert.True(set.Delete('a'));
+        ValidateTree(set.Root);
+        Assert.True(Node.TreeEq(
+            set.Root,
+            new Node('c')
+            {
+                Left = new('b'),
+                Right = new('d'),
+            }.UpdateHeight()));
+    }
+
+    [Fact]
+    public void DeleteDFromCdba()
+    {
+        var set = new AvlSet
+        {
+            Root = new Node('c')
+            {
+                Left = new('b')
+                {
+                    Left = new('a'),
+                },
+                Right = new('d'),
+            }.UpdateHeight()
+        };
+        ValidateTree(set.Root);
+        Assert.True(set.Delete('d'));
+        ValidateTree(set.Root);
+        Assert.True(Node.TreeEq(
+            set.Root,
+            new Node('b')
+            {
+                Left = new('a'),
+                Right = new('c'),
+            }.UpdateHeight()));
+    }
+
+    [Fact]
+    public void DeleteAFromBdac()
+    {
+        var set = new AvlSet
+        {
+            Root = new Node('b')
+            {
+                Left = new('a'),
+                Right = new('d')
+                {
+                    Left = new('c'),
+                },
+            }.UpdateHeight()
+        };
+        ValidateTree(set.Root);
+        Assert.True(set.Delete('a'));
+        ValidateTree(set.Root);
+        Assert.True(Node.TreeEq(
+            set.Root,
+            new Node('c')
+            {
+                Left = new('b'),
+                Right = new('d'),
+            }.UpdateHeight()));
+    }
+
+    [Fact]
+    public void DeleteDFromCadb()
+    {
+        var set = new AvlSet
+        {
+            Root = new Node('c')
+            {
+                Left = new('a')
+                {
+                    Right = new('b'),
+                },
+                Right = new('d'),
+            }.UpdateHeight()
+        };
+        ValidateTree(set.Root);
+        Assert.True(set.Delete('d'));
+        ValidateTree(set.Root);
+        Assert.True(Node.TreeEq(
+            set.Root,
+            new Node('b')
+            {
+                Left = new('a'),
+                Right = new('c'),
+            }.UpdateHeight()));
+    }
+
+    [Fact]
+    public void DeleteAFromCbedfag()
+    {
+        var set = new AvlSet
+        {
+            Root = new Node('c')
+            {
+                Left = new('b')
+                {
+                    Left = new('a'),
+                },
+                Right = new('e')
+                {
+                    Left = new('d'),
+                    Right = new('f')
+                    {
+                        Right = new('g'),
+                    },
+                },
+            }.UpdateHeight()
+        };
+        ValidateTree(set.Root);
+        Assert.True(set.Delete('a'));
+        ValidateTree(set.Root);
+        Assert.True(Node.TreeEq(
+            set.Root,
+            new Node('e')
+            {
+                Left = new('c')
+                {
+                    Left = new('b'),
+                    Right = new('d'),
+                },
+                Right = new('f')
+                {
+                    Right = new('g'),
                 },
             }.UpdateHeight()));
     }
