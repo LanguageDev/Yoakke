@@ -14,29 +14,14 @@ namespace Yoakke.Collections.Tests;
 
 public class AvlTreeTests
 {
-#if false
-    private class Node : BalancedTree.IHeight<Node>, IEquatable<Node>
+    private class Node : BinarySearchTree.NodeBase<Node>, AvlTree.INode<Node>
     {
         public int Key { get; set; }
         public int Height { get; set; } = 1;
-        public Node? Left { get; set; }
-        public Node? Right { get; set; }
 
         public Node(int key)
         {
             this.Key = key;
-        }
-
-        public bool Equals(Node? other)
-        {
-            if (other is null) return false;
-            if (this.Key != other.Key
-             || this.Height != other.Height) return false;
-            if (this.Left is null != other.Left is null
-             || this.Right is null != other.Right is null) return false;
-            if (this.Left is not null && !this.Left.Equals(other.Left)) return false;
-            if (this.Right is not null && !this.Right.Equals(other.Right)) return false;
-            return true;
         }
 
         public Node UpdateHeight()
@@ -44,6 +29,9 @@ public class AvlTreeTests
             this.Height = 1 + Math.Max(this.Left?.UpdateHeight()?.Height ?? 0, this.Right?.UpdateHeight()?.Height ?? 0);
             return this;
         }
+
+        internal static bool TreeEq(Node? n1, Node? n2) =>
+            BinarySearchTreeTests.TreeEquals(n1, n2, (n1, n2) => n1.Key == n2.Key && n1.Height == n2.Height);
     }
 
     private class AvlSet
@@ -55,9 +43,9 @@ public class AvlTreeTests
             var insertion = AvlTree.Insert(
                 root: this.Root,
                 key: k,
-                makeNode: k => new Node(k),
                 keySelector: n => n.Key,
-                keyComparer: Comparer<int>.Default);
+                keyComparer: Comparer<int>.Default,
+                makeNode: k => new Node(k));
             if (insertion.Existing is not null) return false;
             this.Root = insertion.Root;
             return true;
@@ -100,6 +88,28 @@ public class AvlTreeTests
         },
     }.UpdateHeight();
 
+    private static void ValidateTree<TNode>(TNode? root)
+        where TNode : class, AvlTree.INode<TNode>
+    {
+        static int Height(TNode? n) => n is null
+            ? 0
+            : Math.Max(Height(n.Left), Height(n.Right)) + 1;
+
+        static void ValidateHeight(TNode? n)
+        {
+            if (n is null) return;
+            var balance = Height(n.Left) - Height(n.Right);
+            Assert.True(-1 <= balance && balance <= 1);
+            ValidateHeight(n.Left);
+            ValidateHeight(n.Right);
+        }
+
+        // Validate as BST
+        BinarySearchTreeTests.ValidateTree(root);
+        // Check for height
+        ValidateHeight(root);
+    }
+
     [Theory]
     [InlineData("abc")]
     [InlineData("cba")]
@@ -110,14 +120,19 @@ public class AvlTreeTests
     public void InsertAbcInAllOrders(string abc)
     {
         var set = new AvlSet();
-        foreach (var letter in abc) Assert.True(set.Insert(letter));
-        Assert.Equal(
+        ValidateTree(set.Root);
+        foreach (var letter in abc)
+        {
+            Assert.True(set.Insert(letter));
+            ValidateTree(set.Root);
+        }
+        Assert.True(Node.TreeEq(
             set.Root,
             new Node('b')
             {
                 Left = new('a'),
                 Right = new('c'),
-            }.UpdateHeight());
+            }.UpdateHeight()));
     }
 
     // Insert 15
@@ -126,22 +141,26 @@ public class AvlTreeTests
     public void Case1Insert15()
     {
         var set = new AvlSet { Root = InsertCase1Root };
+        ValidateTree(set.Root);
         Assert.True(set.Insert(15));
-        Assert.Equal(
+        ValidateTree(set.Root);
+        Assert.True(Node.TreeEq(
             set.Root,
             new Node(15)
             {
                 Left = new(4),
                 Right = new(20),
-            }.UpdateHeight());
+            }.UpdateHeight()));
     }
 
     [Fact]
     public void Case2Insert15()
     {
         var set = new AvlSet { Root = InsertCase2Root };
+        ValidateTree(set.Root);
         Assert.True(set.Insert(15));
-        Assert.Equal(
+        ValidateTree(set.Root);
+        Assert.True(Node.TreeEq(
             set.Root,
             new Node(9)
             {
@@ -154,15 +173,17 @@ public class AvlTreeTests
                     Left = new(15),
                     Right = new(26),
                 },
-            }.UpdateHeight());
+            }.UpdateHeight()));
     }
 
     [Fact]
     public void Case3Insert15()
     {
         var set = new AvlSet { Root = InsertCase3Root };
+        ValidateTree(set.Root);
         Assert.True(set.Insert(15));
-        Assert.Equal(
+        ValidateTree(set.Root);
+        Assert.True(Node.TreeEq(
             set.Root,
             new Node(9)
             {
@@ -186,7 +207,7 @@ public class AvlTreeTests
                         Right = new(30),
                     },
                 },
-            }.UpdateHeight());
+            }.UpdateHeight()));
     }
 
     // Insert 8
@@ -195,22 +216,26 @@ public class AvlTreeTests
     public void Case1Insert8()
     {
         var set = new AvlSet { Root = InsertCase1Root };
+        ValidateTree(set.Root);
         Assert.True(set.Insert(8));
-        Assert.Equal(
+        ValidateTree(set.Root);
+        Assert.True(Node.TreeEq(
             set.Root,
             new Node(8)
             {
                 Left = new(4),
                 Right = new(20),
-            }.UpdateHeight());
+            }.UpdateHeight()));
     }
 
     [Fact]
     public void Case2Insert8()
     {
         var set = new AvlSet { Root = InsertCase2Root };
+        ValidateTree(set.Root);
         Assert.True(set.Insert(8));
-        Assert.Equal(
+        ValidateTree(set.Root);
+        Assert.True(Node.TreeEq(
             set.Root,
             new Node(9)
             {
@@ -223,15 +248,17 @@ public class AvlTreeTests
                 {
                     Right = new(26),
                 },
-            }.UpdateHeight());
+            }.UpdateHeight()));
     }
 
     [Fact]
     public void Case3Insert8()
     {
         var set = new AvlSet { Root = InsertCase3Root };
+        ValidateTree(set.Root);
         Assert.True(set.Insert(8));
-        Assert.Equal(
+        ValidateTree(set.Root);
+        Assert.True(Node.TreeEq(
             set.Root,
             new Node(9)
             {
@@ -255,7 +282,6 @@ public class AvlTreeTests
                         Right = new(30),
                     },
                 },
-            }.UpdateHeight());
+            }.UpdateHeight()));
     }
-#endif
 }

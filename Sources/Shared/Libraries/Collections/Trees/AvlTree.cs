@@ -36,6 +36,19 @@ public static class AvlTree
         where TNode : class, INode<TNode>;
 
     /// <summary>
+    /// A structure describing the result of an insertion.
+    /// </summary>
+    /// <typeparam name="TNode">The node implementation type.</typeparam>
+    /// <param name="Root">The root of the tree.</param>
+    /// <param name="Inserted">The inserted node, if any.</param>
+    /// <param name="Existing">The existing node, if the insertion failed because of a duplicate key.</param>
+    public record struct InsertResult<TNode>(
+        TNode Root,
+        TNode? Inserted = null,
+        TNode? Existing = null)
+        where TNode : class, INode<TNode>;
+
+    /// <summary>
     /// Updates the height of a node based on its children.
     /// </summary>
     /// <typeparam name="TNode">The node implementation type.</typeparam>
@@ -112,5 +125,54 @@ public static class AvlTree
             return new(Root: root, Rebalanced: true);
         }
         return new(Root: root, Rebalanced: false);
+    }
+
+    /// <summary>
+    /// Performs insertion on an AVL tree.
+    /// </summary>
+    /// <typeparam name="TNode">The node implementation type.</typeparam>
+    /// <typeparam name="TKey">The inserted key type.</typeparam>
+    /// <param name="root">The root of the AVL tree to insert into.</param>
+    /// <param name="key">The key to insert.</param>
+    /// <param name="keySelector">The key selector.</param>
+    /// <param name="keyComparer">The key comparer.</param>
+    /// <param name="makeNode">The function to construct a new node.</param>
+    /// <returns>A structure describing the result of the insertion.</returns>
+    public static InsertResult<TNode> Insert<TNode, TKey>(
+        TNode? root,
+        TKey key,
+        Func<TNode, TKey> keySelector,
+        IComparer<TKey> keyComparer,
+        Func<TKey, TNode> makeNode)
+        where TNode : class, INode<TNode>
+    {
+        // First we use the trivial BST insertion
+        var insertion = BinarySearchTree.Insert(
+            root: root,
+            key: key,
+            keySelector: keySelector,
+            keyComparer: keyComparer,
+            makeNode: makeNode);
+
+        // If nothing is inserted, return here
+        if (insertion.Inserted is null) return new(Root: root!, Existing: insertion.Existing);
+
+        // There was a node inserted
+        root = insertion.Root;
+        var node = insertion.Inserted;
+
+        // We start walking up the tree, updating the heights
+        // If we find a node that needs rebalancing, we rebalance it, then stop
+        while (node is not null)
+        {
+            UpdateHeight(node);
+            var rebalance = Rebalance(node);
+            if (ReferenceEquals(node, root)) root = rebalance.Root;
+            if (rebalance.Rebalanced) break;
+            node = node.Parent;
+        }
+
+        // We are done
+        return new(Root: root, Inserted: insertion.Inserted);
     }
 }

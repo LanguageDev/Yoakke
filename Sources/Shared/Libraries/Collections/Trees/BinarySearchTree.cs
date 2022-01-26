@@ -94,7 +94,7 @@ public static class BinarySearchTree
     /// <typeparam name="TNode">The node implementation type.</typeparam>
     /// <param name="Found">The exact match found.</param>
     /// <param name="Hint">The hint for insertion, if an exact match is not found.</param>
-    public record struct SearchResult<TNode>(TNode? Found, (TNode Node, Child Child)? Hint)
+    public record struct SearchResult<TNode>(TNode? Found = null, (TNode Node, Child Child)? Hint = null)
         where TNode : class, INode<TNode>;
 
     /// <summary>
@@ -104,7 +104,7 @@ public static class BinarySearchTree
     /// <param name="Root">The root of the tree.</param>
     /// <param name="Inserted">The inserted node, if any.</param>
     /// <param name="Existing">The existing node that blocked the insertion, if any.</param>
-    public record struct InsertResult<TNode>(TNode Root, TNode? Inserted, TNode? Existing)
+    public record struct InsertResult<TNode>(TNode Root, TNode? Inserted = null, TNode? Existing = null)
         where TNode : class, INode<TNode>;
 
     /// <summary>
@@ -205,10 +205,10 @@ public static class BinarySearchTree
             }
             else
             {
-                return new(Found: root, Hint: null);
+                return new(Found: root);
             }
         }
-        return new(Found: null, Hint: hint);
+        return new(Hint: hint);
     }
 
     /// <summary>
@@ -237,7 +237,7 @@ public static class BinarySearchTree
             keySelector: keySelector,
             keyComparer: keyComparer);
         // If found, we don't do an insertion
-        if (found is not null) return new(Root: root!, Inserted: null, Existing: found);
+        if (found is not null) return new(Root: root!, Existing: found);
         // If there's a hint, use it
         if (hint is not null)
         {
@@ -245,11 +245,11 @@ public static class BinarySearchTree
             var newNode = makeNode(key);
             if (h.Child == Child.Left) h.Node.Left = newNode;
             else h.Node.Right = newNode;
-            return new(Root: root!, Inserted: newNode, Existing: null);
+            return new(Root: root!, Inserted: newNode);
         }
         // Otherwise, this has to be a new root
         var newRoot = makeNode(key);
-        return new(Root: newRoot, Inserted: newRoot, Existing: null);
+        return new(Root: newRoot, Inserted: newRoot);
     }
 
     /// <summary>
