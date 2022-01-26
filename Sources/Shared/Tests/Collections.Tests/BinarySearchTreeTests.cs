@@ -69,6 +69,20 @@ public class BinarySearchTreeTests
             this.Root = insertion.Root;
             return insertion.Existing is null;
         }
+
+        public bool Delete(int x)
+        {
+            var search = BinarySearchTree.Search(
+                root: this.Root,
+                key: x,
+                keySelector: n => n.Key,
+                keyComparer: Comparer<int>.Default);
+            if (search.Found is null) return false;
+            this.Root = BinarySearchTree.Delete(
+                root: this.Root,
+                node: search.Found);
+            return true;
+        }
     }
 
     [Fact]
@@ -183,6 +197,116 @@ public class BinarySearchTreeTests
                             Right = new(28),
                         },
                     },
+                },
+            }));
+    }
+
+    [Fact]
+    public void DeleteRootSingleRightChild()
+    {
+        var set = new BstSet
+        {
+            Root = new(1)
+            {
+                Right = new(3)
+                {
+                    Left = new(2),
+                    Right = new(4),
+                },
+            }
+        };
+        ValidateTree(set.Root);
+        Assert.True(set.Delete(1));
+        ValidateTree(set.Root);
+        Assert.True(Node.TreeEq(
+            set.Root,
+            new(3)
+            {
+                Left = new(2),
+                Right = new(4),
+            }));
+    }
+
+    [Fact]
+    public void DeleteRootSingleLeftChild()
+    {
+        var set = new BstSet
+        {
+            Root = new(5)
+            {
+                Left = new(3)
+                {
+                    Left = new(2),
+                    Right = new(4),
+                },
+            }
+        };
+        ValidateTree(set.Root);
+        Assert.True(set.Delete(5));
+        ValidateTree(set.Root);
+        Assert.True(Node.TreeEq(
+            set.Root,
+            new(3)
+            {
+                Left = new(2),
+                Right = new(4),
+            }));
+    }
+
+    [Fact]
+    public void DeleteRootRightChildWithNoLeftChild()
+    {
+        var set = new BstSet
+        {
+            Root = new(5)
+            {
+                Left = new(3),
+                Right = new(8)
+                {
+                    Right = new(9),
+                },
+            }
+        };
+        ValidateTree(set.Root);
+        Assert.True(set.Delete(5));
+        ValidateTree(set.Root);
+        Assert.True(Node.TreeEq(
+            set.Root,
+            new(8)
+            {
+                Left = new(3),
+                Right = new(9),
+            }));
+    }
+
+    [Fact]
+    public void DeleteRootRightChildWithLeftChild()
+    {
+        var set = new BstSet
+        {
+            Root = new(5)
+            {
+                Left = new(3),
+                Right = new(8)
+                {
+                    Left = new(6)
+                    {
+                        Right = new(7),
+                    },
+                },
+            }
+        };
+        ValidateTree(set.Root);
+        Assert.True(set.Delete(5));
+        ValidateTree(set.Root);
+        Assert.True(Node.TreeEq(
+            set.Root,
+            new(6)
+            {
+                Left = new(3),
+                Right = new(8)
+                {
+                    Left = new(7),
                 },
             }));
     }
