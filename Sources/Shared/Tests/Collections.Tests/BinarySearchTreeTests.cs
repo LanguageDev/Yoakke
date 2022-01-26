@@ -151,4 +151,39 @@ public class BinarySearchTreeTests
         Assert.False(set.Insert(2));
         ValidateTree(set.Root);
     }
+
+    [Fact]
+    public void InsertMany()
+    {
+        var set = new BstSet();
+        foreach (var n in new[] { 14, 23, 29, 8, 25, 22, 1, 6, 24, 28 })
+        {
+            ValidateTree(set.Root);
+            Assert.True(set.Insert(n));
+        }
+        Assert.True(Node.TreeEq(
+            set.Root,
+            new(14)
+            {
+                Left = new(8)
+                {
+                    Left = new(1)
+                    {
+                        Right = new(6),
+                    },
+                },
+                Right = new(23)
+                {
+                    Left = new(22),
+                    Right = new(29)
+                    {
+                        Left = new(25)
+                        {
+                            Left = new(24),
+                            Right = new(28),
+                        },
+                    },
+                },
+            }));
+    }
 }
