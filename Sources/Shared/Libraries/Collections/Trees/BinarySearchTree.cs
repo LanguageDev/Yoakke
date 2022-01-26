@@ -179,20 +179,20 @@ public static class BinarySearchTree
     /// <param name="root">The root of the subtree to search in.</param>
     /// <param name="key">The key to search for.</param>
     /// <param name="keySelector">The key selector.</param>
-    /// <param name="comparer">The key comparer.</param>
+    /// <param name="keyComparer">The key comparer.</param>
     /// <returns>The results of the search as a <see cref="SearchResult{TNode}"/>.</returns>
     public static SearchResult<TNode> Search<TNode, TKey>(
         TNode? root,
         TKey key,
         Func<TNode, TKey> keySelector,
-        IComparer<TKey> comparer)
+        IComparer<TKey> keyComparer)
         where TNode : class, INode<TNode>
     {
         (TNode Node, Child Child)? hint = null;
         while (root is not null)
         {
             var rootKey = keySelector(root);
-            var cmp = comparer.Compare(key, rootKey);
+            var cmp = keyComparer.Compare(key, rootKey);
             if (cmp < 0)
             {
                 hint = (root, Child.Left);
@@ -219,14 +219,14 @@ public static class BinarySearchTree
     /// <param name="root">The root of the subtree to insert into.</param>
     /// <param name="key">The key to insert with.</param>
     /// <param name="keySelector">The key selector.</param>
-    /// <param name="comparer">The key comparer.</param>
+    /// <param name="keyComparer">The key comparer.</param>
     /// <param name="makeNode">The node factory.</param>
     /// <returns>The results of the insertion as an <see cref="InsertResult{TNode}"/>.</returns>
     public static InsertResult<TNode> Insert<TNode, TKey>(
         TNode? root,
         TKey key,
         Func<TNode, TKey> keySelector,
-        IComparer<TKey> comparer,
+        IComparer<TKey> keyComparer,
         Func<TKey, TNode> makeNode)
         where TNode : class, INode<TNode>
     {
@@ -235,7 +235,7 @@ public static class BinarySearchTree
             root: root,
             key: key,
             keySelector: keySelector,
-            comparer: comparer);
+            keyComparer: keyComparer);
         // If found, we don't do an insertion
         if (found is not null) return new(Root: root!, Inserted: null, Existing: found);
         // If there's a hint, use it
