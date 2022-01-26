@@ -313,7 +313,17 @@ public static class BinarySearchTree
     public static TNode RotateLeft<TNode>(TNode root)
         where TNode : class, INode<TNode>
     {
+        var p = root.Parent;
         var y = root.Right ?? throw new InvalidOperationException("The right child can not be null");
+        if (p is not null)
+        {
+            if (ReferenceEquals(p.Left, root)) p.Left = y;
+            else p.Right = y;
+        }
+        else
+        {
+            y.Parent = null;
+        }
         var t2 = y.Left;
         y.Left = root;
         root.Right = t2;
@@ -329,7 +339,17 @@ public static class BinarySearchTree
     public static TNode RotateRight<TNode>(TNode root)
         where TNode : class, INode<TNode>
     {
+        var p = root.Parent;
         var x = root.Left ?? throw new InvalidOperationException("The left child can not be null");
+        if (p is not null)
+        {
+            if (ReferenceEquals(p.Left, root)) p.Left = x;
+            else p.Right = x;
+        }
+        else
+        {
+            x.Parent = null;
+        }
         var t2 = x.Right;
         x.Right = root;
         root.Left = t2;

@@ -310,4 +310,60 @@ public class BinarySearchTreeTests
                 },
             }));
     }
+
+    [Fact]
+    public void RotateRight()
+    {
+        var root = new Node('Q')
+        {
+            Left = new('P')
+            {
+                Left = new('A'),
+                Right = new('B'),
+            },
+            Right = new('C'),
+        };
+        ValidateTree(root);
+        root = BinarySearchTree.RotateRight(root);
+        ValidateTree(root);
+        Assert.True(Node.TreeEq(
+            root,
+            new('P')
+            {
+                Left = new('A'),
+                Right = new('Q')
+                {
+                    Left = new('B'),
+                    Right = new('C'),
+                },
+            }));
+    }
+
+    [Fact]
+    public void RotateLeft()
+    {
+        var root = new Node('P')
+        {
+            Left = new('A'),
+            Right = new('Q')
+            {
+                Left = new('B'),
+                Right = new('C'),
+            },
+        };
+        ValidateTree(root);
+        root = BinarySearchTree.RotateLeft(root);
+        ValidateTree(root);
+        Assert.True(Node.TreeEq(
+            root,
+            new('Q')
+            {
+                Left = new('P')
+                {
+                    Left = new('A'),
+                    Right = new('B'),
+                },
+                Right = new('C'),
+            }));
+    }
 }
