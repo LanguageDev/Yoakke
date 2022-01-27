@@ -14,41 +14,56 @@ internal class Program
         {
             if (epoch % 100 == 0) Console.WriteLine($"Epoch {epoch}...");
 
-            var set = new T();
-            var pulledNumbers = new HashSet<int>();
-            Debug.Assert(set.IsValid(pulledNumbers));
-
-            while (set.Count < maxElements)
+            var tested = new T();
+            var oracle = new HashSet<int>();
+            try
             {
-                var testCase = set.ToTestCaseString();
+                tested.Validate(oracle);
+            }
+            catch(ValidationException v)
+            {
+                throw new FuzzerException(v, "<empty>", "ctor");
+            }
+
+            while (tested.Count < maxElements)
+            {
+                var testCase = tested.ToTestCaseString();
+
+                Debug.Assert(tested.Count == oracle.Count);
 
                 var n = rnd.Next(0, maxElements * 4);
-                var avlInsert = set.Insert(n);
-                var oracleInsert = pulledNumbers.Add(n);
-                if (avlInsert != oracleInsert || !set.IsValid(pulledNumbers))
+                var operation = $"Insert({n})";
+                var testedInsert = tested.Insert(n);
+                var oracleInsert = oracle.Add(n);
+                if (testedInsert != oracleInsert) throw new FuzzerException($"Insertion return value mismatch (oracle: {oracleInsert}, tested: {testedInsert})", testCase, operation);
+                try
                 {
-                    Console.WriteLine($"Error in AVL tree (avl: {avlInsert} vs {oracleInsert})");
-                    Console.WriteLine("Test case:");
-                    Console.WriteLine($"    Insert({n})");
-                    Console.WriteLine($"    Tree: {testCase}");
-                    return;
+                    tested.Validate(oracle);
+                }
+                catch (ValidationException v)
+                {
+                    throw new FuzzerException(v, testCase, operation);
                 }
             }
 
-            while (set.Count > 0)
+            while (tested.Count > 0)
             {
-                var testCase = set.ToTestCaseString();
+                var testCase = tested.ToTestCaseString();
+
+                Debug.Assert(tested.Count == oracle.Count);
 
                 var n = rnd.Next(0, maxElements * 4);
-                var avlDelete = set.Delete(n);
-                var oracleDelete = pulledNumbers.Remove(n);
-                if (avlDelete != oracleDelete || !set.IsValid(pulledNumbers))
+                var operation = $"Delete({n})";
+                var testedDelete = tested.Delete(n);
+                var oracleDelete = oracle.Remove(n);
+                if (testedDelete != oracleDelete) throw new FuzzerException($"Deletion return value mismatch (oracle: {oracleDelete}, tested: {testedDelete})", testCase, operation);
+                try
                 {
-                    Console.WriteLine($"Error in AVL tree (avl: {avlDelete} vs {oracleDelete})");
-                    Console.WriteLine("Test case:");
-                    Console.WriteLine($"    Delete({n})");
-                    Console.WriteLine($"    Tree: {testCase}");
-                    return;
+                    tested.Validate(oracle);
+                }
+                catch (ValidationException v)
+                {
+                    throw new FuzzerException(v, testCase, operation);
                 }
             }
         }
@@ -56,6 +71,14 @@ internal class Program
 
     internal static void Main(string[] args)
     {
-        FuzzTreeSet<AvlTreeSet>(5);
+        try
+        {
+            // FuzzTreeSet<BstTreeSet>(100);
+            FuzzTreeSet<AvlTreeSet>(5);
+        }
+        catch (FuzzerException f)
+        {
+            Console.WriteLine(f.Message);
+        }
     }
 }

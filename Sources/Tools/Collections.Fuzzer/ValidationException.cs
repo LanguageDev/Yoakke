@@ -10,12 +10,10 @@ using System.Threading.Tasks;
 
 namespace Yoakke.Collections.Fuzzer;
 
-internal interface ITreeSet
+internal class ValidationException : Exception
 {
-    public int Count { get; }
-
-    public bool Insert(int k);
-    public bool Delete(int k);
-    public string ToTestCaseString();
-    public void Validate(IEnumerable<int> expectedContents);
+    public ValidationException(string message)
+        : base(message)
+    {
+    }
 }

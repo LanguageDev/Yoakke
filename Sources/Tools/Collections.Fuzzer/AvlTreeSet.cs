@@ -11,38 +11,33 @@ using Yoakke.Collections.Trees;
 
 namespace Yoakke.Collections.Fuzzer;
 
-internal class AvlTreeSet : ITreeSet
+internal class AvlTreeNode : TreeNodeBase<AvlTreeNode>, AvlTree.INode<AvlTreeNode>
 {
-    private class Node : BinarySearchTree.NodeBase<Node>, AvlTree.INode<Node>
+    public int Height { get; set; } = 1;
+
+    public AvlTreeNode(int key)
+        : base(key)
     {
-        public int Key { get; set; }
-        public int Height { get; set; } = 1;
-
-        public Node(int key)
-        {
-            this.Key = key;
-        }
     }
+}
 
-    public int Count { get; private set; }
-
-    private Node? root;
-
-    public bool Insert(int k)
+internal class AvlTreeSet : TreeSetBase<AvlTreeNode>
+{
+    public override bool Insert(int k)
     {
         var insertion = AvlTree.Insert(
             root: this.root,
             key: k,
             keySelector: n => n.Key,
             keyComparer: Comparer<int>.Default,
-            makeNode: k => new Node(k));
+            makeNode: k => new(k));
         if (insertion.Existing is not null) return false;
         this.root = insertion.Root;
         ++this.Count;
         return true;
     }
 
-    public bool Delete(int k)
+    public override bool Delete(int k)
     {
         var search = BinarySearchTree.Search(
             root: this.root,
@@ -55,75 +50,34 @@ internal class AvlTreeSet : ITreeSet
         return true;
     }
 
-    public string ToTestCaseString()
+    public override void Validate(IEnumerable<int> expected)
     {
-        static void Impl(StringBuilder builder, Node? node)
-        {
-            if (node is null) return;
-            builder.Append("new(").Append(node.Key).Append(')');
-            if (node.Left is not null || node.Right is not null)
-            {
-                builder.Append(" { ");
-                if (node.Left is not null)
-                {
-                    builder.Append("Left = ");
-                    Impl(builder, node.Left);
-                    builder.Append(", ");
-                }
-                if (node.Right is not null)
-                {
-                    builder.Append("Right = ");
-                    Impl(builder, node.Right);
-                    builder.Append(", ");
-                }
-                builder.Append('}');
-            }
-        }
-
-        var result = new StringBuilder();
-        Impl(result, this.root);
-        return result.ToString();
+        base.Validate(expected);
+        this.ValidateBalanceAndHeight();
     }
 
-    public bool IsValid(IEnumerable<int> expectedElements)
+    private void ValidateBalanceAndHeight()
     {
-        static (bool Valid, int Height) HeightCheck(Node? node)
+        static int Impl(AvlTreeNode? node)
         {
-            if (node is null) return (true, 0);
-            var (leftValid, leftHeight) = HeightCheck(node.Left);
-            var (rightValid, rightHeight) = HeightCheck(node.Right);
-            var balance = leftHeight - rightHeight;
-            return (
-                leftValid && rightValid && -1 <= balance && balance <= 1,
-                Math.Max(leftHeight, rightHeight) + 1);
+            if (node is null) return 0;
+
+            var leftExpHeight = Impl(node.Left);
+            var leftActHeight = node.Left?.Height ?? 0;
+            if (leftExpHeight != leftActHeight) throw new ValidationException($"Height error: The left node's height ({leftActHeight}) does not match the expected ({leftExpHeight})");
+
+            var rightExpHeight = Impl(node.Right);
+            var rightActHeight = node.Right?.Height ?? 0;
+            if (rightExpHeight != rightActHeight) throw new ValidationException($"Height error: The right node's height ({rightActHeight}) does not match the expected ({rightExpHeight})");
+
+            var balance = leftActHeight - rightActHeight;
+            if (!(-1 <= balance && balance <= 1)) throw new ValidationException($"Balance error: The node is unbalanced (balance factor {balance})");
+
+            return 1 + Math.Max(leftActHeight, rightActHeight);
         }
 
-        bool AncestoryCheck(Node? node)
-        {
-            if (ReferenceEquals(node, this.root) && this.root!.Parent is not null) return false;
-            if (node is null) return true;
-            if (!AncestoryCheck(node.Left)) return false;
-            if (!AncestoryCheck(node.Right)) return false;
-            if (node.Left is not null && !ReferenceEquals(node.Left.Parent, node)) return false;
-            if (node.Right is not null && !ReferenceEquals(node.Right.Parent, node)) return false;
-            return true;
-        }
-
-        var expected = expectedElements.ToHashSet();
-
-        bool ContentCheck(Node? node)
-        {
-            if (node is null) return true;
-            ContentCheck(node.Left);
-            ContentCheck(node.Right);
-            if (!expected!.Remove(node.Key)) return false;
-            if (ReferenceEquals(node, this.root)) return expected.Count == 0;
-            return true;
-        }
-
-        var (heightValid, _) = HeightCheck(this.root);
-        var ancestoryValid = AncestoryCheck(this.root);
-        var contentValid = ContentCheck(this.root);
-        return heightValid && ancestoryValid && contentValid;
+        var rootExpHeight = Impl(this.root);
+        var rootActHeight = this.root?.Height ?? 0;
+        if (rootExpHeight != rootActHeight) throw new ValidationException($"Height error: The root's height ({rootActHeight}) does not match the expected ({rootExpHeight})");
     }
 }
