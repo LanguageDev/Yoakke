@@ -32,7 +32,7 @@ public static class AvlTree
     /// <typeparam name="TNode">The node implementation type.</typeparam>
     /// <param name="Root">The new root of the subtree that was rebalanced.</param>
     /// <param name="Rebalanced">True, if rebalancing did happen, false otherwise.</param>
-    public record struct RebalanceResult<TNode>(TNode Root, bool Rebalanced)
+    public readonly record struct RebalanceResult<TNode>(TNode Root, bool Rebalanced)
         where TNode : class, INode<TNode>;
 
     /// <summary>
@@ -42,7 +42,7 @@ public static class AvlTree
     /// <param name="Root">The root of the tree.</param>
     /// <param name="Inserted">The inserted node, if any.</param>
     /// <param name="Existing">The existing node, if the insertion failed because of a duplicate key.</param>
-    public record struct InsertResult<TNode>(
+    public readonly record struct InsertResult<TNode>(
         TNode Root,
         TNode? Inserted = null,
         TNode? Existing = null)

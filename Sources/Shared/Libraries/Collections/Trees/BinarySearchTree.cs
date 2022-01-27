@@ -94,7 +94,7 @@ public static class BinarySearchTree
     /// <typeparam name="TNode">The node implementation type.</typeparam>
     /// <param name="Found">The exact match found.</param>
     /// <param name="Hint">The hint for insertion, if an exact match is not found.</param>
-    public record struct SearchResult<TNode>(TNode? Found = null, (TNode Node, Child Child)? Hint = null)
+    public readonly record struct SearchResult<TNode>(TNode? Found = null, (TNode Node, Child Child)? Hint = null)
         where TNode : class, INode<TNode>;
 
     /// <summary>
@@ -104,7 +104,7 @@ public static class BinarySearchTree
     /// <param name="Root">The root of the tree.</param>
     /// <param name="Inserted">The inserted node, if any.</param>
     /// <param name="Existing">The existing node that blocked the insertion, if any.</param>
-    public record struct InsertResult<TNode>(TNode Root, TNode? Inserted = null, TNode? Existing = null)
+    public readonly record struct InsertResult<TNode>(TNode Root, TNode? Inserted = null, TNode? Existing = null)
         where TNode : class, INode<TNode>;
 
     /// <summary>
