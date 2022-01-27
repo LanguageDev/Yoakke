@@ -591,4 +591,62 @@ public class AvlTreeTests
                 Left = new(5),
             }.UpdateHeight()));
     }
+
+    [Fact]
+    public void DeleteFuzzed03()
+    {
+        var set = new AvlSet
+        {
+            Root = new Node(41)
+            {
+                Left = new(20)
+                {
+                    Left = new(5)
+                    {
+                        Left = new(1),
+                    },
+                    Right = new(25)
+                    {
+                        Left = new(23),
+                    },
+                },
+                Right = new(46)
+                {
+                    Left = new(45),
+                    Right = new(57)
+                    {
+                        Left = new(53),
+                        Right = new(58),
+                    },
+                },
+            }.UpdateHeight()
+        };
+        ValidateTree(set.Root);
+        Assert.True(set.Delete(41));
+        ValidateTree(set.Root);
+        Assert.True(Node.TreeEq(
+            set.Root,
+            new Node(45)
+            {
+                Left = new(20)
+                {
+                    Left = new(5)
+                    {
+                        Left = new(1),
+                    },
+                    Right = new(25)
+                    {
+                        Left = new(23),
+                    },
+                },
+                Right = new(57)
+                {
+                    Left = new(46)
+                    {
+                        Right = new(53),
+                    },
+                    Right = new(58),
+                },
+            }.UpdateHeight()));
+    }
 }

@@ -168,6 +168,7 @@ public static class AvlTree
             var rebalance = Rebalance(n);
             if (ReferenceEquals(n, root)) root = rebalance.Root;
             if (rebalance.Rebalanced) break;
+            n = rebalance.Root;
         }
 
         // We are done
@@ -203,44 +204,45 @@ public static class AvlTree
                 uParent.Right = v;
                 u.Parent = null;
             }
-            // Update upwards
-            for (var n = v ?? uParent; n is not null; n = n.Parent)
-            {
-                UpdateHeight(n);
-                var rebalance = Rebalance(n);
-                if (ReferenceEquals(n, root)) root = rebalance.Root;
-            }
         }
 
         if (node.Left is null || node.Right is null)
         {
             // 0 or 1 child
+            var nodeParent = node.Parent;
             Shift(node, node.Left ?? node.Right);
             // Update upwards
-            for (var n = node.Parent; n is not null; n = n.Parent)
+            for (var n = nodeParent; n is not null; n = n.Parent)
             {
                 UpdateHeight(n);
                 var rebalance = Rebalance(n);
                 if (ReferenceEquals(n, root)) root = rebalance.Root;
+                n = rebalance.Root;
             }
         }
         else
         {
             // 2 children
             var y = BinarySearchTree.Successor(node);
+            var yParent = y.Parent;
             if (!ReferenceEquals(y!.Parent, node))
             {
                 Shift(y, y.Right);
                 y.Right = node.Right;
             }
+            else
+            {
+                yParent = y;
+            }
             Shift(node, y);
             y.Left = node.Left;
             // Update upwards
-            for (var n = y; n is not null; n = n.Parent)
+            for (var n = yParent; n is not null; n = n.Parent)
             {
                 UpdateHeight(n);
                 var rebalance = Rebalance(n);
                 if (ReferenceEquals(n, root)) root = rebalance.Root;
+                n = rebalance.Root;
             }
         }
         return root;

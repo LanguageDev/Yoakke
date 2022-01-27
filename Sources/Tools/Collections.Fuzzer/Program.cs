@@ -71,21 +71,39 @@ internal class Program
 
     internal static void Main(string[] args)
     {
-#if false
+#if true
         var tree = new AvlTreeSet
         {
-            Root = new AvlTreeNode(8)
+            Root = new AvlTreeNode(41)
             {
-                Left = new(5),
-                Right = new(19),
+                Left = new(20)
+                {
+                    Left = new(5)
+                    {
+                        Left = new(1),
+                    },
+                    Right = new(25)
+                    {
+                        Left = new(23),
+                    },
+                },
+                Right = new(46)
+                {
+                    Left = new(45),
+                    Right = new(57)
+                    {
+                        Left = new(53),
+                        Right = new(58),
+                    },
+                },
             }.UpdateHeight()
         };
-        tree.Delete(8);
+        tree.Delete(41);
 #else
         try
         {
             // FuzzTreeSet<BstTreeSet>(100);
-            FuzzTreeSet<AvlTreeSet>(5);
+            FuzzTreeSet<AvlTreeSet>(100);
         }
         catch (FuzzerException f)
         {
