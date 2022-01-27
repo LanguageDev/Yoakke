@@ -71,6 +71,17 @@ internal class Program
 
     internal static void Main(string[] args)
     {
+#if true
+        var tree = new AvlTreeSet
+        {
+            Root = new AvlTreeNode(8)
+            {
+                Left = new(5),
+                Right = new(19),
+            }.UpdateHeight()
+        };
+        tree.Delete(8);
+#else
         try
         {
             // FuzzTreeSet<BstTreeSet>(100);
@@ -80,5 +91,6 @@ internal class Program
         {
             Console.WriteLine(f.Message);
         }
+#endif
     }
 }

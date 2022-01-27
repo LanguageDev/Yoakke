@@ -187,44 +187,35 @@ public static class AvlTree
         // NOTE: Mostly copied from BST.Delete
         void Shift(TNode u, TNode? v)
         {
-            if (u.Parent is null)
+            var uParent = u.Parent;
+            if (uParent is null)
             {
                 root = v;
                 if (v is not null) v.Parent = null;
             }
-            else if (ReferenceEquals(u, u.Parent.Left))
+            else if (ReferenceEquals(u, uParent.Left))
             {
-                u.Parent.Left = v;
+                uParent.Left = v;
+                u.Parent = null;
             }
             else
             {
-                u.Parent.Right = v;
+                uParent.Right = v;
+                u.Parent = null;
+            }
+
+            for (var n = v ?? uParent; n is not null; n = n.Parent)
+            {
+                UpdateHeight(n);
+                var rebalance = Rebalance(n);
+                if (ReferenceEquals(n, root)) root = rebalance.Root;
             }
         }
 
-        if (node.Left is null)
+        if (node.Left is null || node.Right is null)
         {
             // 0 or 1 child
-            Shift(node, node.Right);
-            // Update upwards
-            for (var n = node.Parent; n is not null; n = n.Parent)
-            {
-                UpdateHeight(n);
-                var rebalance = Rebalance(n);
-                if (ReferenceEquals(n, root)) root = rebalance.Root;
-            }
-        }
-        else if (node.Right is null)
-        {
-            // 0 or 1 child
-            Shift(node, node.Left);
-            // Update upwards
-            for (var n = node.Parent; n is not null; n = n.Parent)
-            {
-                UpdateHeight(n);
-                var rebalance = Rebalance(n);
-                if (ReferenceEquals(n, root)) root = rebalance.Root;
-            }
+            Shift(node, node.Left ?? node.Right);
         }
         else
         {
@@ -235,22 +226,8 @@ public static class AvlTree
                 Shift(y, y.Right);
                 y.Right = node.Right;
             }
-            // Update upwards
-            for (var n = y.Parent; n is not null; n = n.Parent)
-            {
-                UpdateHeight(n);
-                var rebalance = Rebalance(n);
-                if (ReferenceEquals(n, root)) root = rebalance.Root;
-            }
             Shift(node, y);
             y.Left = node.Left;
-            // Update upwards
-            for (var n = node.Parent; n is not null; n = n.Parent)
-            {
-                UpdateHeight(n);
-                var rebalance = Rebalance(n);
-                if (ReferenceEquals(n, root)) root = rebalance.Root;
-            }
         }
         return root;
     }

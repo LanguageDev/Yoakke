@@ -26,13 +26,13 @@ internal class BstTreeSet : TreeSetBase<BstTreeNode>
     public override bool Insert(int k)
     {
         var insertion = BinarySearchTree.Insert(
-            root: this.root,
+            root: this.Root,
             key: k,
             keySelector: n => n.Key,
             keyComparer: Comparer<int>.Default,
             makeNode: k => new(k));
         if (insertion.Existing is not null) return false;
-        this.root = insertion.Root;
+        this.Root = insertion.Root;
         ++this.Count;
         return true;
     }
@@ -40,12 +40,12 @@ internal class BstTreeSet : TreeSetBase<BstTreeNode>
     public override bool Delete(int k)
     {
         var search = BinarySearchTree.Search(
-            root: this.root,
+            root: this.Root,
             key: k,
             keySelector: n => n.Key,
             keyComparer: Comparer<int>.Default);
         if (search.Found is null) return false;
-        this.root = BinarySearchTree.Delete(root: this.root, search.Found);
+        this.Root = BinarySearchTree.Delete(root: this.Root, search.Found);
         --this.Count;
         return true;
     }

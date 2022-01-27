@@ -19,6 +19,12 @@ internal class AvlTreeNode : TreeNodeBase<AvlTreeNode>, AvlTree.INode<AvlTreeNod
         : base(key)
     {
     }
+
+    public AvlTreeNode UpdateHeight()
+    {
+        this.Height = 1 + Math.Max(this.Left?.UpdateHeight()?.Height ?? 0, this.Right?.UpdateHeight()?.Height ?? 0);
+        return this;
+    }
 }
 
 internal class AvlTreeSet : TreeSetBase<AvlTreeNode>
@@ -26,13 +32,13 @@ internal class AvlTreeSet : TreeSetBase<AvlTreeNode>
     public override bool Insert(int k)
     {
         var insertion = AvlTree.Insert(
-            root: this.root,
+            root: this.Root,
             key: k,
             keySelector: n => n.Key,
             keyComparer: Comparer<int>.Default,
             makeNode: k => new(k));
         if (insertion.Existing is not null) return false;
-        this.root = insertion.Root;
+        this.Root = insertion.Root;
         ++this.Count;
         return true;
     }
@@ -40,12 +46,12 @@ internal class AvlTreeSet : TreeSetBase<AvlTreeNode>
     public override bool Delete(int k)
     {
         var search = BinarySearchTree.Search(
-            root: this.root,
+            root: this.Root,
             key: k,
             keySelector: n => n.Key,
             keyComparer: Comparer<int>.Default);
         if (search.Found is null) return false;
-        this.root = AvlTree.Delete(root: this.root, search.Found);
+        this.Root = AvlTree.Delete(root: this.Root, search.Found);
         --this.Count;
         return true;
     }
@@ -76,8 +82,8 @@ internal class AvlTreeSet : TreeSetBase<AvlTreeNode>
             return 1 + Math.Max(leftActHeight, rightActHeight);
         }
 
-        var rootExpHeight = Impl(this.root);
-        var rootActHeight = this.root?.Height ?? 0;
+        var rootExpHeight = Impl(this.Root);
+        var rootActHeight = this.Root?.Height ?? 0;
         if (rootExpHeight != rootActHeight) throw new ValidationException($"Height error: The root's height ({rootActHeight}) does not match the expected ({rootExpHeight})");
     }
 }

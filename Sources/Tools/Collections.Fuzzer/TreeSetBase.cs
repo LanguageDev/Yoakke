@@ -27,7 +27,7 @@ internal abstract class TreeSetBase<TNode> : ITreeSet
 {
     public int Count { get; protected set; }
 
-    protected TNode? root;
+    public TNode? Root { get; set; }
 
     public abstract bool Delete(int k);
     public abstract bool Insert(int k);
@@ -65,7 +65,7 @@ internal abstract class TreeSetBase<TNode> : ITreeSet
             }
         }
 
-        Impl(this.root);
+        Impl(this.Root);
         return builder.ToString();
     }
 
@@ -86,9 +86,9 @@ internal abstract class TreeSetBase<TNode> : ITreeSet
             }
         }
 
-        if (this.root is null) return;
-        if (this.root.Parent is not null) throw new ValidationException("Adjacency error: The parent of root is not null");
-        Impl(this.root);
+        if (this.Root is null) return;
+        if (this.Root.Parent is not null) throw new ValidationException("Adjacency error: The parent of root is not null");
+        Impl(this.Root);
     }
 
     protected void ValidateContents(IEnumerable<int> expected)
@@ -103,7 +103,7 @@ internal abstract class TreeSetBase<TNode> : ITreeSet
             if (!remaining!.Remove(node.Key)) throw new ValidationException($"Content error: The element {node.Key} was not expected to be present in the tree");
         }
 
-        Impl(this.root);
+        Impl(this.Root);
         if (remaining.Count > 0) throw new ValidationException($"Content error: The elements [{string.Join(", ", remaining)}] were not found in the tree, but were expected");
     }
 }
