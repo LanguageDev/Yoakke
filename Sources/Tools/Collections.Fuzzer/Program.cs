@@ -6,14 +6,15 @@ namespace Yoakke.Collections.Fuzzer;
 
 internal class Program
 {
-    internal static void FuzzAvlTree(int maxElements)
+    internal static void FuzzTreeSet<T>(int maxElements)
+        where T : ITreeSet, new()
     {
         var rnd = new Random();
         for (var epoch = 0; ; ++epoch)
         {
             if (epoch % 100 == 0) Console.WriteLine($"Epoch {epoch}...");
 
-            var set = new AvlSet();
+            var set = new T();
             var pulledNumbers = new HashSet<int>();
             Debug.Assert(set.IsValid(pulledNumbers));
 
@@ -55,6 +56,6 @@ internal class Program
 
     internal static void Main(string[] args)
     {
-        FuzzAvlTree(5);
+        FuzzTreeSet<AvlTreeSet>(5);
     }
 }

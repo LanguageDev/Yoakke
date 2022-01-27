@@ -216,24 +216,41 @@ public static class AvlTree
         }
         else if (node.Right is null)
         {
-            // TODO
-            throw new NotImplementedException();
             // 0 or 1 child
             Shift(node, node.Left);
+            // Update upwards
+            for (var n = node.Parent; n is not null; n = n.Parent)
+            {
+                UpdateHeight(n);
+                var rebalance = Rebalance(n);
+                if (ReferenceEquals(n, root)) root = rebalance.Root;
+            }
         }
         else
         {
-            // TODO
-            throw new NotImplementedException();
             // 2 children
             var y = BinarySearchTree.Successor(node);
-            if (!ReferenceEquals(y.Parent, node))
+            if (!ReferenceEquals(y!.Parent, node))
             {
                 Shift(y, y.Right);
                 y.Right = node.Right;
             }
+            // Update upwards
+            for (var n = y.Parent; n is not null; n = n.Parent)
+            {
+                UpdateHeight(n);
+                var rebalance = Rebalance(n);
+                if (ReferenceEquals(n, root)) root = rebalance.Root;
+            }
             Shift(node, y);
             y.Left = node.Left;
+            // Update upwards
+            for (var n = node.Parent; n is not null; n = n.Parent)
+            {
+                UpdateHeight(n);
+                var rebalance = Rebalance(n);
+                if (ReferenceEquals(n, root)) root = rebalance.Root;
+            }
         }
         return root;
     }

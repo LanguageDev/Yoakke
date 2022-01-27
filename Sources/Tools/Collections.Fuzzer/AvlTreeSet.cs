@@ -11,7 +11,7 @@ using Yoakke.Collections.Trees;
 
 namespace Yoakke.Collections.Fuzzer;
 
-internal class AvlSet
+internal class AvlTreeSet : ITreeSet
 {
     private class Node : BinarySearchTree.NodeBase<Node>, AvlTree.INode<Node>
     {
@@ -98,8 +98,9 @@ internal class AvlSet
                 Math.Max(leftHeight, rightHeight) + 1);
         }
 
-        static bool AncestoryCheck(Node? node)
+        bool AncestoryCheck(Node? node)
         {
+            if (ReferenceEquals(node, this.root) && this.root!.Parent is not null) return false;
             if (node is null) return true;
             if (!AncestoryCheck(node.Left)) return false;
             if (!AncestoryCheck(node.Right)) return false;
