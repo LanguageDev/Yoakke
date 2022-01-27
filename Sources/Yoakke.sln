@@ -84,6 +84,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{F51DEFFD
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{55692E6E-198F-4699-B6D3-CBA49D22A2D3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Collections.Fuzzer", "Tools\Collections.Fuzzer\Collections.Fuzzer.csproj", "{A12EA952-C300-4034-BA70-B46B5521CB6A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -194,6 +196,10 @@ Global
 		{CCD5F778-B722-414A-A376-B99E0734C3C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CCD5F778-B722-414A-A376-B99E0734C3C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CCD5F778-B722-414A-A376-B99E0734C3C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A12EA952-C300-4034-BA70-B46B5521CB6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A12EA952-C300-4034-BA70-B46B5521CB6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A12EA952-C300-4034-BA70-B46B5521CB6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A12EA952-C300-4034-BA70-B46B5521CB6A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -228,6 +234,7 @@ Global
 		{3743B1A5-DF69-4C44-8BC0-C967D0BB4AD6} = {807C54A7-C3E0-4F31-95A8-C9FD3F4D5660}
 		{F51DEFFD-626F-4040-9227-A59BF67F4F53} = {807C54A7-C3E0-4F31-95A8-C9FD3F4D5660}
 		{55692E6E-198F-4699-B6D3-CBA49D22A2D3} = {807C54A7-C3E0-4F31-95A8-C9FD3F4D5660}
+		{A12EA952-C300-4034-BA70-B46B5521CB6A} = {3111DDED-28E3-4DE3-9185-89D1D83C428D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1EDE8F07-AE3A-4556-AEF0-3AC518F18F92}
