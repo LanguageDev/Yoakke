@@ -203,7 +203,7 @@ public static class AvlTree
                 uParent.Right = v;
                 u.Parent = null;
             }
-
+            // Update upwards
             for (var n = v ?? uParent; n is not null; n = n.Parent)
             {
                 UpdateHeight(n);
@@ -216,6 +216,13 @@ public static class AvlTree
         {
             // 0 or 1 child
             Shift(node, node.Left ?? node.Right);
+            // Update upwards
+            for (var n = node.Parent; n is not null; n = n.Parent)
+            {
+                UpdateHeight(n);
+                var rebalance = Rebalance(n);
+                if (ReferenceEquals(n, root)) root = rebalance.Root;
+            }
         }
         else
         {
@@ -228,6 +235,13 @@ public static class AvlTree
             }
             Shift(node, y);
             y.Left = node.Left;
+            // Update upwards
+            for (var n = y; n is not null; n = n.Parent)
+            {
+                UpdateHeight(n);
+                var rebalance = Rebalance(n);
+                if (ReferenceEquals(n, root)) root = rebalance.Root;
+            }
         }
         return root;
     }

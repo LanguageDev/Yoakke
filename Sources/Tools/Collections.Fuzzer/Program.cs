@@ -71,7 +71,7 @@ internal class Program
 
     internal static void Main(string[] args)
     {
-#if true
+#if false
         var tree = new AvlTreeSet
         {
             Root = new AvlTreeNode(8)
