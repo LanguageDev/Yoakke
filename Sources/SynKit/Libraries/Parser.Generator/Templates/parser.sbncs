@@ -43,6 +43,8 @@ allocate_var() = 'a' + var_cnt++
     {{ case node.Type }}
         {{ when 'Placeholder' }}
             {{ $resultVar }} = placeholder;
+        {{ when 'MethodCall' }}
+            {{ $resultVar }} = {{ node.Method }}({{ lastIndex }});
         {{ when 'Transform' }}
             {{ $subVar = generate_parser(rule, node.Subexpr, lastIndex) }}
             if ({{ $subVar }}.IsOk)

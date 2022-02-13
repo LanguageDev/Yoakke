@@ -41,8 +41,14 @@ public class ParserSourceGenerator : IIncrementalGenerator
         public string Rule { get; set; } = string.Empty;
     }
 
+    private class CustomParserAttributeModel
+    {
+        public string Rule { get; set; } = string.Empty;
+    }
+
     private record class Symbols(
         INamedTypeSymbol ParserAttribute,
+        INamedTypeSymbol CustomParserAttribute,
         INamedTypeSymbol TokenSourceAttribute,
         INamedTypeSymbol RuleAttribute,
         INamedTypeSymbol LeftAttribute,
@@ -70,6 +76,7 @@ public class ParserSourceGenerator : IIncrementalGenerator
 
     private static Symbols LoadSymbols(Compilation compilation) => new(
         ParserAttribute: compilation.GetRequiredType(typeof(ParserAttribute)),
+        CustomParserAttribute: compilation.GetRequiredType(typeof(CustomParserAttribute)),
         TokenSourceAttribute: compilation.GetRequiredType(typeof(TokenSourceAttribute)),
         RuleAttribute: compilation.GetRequiredType(typeof(RuleAttribute)),
         LeftAttribute: compilation.GetRequiredType(typeof(LeftAttribute)),
@@ -140,6 +147,15 @@ public class ParserSourceGenerator : IIncrementalGenerator
                 var rule = new Rule(name, new BnfAst.Transform(ast, method)) { VisualName = name };
                 ruleSet.Add(rule);
             }
+
+            // Let's look if there's a custom parser attribute
+            if (method.TryGetAttribute(symbols.CustomParserAttribute, out CustomParserAttributeModel? customParser))
+            {
+                // It's a custom parser, register it
+                var name = customParser!.Rule;
+                var rule = new Rule(name, new BnfAst.MethodCall(method)) { VisualName = name };
+                ruleSet.Add(rule);
+            }
         }
 
         ruleSet.Desugar();
@@ -178,7 +194,7 @@ public class ParserSourceGenerator : IIncrementalGenerator
             Name = r.Value.VisualName,
             MethodName = ToPascalCase(r.Key),
             Ast = TranslateAst(parserModel, r.Value.Ast),
-        }),
+        }).ToList(),
     };
 
     private static object TranslateAst(ParserModel model, BnfAst ast) => ast switch
@@ -187,6 +203,12 @@ public class ParserSourceGenerator : IIncrementalGenerator
         {
             Type = "Placeholder",
             ParsedType = ast.GetParsedType(model.RuleSet, model.TokenKinds),
+        },
+        BnfAst.MethodCall m => new
+        {
+            Type = "MethodCall",
+            ParsedType = ast.GetParsedType(model.RuleSet, model.TokenKinds),
+            Method = m.Method.Name,
         },
         BnfAst.Transform t => new
         {
@@ -293,7 +315,7 @@ public class ParserSourceGenerator : IIncrementalGenerator
         BnfAst.Rep1 rep1 => CheckBnfAst(context, model, rep1.Subexpr),
         BnfAst.Transform tr => CheckBnfAst(context, model, tr.Subexpr),
         BnfAst.Call call => CheckReferenceValidity(context, model, call.Name),
-        BnfAst.Literal or BnfAst.Placeholder => true,
+        BnfAst.Literal or BnfAst.Placeholder or BnfAst.MethodCall => true,
         _ => throw new InvalidOperationException(),
     };
 
@@ -306,8 +328,6 @@ public class ParserSourceGenerator : IIncrementalGenerator
         if (model.RuleSet.Rules.ContainsKey(referenceName)) return true;
         // If there is such a terminal, also OK
         if (model.TokenKinds.Fields.ContainsKey(referenceName)) return true;
-        // As a last-effort, check for a "parse<ReferenceName>" in the type definition
-        if (model.ParserType.GetMembers($"parse{ToPascalCase(referenceName)}").Length > 0) return true;
         // It is an unknown reference, report it
         context.ReportDiagnostic(Diagnostic.Create(
             descriptor: Diagnostics.UnknownRuleIdentifier,
