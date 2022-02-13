@@ -307,7 +307,7 @@ public class ParserSourceGenerator : IIncrementalGenerator
         // If there is such a terminal, also OK
         if (model.TokenKinds.Fields.ContainsKey(referenceName)) return true;
         // As a last-effort, check for a "parse<ReferenceName>" in the type definition
-        if (model.ParserType.GetMembers($"parse{referenceName}").Length > 0) return true;
+        if (model.ParserType.GetMembers($"parse{ToPascalCase(referenceName)}").Length > 0) return true;
         // It is an unknown reference, report it
         context.ReportDiagnostic(Diagnostic.Create(
             descriptor: Diagnostics.UnknownRuleIdentifier,
