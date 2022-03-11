@@ -1,3 +1,8 @@
+{{
+# Helper, because string.escape by itself does ont escape single quotes
+escape_char_lit(ch) = string.replace(string.escape(ch), '\'', '\\\'')
+}}
+
 using System;
 using System.CodeDom.Compiler;
 using System.IO;
@@ -74,13 +79,13 @@ partial {{ LexerType.Kind }} {{ LexerType.Name }}
                         {{ if interval.Start == null && interval.End == null }}
                             char ch
                         {{ else if interval.End == null }}
-                            >= '{{ string.escape(interval.Start) }}'
+                            >= '{{ escape_char_lit(interval.Start) }}'
                         {{ else if interval.Start == null }}
-                            <= '{{ string.escape(interval.End) }}'
+                            <= '{{ escape_char_lit(interval.End) }}'
                         {{ else if interval.Start == interval.End }}
-                            '{{ string.escape(interval.Start) }}'
+                            '{{ escape_char_lit(interval.Start) }}'
                         {{ else }}
-                            >= '{{ string.escape(interval.Start) }}' and <= '{{ string.escape(interval.End) }}'
+                            >= '{{ escape_char_lit(interval.Start) }}' and <= '{{ escape_char_lit(interval.End) }}'
                         {{ end }}
                         :
                     {{ end }}
