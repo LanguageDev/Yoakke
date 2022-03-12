@@ -15,14 +15,10 @@ jobs:
     - id: clone-repo
       name: Clone the repo
       uses: actions/checkout@v2
-    - id: branch-name
-      name: Extract branch name
-      shell: bash
-      run: echo "::set-env name=BRANCH_NAME::$(echo ${GITHUB_REF#refs/heads/} | sed 's/\//_/g')"
     - id: commits-happened
       name: Check if commits happened in the last 72 hours
       run: |
-        if([string]::IsNullOrWhitespace((git log ${BRANCH_NAME} --since="72 hours ago") -join '')) {
+        if([string]::IsNullOrWhitespace((git log ${GITHUB_REF##*/} --since="72 hours ago") -join '')) {
           Echo "No recent commits, skipping nightly build"
           Exit 1
         }
