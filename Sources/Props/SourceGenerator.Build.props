@@ -40,9 +40,6 @@
     <Compile Remove="$(SolutionDir)/Shared/Libraries/SourceGenerator.Common/obj/**/*.cs" />
 
     <!-- Run-time polyfill libraries -->
-    <Compile Include="$(SolutionDir)/Shared/Libraries/Polyfill/**/*.cs" Link="Polyfill" Visible="False" />
-    <Compile Remove="$(SolutionDir)/Shared/Libraries/Polyfill/obj/**/*.cs" />
-
     <PackageReference Include="System.Memory" Version="4.5.4" PrivateAssets="all" GeneratePathProperty="true" />
     <None Include="$(PkgSystem_Memory)\lib\netstandard2.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
 

@@ -1,3 +1,4 @@
 <Project>
+  <!-- The example project type will be fine for tools -->
   <Import Project="..\Props\Example.Build.props" />
 </Project>

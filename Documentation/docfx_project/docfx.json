@@ -11,10 +11,14 @@
             "**/Examples/**",
             "**/Benchmarks/**",
             "**/Tests/**",
+            "**/Demos/**",
             "**/*.Tests/**",
             "**/*.Tests.*/**",
             "**/*.Example/**",
             "**/*.Sample/**",
+            "**/*.Demo/**",
+            "**/*.Demos/**",
+            "**/*.Benchmark/**",
             "**/*.Benchmarks/**"
           ]
         }
