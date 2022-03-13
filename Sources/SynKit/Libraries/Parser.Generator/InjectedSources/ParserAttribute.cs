@@ -8,6 +8,8 @@ using System;
 
 namespace Yoakke.SynKit.Parser.Attributes;
 
+#nullable enable
+
 /// <summary>
 /// An attribute to mark a class as a parser with rule methods inside.
 /// </summary>
@@ -35,3 +37,5 @@ internal class ParserAttribute : Attribute
         this.TokenType = tokenType;
     }
 }
+
+#nullable restore
