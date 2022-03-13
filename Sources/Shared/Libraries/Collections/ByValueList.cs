@@ -65,12 +65,7 @@ public readonly struct ByValueList<T> : IReadOnlyList<T>, IList<T>,
         && this.underlying.SequenceEqual(other, this.comparer);
 
     /// <inheritdoc/>
-    public override int GetHashCode()
-    {
-        var h = default(HashCode);
-        foreach (var item in this) h.Add(item, this.comparer);
-        return h.ToHashCode();
-    }
+    public override int GetHashCode() => HashUtils.CombineSequence(this.underlying, this.comparer);
 
     /// <inheritdoc/>
     public IEnumerator<T> GetEnumerator() => this.underlying.GetEnumerator();

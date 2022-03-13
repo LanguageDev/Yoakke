@@ -34,7 +34,9 @@ public sealed class ByValueListTests
     [InlineData(new int[] { }, new int[] { 1 })]
     [InlineData(new int[] { 1, 1 }, new int[] { 1, 1, 1 })]
     [InlineData(new[] { 1, 2 }, new[] { 1, 2, 3 })]
+    [InlineData(new[] { 1, 2, 3 }, new[] { 3, 2, 1 })]
     [InlineData(new[] { 5, 1, 3, 9, 8 }, new[] { 5, 1, 3, 9, 8, 10 })]
+    [InlineData(new[] { 5, 1, 3, 8, 8 }, new[] { 5, 1, 3, 9, 8 })]
     [Theory]
     public void NotEqualLists(int[] v1, int[] v2)
     {
