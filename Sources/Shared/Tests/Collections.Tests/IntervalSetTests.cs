@@ -388,7 +388,7 @@ public sealed class IntervalSetTests
         return result;
     }
 
-    private static Interval<int> ParseInterval(string text)
+    internal static Interval<int> ParseInterval(string text)
     {
         var parts = text.Split("; ");
         var loStr = parts[0].Trim();
