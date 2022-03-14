@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Yoakke.Collections;
 using Yoakke.Collections.Intervals;
 
 namespace Yoakke.SynKit.Automata;
@@ -29,7 +30,8 @@ public sealed class Dfa<TState, TSymbol> : IFiniteStateAutomaton<TState, TSymbol
     }
 
     /// <inheritdoc/>
-    IReadOnlyCollection<TState> IFiniteStateAutomaton<TState, TSymbol>.InitialStates => throw new NotImplementedException();
+    IReadOnlyCollection<TState> IFiniteStateAutomaton<TState, TSymbol>.InitialStates =>
+        new EnumerableCollection<TState>(EnumerableExtensions.Singleton(this.InitialState), 1);
 
     /// <inheritdoc/>
     public ICollection<TState> AcceptingStates => throw new NotImplementedException();
@@ -40,6 +42,9 @@ public sealed class Dfa<TState, TSymbol> : IFiniteStateAutomaton<TState, TSymbol
     /// <inheritdoc/>
     IReadOnlyCollection<EpsilonTransition<TState>> IFiniteStateAutomaton<TState, TSymbol>.EpsilonTransitions =>
         Array.Empty<EpsilonTransition<TState>>();
+
+    /// <inheritdoc/>
+    public ICollection<Interval<TSymbol>> Alphabet => throw new NotImplementedException();
 
     /// <inheritdoc/>
     public bool Accepts(IEnumerable<TSymbol> input) => throw new NotImplementedException();

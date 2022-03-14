@@ -29,6 +29,16 @@ public sealed class IntervalMap<TKey, TValue> : IReadOnlyCollection<KeyValuePair
     public bool IsReadOnly => false;
 
     /// <summary>
+    /// The keys in the map.
+    /// </summary>
+    public IEnumerable<Interval<TKey>> Keys => this.intervals.Select(kv => kv.Key);
+
+    /// <summary>
+    /// The values in the map.
+    /// </summary>
+    public IEnumerable<TValue> Values => this.intervals.Select(kv => kv.Value);
+
+    /// <summary>
     /// The interval comparer used.
     /// </summary>
     public IntervalComparer<TKey> IntervalComparer => this.intervals.Comparer;
@@ -66,6 +76,17 @@ public sealed class IntervalMap<TKey, TValue> : IReadOnlyCollection<KeyValuePair
     public IntervalMap(EndpointComparer<TKey>? comparer)
         : this(comparer is null ? null : new IntervalComparer<TKey>(comparer))
     {
+    }
+
+    /// <summary>
+    /// Retrieves the intersecting entries in this map.
+    /// </summary>
+    /// <param name="keys">The interval of keys to search intersection with.</param>
+    /// <returns>The sequence of key-value pairs that are intersecting with <paramref name="keys"/>.</returns>
+    public IEnumerable<KeyValuePair<Interval<TKey>, TValue>> Intersecting(Interval<TKey> keys)
+    {
+        var (from, to) = this.intervals.IntersectingRange(keys);
+        for (; from != to; ++from) yield return this.intervals[from];
     }
 
     /// <inheritdoc/>
@@ -239,7 +260,7 @@ public sealed class IntervalMap<TKey, TValue> : IReadOnlyCollection<KeyValuePair
     bool ICollection<KeyValuePair<Interval<TKey>, TValue>>.Remove(KeyValuePair<Interval<TKey>, TValue> item)
     {
         // NOTE: Kinda ineffective but will work for now
-        var intersecting = this.GetIntervalsAndValues(item.Key).ToList();
+        var intersecting = this.Intersecting(item.Key).ToList();
         var anyRemoved = false;
         foreach (var kv in intersecting)
         {
@@ -267,12 +288,6 @@ public sealed class IntervalMap<TKey, TValue> : IReadOnlyCollection<KeyValuePair
 
     /// <inheritdoc/>
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
-
-    private IEnumerable<KeyValuePair<Interval<TKey>, TValue>> GetIntervalsAndValues(Interval<TKey> keys)
-    {
-        var (from, to) = this.intervals.IntersectingRange(keys);
-        for (; from != to; ++from) yield return this.intervals[from];
-    }
 
     private bool TryGetContained(Interval<TKey> keys, out IEnumerable<KeyValuePair<Interval<TKey>, TValue>> values)
     {

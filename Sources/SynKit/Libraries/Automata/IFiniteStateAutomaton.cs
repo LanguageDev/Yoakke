@@ -38,6 +38,11 @@ public interface IFiniteStateAutomaton<TState, TSymbol>
     public IReadOnlyCollection<EpsilonTransition<TState>> EpsilonTransitions { get; }
 
     /// <summary>
+    /// The alphabet of the automaton.
+    /// </summary>
+    public ICollection<Interval<TSymbol>> Alphabet { get; }
+
+    /// <summary>
     /// Checks if this automaton results in an accepting state for the given input.
     /// </summary>
     /// <param name="input">The sequence of input to feed in for the automaton.</param>
