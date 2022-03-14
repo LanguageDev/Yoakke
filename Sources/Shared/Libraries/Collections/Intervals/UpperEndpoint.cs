@@ -13,6 +13,8 @@ namespace Yoakke.Collections.Intervals;
 /// </summary>
 /// <typeparam name="T">The endpoint type.</typeparam>
 public readonly record struct UpperEndpoint<T>(EndpointType Type, T? Value)
+    : IEquatable<UpperEndpoint<T>>,
+      IComparable<UpperEndpoint<T>>, IComparable<LowerEndpoint<T>>
 {
     /// <summary>
     /// Constructs an unbounded upper endpoint.
@@ -42,6 +44,82 @@ public readonly record struct UpperEndpoint<T>(EndpointType Type, T? Value)
         EndpointType.Exclusive => $"{this.Value})",
         _ => throw new InvalidOperationException(),
     };
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => EndpointComparer<T>.Default.GetHashCode(this);
+
+    /// <inheritdoc/>
+    public bool Equals(UpperEndpoint<T> other) => EndpointComparer<T>.Default.Equals(this, other);
+
+    /// <inheritdoc/>
+    public int CompareTo(UpperEndpoint<T> other) => EndpointComparer<T>.Default.Compare(this, other);
+
+    /// <inheritdoc/>
+    public int CompareTo(LowerEndpoint<T> other) => EndpointComparer<T>.Default.Compare(this, other);
+
+    /// <summary>
+    /// Less-than compares endpoints.
+    /// </summary>
+    /// <param name="left">The first endpoint to compare.</param>
+    /// <param name="right">The second endpoint to compare.</param>
+    /// <returns>True, if <paramref name="left"/> comes strictly before <paramref name="right"/>.</returns>
+    public static bool operator <(UpperEndpoint<T> left, UpperEndpoint<T> right) => left.CompareTo(right) < 0;
+
+    /// <summary>
+    /// Less-or-equal compares endpoints.
+    /// </summary>
+    /// <param name="left">The first endpoint to compare.</param>
+    /// <param name="right">The second endpoint to compare.</param>
+    /// <returns>True, if <paramref name="left"/> comes before <paramref name="right"/>.</returns>
+    public static bool operator <=(UpperEndpoint<T> left, UpperEndpoint<T> right) => left.CompareTo(right) <= 0;
+
+    /// <summary>
+    /// Greater-than compares endpoints.
+    /// </summary>
+    /// <param name="left">The first endpoint to compare.</param>
+    /// <param name="right">The second endpoint to compare.</param>
+    /// <returns>True, if <paramref name="left"/> comes strictly after <paramref name="right"/>.</returns>
+    public static bool operator >(UpperEndpoint<T> left, UpperEndpoint<T> right) => left.CompareTo(right) > 0;
+
+    /// <summary>
+    /// Greater-or-equal compares endpoints.
+    /// </summary>
+    /// <param name="left">The first endpoint to compare.</param>
+    /// <param name="right">The second endpoint to compare.</param>
+    /// <returns>True, if <paramref name="left"/> comes after <paramref name="right"/>.</returns>
+    public static bool operator >=(UpperEndpoint<T> left, UpperEndpoint<T> right) => left.CompareTo(right) >= 0;
+
+    /// <summary>
+    /// Less-than compares endpoints.
+    /// </summary>
+    /// <param name="left">The first endpoint to compare.</param>
+    /// <param name="right">The second endpoint to compare.</param>
+    /// <returns>True, if <paramref name="left"/> comes strictly before <paramref name="right"/>.</returns>
+    public static bool operator <(UpperEndpoint<T> left, LowerEndpoint<T> right) => left.CompareTo(right) < 0;
+
+    /// <summary>
+    /// Less-or-equal compares endpoints.
+    /// </summary>
+    /// <param name="left">The first endpoint to compare.</param>
+    /// <param name="right">The second endpoint to compare.</param>
+    /// <returns>True, if <paramref name="left"/> comes before <paramref name="right"/>.</returns>
+    public static bool operator <=(UpperEndpoint<T> left, LowerEndpoint<T> right) => left.CompareTo(right) <= 0;
+
+    /// <summary>
+    /// Greater-than compares endpoints.
+    /// </summary>
+    /// <param name="left">The first endpoint to compare.</param>
+    /// <param name="right">The second endpoint to compare.</param>
+    /// <returns>True, if <paramref name="left"/> comes strictly after <paramref name="right"/>.</returns>
+    public static bool operator >(UpperEndpoint<T> left, LowerEndpoint<T> right) => left.CompareTo(right) > 0;
+
+    /// <summary>
+    /// Greater-or-equal compares endpoints.
+    /// </summary>
+    /// <param name="left">The first endpoint to compare.</param>
+    /// <param name="right">The second endpoint to compare.</param>
+    /// <returns>True, if <paramref name="left"/> comes after <paramref name="right"/>.</returns>
+    public static bool operator >=(UpperEndpoint<T> left, LowerEndpoint<T> right) => left.CompareTo(right) >= 0;
 }
 
 /// <summary>

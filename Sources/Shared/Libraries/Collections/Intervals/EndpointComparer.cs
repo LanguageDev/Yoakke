@@ -103,7 +103,23 @@ public sealed class EndpointComparer<T> : IEqualityComparer<LowerEndpoint<T>>, I
     /// <param name="x">The lower endpoint to compare.</param>
     /// <param name="y">The upper endpoint to compare.</param>
     /// <returns>The integer describing the relation of <paramref name="x"/> and <paramref name="y"/>.</returns>
-    public int Compare(LowerEndpoint<T> x, UpperEndpoint<T> y) => throw new NotImplementedException(); // TODO
+    public int Compare(LowerEndpoint<T> x, UpperEndpoint<T> y) => (x.Type, y.Type) switch
+    {
+        (EndpointType.Unbounded, _) or (_, EndpointType.Unbounded) => -1,
+        (EndpointType.Exclusive, EndpointType.Exclusive)
+     or (EndpointType.Exclusive, EndpointType.Inclusive)
+     or (EndpointType.Inclusive, EndpointType.Exclusive) => this.ValueComparer.Compare(x.Value!, y.Value!) switch
+        {
+            0 => 1,
+            var n => n,
+        },
+        (EndpointType.Inclusive, EndpointType.Inclusive) => this.ValueComparer.Compare(x.Value!, y.Value!) switch
+        {
+            0 => -1,
+            var n => n,
+        },
+        _ => throw new InvalidOperationException(),
+    };
 
     /// <summary>
     /// Compares an upper endpoing to a lower endpoint.
@@ -112,6 +128,27 @@ public sealed class EndpointComparer<T> : IEqualityComparer<LowerEndpoint<T>>, I
     /// <param name="y">The lower endpoint to compare.</param>
     /// <returns>The integer describing the relation of <paramref name="x"/> and <paramref name="y"/>.</returns>
     public int Compare(UpperEndpoint<T> x, LowerEndpoint<T> y) => -this.Compare(y, x);
+
+    /// <summary>
+    /// Checks, if a lower endpoint is in touching relation with an upper endpoint.
+    /// </summary>
+    /// <param name="x">The <see cref="LowerEndpoint{T}"/> to check.</param>
+    /// <param name="y">The <see cref="UpperEndpoint{T}"/> to check.</param>
+    /// <returns>True, if <paramref name="x"/> is touching <paramref name="y"/>.</returns>
+    public bool IsTouching(LowerEndpoint<T> x, UpperEndpoint<T> y) => (x.Type, y.Type) switch
+    {
+        (EndpointType.Inclusive, EndpointType.Exclusive)
+     or (EndpointType.Exclusive, EndpointType.Inclusive) => this.ValueEqualityComparer.Equals(x.Value!, y.Value!),
+        _ => false,
+    };
+
+    /// <summary>
+    /// Checks, if a lower endpoint is in touching relation with an upper endpoint.
+    /// </summary>
+    /// <param name="x">The <see cref="UpperEndpoint{T}"/> to check.</param>
+    /// <param name="y">The <see cref="LowerEndpoint{T}"/> to check.</param>
+    /// <returns>True, if <paramref name="x"/> is touching <paramref name="y"/>.</returns>
+    public bool IsTouching(UpperEndpoint<T> x, LowerEndpoint<T> y) => this.IsTouching(y, x);
 
     private int MakeHash(EndpointType type, T value)
     {
