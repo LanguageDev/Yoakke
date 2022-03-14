@@ -14,7 +14,7 @@ namespace Yoakke.Collections.Intervals;
 /// <typeparam name="T">The endpoint type.</typeparam>
 public readonly record struct UpperEndpoint<T>(EndpointType Type, T? Value)
     : IEquatable<UpperEndpoint<T>>,
-      IComparable<UpperEndpoint<T>>, IComparable<LowerEndpoint<T>>
+      IComparable, IComparable<UpperEndpoint<T>>, IComparable<LowerEndpoint<T>>
 {
     /// <summary>
     /// Constructs an unbounded upper endpoint.
@@ -50,6 +50,14 @@ public readonly record struct UpperEndpoint<T>(EndpointType Type, T? Value)
 
     /// <inheritdoc/>
     public bool Equals(UpperEndpoint<T> other) => EndpointComparer<T>.Default.Equals(this, other);
+
+    /// <inheritdoc/>
+    public int CompareTo(object obj) => obj switch
+    {
+        LowerEndpoint<T> l => this.CompareTo(l),
+        UpperEndpoint<T> u => this.CompareTo(u),
+        _ => throw new InvalidOperationException(),
+    };
 
     /// <inheritdoc/>
     public int CompareTo(UpperEndpoint<T> other) => EndpointComparer<T>.Default.Compare(this, other);

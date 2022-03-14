@@ -70,28 +70,42 @@ public sealed class EndpointComparer<T> : IEqualityComparer<LowerEndpoint<T>>, I
     }
 
     /// <inheritdoc/>
-    public int Compare(LowerEndpoint<T> x, LowerEndpoint<T> y) =>
-        this.CompareSameSideImpl(x.Type, x.Value, y.Type, y.Value);
-
-    /// <inheritdoc/>
-    public int Compare(UpperEndpoint<T> x, UpperEndpoint<T> y) =>
-        -this.CompareSameSideImpl(x.Type, x.Value, y.Type, y.Value);
-
-    private int CompareSameSideImpl(EndpointType t1, T? v1, EndpointType t2, T? v2) => (t1, t2) switch
+    public int Compare(LowerEndpoint<T> x, LowerEndpoint<T> y) => (x.Type, y.Type) switch
     {
         (EndpointType.Unbounded, EndpointType.Unbounded) => 0,
         (EndpointType.Unbounded, _) => -1,
         (_, EndpointType.Unbounded) => 1,
-        (EndpointType.Exclusive, EndpointType.Exclusive) => this.ValueComparer.Compare(v1!, v2!),
-        (EndpointType.Inclusive, EndpointType.Inclusive) => this.ValueComparer.Compare(v1!, v2!),
-        (EndpointType.Exclusive, EndpointType.Inclusive) => this.ValueComparer.Compare(v1!, v2!) switch
+        (EndpointType.Exclusive, EndpointType.Exclusive)
+     or (EndpointType.Inclusive, EndpointType.Inclusive) => this.ValueComparer.Compare(x.Value!, y.Value!),
+        (EndpointType.Exclusive, EndpointType.Inclusive) => this.ValueComparer.Compare(x.Value!, y.Value!) switch
         {
             0 => 1,
             var n => n,
         },
-        (EndpointType.Inclusive, EndpointType.Exclusive) => this.ValueComparer.Compare(v1!, v2!) switch
+        (EndpointType.Inclusive, EndpointType.Exclusive) => this.ValueComparer.Compare(x.Value!, y.Value!) switch
         {
             0 => -1,
+            var n => n,
+        },
+        _ => throw new InvalidOperationException(),
+    };
+
+    /// <inheritdoc/>
+    public int Compare(UpperEndpoint<T> x, UpperEndpoint<T> y) =>  (x.Type, y.Type) switch
+    {
+        (EndpointType.Unbounded, EndpointType.Unbounded) => 0,
+        (EndpointType.Unbounded, _) => 1,
+        (_, EndpointType.Unbounded) => -1,
+        (EndpointType.Exclusive, EndpointType.Exclusive)
+     or (EndpointType.Inclusive, EndpointType.Inclusive) => this.ValueComparer.Compare(x.Value!, y.Value!),
+        (EndpointType.Exclusive, EndpointType.Inclusive) => this.ValueComparer.Compare(x.Value!, y.Value!) switch
+        {
+            0 => -1,
+            var n => n,
+        },
+        (EndpointType.Inclusive, EndpointType.Exclusive) => this.ValueComparer.Compare(x.Value!, y.Value!) switch
+        {
+            0 => 1,
             var n => n,
         },
         _ => throw new InvalidOperationException(),
