@@ -36,6 +36,24 @@ public readonly record struct LowerEndpoint<T>(EndpointType Type, T? Value)
     /// <returns>The constructed lower endpoint.</returns>
     public static LowerEndpoint<T> Exclusive(T value) => new(EndpointType.Exclusive, value);
 
+    /// <summary>
+    /// The touching upper endpoint of this, if any.
+    /// </summary>
+    public UpperEndpoint<T>? Touching => this.Type switch
+    {
+        EndpointType.Unbounded => null,
+        EndpointType.Inclusive => UpperEndpoint.Exclusive(this.Value!),
+        EndpointType.Exclusive => UpperEndpoint.Inclusive(this.Value!),
+        _ => throw new InvalidOperationException(),
+    };
+
+    /// <summary>
+    /// Checks, if this endpoint is in touching relation with another one.
+    /// </summary>
+    /// <param name="other">The <see cref="UpperEndpoint{T}"/> to compare with.</param>
+    /// <returns>True, if this is touching <paramref name="other"/>.</returns>
+    public bool IsTouching(UpperEndpoint<T> other) => EndpointComparer<T>.Default.IsTouching(this, other);
+
     /// <inheritdoc/>
     public override string ToString() => this.Type switch
     {

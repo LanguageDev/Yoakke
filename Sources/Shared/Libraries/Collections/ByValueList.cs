@@ -44,6 +44,9 @@ public readonly struct ByValueList<T> : IReadOnlyList<T>, IList<T>,
     }
 
     /// <inheritdoc/>
+    public override string ToString() => $"[{string.Join(", ", this.underlying)}]";
+
+    /// <inheritdoc/>
     public override bool Equals(object obj)
     {
         if (obj is IList<T> l) return this.Equals(l);

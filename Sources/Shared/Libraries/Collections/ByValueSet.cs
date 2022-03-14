@@ -44,6 +44,9 @@ public readonly struct ByValueSet<T> : ISet<T>,
     }
 
     /// <inheritdoc/>
+    public override string ToString() => $"{{{string.Join(", ", this.underlying)}}}";
+
+    /// <inheritdoc/>
     public override bool Equals(object obj) => obj is ISet<T> s && this.Equals(s);
 
     /// <inheritdoc/>
