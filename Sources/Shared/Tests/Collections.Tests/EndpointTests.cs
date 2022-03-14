@@ -125,4 +125,35 @@ public sealed class EndpointTests
         Assert.True(x.Equals(y));
         Assert.Equal(x.GetHashCode(), y.GetHashCode());
     }
+
+    public static IEnumerable<object[]> LessThanEndpointsData { get; } = new object[][]
+    {
+        new object[] { LowerEndpoint.Unbounded<int>(), UpperEndpoint.Unbounded<int>() },
+        new object[] { LowerEndpoint.Unbounded<int>(), UpperEndpoint.Inclusive(-10) },
+        new object[] { LowerEndpoint.Unbounded<int>(), UpperEndpoint.Inclusive(0) },
+        new object[] { LowerEndpoint.Unbounded<int>(), UpperEndpoint.Inclusive(10) },
+        new object[] { LowerEndpoint.Unbounded<int>(), UpperEndpoint.Exclusive(-10) },
+        new object[] { LowerEndpoint.Unbounded<int>(), UpperEndpoint.Exclusive(0) },
+        new object[] { LowerEndpoint.Unbounded<int>(), UpperEndpoint.Exclusive(10) },
+        new object[] { LowerEndpoint.Inclusive(-10), UpperEndpoint.Unbounded<int>() },
+        new object[] { LowerEndpoint.Inclusive(0), UpperEndpoint.Unbounded<int>() },
+        new object[] { LowerEndpoint.Inclusive(10), UpperEndpoint.Unbounded<int>() },
+        new object[] { LowerEndpoint.Exclusive(-10), UpperEndpoint.Unbounded<int>() },
+        new object[] { LowerEndpoint.Exclusive(0), UpperEndpoint.Unbounded<int>() },
+        new object[] { LowerEndpoint.Exclusive(10), UpperEndpoint.Unbounded<int>() },
+        new object[] { LowerEndpoint.Exclusive(0), UpperEndpoint.Exclusive(1) },
+        new object[] { LowerEndpoint.Exclusive(-1), UpperEndpoint.Inclusive(0) },
+        new object[] { LowerEndpoint.Inclusive(0), UpperEndpoint.Inclusive(0) },
+        new object[] { UpperEndpoint.Exclusive(0), LowerEndpoint.Inclusive(0) },
+    };
+
+    [MemberData(nameof(LessThanEndpointsData))]
+    [Theory]
+    public void LessThanEndpoints(IComparable x, IComparable y)
+    {
+        Assert.True(x.CompareTo(y) < 0);
+        Assert.True(y.CompareTo(x) > 0);
+        Assert.False(x.Equals(y));
+        Assert.NotEqual(x, y);
+    }
 }
