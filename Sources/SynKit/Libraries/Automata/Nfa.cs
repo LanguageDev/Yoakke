@@ -212,12 +212,12 @@ public sealed class Nfa<TState, TSymbol> : IFiniteStateAutomaton<TState, TSymbol
     /// <summary>
     /// The state comparer.
     /// </summary>
-    public IEqualityComparer<TState> StateComparer { get; }
+    public IEqualityComparer<TState> StateComparer => this.transitionsRaw.StateComparer;
 
     /// <summary>
     /// The symbol interval comparer.
     /// </summary>
-    public IntervalComparer<TSymbol> SymbolIntervalComparer { get; }
+    public IntervalComparer<TSymbol> SymbolIntervalComparer => this.transitionsRaw.SymbolIntervalComparer;
 
     /// <summary>
     /// The symbol comparer.
@@ -250,9 +250,6 @@ public sealed class Nfa<TState, TSymbol> : IFiniteStateAutomaton<TState, TSymbol
         IEqualityComparer<TState> stateComparer,
         IntervalComparer<TSymbol> symbolIntervalComparer)
     {
-        this.StateComparer = stateComparer;
-        this.SymbolIntervalComparer = symbolIntervalComparer;
-
         // Instantiate collections
         this.transitionsRaw = new(stateComparer, symbolIntervalComparer);
         this.epsilonTransitionsRaw = new(stateComparer);

@@ -17,8 +17,8 @@ public interface IValueCombiner<T>
     /// <summary>
     /// Combines the entries into a single entry.
     /// </summary>
-    /// <param name="first">The first entry to combine.</param>
-    /// <param name="second">The second entry to combine.</param>
-    /// <returns>The combined entry of <paramref name="first"/> and <paramref name="second"/>.</returns>
-    public T Combine(T first, T second);
+    /// <param name="existing">The existing entry to combine.</param>
+    /// <param name="added">The newly added entry to combine.</param>
+    /// <returns>The combined entry of <paramref name="existing"/> and <paramref name="added"/>.</returns>
+    public T Combine(T existing, T added);
 }
