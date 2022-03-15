@@ -19,6 +19,21 @@ namespace Yoakke.SynKit.Automata;
 /// <typeparam name="TSymbol">The symbol type.</typeparam>
 public sealed class Dfa<TState, TSymbol> : IFiniteStateAutomaton<TState, TSymbol>
 {
+    private readonly struct GraphNodeAdapter : GraphSearch.INeighborSelector<TState>
+    {
+        private readonly Dfa<TState, TSymbol> dfa;
+
+        public GraphNodeAdapter(Dfa<TState, TSymbol> dfa)
+        {
+            this.dfa = dfa;
+        }
+
+        public IEnumerable<TState> GetNeighbors(TState node) =>
+            this.dfa.transitionsRaw.TransitionMap.TryGetValue(node, out var onMap)
+                ? onMap.Values
+                : Enumerable.Empty<TState>();
+    }
+
     private readonly struct OverwriteCombiner : IValueCombiner<TState>
     {
         public TState Combine(TState existing, TState added) => added;
@@ -138,6 +153,12 @@ public sealed class Dfa<TState, TSymbol> : IFiniteStateAutomaton<TState, TSymbol
 
     /// <inheritdoc/>
     public ICollection<Interval<TSymbol>> Alphabet => this.alphabet;
+
+    /// <inheritdoc/>
+    public IEnumerable<TState> ReachableStates => GraphSearch.DepthFirst(
+        root: this.InitialState,
+        comparer: this.StateComparer,
+        nodeAdapter: new GraphNodeAdapter(this));
 
     /// <summary>
     /// True, if this DFA is complete over its <see cref="Alphabet"/>.

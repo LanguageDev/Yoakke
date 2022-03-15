@@ -43,6 +43,11 @@ public interface IFiniteStateAutomaton<TState, TSymbol>
     public ICollection<Interval<TSymbol>> Alphabet { get; }
 
     /// <summary>
+    /// All the reachable states from the initial states.
+    /// </summary>
+    public IEnumerable<TState> ReachableStates { get; }
+
+    /// <summary>
     /// Checks if this automaton results in an accepting state for the given input.
     /// </summary>
     /// <param name="input">The sequence of input to feed in for the automaton.</param>

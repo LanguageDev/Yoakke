@@ -19,6 +19,48 @@ namespace Yoakke.SynKit.Automata;
 /// <typeparam name="TSymbol">The symbol type.</typeparam>
 public sealed class Nfa<TState, TSymbol> : IFiniteStateAutomaton<TState, TSymbol>
 {
+    private readonly struct GraphNodeAdapter : GraphSearch.INeighborSelector<TState>
+    {
+        private readonly Nfa<TState, TSymbol> nfa;
+
+        public GraphNodeAdapter(Nfa<TState, TSymbol> nfa)
+        {
+            this.nfa = nfa;
+        }
+
+        public IEnumerable<TState> GetNeighbors(TState node)
+        {
+            var transitions = this.nfa.transitionsRaw.TransitionMap.TryGetValue(node, out var onMap)
+                ? onMap.Values.SelectMany(x => x)
+                : null;
+            var epsTransitions = this.nfa.epsilonTransitionsRaw.EpsilonTransitionMap.TryGetValue(node, out var toSet)
+                ? toSet
+                : null;
+            return (transitions, epsTransitions) switch
+            {
+                (null, null) => Enumerable.Empty<TState>(),
+                (var x, null) => x,
+                (null, var y) => y,
+                (var x, var y) => x.Concat(y),
+            };
+        }
+    }
+
+    private readonly struct EpsilonGraphNodeAdapter : GraphSearch.INeighborSelector<TState>
+    {
+        private readonly Nfa<TState, TSymbol> nfa;
+
+        public EpsilonGraphNodeAdapter(Nfa<TState, TSymbol> nfa)
+        {
+            this.nfa = nfa;
+        }
+
+        public IEnumerable<TState> GetNeighbors(TState node) =>
+            this.nfa.epsilonTransitionsRaw.EpsilonTransitionMap.TryGetValue(node, out var ts)
+                ? ts
+                : Enumerable.Empty<TState>();
+    }
+
     private readonly struct UnionCombiner : IValueCombiner<HashSet<TState>>
     {
         public HashSet<TState> Combine(HashSet<TState> first, HashSet<TState> second) =>
@@ -209,6 +251,12 @@ public sealed class Nfa<TState, TSymbol> : IFiniteStateAutomaton<TState, TSymbol
     /// <inheritdoc/>
     public ICollection<Interval<TSymbol>> Alphabet => this.alphabet;
 
+    /// <inheritdoc/>
+    public IEnumerable<TState> ReachableStates => GraphSearch.DepthFirst(
+        roots: this.InitialStates,
+        comparer: this.StateComparer,
+        nodeAdapter: new GraphNodeAdapter(this));
+
     /// <summary>
     /// The state comparer.
     /// </summary>
@@ -329,7 +377,18 @@ public sealed class Nfa<TState, TSymbol> : IFiniteStateAutomaton<TState, TSymbol
     /// </summary>
     /// <param name="state">The state to get the epsilon closure of.</param>
     /// <returns>All states reachable with only epsilon-transitions from <paramref name="state"/>.</returns>
-    public IEnumerable<TState> EpsilonClosure(TState state) => throw new NotImplementedException();
+    public ISet<TState> EpsilonClosure(TState state) =>
+        this.EpsilonClosure(EnumerableExtensions.Singleton(state));
+
+    /// <summary>
+    /// Retrieves the epsilon closure of the given state, which is all states reachable with only epsilon transitions.
+    /// </summary>
+    /// <param name="states">The states to get the epsilon closure of.</param>
+    /// <returns>All states reachable with only epsilon-transitions from <paramref name="states"/>.</returns>
+    public ISet<TState> EpsilonClosure(IEnumerable<TState> states) => GraphSearch.AllReachable(
+        roots: states,
+        comparer: this.StateComparer,
+        nodeAdapter: new EpsilonGraphNodeAdapter(this));
 
     /// <summary>
     /// Eliminates the epsilon-transitions from this NFA.
