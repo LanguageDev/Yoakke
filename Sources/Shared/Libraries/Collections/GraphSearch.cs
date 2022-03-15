@@ -32,13 +32,32 @@ public static class GraphSearch
     /// </summary>
     /// <typeparam name="TNode">The node implementation type.</typeparam>
     /// <typeparam name="TNodeAdapter">The node adapter type.</typeparam>
+    /// <param name="root">The root to start the search from.</param>
+    /// <param name="comparer">The comparer for the nodes to use.</param>
+    /// <param name="nodeAdapter">The node adapter.</param>
+    /// <returns>The set of reachable nodes from <paramref name="root"/>.</returns>
+    public static HashSet<TNode> AllReachable<TNode, TNodeAdapter>(
+        TNode root,
+        IEqualityComparer<TNode>? comparer,
+        TNodeAdapter nodeAdapter)
+        where TNodeAdapter : INeighborSelector<TNode> =>
+        AllReachable(
+            roots: EnumerableExtensions.Singleton(root),
+            comparer: comparer,
+            nodeAdapter: nodeAdapter);
+
+    /// <summary>
+    /// Retrieves all reachable nodes in the graph.
+    /// </summary>
+    /// <typeparam name="TNode">The node implementation type.</typeparam>
+    /// <typeparam name="TNodeAdapter">The node adapter type.</typeparam>
     /// <param name="roots">The roots to start the search from.</param>
     /// <param name="comparer">The comparer for the nodes to use.</param>
     /// <param name="nodeAdapter">The node adapter.</param>
     /// <returns>The set of reachable nodes from <paramref name="roots"/>.</returns>
     public static HashSet<TNode> AllReachable<TNode, TNodeAdapter>(
         IEnumerable<TNode> roots,
-        IEqualityComparer<TNode> comparer,
+        IEqualityComparer<TNode>? comparer,
         TNodeAdapter nodeAdapter)
         where TNodeAdapter : INeighborSelector<TNode>
     {
@@ -53,16 +72,54 @@ public static class GraphSearch
     /// </summary>
     /// <typeparam name="TNode">The node implementation type.</typeparam>
     /// <typeparam name="TNodeAdapter">The node adapter type.</typeparam>
+    /// <param name="root">The root to start the search from.</param>
+    /// <param name="comparer">The comparer for the nodes to use.</param>
+    /// <param name="nodeAdapter">The node adapter.</param>
+    /// <returns>The sequence of nodes in a breadth-first order.</returns>
+    public static IEnumerable<TNode> BreadthFirst<TNode, TNodeAdapter>(
+        TNode root,
+        IEqualityComparer<TNode>? comparer,
+        TNodeAdapter nodeAdapter)
+        where TNodeAdapter : INeighborSelector<TNode> =>
+        BreadthFirst(
+            roots: EnumerableExtensions.Singleton(root),
+            comparer: comparer,
+            nodeAdapter: nodeAdapter);
+
+    /// <summary>
+    /// Searches through a graph using BFS.
+    /// </summary>
+    /// <typeparam name="TNode">The node implementation type.</typeparam>
+    /// <typeparam name="TNodeAdapter">The node adapter type.</typeparam>
     /// <param name="roots">The roots to start the search from.</param>
     /// <param name="comparer">The comparer for the nodes to use.</param>
     /// <param name="nodeAdapter">The node adapter.</param>
     /// <returns>The sequence of nodes in a breadth-first order.</returns>
     public static IEnumerable<TNode> BreadthFirst<TNode, TNodeAdapter>(
         IEnumerable<TNode> roots,
-        IEqualityComparer<TNode> comparer,
+        IEqualityComparer<TNode>? comparer,
         TNodeAdapter nodeAdapter)
         where TNodeAdapter : INeighborSelector<TNode> =>
         BreadthFirstImpl(roots, new(comparer), nodeAdapter);
+
+    /// <summary>
+    /// Searches through a graph using DFS.
+    /// </summary>
+    /// <typeparam name="TNode">The node implementation type.</typeparam>
+    /// <typeparam name="TNodeAdapter">The node adapter type.</typeparam>
+    /// <param name="root">The root to start the search from.</param>
+    /// <param name="comparer">The comparer for the nodes to use.</param>
+    /// <param name="nodeAdapter">The node adapter.</param>
+    /// <returns>The sequence of nodes in a depth-first order.</returns>
+    public static IEnumerable<TNode> DepthFirst<TNode, TNodeAdapter>(
+        TNode root,
+        IEqualityComparer<TNode>? comparer,
+        TNodeAdapter nodeAdapter)
+        where TNodeAdapter : INeighborSelector<TNode> =>
+        DepthFirst(
+            roots: EnumerableExtensions.Singleton(root),
+            comparer: comparer,
+            nodeAdapter: nodeAdapter);
 
     /// <summary>
     /// Searches through a graph using DFS.
@@ -75,7 +132,7 @@ public static class GraphSearch
     /// <returns>The sequence of nodes in a depth-first order.</returns>
     public static IEnumerable<TNode> DepthFirst<TNode, TNodeAdapter>(
         IEnumerable<TNode> roots,
-        IEqualityComparer<TNode> comparer,
+        IEqualityComparer<TNode>? comparer,
         TNodeAdapter nodeAdapter)
         where TNodeAdapter : INeighborSelector<TNode> =>
         DepthFirstImpl(roots, new(comparer), nodeAdapter);
