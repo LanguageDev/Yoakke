@@ -25,7 +25,7 @@ public sealed class IntervalSetTests
     {
         var originalSet = ParseIntervalSet(setText);
         var resultingSet = ParseIntervalSet(resultText);
-        var shouldChange = !originalSet.SequenceEqual(resultingSet);
+        var shouldChange = !originalSet.SequenceEqual(resultingSet, originalSet.IntervalComparer);
         var item = int.Parse(itemText);
 
         var newAdded = originalSet.Add(item);
@@ -46,7 +46,7 @@ public sealed class IntervalSetTests
     {
         var originalSet = ParseIntervalSet(setText);
         var resultingSet = ParseIntervalSet(resultText);
-        var shouldChange = !originalSet.SequenceEqual(resultingSet);
+        var shouldChange = !originalSet.SequenceEqual(resultingSet, originalSet.IntervalComparer);
         var item = int.Parse(itemText);
 
         var oldRemoved = originalSet.Remove(item);
@@ -87,8 +87,8 @@ public sealed class IntervalSetTests
     {
         var originalSet = ParseIntervalSet(setText);
         var resultingSet = ParseIntervalSet(resultText);
-        var shouldChange = !originalSet.SequenceEqual(resultingSet);
-        var interval = ParseInterval(intervalText);
+        var shouldChange = !originalSet.SequenceEqual(resultingSet, originalSet.IntervalComparer);
+        var interval = IntervalTests.ParseInterval(intervalText);
 
         var newAdded = originalSet.Add(interval);
 
@@ -120,8 +120,8 @@ public sealed class IntervalSetTests
     {
         var originalSet = ParseIntervalSet(setText);
         var resultingSet = ParseIntervalSet(resultText);
-        var shouldChange = !originalSet.SequenceEqual(resultingSet);
-        var interval = ParseInterval(intervalText);
+        var shouldChange = !originalSet.SequenceEqual(resultingSet, originalSet.IntervalComparer);
+        var interval = IntervalTests.ParseInterval(intervalText);
 
         var oldRemoved = originalSet.Remove(interval);
 
@@ -159,198 +159,226 @@ public sealed class IntervalSetTests
         AssertEquals(originalSet, resultingSet);
     }
 
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "4", true)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "12", true)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "7", false)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "6", false)]
-    [InlineData("(-oo; +oo)", "0", true)]
-    [InlineData("(-oo; 0) U (0; +oo)", "0", false)]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "4")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "12")]
+    [InlineData("(-oo; +oo)", "0")]
     [Theory]
-    public void ContainsItem(string setText, string itemText, bool contained)
+    public void ContainsItem(string setText, string itemText)
     {
         var set = ParseIntervalSet(setText);
         var item = int.Parse(itemText);
 
-        var result = set.Contains(item);
-
-        Assert.Equal(contained, result);
+        Assert.True(set.Contains(item));
     }
 
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(7; 9)", true)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "[2; 5]", true)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "[5; 5]", true)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(13; 15]", true)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(0; 0)", true)]
-    [InlineData("(-oo; +oo)", "[-123; 54]", true)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "[2; 6]", false)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(5; 7]", false)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(7; 16]", false)]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "7")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "6")]
+    [InlineData("(-oo; 0) U (0; +oo)", "0")]
     [Theory]
-    public void ContainsInterval(string setText, string intervalText, bool contained)
+    public void DoesNotContainItem(string setText, string itemText)
     {
         var set = ParseIntervalSet(setText);
-        var interval = ParseInterval(intervalText);
+        var item = int.Parse(itemText);
 
-        var result = set.Contains(interval);
-
-        Assert.Equal(contained, result);
+        Assert.False(set.Contains(item));
     }
 
-    [InlineData("(-oo; 5] U (7; 9)", "(-oo; 5] U (7; 9) U [12; 16]", true)]
-    [InlineData("", "", true)]
-    [InlineData("[12; 16]", "(-oo; 5] U (7; 9) U [12; 16]", true)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; 5] U (7; 9) U [12; 16]", true)]
-    [InlineData("(12; 16]", "(-oo; 5] U (7; 9) U [12; 16]", true)]
-    [InlineData("[16; 16]", "(-oo; 5] U (7; 9) U [12; 16]", true)]
-    [InlineData("", "(-oo; 5] U (7; 9) U [12; 16]", true)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; +oo)", true)]
-    [InlineData("(-oo; +oo)", "(-oo; 5] U (7; 9) U [12; 16]", false)]
-    [InlineData("[3; 7) U [9; 13)", "(-oo; 5] U (7; 9) U [12; 16]", false)]
-    [InlineData("[9; 9]", "(-oo; 5] U (7; 9) U [12; 16]", false)]
-    [InlineData("(5; 7] U [9; 12)", "(-oo; 5] U (7; 9) U [12; 16]", false)]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(7; 9)")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "[2; 5]")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "[5; 5]")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(13; 15]")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(0; 0)")]
+    [InlineData("(-oo; +oo)", "[-123; 54]")]
     [Theory]
-    public void IsSubset(string set1Text, string set2Text, bool isSubset)
-    {
-        var set1 = ParseIntervalSet(set1Text);
-        var set2 = ParseIntervalSet(set2Text);
-
-        if (isSubset)
-        {
-            Assert.True(set1.IsSubsetOf(set2));
-            Assert.True(set2.IsSupersetOf(set1));
-        }
-        else
-        {
-            Assert.False(set1.IsSubsetOf(set2));
-            Assert.False(set2.IsSupersetOf(set1));
-        }
-    }
-
-    [InlineData("(-oo; 5] U (7; 9)", "(-oo; 5] U (7; 9) U [12; 16]", true)]
-    [InlineData("", "", false)]
-    [InlineData("[12; 16]", "(-oo; 5] U (7; 9) U [12; 16]", true)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; 5] U (7; 9) U [12; 16]", false)]
-    [InlineData("(12; 16]", "(-oo; 5] U (7; 9) U [12; 16]", true)]
-    [InlineData("[16; 16]", "(-oo; 5] U (7; 9) U [12; 16]", true)]
-    [InlineData("", "(-oo; 5] U (7; 9) U [12; 16]", true)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; +oo)", true)]
-    [InlineData("(-oo; +oo)", "(-oo; 5] U (7; 9) U [12; 16]", false)]
-    [InlineData("[3; 7) U [9; 13)", "(-oo; 5] U (7; 9) U [12; 16]", false)]
-    [InlineData("[9; 9]", "(-oo; 5] U (7; 9) U [12; 16]", false)]
-    [InlineData("(5; 7] U [9; 12)", "(-oo; 5] U (7; 9) U [12; 16]", false)]
-    [Theory]
-    public void IsProperSubset(string set1Text, string set2Text, bool isSubset)
-    {
-        var set1 = ParseIntervalSet(set1Text);
-        var set2 = ParseIntervalSet(set2Text);
-
-        if (isSubset)
-        {
-            // Non-proper
-            Assert.True(set1.IsSubsetOf(set2));
-            Assert.True(set2.IsSupersetOf(set1));
-            // Proper
-            Assert.True(set1.IsProperSubsetOf(set2));
-            Assert.True(set2.IsProperSupersetOf(set1));
-        }
-        else
-        {
-            Assert.False(set1.IsProperSubsetOf(set2));
-            Assert.False(set2.IsProperSupersetOf(set1));
-        }
-    }
-
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; 5]", true)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; +oo)", true)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "[2; 7)", true)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "[13; 14)", true)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "[9; 12)", false)]
-    [InlineData("", "(0; 0)", false)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "[1; 1]", true)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "[6; 6]", false)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(0; 0)", false)]
-    [InlineData("", "(2; 6)", false)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "[2; 20)", true)]
-    [InlineData("[5; 5]", "[5; 5]", true)]
-    [InlineData("[5; 5]", "[1; 1]", false)]
-    [Theory]
-    public void OverlapsInterval(string setText, string intervalText, bool overlaps)
+    public void ContainsInterval(string setText, string intervalText)
     {
         var set = ParseIntervalSet(setText);
-        var interval = ParseInterval(intervalText);
+        var interval = IntervalTests.ParseInterval(intervalText);
 
-        var result = set.Overlaps(interval);
-
-        if (overlaps) Assert.True(result);
-        else Assert.False(result);
+        Assert.Contains(interval, set);
     }
 
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; 5] U (7; 9) U [12; 16]", true)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; 4) U (4; +oo)", true)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(5; 7] U [9; 12) U (16; +oo)", false)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "[5; 7) U [18; 20)", true)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(6; 7) U [18; 20)", false)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "[3; 7) U [18; 20)", true)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "[3; 10) U [18; 20)", true)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "[3; 10) U [13; 20)", true)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "[1; 1]", true)]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "[2; 6]")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(5; 7]")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(7; 16]")]
     [Theory]
-    public void OverlapsSet(string set1Text, string set2Text, bool hasOverlap)
+    public void DoesNotContainInterval(string setText, string intervalText)
+    {
+        var set = ParseIntervalSet(setText);
+        var interval = IntervalTests.ParseInterval(intervalText);
+
+        Assert.DoesNotContain(interval, set);
+    }
+
+    [InlineData("", "")]
+    [InlineData("(-oo; 5] U (7; 9)", "(-oo; 5] U (7; 9) U [12; 16]")]
+    [InlineData("[12; 16]", "(-oo; 5] U (7; 9) U [12; 16]")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; 5] U (7; 9) U [12; 16]")]
+    [InlineData("(12; 16]", "(-oo; 5] U (7; 9) U [12; 16]")]
+    [InlineData("[16; 16]", "(-oo; 5] U (7; 9) U [12; 16]")]
+    [InlineData("", "(-oo; 5] U (7; 9) U [12; 16]")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; +oo)")]
+    [Theory]
+    public void Subset(string set1Text, string set2Text)
     {
         var set1 = ParseIntervalSet(set1Text);
         var set2 = ParseIntervalSet(set2Text);
 
-        if (hasOverlap)
-        {
-            Assert.True(set1.Overlaps(set2));
-            Assert.True(set2.Overlaps(set1));
-        }
-        else
-        {
-            Assert.False(set1.Overlaps(set2));
-            Assert.False(set2.Overlaps(set1));
-        }
+        Assert.True(set1.IsSubsetOf(set2));
+        Assert.True(set2.IsSupersetOf(set1));
     }
 
-    [InlineData("", "", true)]
-    [InlineData("[1; 1]", "[1; 1]", true)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; 5] U (7; 9) U [12; 16]", true)]
-    [InlineData("(1; 2) U (3; 4)", "(1; 2) U (3; 4)", true)]
-    [InlineData("[1; 2] U (3; 4)", "[1; 2] U (3; 4)", true)]
-    [InlineData("[1; 2] U (3; 4)", "(1; 2] U (3; 4)", false)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(7; 9) U [12; 16]", false)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; 5] U [12; 16]", false)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; 5] U (7; 9)", false)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "", false)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; +oo)", false)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(5; 7] U [9; 12) U (16; +oo)", false)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "[5; 7) U [18; 20)", false)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(6; 7) U [18; 20)", false)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "[3; 7) U [18; 20)", false)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "[3; 10) U [18; 20)", false)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "[3; 10) U [13; 20)", false)]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "[1; 1]", false)]
+    [InlineData("(-oo; +oo)", "(-oo; 5] U (7; 9) U [12; 16]")]
+    [InlineData("[3; 7) U [9; 13)", "(-oo; 5] U (7; 9) U [12; 16]")]
+    [InlineData("[9; 9]", "(-oo; 5] U (7; 9) U [12; 16]")]
+    [InlineData("(5; 7] U [9; 12)", "(-oo; 5] U (7; 9) U [12; 16]")]
     [Theory]
-    public void EqualSet(string set1Text, string set2Text, bool equal)
+    public void NotSubset(string set1Text, string set2Text)
     {
         var set1 = ParseIntervalSet(set1Text);
         var set2 = ParseIntervalSet(set2Text);
 
-        if (equal)
-        {
-            AssertEquals(set1, set2);
-        }
-        else
-        {
-            Assert.False(set1.SetEquals(set2));
-            Assert.False(set2.SetEquals(set1));
-        }
+        Assert.False(set1.IsSubsetOf(set2));
+        Assert.False(set2.IsSupersetOf(set1));
+    }
+
+    [InlineData("(-oo; 5] U (7; 9)", "(-oo; 5] U (7; 9) U [12; 16]")]
+    [InlineData("[12; 16]", "(-oo; 5] U (7; 9) U [12; 16]")]
+    [InlineData("(12; 16]", "(-oo; 5] U (7; 9) U [12; 16]")]
+    [InlineData("[16; 16]", "(-oo; 5] U (7; 9) U [12; 16]")]
+    [InlineData("", "(-oo; 5] U (7; 9) U [12; 16]")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; +oo)")]
+    [Theory]
+    public void ProperSubset(string set1Text, string set2Text)
+    {
+        var set1 = ParseIntervalSet(set1Text);
+        var set2 = ParseIntervalSet(set2Text);
+
+        // Non-proper
+        Assert.True(set1.IsSubsetOf(set2));
+        Assert.True(set2.IsSupersetOf(set1));
+        // Proper
+        Assert.True(set1.IsProperSubsetOf(set2));
+        Assert.True(set2.IsProperSupersetOf(set1));
+    }
+
+    [InlineData("", "")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; 5] U (7; 9) U [12; 16]")]
+    [InlineData("(-oo; +oo)", "(-oo; 5] U (7; 9) U [12; 16]")]
+    [InlineData("[3; 7) U [9; 13)", "(-oo; 5] U (7; 9) U [12; 16]")]
+    [InlineData("[9; 9]", "(-oo; 5] U (7; 9) U [12; 16]")]
+    [InlineData("(5; 7] U [9; 12)", "(-oo; 5] U (7; 9) U [12; 16]")]
+    [Theory]
+    public void NotProperSubset(string set1Text, string set2Text)
+    {
+        var set1 = ParseIntervalSet(set1Text);
+        var set2 = ParseIntervalSet(set2Text);
+
+        Assert.False(set1.IsProperSubsetOf(set2));
+        Assert.False(set2.IsProperSupersetOf(set1));
+    }
+
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; 5]")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; +oo)")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "[2; 7)")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "[13; 14)")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "[1; 1]")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "[2; 20)")]
+    [InlineData("[5; 5]", "[5; 5]")]
+    [Theory]
+    public void OverlappingSetWithInterval(string setText, string intervalText)
+    {
+        var set = ParseIntervalSet(setText);
+        var interval = IntervalTests.ParseInterval(intervalText);
+
+        Assert.True(set.Overlaps(interval));
+    }
+
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "[9; 12)")]
+    [InlineData("", "(0; 0)")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "[6; 6]")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(0; 0)")]
+    [InlineData("", "(2; 6)")]
+    [InlineData("[5; 5]", "[1; 1]")]
+    [Theory]
+    public void NonOverlappingSetWithInterval(string setText, string intervalText)
+    {
+        var set = ParseIntervalSet(setText);
+        var interval = IntervalTests.ParseInterval(intervalText);
+
+        Assert.False(set.Overlaps(interval));
+    }
+
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; 5] U (7; 9) U [12; 16]")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; 4) U (4; +oo)")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "[5; 7) U [18; 20)")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "[3; 7) U [18; 20)")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "[3; 10) U [18; 20)")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "[3; 10) U [13; 20)")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "[1; 1]")]
+    [Theory]
+    public void OverlappingSet(string set1Text, string set2Text)
+    {
+        var set1 = ParseIntervalSet(set1Text);
+        var set2 = ParseIntervalSet(set2Text);
+
+        Assert.True(set1.Overlaps(set2));
+        Assert.True(set2.Overlaps(set1));
+    }
+
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(5; 7] U [9; 12) U (16; +oo)")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(6; 7) U [18; 20)")]
+    [Theory]
+    public void NonOverlappingSet(string set1Text, string set2Text)
+    {
+        var set1 = ParseIntervalSet(set1Text);
+        var set2 = ParseIntervalSet(set2Text);
+
+        Assert.False(set1.Overlaps(set2));
+        Assert.False(set2.Overlaps(set1));
+    }
+
+    [InlineData("", "")]
+    [InlineData("[1; 1]", "[1; 1]")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; 5] U (7; 9) U [12; 16]")]
+    [InlineData("(1; 2) U (3; 4)", "(1; 2) U (3; 4)")]
+    [InlineData("[1; 2] U (3; 4)", "[1; 2] U (3; 4)")]
+    [Theory]
+    public void EqualSets(string set1Text, string set2Text)
+    {
+        var set1 = ParseIntervalSet(set1Text);
+        var set2 = ParseIntervalSet(set2Text);
+
+        AssertEquals(set1, set2);
+    }
+
+    [InlineData("[1; 2] U (3; 4)", "(1; 2] U (3; 4)")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(7; 9) U [12; 16]")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; 5] U [12; 16]")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; 5] U (7; 9)")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(-oo; +oo)")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(5; 7] U [9; 12) U (16; +oo)")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "[5; 7) U [18; 20)")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(6; 7) U [18; 20)")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "[3; 7) U [18; 20)")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "[3; 10) U [18; 20)")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "[3; 10) U [13; 20)")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "[1; 1]")]
+    [Theory]
+    public void InequalSets(string set1Text, string set2Text)
+    {
+        var set1 = ParseIntervalSet(set1Text);
+        var set2 = ParseIntervalSet(set2Text);
+
+        Assert.False(set1.SetEquals(set2));
+        Assert.False(set2.SetEquals(set1));
     }
 
     private static void AssertEquals(IntervalSet<int> a, IntervalSet<int> b)
     {
         // Same intervals
-        Assert.True(a.SequenceEqual(b));
+        Assert.True(a.SequenceEqual(b, a.IntervalComparer));
         // Set-equality
         Assert.True(a.SetEquals(b));
         Assert.True(b.SetEquals(a));
@@ -376,7 +404,7 @@ public sealed class IntervalSetTests
 
         // Split by Union and parse intervals
         var intervalParts = text.Split('U');
-        var intervals = intervalParts.Select(ParseInterval);
+        var intervals = intervalParts.Select(IntervalTests.ParseInterval);
 
         // Construct the dense set
         var result = new IntervalSet<int>();
@@ -386,20 +414,5 @@ public sealed class IntervalSetTests
         Assert.True(intervals.SequenceEqual(result));
 
         return result;
-    }
-
-    internal static Interval<int> ParseInterval(string text)
-    {
-        var parts = text.Split("; ");
-        var loStr = parts[0].Trim();
-        var hiStr = parts[1].Trim();
-
-        var lo = loStr == "(-oo" ? LowerEndpoint.Unbounded<int>()
-               : loStr[0] == '[' ? LowerEndpoint.Inclusive(int.Parse(loStr[1..]))
-               : LowerEndpoint.Exclusive(int.Parse(loStr[1..]));
-        var hi = hiStr == "+oo)" ? UpperEndpoint.Unbounded<int>()
-               : hiStr[^1] == ']' ? UpperEndpoint.Inclusive(int.Parse(hiStr[..^1]))
-               : UpperEndpoint.Exclusive(int.Parse(hiStr[..^1]));
-        return new(lo, hi);
     }
 }

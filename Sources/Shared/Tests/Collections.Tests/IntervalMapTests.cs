@@ -14,12 +14,11 @@ namespace Yoakke.Collections.Tests;
 
 public sealed class IntervalMapTests
 {
-    private struct HashSetCombiner : IValueCombiner<HashSet<int>>
+    private readonly struct HashSetCombiner : IValueCombiner<HashSet<int>>
     {
         public HashSet<int> Combine(HashSet<int> first, HashSet<int> second) => new(first.Concat(second));
     }
 
-    [Theory]
     // Legacy tests
     [InlineData(
         "",
@@ -109,6 +108,7 @@ public sealed class IntervalMapTests
         "[1; 3) => { 1 } U [5; 7) => { 1 } U [9; 12) => { 1 } U [14; 15) => { 1 }",
         "[6; 10) => { 2 }",
         "[1; 3) => { 1 } U [5; 6) => { 1 } U [6; 7) => { 1, 2 } U [7; 9) => { 2 } U [9; 10) => { 1, 2 } U [10; 12) => { 1 } U [14; 15) => { 1 }")]
+    [Theory]
     public void AddInterval(string mapText, string assocText, string resultText)
     {
         var originalMap = ParseDenseMap(mapText);
@@ -120,7 +120,6 @@ public sealed class IntervalMapTests
         AssertEquals(originalMap, resultingMap);
     }
 
-    [Theory]
     [InlineData(
         "[2; 5) => { 1 } U [7; 9) => { 1 }",
         "[4; 8)",
@@ -226,39 +225,47 @@ public sealed class IntervalMapTests
         "[1; 3) => { 1 } U [5; 7) => { 1 } U [9; 12) => { 1 } U [14; 15) => { 1 }",
         "[6; 10)",
         "[1; 3) => { 1 } U [5; 6) => { 1 } U [10; 12) => { 1 } U [14; 15) => { 1 }")]
+    [Theory]
     public void RemoveInterval(string mapText, string intervalText, string resultText)
     {
         var originalMap = ParseDenseMap(mapText);
         var resultingMap = ParseDenseMap(resultText);
-        var interval = ParseInterval(intervalText);
+        var interval = IntervalTests.ParseInterval(intervalText);
 
         originalMap.Remove(interval);
 
         AssertEquals(originalMap, resultingMap);
     }
 
+    [InlineData("", "(0; 0)")]
+    [InlineData("[0; 5) => { 1 }", "[0; 5)")]
+    [InlineData("[0; 5) => { 1 }", "[0; 1)")]
+    [InlineData("[0; 5) => { 1 }", "[4; 5)")]
+    [InlineData("[0; 5) => { 1 }", "[2; 3)")]
+    [InlineData("(-oo; +oo) => { 1 }", "[2; 3)")]
+    [InlineData("[0; 1) => { 1 } U [1; 2) => { 1 }", "[0; 2)")]
     [Theory]
-    [InlineData("", "(0; 0)", true)]
-    [InlineData("[0; 5) => { 1 }", "[6; 7)", false)]
-    [InlineData("[0; 5) => { 1 }", "[0; 5)", true)]
-    [InlineData("[0; 5) => { 1 }", "[0; 1)", true)]
-    [InlineData("[0; 5) => { 1 }", "[4; 5)", true)]
-    [InlineData("[0; 5) => { 1 }", "[2; 3)", true)]
-    [InlineData("(-oo; +oo) => { 1 }", "[2; 3)", true)]
-    [InlineData("[0; 1) => { 1 } U [1; 2) => { 1 }", "[0; 2)", true)]
-    [InlineData("[0; 1) => { 1 } U [1; 2) => { 1 }", "[0; 3)", false)]
-    [InlineData("[0; 1) => { 1 } U [1; 2) => { 1 }", "[-1; 2)", false)]
-    [InlineData("[0; 1) => { 1 } U [1; 2) => { 1 }", "[-1; 3)", false)]
-    [InlineData("[0; 1) => { 1 } U [2; 3) => { 1 }", "[1; 2)", false)]
-    [InlineData("[0; 1) => { 1 } U [2; 3) => { 1 }", "[0; 3)", false)]
-    public void ContainsInterval(string mapText, string intervalText, bool contains)
+    public void ContainsInterval(string mapText, string intervalText)
     {
         var map = ParseDenseMap(mapText);
-        var interval = ParseInterval(intervalText);
+        var interval = IntervalTests.ParseInterval(intervalText);
 
-        var result = map.ContainsKeys(interval);
+        Assert.True(map.ContainsKeys(interval));
+    }
 
-        Assert.Equal(contains, result);
+    [InlineData("[0; 5) => { 1 }", "[6; 7)")]
+    [InlineData("[0; 1) => { 1 } U [1; 2) => { 1 }", "[0; 3)")]
+    [InlineData("[0; 1) => { 1 } U [1; 2) => { 1 }", "[-1; 2)")]
+    [InlineData("[0; 1) => { 1 } U [1; 2) => { 1 }", "[-1; 3)")]
+    [InlineData("[0; 1) => { 1 } U [2; 3) => { 1 }", "[1; 2)")]
+    [InlineData("[0; 1) => { 1 } U [2; 3) => { 1 }", "[0; 3)")]
+    [Theory]
+    public void DoesNotContainInterval(string mapText, string intervalText)
+    {
+        var map = ParseDenseMap(mapText);
+        var interval = IntervalTests.ParseInterval(intervalText);
+
+        Assert.False(map.ContainsKeys(interval));
     }
 
     private static void AssertEquals(
@@ -294,7 +301,7 @@ public sealed class IntervalMapTests
     private static KeyValuePair<Interval<int>, HashSet<int>> ParseAssociation(string text)
     {
         var parts = text.Split("=>");
-        var interval = ParseInterval(parts[0]);
+        var interval = IntervalTests.ParseInterval(parts[0]);
         var set = ParseSet(parts[1]);
         return new(interval, set);
     }
@@ -306,6 +313,4 @@ public sealed class IntervalMapTests
         Assert.Equal('}', text[^1]);
         return text[1..^1].Split(',').Select(t => int.Parse(t.Trim())).ToHashSet();
     }
-
-    private static Interval<int> ParseInterval(string text) => IntervalSetTests.ParseInterval(text);
 }
