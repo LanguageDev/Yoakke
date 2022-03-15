@@ -425,26 +425,26 @@ public sealed class Nfa<TState, TSymbol> : IFiniteStateAutomaton<TState, TSymbol
     {
         if (this.EpsilonTransitions.Count == 0) return false;
 
-        foreach (var state in this.States)
+        foreach (var fromState in this.States)
         {
             // For each state we look at its epsilon closure
             // For each element in the closure we copy the non-epsilon transitions from state to the others
             // We can omit the state itself from the copy
             var epsilonClosure = this
-                .EpsilonClosure(state)
-                .Where(s => !this.StateComparer.Equals(s, state));
+                .EpsilonClosure(fromState)
+                .Where(s => !this.StateComparer.Equals(s, fromState));
             foreach (var toState in epsilonClosure)
             {
                 // Copy the transitions
                 if (this.transitionsRaw.TransitionMap.TryGetValue(toState, out var fromV2Map))
                 {
-                    var fromV1Map = this.transitionsRaw.GetTransitionsFrom(state);
+                    var fromV1Map = this.transitionsRaw.GetTransitionsFrom(fromState);
                     foreach (var onTo in fromV2Map) fromV1Map.Add(onTo.Key, onTo.Value, default(UnionCombiner));
                 }
-                // If v1 is a starting state, we need to make v2 one as well
-                if (this.InitialStates.Contains(state)) this.InitialStates.Add(toState);
-                // If v2 is a final state, v1 needs to be as well
-                if (this.AcceptingStates.Contains(toState)) this.AcceptingStates.Add(state);
+                // If fromState is a starting state, we need to make v2 one as well
+                if (this.InitialStates.Contains(fromState)) this.InitialStates.Add(toState);
+                // If toState is a final state, v1 needs to be as well
+                if (this.AcceptingStates.Contains(toState)) this.AcceptingStates.Add(fromState);
             }
         }
 

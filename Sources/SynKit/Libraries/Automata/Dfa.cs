@@ -163,7 +163,9 @@ public sealed class Dfa<TState, TSymbol> : IFiniteStateAutomaton<TState, TSymbol
     /// <summary>
     /// True, if this DFA is complete over its <see cref="Alphabet"/>.
     /// </summary>
-    public bool IsComplete => throw new NotImplementedException();
+    public bool IsComplete => this.Alphabet.Count == 0
+        || this.States.All(state => this.transitionsRaw.TransitionMap.TryGetValue(state, out var onMap)
+                                 && this.Alphabet.All(symbolIv => onMap.ContainsKeys(symbolIv)));
 
     /// <summary>
     /// The state comparer.
@@ -265,13 +267,25 @@ public sealed class Dfa<TState, TSymbol> : IFiniteStateAutomaton<TState, TSymbol
     }
 
     /// <inheritdoc/>
-    public bool Accepts(IEnumerable<TSymbol> input) => throw new NotImplementedException();
+    public bool Accepts(IEnumerable<TSymbol> input)
+    {
+        var currentState = this.InitialState;
+        foreach (var symbol in input)
+        {
+            if (!this.transitionsRaw.TransitionMap.TryGetValue(currentState, out var fromMap)) return false;
+            var values = fromMap.Intersecting(Interval.Singleton(symbol)).Select(kv => kv.Value).GetEnumerator();
+            if (!values.MoveNext()) return false;
+            currentState = values.Current;
+        }
+        return this.AcceptingStates.Contains(currentState);
+    }
 
     /// <summary>
     /// Completes this DFA under its <see cref="Alphabet"/>.
     /// </summary>
+    /// <param name="trap">The state to use as a trap.</param>
     /// <returns>True, if the DFA was not complete and needed completion.</returns>
-    public bool Complete() => throw new NotImplementedException();
+    public bool Complete(TState trap) => throw new NotImplementedException();
 
     /// <summary>
     /// Minimizes this DFA into a new one.
