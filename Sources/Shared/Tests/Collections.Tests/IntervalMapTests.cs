@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 using Yoakke.Collections.Intervals;
+using static Yoakke.Collections.Tests.IntervalSetTests;
 
 namespace Yoakke.Collections.Tests;
 
@@ -230,7 +231,7 @@ public sealed class IntervalMapTests
     {
         var originalMap = ParseDenseMap(mapText);
         var resultingMap = ParseDenseMap(resultText);
-        var interval = IntervalTests.ParseInterval(intervalText);
+        var interval = ParseInterval(intervalText);
 
         originalMap.Remove(interval);
 
@@ -248,7 +249,7 @@ public sealed class IntervalMapTests
     public void ContainsInterval(string mapText, string intervalText)
     {
         var map = ParseDenseMap(mapText);
-        var interval = IntervalTests.ParseInterval(intervalText);
+        var interval = ParseInterval(intervalText);
 
         Assert.True(map.ContainsKeys(interval));
     }
@@ -263,25 +264,25 @@ public sealed class IntervalMapTests
     public void DoesNotContainInterval(string mapText, string intervalText)
     {
         var map = ParseDenseMap(mapText);
-        var interval = IntervalTests.ParseInterval(intervalText);
+        var interval = ParseInterval(intervalText);
 
         Assert.False(map.ContainsKeys(interval));
     }
 
     private static void AssertEquals(
-        IntervalMap<int, HashSet<int>> a,
-        IEnumerable<KeyValuePair<Interval<int>, HashSet<int>>> b)
+        IntervalMap<IntWrap, HashSet<int>> a,
+        IEnumerable<KeyValuePair<Interval<IntWrap>, HashSet<int>>> b)
     {
         // Key equality
-        Assert.True(a.Select(i => i.Key).SequenceEqual(b.Select(i => i.Key)));
+        Assert.True(a.Select(i => i.Key).SequenceEqual(b.Select(i => i.Key), a.IntervalComparer));
         // Value equality
         Assert.True(a.Select(i => i.Value).Zip(b.Select(i => i.Value)).All(pair => pair.First.SetEquals(pair.Second)));
     }
 
-    private static IntervalMap<int, HashSet<int>> ParseDenseMap(string text)
+    private static IntervalMap<IntWrap, HashSet<int>> ParseDenseMap(string text)
     {
         text = text.Trim();
-        var result = new IntervalMap<int, HashSet<int>>(comparer: null as IntervalComparer<int>);
+        var result = new IntervalMap<IntWrap, HashSet<int>>(IntWrapComparer.IntervalInstance);
 
         // Empty string means empty set
         if (text.Length == 0) return result;
@@ -299,19 +300,25 @@ public sealed class IntervalMapTests
         return result;
     }
 
-    private static KeyValuePair<Interval<int>, HashSet<int>> ParseAssociation(string text)
+    private static KeyValuePair<Interval<IntWrap>, HashSet<int>> ParseAssociation(string text)
     {
         var parts = text.Split("=>");
-        var interval = IntervalTests.ParseInterval(parts[0]);
+        var interval = ParseInterval(parts[0]);
         var set = ParseSet(parts[1]);
         return new(interval, set);
     }
+
+    private static Interval<IntWrap> ParseInterval(string text) =>
+        IntervalSetTests.ParseInterval(text);
 
     private static HashSet<int> ParseSet(string text)
     {
         text = text.Trim();
         Assert.Equal('{', text[0]);
         Assert.Equal('}', text[^1]);
-        return text[1..^1].Split(',').Select(t => int.Parse(t.Trim())).ToHashSet();
+        return text[1..^1]
+            .Split(',')
+            .Select(t => int.Parse(t.Trim()))
+            .ToHashSet();
     }
 }

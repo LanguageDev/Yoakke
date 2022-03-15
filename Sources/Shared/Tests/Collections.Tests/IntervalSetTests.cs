@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,42 +15,63 @@ namespace Yoakke.Collections.Tests;
 
 public sealed class IntervalSetTests
 {
-    [InlineData("", "4", "[4; 4]")]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "4", "(-oo; 5] U (7; 9) U [12; 16]")]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "7", "(-oo; 5] U [7; 9) U [12; 16]")]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "12", "(-oo; 5] U (7; 9) U [12; 16]")]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "10", "(-oo; 5] U (7; 9) U [10; 10] U [12; 16]")]
-    [InlineData("(-oo; 0) U (0; +oo)", "0", "(-oo; +oo)")]
+    // NOTE: We use this wrapper type to check for proper comparer usage
+
+    internal sealed class IntWrap
+    {
+        public int Value { get; set; }
+
+        public IntWrap(int value)
+        {
+            this.Value = value;
+        }
+    }
+
+    internal sealed class IntWrapComparer : IEqualityComparer<IntWrap>, IComparer<IntWrap>
+    {
+        public static IntWrapComparer Instance { get; } = new();
+        public static EndpointComparer<IntWrap> EndpointInstance { get; } = new(Instance, Instance);
+        public static IntervalComparer<IntWrap> IntervalInstance { get; } = new(EndpointInstance);
+
+        public int Compare(IntWrap? x, IntWrap? y) => (x?.Value ?? 0) - (y?.Value ?? 0);
+        public bool Equals(IntWrap? x, IntWrap? y) => x?.Value == y?.Value;
+        public int GetHashCode([DisallowNull] IntWrap obj) => obj.Value.GetHashCode();
+    }
+
+    [InlineData("", 4, "[4; 4]")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", 4, "(-oo; 5] U (7; 9) U [12; 16]")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", 7, "(-oo; 5] U [7; 9) U [12; 16]")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", 12, "(-oo; 5] U (7; 9) U [12; 16]")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", 10, "(-oo; 5] U (7; 9) U [10; 10] U [12; 16]")]
+    [InlineData("(-oo; 0) U (0; +oo)", 0, "(-oo; +oo)")]
     [Theory]
-    public void AddItem(string setText, string itemText, string resultText)
+    public void AddItem(string setText, int item, string resultText)
     {
         var originalSet = ParseIntervalSet(setText);
         var resultingSet = ParseIntervalSet(resultText);
         var shouldChange = !originalSet.SequenceEqual(resultingSet, originalSet.IntervalComparer);
-        var item = int.Parse(itemText);
 
-        var newAdded = originalSet.Add(item);
+        var newAdded = originalSet.Add(new IntWrap(item));
 
         AssertEquals(originalSet, resultingSet);
         Assert.Equal(shouldChange, newAdded);
     }
 
-    [InlineData("", "4", "")]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "4", "(-oo; 4) U (4; 5] U (7; 9) U [12; 16]")]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "6", "(-oo; 5] U (7; 9) U [12; 16]")]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "12", "(-oo; 5] U (7; 9) U (12; 16]")]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "8", "(-oo; 5] U (7; 8) U (8; 9) U [12; 16]")]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "14", "(-oo; 5] U (7; 9) U [12; 14) U (14; 16]")]
-    [InlineData("(-oo; +oo)", "0", "(-oo; 0) U (0; +oo)")]
+    [InlineData("", 4, "")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", 4, "(-oo; 4) U (4; 5] U (7; 9) U [12; 16]")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", 6, "(-oo; 5] U (7; 9) U [12; 16]")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", 12, "(-oo; 5] U (7; 9) U (12; 16]")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", 8, "(-oo; 5] U (7; 8) U (8; 9) U [12; 16]")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", 14, "(-oo; 5] U (7; 9) U [12; 14) U (14; 16]")]
+    [InlineData("(-oo; +oo)", 0, "(-oo; 0) U (0; +oo)")]
     [Theory]
-    public void RemoveItem(string setText, string itemText, string resultText)
+    public void RemoveItem(string setText, int item, string resultText)
     {
         var originalSet = ParseIntervalSet(setText);
         var resultingSet = ParseIntervalSet(resultText);
         var shouldChange = !originalSet.SequenceEqual(resultingSet, originalSet.IntervalComparer);
-        var item = int.Parse(itemText);
 
-        var oldRemoved = originalSet.Remove(item);
+        var oldRemoved = originalSet.Remove(new IntWrap(item));
 
         AssertEquals(originalSet, resultingSet);
         Assert.Equal(shouldChange, oldRemoved);
@@ -88,7 +110,7 @@ public sealed class IntervalSetTests
         var originalSet = ParseIntervalSet(setText);
         var resultingSet = ParseIntervalSet(resultText);
         var shouldChange = !originalSet.SequenceEqual(resultingSet, originalSet.IntervalComparer);
-        var interval = IntervalTests.ParseInterval(intervalText);
+        var interval = ParseInterval(intervalText);
 
         var newAdded = originalSet.Add(interval);
 
@@ -121,7 +143,7 @@ public sealed class IntervalSetTests
         var originalSet = ParseIntervalSet(setText);
         var resultingSet = ParseIntervalSet(resultText);
         var shouldChange = !originalSet.SequenceEqual(resultingSet, originalSet.IntervalComparer);
-        var interval = IntervalTests.ParseInterval(intervalText);
+        var interval = ParseInterval(intervalText);
 
         var oldRemoved = originalSet.Remove(interval);
 
@@ -159,28 +181,24 @@ public sealed class IntervalSetTests
         AssertEquals(originalSet, resultingSet);
     }
 
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "4")]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "12")]
-    [InlineData("(-oo; +oo)", "0")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", 4)]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", 12)]
+    [InlineData("(-oo; +oo)", 0)]
     [Theory]
-    public void ContainsItem(string setText, string itemText)
+    public void ContainsItem(string setText, int item)
     {
         var set = ParseIntervalSet(setText);
-        var item = int.Parse(itemText);
-
-        Assert.True(set.Contains(item));
+        Assert.True(set.Contains(new IntWrap(item)));
     }
 
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "7")]
-    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "6")]
-    [InlineData("(-oo; 0) U (0; +oo)", "0")]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", 7)]
+    [InlineData("(-oo; 5] U (7; 9) U [12; 16]", 6)]
+    [InlineData("(-oo; 0) U (0; +oo)", 0)]
     [Theory]
-    public void DoesNotContainItem(string setText, string itemText)
+    public void DoesNotContainItem(string setText, int item)
     {
         var set = ParseIntervalSet(setText);
-        var item = int.Parse(itemText);
-
-        Assert.False(set.Contains(item));
+        Assert.False(set.Contains(new IntWrap(item)));
     }
 
     [InlineData("(-oo; 5] U (7; 9) U [12; 16]", "(7; 9)")]
@@ -193,7 +211,7 @@ public sealed class IntervalSetTests
     public void ContainsInterval(string setText, string intervalText)
     {
         var set = ParseIntervalSet(setText);
-        var interval = IntervalTests.ParseInterval(intervalText);
+        var interval = ParseInterval(intervalText);
 
         Assert.Contains(interval, set);
     }
@@ -205,9 +223,12 @@ public sealed class IntervalSetTests
     public void DoesNotContainInterval(string setText, string intervalText)
     {
         var set = ParseIntervalSet(setText);
-        var interval = IntervalTests.ParseInterval(intervalText);
+        var interval = ParseInterval(intervalText);
 
-        Assert.DoesNotContain(interval, set);
+        // NOTE: Assert.DoesNotContain relies on a heuristic to find the comparer
+#pragma warning disable xUnit2017 // Do not use Contains() to check if a value exists in a collection
+        Assert.False(set.Contains(interval));
+#pragma warning restore xUnit2017 // Do not use Contains() to check if a value exists in a collection
     }
 
     [InlineData("", "")]
@@ -289,7 +310,7 @@ public sealed class IntervalSetTests
     public void OverlappingSetWithInterval(string setText, string intervalText)
     {
         var set = ParseIntervalSet(setText);
-        var interval = IntervalTests.ParseInterval(intervalText);
+        var interval = ParseInterval(intervalText);
 
         Assert.True(set.Overlaps(interval));
     }
@@ -304,7 +325,7 @@ public sealed class IntervalSetTests
     public void NonOverlappingSetWithInterval(string setText, string intervalText)
     {
         var set = ParseIntervalSet(setText);
-        var interval = IntervalTests.ParseInterval(intervalText);
+        var interval = ParseInterval(intervalText);
 
         Assert.False(set.Overlaps(interval));
     }
@@ -375,7 +396,7 @@ public sealed class IntervalSetTests
         Assert.False(set2.SetEquals(set1));
     }
 
-    private static void AssertEquals(IntervalSet<int> a, IntervalSet<int> b)
+    private static void AssertEquals<T>(IntervalSet<T> a, IntervalSet<T> b)
     {
         // Same intervals
         Assert.True(a.SequenceEqual(b, a.IntervalComparer));
@@ -396,24 +417,27 @@ public sealed class IntervalSetTests
         Assert.False(b.IsProperSupersetOf(a));
     }
 
-    private static IntervalSet<int> ParseIntervalSet(string text)
+    private static IntervalSet<IntWrap> ParseIntervalSet(string text)
     {
         text = text.Trim();
-        var result = new IntervalSet<int>(comparer: null as IntervalComparer<int>);
+        var result = new IntervalSet<IntWrap>(IntWrapComparer.IntervalInstance);
 
         // Empty string means empty set
         if (text.Length == 0) return result;
 
         // Split by Union and parse intervals
         var intervalParts = text.Split('U');
-        var intervals = intervalParts.Select(IntervalTests.ParseInterval);
+        var intervals = intervalParts.Select(ParseInterval);
 
         // Construct the dense set
         foreach (var iv in intervals) result.Add(iv);
 
         // Check, if the constructed set is indeed the specified one
-        Assert.True(intervals.SequenceEqual(result));
+        Assert.True(intervals.SequenceEqual(result, result.IntervalComparer));
 
         return result;
     }
+
+    internal static Interval<IntWrap> ParseInterval(string text) =>
+        IntervalTests.ParseInterval(text, p => new IntWrap(int.Parse(p)));
 }
