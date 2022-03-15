@@ -399,15 +399,16 @@ public sealed class IntervalSetTests
     private static IntervalSet<int> ParseIntervalSet(string text)
     {
         text = text.Trim();
+        var result = new IntervalSet<int>(comparer: null as IntervalComparer<int>);
+
         // Empty string means empty set
-        if (text.Length == 0) return new();
+        if (text.Length == 0) return result;
 
         // Split by Union and parse intervals
         var intervalParts = text.Split('U');
         var intervals = intervalParts.Select(IntervalTests.ParseInterval);
 
         // Construct the dense set
-        var result = new IntervalSet<int>();
         foreach (var iv in intervals) result.Add(iv);
 
         // Check, if the constructed set is indeed the specified one

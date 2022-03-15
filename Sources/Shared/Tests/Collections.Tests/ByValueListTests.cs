@@ -17,8 +17,8 @@ public sealed class ByValueListTests
     [Theory]
     public void EqualLists(int[] v1, int[] v2)
     {
-        var l1 = new ByValueList<int>(v1);
-        var l2 = new ByValueList<int>(v2);
+        var l1 = new ByValueList<int>(v1, comparer: null);
+        var l2 = new ByValueList<int>(v2, comparer: null);
 
         Assert.Equal(l1, l2);
         Assert.Equal(l2, l1);
@@ -40,8 +40,8 @@ public sealed class ByValueListTests
     [Theory]
     public void NotEqualLists(int[] v1, int[] v2)
     {
-        var l1 = new ByValueList<int>(v1);
-        var l2 = new ByValueList<int>(v2);
+        var l1 = new ByValueList<int>(v1, comparer: null);
+        var l2 = new ByValueList<int>(v2, comparer: null);
 
         Assert.NotEqual(l1, l2);
         Assert.NotEqual(l2, l1);

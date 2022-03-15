@@ -281,15 +281,16 @@ public sealed class IntervalMapTests
     private static IntervalMap<int, HashSet<int>> ParseDenseMap(string text)
     {
         text = text.Trim();
+        var result = new IntervalMap<int, HashSet<int>>(comparer: null as IntervalComparer<int>);
+
         // Empty string means empty set
-        if (text.Length == 0) return new();
+        if (text.Length == 0) return result;
 
         // Split by Union and parse intervals
         var intervalParts = text.Split('U');
         var intervalSetPairs = intervalParts.Select(ParseAssociation);
 
         // Construct the dense set
-        var result = new IntervalMap<int, HashSet<int>>();
         foreach (var (iv, set) in intervalSetPairs) result.Add(iv, set, default(HashSetCombiner));
 
         // Check equality

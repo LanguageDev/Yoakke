@@ -16,7 +16,7 @@ namespace Yoakke.Collections;
 public sealed class EnumerableCollection<T> : IReadOnlyCollection<T>
 {
     /// <inheritdoc/>
-    public int Count => throw new NotImplementedException();
+    public int Count => this.count;
 
     private readonly IEnumerable<T> enumerable;
     private readonly int count;

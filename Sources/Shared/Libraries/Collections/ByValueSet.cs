@@ -27,7 +27,7 @@ public readonly struct ByValueSet<T> : ISet<T>,
     /// </summary>
     /// <param name="underlying">The underlying set to wrap.</param>
     /// <param name="comparer">The comparer to use.</param>
-    public ByValueSet(ISet<T> underlying, IEqualityComparer<T>? comparer = null)
+    public ByValueSet(ISet<T> underlying, IEqualityComparer<T>? comparer)
     {
         this.underlying = underlying;
         this.comparer = comparer ?? EqualityComparer<T>.Default;

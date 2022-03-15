@@ -64,7 +64,7 @@ public sealed class IntervalMap<TKey, TValue> : IReadOnlyCollection<KeyValuePair
     /// Constructs a new, empty <see cref="IntervalMap{TKey, TValue}"/>.
     /// </summary>
     /// <param name="comparer">The interval comparer to use.</param>
-    public IntervalMap(IntervalComparer<TKey>? comparer = null)
+    public IntervalMap(IntervalComparer<TKey>? comparer)
     {
         this.intervals = new(comparer ?? IntervalComparer<TKey>.Default);
     }

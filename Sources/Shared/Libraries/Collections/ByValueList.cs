@@ -37,7 +37,7 @@ public readonly struct ByValueList<T> : IReadOnlyList<T>, IList<T>,
     /// </summary>
     /// <param name="underlying">The underlying list to wrap.</param>
     /// <param name="comparer">The comparer to use.</param>
-    public ByValueList(IReadOnlyList<T> underlying, IEqualityComparer<T>? comparer = null)
+    public ByValueList(IReadOnlyList<T> underlying, IEqualityComparer<T>? comparer)
     {
         this.underlying = underlying;
         this.comparer = comparer ?? EqualityComparer<T>.Default;

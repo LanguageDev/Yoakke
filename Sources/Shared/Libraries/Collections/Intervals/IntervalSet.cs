@@ -53,7 +53,7 @@ public sealed class IntervalSet<T> : IReadOnlyCollection<Interval<T>>, ICollecti
     /// Constructs a new, empty <see cref="IntervalSet{T}"/>.
     /// </summary>
     /// <param name="comparer">The interval comparer to use.</param>
-    public IntervalSet(IntervalComparer<T>? comparer = null)
+    public IntervalSet(IntervalComparer<T>? comparer)
     {
         this.intervals = new(comparer ?? IntervalComparer<T>.Default);
     }
