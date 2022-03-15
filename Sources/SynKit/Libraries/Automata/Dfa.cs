@@ -140,6 +140,11 @@ public sealed class Dfa<TState, TSymbol> : IFiniteStateAutomaton<TState, TSymbol
     public ICollection<Interval<TSymbol>> Alphabet => this.alphabet;
 
     /// <summary>
+    /// True, if this DFA is complete over its <see cref="Alphabet"/>.
+    /// </summary>
+    public bool IsComplete => throw new NotImplementedException();
+
+    /// <summary>
     /// The state comparer.
     /// </summary>
     public IEqualityComparer<TState> StateComparer => this.transitionsRaw.StateComparer;
@@ -240,4 +245,22 @@ public sealed class Dfa<TState, TSymbol> : IFiniteStateAutomaton<TState, TSymbol
 
     /// <inheritdoc/>
     public bool Accepts(IEnumerable<TSymbol> input) => throw new NotImplementedException();
+
+    /// <summary>
+    /// Completes this DFA under its <see cref="Alphabet"/>.
+    /// </summary>
+    /// <returns>True, if the DFA was not complete and needed completion.</returns>
+    public bool Complete() => throw new NotImplementedException();
+
+    /// <summary>
+    /// Minimizes this DFA into a new one.
+    /// </summary>
+    /// <typeparam name="TResultState">The type of the minimized states.</typeparam>
+    /// <param name="differentiate">The pairs of thahtes that have to stay different during minimization.
+    /// An empty sequence will mean that only the accepting and non-accepting states will be differentiated strictly.</param>
+    /// <param name="stateCombiner">The state combiner to use when combining equivalent states.</param>
+    /// <returns></returns>
+    public Dfa<TResultState, TSymbol> Minimize<TResultState>(
+        IEnumerable<(TState, TState)> differentiate,
+        IStateCombiner<TState, TResultState> stateCombiner) => throw new NotImplementedException();
 }

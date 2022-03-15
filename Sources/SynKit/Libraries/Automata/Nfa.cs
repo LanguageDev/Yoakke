@@ -323,4 +323,26 @@ public sealed class Nfa<TState, TSymbol> : IFiniteStateAutomaton<TState, TSymbol
 
     /// <inheritdoc/>
     public bool Accepts(IEnumerable<TSymbol> input) => throw new NotImplementedException();
+
+    /// <summary>
+    /// Retrieves the epsilon closure of the given state, which is all states reachable with only epsilon transitions.
+    /// </summary>
+    /// <param name="state">The state to get the epsilon closure of.</param>
+    /// <returns>All states reachable with only epsilon-transitions from <paramref name="state"/>.</returns>
+    public IEnumerable<TState> EpsilonClosure(TState state) => throw new NotImplementedException();
+
+    /// <summary>
+    /// Eliminates the epsilon-transitions from this NFA.
+    /// </summary>
+    /// <returns>True. if there were epsilon-transitions to eliminate.</returns>
+    public bool EliminateEpsilonTransitions() => throw new NotImplementedException();
+
+    /// <summary>
+    /// Determinizes this NFA into a DFA.
+    /// </summary>
+    /// <typeparam name="TResultState">The type of the determinized states.</typeparam>
+    /// <param name="stateCombiner">The state combiner to construct the deterministic states.</param>
+    /// <returns>The equivalent DFA.</returns>
+    public Dfa<TResultState, TSymbol> Determinize<TResultState>(
+        IStateCombiner<TState, TResultState> stateCombiner) => throw new NotImplementedException();
 }
