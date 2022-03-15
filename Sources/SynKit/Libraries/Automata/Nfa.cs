@@ -370,7 +370,34 @@ public sealed class Nfa<TState, TSymbol> : IFiniteStateAutomaton<TState, TSymbol
     }
 
     /// <inheritdoc/>
-    public bool Accepts(IEnumerable<TSymbol> input) => throw new NotImplementedException();
+    public bool Accepts(IEnumerable<TSymbol> input)
+    {
+        // Initial state is the epsilon-closure of the set of initial states
+        var currentState = new ByValueSet<TState>(this.EpsilonClosure(this.InitialStates), this.StateComparer);
+        foreach (var symbol in input)
+        {
+            // Next state is the epsilon-closure of all states that are reachable from the current states
+            // through 'symbol'
+            var nextState = new HashSet<TState>(this.StateComparer);
+            foreach (var fromState in currentState)
+            {
+                if (!this.transitionsRaw.TransitionMap.TryGetValue(fromState, out var onMap)) continue;
+                var values = onMap
+                    .Intersecting(Interval.Singleton(symbol))
+                    .Select(kv => kv.Value)
+                    .GetEnumerator();
+                if (!values.MoveNext()) continue;
+
+                foreach (var s in this.EpsilonClosure(values.Current)) nextState.Add(s);
+            }
+
+            currentState = new(nextState, this.StateComparer);
+
+            // If there are no states, the NFA is stuck
+            if (currentState.Count == 0) return false;
+        }
+        return currentState.Overlaps(this.AcceptingStates);
+    }
 
     /// <summary>
     /// Retrieves the epsilon closure of the given state, which is all states reachable with only epsilon transitions.
@@ -394,7 +421,37 @@ public sealed class Nfa<TState, TSymbol> : IFiniteStateAutomaton<TState, TSymbol
     /// Eliminates the epsilon-transitions from this NFA.
     /// </summary>
     /// <returns>True. if there were epsilon-transitions to eliminate.</returns>
-    public bool EliminateEpsilonTransitions() => throw new NotImplementedException();
+    public bool EliminateEpsilonTransitions()
+    {
+        if (this.EpsilonTransitions.Count == 0) return false;
+
+        foreach (var state in this.States)
+        {
+            // For each state we look at its epsilon closure
+            // For each element in the closure we copy the non-epsilon transitions from state to the others
+            // We can omit the state itself from the copy
+            var epsilonClosure = this
+                .EpsilonClosure(state)
+                .Where(s => !this.StateComparer.Equals(s, state));
+            foreach (var toState in epsilonClosure)
+            {
+                // Copy the transitions
+                if (this.transitionsRaw.TransitionMap.TryGetValue(toState, out var fromV2Map))
+                {
+                    var fromV1Map = this.transitionsRaw.GetTransitionsFrom(state);
+                    foreach (var onTo in fromV2Map) fromV1Map.Add(onTo.Key, onTo.Value, default(UnionCombiner));
+                }
+                // If v1 is a starting state, we need to make v2 one as well
+                if (this.InitialStates.Contains(state)) this.InitialStates.Add(toState);
+                // If v2 is a final state, v1 needs to be as well
+                if (this.AcceptingStates.Contains(toState)) this.AcceptingStates.Add(state);
+            }
+        }
+
+        this.EpsilonTransitions.Clear();
+
+        return true;
+    }
 
     /// <summary>
     /// Determinizes this NFA into a DFA.
@@ -403,5 +460,53 @@ public sealed class Nfa<TState, TSymbol> : IFiniteStateAutomaton<TState, TSymbol
     /// <param name="stateCombiner">The state combiner to construct the deterministic states.</param>
     /// <returns>The equivalent DFA.</returns>
     public Dfa<TResultState, TSymbol> Determinize<TResultState>(
-        IStateCombiner<TState, TResultState> stateCombiner) => throw new NotImplementedException();
+        IStateCombiner<TState, TResultState> stateCombiner)
+    {
+        // The DFA we are building
+        var result = new Dfa<TResultState, TSymbol>(stateCombiner.ResultComparer, this.SymbolIntervalComparer);
+        // The NFA state combinations we have visited
+        // NOTE: Comparers are passed to the constructed by-value sets
+        var visited = new HashSet<ByValueSet<TState>>();
+        // Unhandled states stack
+        var stk = new Stack<ByValueSet<TState>>();
+        // The first state constructed from the epsilon closure of all the initial states
+        var first = new ByValueSet<TState>(this.EpsilonClosure(this.InitialStates), this.StateComparer);
+        // Create the combined state
+        result.InitialState = stateCombiner.Combine(first);
+        // The initial state needs to be processed, which will generate the remaining work as we go
+        stk.Push(first);
+        while (stk.Count > 0)
+        {
+            var top = stk.Pop();
+            // Construct a transition map
+            // Essentially from the current set of states we calculate what set of states we arrive at for a given symbol
+            var resultTransitions = new IntervalMap<TSymbol, HashSet<TState>>(this.SymbolIntervalComparer);
+            foreach (var primState in top)
+            {
+                if (!this.transitionsRaw.TransitionMap.TryGetValue(primState, out var onMap)) continue;
+                foreach (var onTo in onMap)
+                {
+                    foreach (var to in onTo.Value.SelectMany(this.EpsilonClosure))
+                    {
+                        resultTransitions.Add(
+                            onTo.Key,
+                            new HashSet<TState>(this.StateComparer) { to },
+                            default(UnionCombiner));
+                    }
+                }
+            }
+            // Add the transitions
+            var from = stateCombiner.Combine(top);
+            foreach (var onTo in resultTransitions)
+            {
+                var toSet = new ByValueSet<TState>(onTo.Value, onTo.Value.Comparer);
+                if (visited.Add(toSet)) stk.Push(toSet);
+                var to = stateCombiner.Combine(toSet);
+                result.Transitions.Add(new(from, onTo.Key, to));
+            }
+            // Register as accepting, if any
+            if (top.Any(this.AcceptingStates.Contains)) result.AcceptingStates.Add(from);
+        }
+        return result;
+    }
 }

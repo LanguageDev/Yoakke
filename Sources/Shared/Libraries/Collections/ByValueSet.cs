@@ -38,7 +38,7 @@ public readonly struct ByValueSet<T> : ISet<T>,
     /// </summary>
     /// <param name="values">The values for the set to contain.</param>
     /// <param name="comparer">The comparer to use.</param>
-    public ByValueSet(IEnumerable<T> values, IEqualityComparer<T>? comparer = null)
+    public ByValueSet(IEnumerable<T> values, IEqualityComparer<T>? comparer)
         : this(new HashSet<T>(values, comparer), comparer)
     {
     }
