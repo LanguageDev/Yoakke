@@ -5,6 +5,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Yoakke.Collections;
@@ -37,6 +38,11 @@ public sealed class Dfa<TState, TSymbol> : IFiniteStateAutomaton<TState, TSymbol
     private readonly struct OverwriteCombiner : IValueCombiner<TState>
     {
         public TState Combine(TState existing, TState added) => added;
+    }
+
+    private readonly struct PairCombiner : IValueCombiner<TState[]>
+    {
+        public TState[] Combine(TState[] first, TState[] second) => first.Concat(second).ToArray();
     }
 
     private sealed class TransitionCollection
@@ -294,8 +300,147 @@ public sealed class Dfa<TState, TSymbol> : IFiniteStateAutomaton<TState, TSymbol
     /// <param name="differentiate">The pairs of thahtes that have to stay different during minimization.
     /// An empty sequence will mean that only the accepting and non-accepting states will be differentiated strictly.</param>
     /// <param name="stateCombiner">The state combiner to use when combining equivalent states.</param>
-    /// <returns></returns>
+    /// <returns>The equivalent minimal DFA.</returns>
     public Dfa<TResultState, TSymbol> Minimize<TResultState>(
         IEnumerable<(TState, TState)> differentiate,
-        IStateCombiner<TState, TResultState> stateCombiner) => throw new NotImplementedException();
+        IStateCombiner<TState, TResultState> stateCombiner)
+    {
+        // TODO: Whoever will clean up this code
+        // I'm incredibly sorry
+
+        // Empty table
+        var table = new HashSet<(TState, TState)>(EqualityComparerUtils.Tuple(this.StateComparer, this.StateComparer));
+        var trapTable = new HashSet<TState>(this.StateComparer);
+        var states = this.States.ToList();
+
+        void Plot(TState s1, TState s2)
+        {
+            table.Add((s1, s2));
+            table.Add((s2, s1));
+        }
+
+        void PlotTrap(TState s) => trapTable.Add(s);
+
+        bool AreDifferent(TState s1, TState s2) => table.Contains((s1, s2));
+
+        bool IsDifferentFromTrap(TState s) => trapTable!.Contains(s);
+
+        bool ShouldBeDifferent(TState s1, TState s2)
+        {
+            // We need to cut up the transition symbols into sections
+            // For that we build a transition map of (interval -> destination[1..2])
+            var onMap = new IntervalMap<TSymbol, TState[]>(this.SymbolIntervalComparer);
+            if (this.transitionsRaw.TransitionMap.TryGetValue(s1, out var s1on))
+            {
+                foreach (var onTo in s1on) onMap.Add(onTo.Key, new[] { onTo.Value }, default(PairCombiner));
+            }
+            if (this.transitionsRaw.TransitionMap.TryGetValue(s2, out var s2on))
+            {
+                foreach (var onTo in s2on) onMap.Add(onTo.Key, new[] { onTo.Value }, default(PairCombiner));
+            }
+
+            foreach (var onTo in onMap)
+            {
+                Debug.Assert(onTo.Value.Length is 1 or 2, "At least one state has to map from the specified intervals.");
+                if (onTo.Value.Length == 1 && IsDifferentFromTrap(onTo.Value[0])) return true;
+                if (onTo.Value.Length == 1) continue;
+                if (AreDifferent(onTo.Value[0], onTo.Value[1])) return true;
+            }
+            return false;
+        }
+
+        bool ShouldBeDifferentFromTrap(TState state)
+        {
+            if (!this.transitionsRaw.TransitionMap.TryGetValue(state, out var onSet)) return false;
+            foreach (var onTo in onSet)
+            {
+                if (IsDifferentFromTrap(onTo.Value)) return true;
+            }
+            return false;
+        }
+
+        Dictionary<TState, TResultState> BuildStateMap()
+        {
+            var stateMap = new Dictionary<TState, TResultState>(this.StateComparer);
+            for (var i = 0; i < states!.Count; ++i)
+            {
+                var s1 = states[i];
+                var equivalentSet = new HashSet<TState>(this.StateComparer) { s1 };
+                for (var j = 0; j < states.Count; ++j)
+                {
+                    if (i == j) continue;
+                    var s2 = states[j];
+                    if (!AreDifferent(s1, s2)) equivalentSet.Add(s2);
+                }
+                stateMap.Add(s1, stateCombiner.Combine(equivalentSet));
+            }
+            return stateMap;
+        }
+
+        // INITIALIZATION ///////////////////////////////////////////////////////////////
+        // Initialize by differentiating the accepting and pairwise-differentiated states
+        // First, all (accepting, non-accepting) pairs get plotted in the table
+        for (var i = 0; i < states.Count; ++i)
+        {
+            var s1 = states[i];
+            var s1accepting = this.AcceptingStates.Contains(s1);
+            for (var j = 0; j < i; ++j)
+            {
+                var s2 = states[j];
+                var s2accepting = this.AcceptingStates.Contains(s2);
+                if (s1accepting != s2accepting) Plot(s1, s2);
+            }
+        }
+
+        // Plot trap vs accepting
+        foreach (var s in this.AcceptingStates) PlotTrap(s);
+
+        // Then we plot the custom pairs too
+        foreach (var (s1, s2) in differentiate) Plot(s1, s2);
+
+        // FILLING //////////////////////////////////////////////////////////////////////
+        while (true)
+        {
+            var changed = false;
+            for (var i = 0; i < states.Count; ++i)
+            {
+                var s1 = states[i];
+                // Compare to other states
+                for (var j = 0; j < i; ++j)
+                {
+                    var s2 = states[j];
+
+                    if (AreDifferent(s1, s2)) continue;
+                    if (ShouldBeDifferent(s1, s2))
+                    {
+                        Plot(s1, s2);
+                        changed = true;
+                    }
+                }
+                // Compare to trap
+                if (!IsDifferentFromTrap(s1) && ShouldBeDifferentFromTrap(s1))
+                {
+                    PlotTrap(s1);
+                    changed = true;
+                }
+            }
+            if (!changed) break;
+        }
+
+        // RESULT ///////////////////////////////////////////////////////////////////////
+        // Create a state mapping of old-state -> equivalent-state
+        var stateMap = BuildStateMap();
+
+        // Create the result
+        var result = new Dfa<TResultState, TSymbol>(stateCombiner.ResultComparer, this.SymbolIntervalComparer);
+
+        // Now build the new transitions with the state equivalences
+        foreach (var (from, on, to) in this.Transitions) result.Transitions.Add(new(stateMap[from], on, stateMap[to]));
+
+        // Introduce the initial state and all the accepting states
+        result.InitialState = stateMap[this.InitialState];
+        foreach (var s in this.acceptingStates) result.AcceptingStates.Add(stateMap[s]);
+
+        return result;
+    }
 }
