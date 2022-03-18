@@ -291,7 +291,33 @@ public sealed class Dfa<TState, TSymbol> : IFiniteStateAutomaton<TState, TSymbol
     /// </summary>
     /// <param name="trap">The state to use as a trap.</param>
     /// <returns>True, if the DFA was not complete and needed completion.</returns>
-    public bool Complete(TState trap) => throw new NotImplementedException();
+    public bool Complete(TState trap)
+    {
+        // NOTE: Not very efficient to check here explicitly, but avoids modifying the state set
+        // during iteration
+        if (this.IsComplete) return false;
+
+        // Now for each state, for any symbol that's not part of a transition
+        // we transition to the trap state
+        foreach (var state in this.States)
+        {
+            var transitions = this.transitionsRaw.GetTransitionsFrom(state);
+
+            // Compute the symbols that have no transitions for our ABC
+            var notCovered = new IntervalSet<TSymbol>(transitions.Keys, this.SymbolIntervalComparer);
+            notCovered.Complement();
+            notCovered.IntersectWith(this.Alphabet);
+
+            // Add them all
+            foreach (var iv in notCovered)
+            {
+                if (this.SymbolIntervalComparer.IsEmpty(iv)) continue;
+                this.Transitions.Add(new(state, iv, trap));
+            }
+        }
+
+        return true;
+    }
 
     /// <summary>
     /// Minimizes this DFA into a new one.
