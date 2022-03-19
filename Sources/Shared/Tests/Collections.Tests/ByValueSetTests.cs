@@ -18,8 +18,8 @@ public sealed class ByValueSetTests
     [Theory]
     public void EqualSets(int[] v1, int[] v2)
     {
-        var l1 = new ByValueSet<int>(v1);
-        var l2 = new ByValueSet<int>(v2);
+        var l1 = new ByValueSet<int>(v1, EqualityComparer<int>.Default);
+        var l2 = new ByValueSet<int>(v2, EqualityComparer<int>.Default);
 
         Assert.Equal(l1, l2);
         Assert.Equal(l2, l1);
@@ -34,8 +34,8 @@ public sealed class ByValueSetTests
     [Theory]
     public void NotEqualSets(int[] v1, int[] v2)
     {
-        var l1 = new ByValueSet<int>(v1);
-        var l2 = new ByValueSet<int>(v2);
+        var l1 = new ByValueSet<int>(v1, EqualityComparer<int>.Default);
+        var l2 = new ByValueSet<int>(v2, EqualityComparer<int>.Default);
 
         Assert.NotEqual(l1, l2);
         Assert.NotEqual(l2, l1);

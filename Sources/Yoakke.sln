@@ -69,7 +69,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Collections", "Shared\Libra
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Collections.Tests", "Shared\Tests\Collections.Tests\Collections.Tests.csproj", "{5FE19C76-0CC1-4B50-B4E7-DA1E953D4D2B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automata", "SynKit\Libraries\Automata\Automata.csproj", "{9052B0D8-0AEF-4970-A9F3-5C08FAB8330D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Automata", "SynKit\Libraries\Automata\Automata.csproj", "{9052B0D8-0AEF-4970-A9F3-5C08FAB8330D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automata.Tests", "SynKit\Tests\Automata.Tests\Automata.Tests.csproj", "{86668CBD-0DF3-41AC-8AB5-EDDDA76A033F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -93,6 +95,10 @@ Global
 		{9052B0D8-0AEF-4970-A9F3-5C08FAB8330D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9052B0D8-0AEF-4970-A9F3-5C08FAB8330D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9052B0D8-0AEF-4970-A9F3-5C08FAB8330D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86668CBD-0DF3-41AC-8AB5-EDDDA76A033F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86668CBD-0DF3-41AC-8AB5-EDDDA76A033F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86668CBD-0DF3-41AC-8AB5-EDDDA76A033F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86668CBD-0DF3-41AC-8AB5-EDDDA76A033F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -109,6 +115,7 @@ Global
 		{2AEF1545-0542-4398-834E-DAA4AEA1FAC3} = {49649892-FD91-4FB6-A74B-F817FBEB4DF4}
 		{5FE19C76-0CC1-4B50-B4E7-DA1E953D4D2B} = {2326A38C-2914-4D66-8B76-D2ACFD39C6EB}
 		{9052B0D8-0AEF-4970-A9F3-5C08FAB8330D} = {3743B1A5-DF69-4C44-8BC0-C967D0BB4AD6}
+		{86668CBD-0DF3-41AC-8AB5-EDDDA76A033F} = {F51DEFFD-626F-4040-9227-A59BF67F4F53}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1EDE8F07-AE3A-4556-AEF0-3AC518F18F92}
