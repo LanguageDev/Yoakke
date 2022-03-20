@@ -32,12 +32,21 @@ public static class AutomatonExtensions
     }
 
     /// <summary>
+    /// Adds a singleton value to an interval set. Useful for DFA alphabets.
+    /// </summary>
+    /// <typeparam name="T">The added value type.</typeparam>
+    /// <param name="intervalSet">The set to add to.</param>
+    /// <param name="value">The singleton value to add.</param>
+    public static void Add<T>(this ICollection<Interval<T>> intervalSet, T value) =>
+        intervalSet.Add(Interval.Singleton(value));
+
+    /// <summary>
     /// Adds a transition to the transition collection.
     /// </summary>
     /// <typeparam name="TState">The state type.</typeparam>
     /// <typeparam name="TSymbol">The symbol type.</typeparam>
     /// <param name="transitions">The collection of transitions to add to.</param>
-    /// <param name="from">The sourc state.</param>
+    /// <param name="from">The source state.</param>
     /// <param name="on">The symbol to transition on.</param>
     /// <param name="to">The destination state.</param>
     public static void Add<TState, TSymbol>(
@@ -52,7 +61,7 @@ public static class AutomatonExtensions
     /// <typeparam name="TState">The state type.</typeparam>
     /// <typeparam name="TSymbol">The symbol type.</typeparam>
     /// <param name="transitions">The collection of transitions to add to.</param>
-    /// <param name="from">The sourc state.</param>
+    /// <param name="from">The source state.</param>
     /// <param name="on">The interval of symbols to transition on.</param>
     /// <param name="to">The destination state.</param>
     public static void Add<TState, TSymbol>(
@@ -67,7 +76,7 @@ public static class AutomatonExtensions
     /// <typeparam name="TState">The state type.</typeparam>
     /// <typeparam name="TSymbol">The symbol type.</typeparam>
     /// <param name="transitions">The collection of epsilon transitions to add to.</param>
-    /// <param name="from">The sourc state.</param>
+    /// <param name="from">The source state.</param>
     /// <param name="to">The destination state.</param>
     public static void Add<TState, TSymbol>(
         this ICollection<EpsilonTransition<TState>> transitions,

@@ -77,6 +77,26 @@ public class DfaTests
         Assert.Contains(Tran(SetOf("BA"), 'b', SetOf("AB")), dfa.Transitions);
     }
 
+    [Fact]
+    public void CompleteSimple()
+    {
+        // We build a DFA that accepts a*
+        // And we complete it over { a, b }
+        var dfa = new Dfa<char, char>();
+        dfa.InitialState = 'q';
+        dfa.AcceptingStates.Add('q');
+        dfa.Transitions.Add('q', 'a', 'q');
+        dfa.Alphabet.Add('b');
+
+        Assert.True(dfa.Complete('t'));
+        Assert.True(SetOf('q', 't').SetEquals(dfa.States));
+        Assert.Equal(4, dfa.Transitions.Count);
+        Assert.Contains(Tran('q', 'a', 'q'), dfa.Transitions);
+        Assert.Contains(Tran('q', 'b', 't'), dfa.Transitions);
+        Assert.Contains(Tran('t', 'a', 't'), dfa.Transitions);
+        Assert.Contains(Tran('t', 'b', 't'), dfa.Transitions);
+    }
+
     private static Dfa<string, char> BuildLastTwoDifferentCharsDfa()
     {
         var dfa = new Dfa<string, char>();

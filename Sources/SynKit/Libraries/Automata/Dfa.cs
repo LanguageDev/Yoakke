@@ -297,6 +297,10 @@ public sealed class Dfa<TState, TSymbol> : IFiniteStateAutomaton<TState, TSymbol
         // during iteration
         if (this.IsComplete) return false;
 
+        // Since the trap is surely needed, we need to add it
+        // This way we avoid modification
+        this.States.Add(trap);
+
         // Now for each state, for any symbol that's not part of a transition
         // we transition to the trap state
         foreach (var state in this.States)
