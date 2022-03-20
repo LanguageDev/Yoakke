@@ -97,7 +97,7 @@ public static class AutomatonExtensions
     /// <param name="transitions">The collection of epsilon transitions to add to.</param>
     /// <param name="from">The source state.</param>
     /// <param name="to">The destination state.</param>
-    public static void Add<TState, TSymbol>(
+    public static void Add<TState>(
         this ICollection<EpsilonTransition<TState>> transitions,
         TState from,
         TState to) => transitions.Add(new(from, to));
