@@ -1,4 +1,6 @@
+using System.Linq;
 using Xunit;
+using Yoakke.Collections;
 using Yoakke.SynKit.Automata;
 
 namespace Automata.Tests;
@@ -18,6 +20,9 @@ public class DfaTests
     {
         var dfa = BuildLastTwoDifferentCharsDfa();
         Assert.True(dfa.Accepts(input));
+
+        var minDfa = dfa.Minimize();
+        Assert.True(minDfa.Accepts(input));
     }
 
     [InlineData("")]
@@ -32,6 +37,44 @@ public class DfaTests
     {
         var dfa = BuildLastTwoDifferentCharsDfa();
         Assert.False(dfa.Accepts(input));
+
+        var minDfa = dfa.Minimize();
+        Assert.False(minDfa.Accepts(input));
+    }
+
+    [Fact]
+    public void Last2DifferentMinimize()
+    {
+        var dfa = BuildLastTwoDifferentCharsDfa().Minimize();
+
+        Assert.True(dfa.States.ToHashSet().SetEquals(new[]
+        {
+            SetOf("S"),
+            SetOf("A", "AA"),
+            SetOf("B", "BB"),
+            SetOf("AB"),
+            SetOf("BA"),
+        }));
+
+        Assert.True(dfa.AcceptingStates.ToHashSet().SetEquals(new[]
+        {
+            SetOf("AB"),
+            SetOf("BA"),
+        }));
+
+        Assert.Equal(SetOf("S"), dfa.InitialState);
+
+        Assert.Equal(10, dfa.Transitions.Count);
+        Assert.Contains(Tran(SetOf("S"), 'a', SetOf("A", "AA")), dfa.Transitions);
+        Assert.Contains(Tran(SetOf("S"), 'b', SetOf("B", "BB")), dfa.Transitions);
+        Assert.Contains(Tran(SetOf("A", "AA"), 'a', SetOf("A", "AA")), dfa.Transitions);
+        Assert.Contains(Tran(SetOf("B", "BB"), 'b', SetOf("B", "BB")), dfa.Transitions);
+        Assert.Contains(Tran(SetOf("A", "AA"), 'b', SetOf("AB")), dfa.Transitions);
+        Assert.Contains(Tran(SetOf("B", "BB"), 'a', SetOf("BA")), dfa.Transitions);
+        Assert.Contains(Tran(SetOf("AB"), 'a', SetOf("BA")), dfa.Transitions);
+        Assert.Contains(Tran(SetOf("AB"), 'b', SetOf("B", "BB")), dfa.Transitions);
+        Assert.Contains(Tran(SetOf("BA"), 'a', SetOf("A", "AA")), dfa.Transitions);
+        Assert.Contains(Tran(SetOf("BA"), 'b', SetOf("AB")), dfa.Transitions);
     }
 
     private static Dfa<string, char> BuildLastTwoDifferentCharsDfa()
@@ -56,4 +99,9 @@ public class DfaTests
         dfa.Transitions.Add("BA", 'b', "AB");
         return dfa;
     }
+
+    private static ByValueSet<T> SetOf<T>(params T[] vs) => new(vs, comparer: null);
+
+    private static Transition<TState, TSymbol> Tran<TState, TSymbol>(TState from, TSymbol on, TState to) =>
+        new(from, on, to);
 }
