@@ -97,6 +97,58 @@ public class DfaTests
         Assert.Contains(Tran('t', 'b', 't'), dfa.Transitions);
     }
 
+    [Fact]
+    public void MinimizeIncomplete()
+    {
+        // We build a simple, incomplete DFA
+        var dfa = new Dfa<string, char>();
+        dfa.InitialState = "A";
+        dfa.AcceptingStates.Add("D");
+        dfa.Transitions.Add("A", '0', "B");
+        dfa.Transitions.Add("A", '1', "C");
+        dfa.Transitions.Add("B", '0', "C");
+        dfa.Transitions.Add("C", '0', "B");
+        dfa.Transitions.Add("C", '1', "D");
+
+        // Minimize it
+        var minDfa = dfa.Minimize();
+
+        Assert.True(SetOf(SetOf("A"), SetOf("B"), SetOf("C"), SetOf("D")).SetEquals(minDfa.States));
+        Assert.True(SetOf(SetOf("D")).SetEquals(minDfa.AcceptingStates));
+
+        Assert.Equal(5, minDfa.Transitions.Count);
+        Assert.Contains(Tran(SetOf("A"), '0', SetOf("B")), minDfa.Transitions);
+        Assert.Contains(Tran(SetOf("A"), '1', SetOf("C")), minDfa.Transitions);
+        Assert.Contains(Tran(SetOf("B"), '0', SetOf("C")), minDfa.Transitions);
+        Assert.Contains(Tran(SetOf("C"), '0', SetOf("B")), minDfa.Transitions);
+        Assert.Contains(Tran(SetOf("C"), '1', SetOf("D")), minDfa.Transitions);
+    }
+
+    [Fact]
+    public void MinimizeIncompleteIssue()
+    {
+        var dfa = new Dfa<string, char>();
+        dfa.InitialState = "q0";
+        dfa.AcceptingStates.Add("q3");
+        dfa.AcceptingStates.Add("q4");
+        dfa.Transitions.Add("q0", '0', "q1");
+        dfa.Transitions.Add("q1", 'x', "q2");
+        dfa.Transitions.Add("q2", '0', "q3");
+        dfa.Transitions.Add("q3", '0', "q4");
+        dfa.Transitions.Add("q4", '0', "q4");
+
+        var minDfa = dfa.Minimize();
+
+        Assert.True(SetOf(SetOf("q0"), SetOf("q1"), SetOf("q2"), SetOf("q3", "q4")).SetEquals(minDfa.States));
+        Assert.True(SetOf(SetOf("q3", "q4")).SetEquals(minDfa.AcceptingStates));
+
+        Assert.Equal(4, minDfa.Transitions.Count);
+        Assert.Contains(Tran(SetOf("q0"), '0', SetOf("q1")), minDfa.Transitions);
+        Assert.Contains(Tran(SetOf("q1"), 'x', SetOf("q2")), minDfa.Transitions);
+        Assert.Contains(Tran(SetOf("q2"), '0', SetOf("q3", "q4")), minDfa.Transitions);
+        Assert.Contains(Tran(SetOf("q3", "q4"), '0', SetOf("q3", "q4")), minDfa.Transitions);
+    }
+
     private static Dfa<string, char> BuildLastTwoDifferentCharsDfa()
     {
         var dfa = new Dfa<string, char>();

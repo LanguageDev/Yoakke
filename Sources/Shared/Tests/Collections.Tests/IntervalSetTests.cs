@@ -396,6 +396,71 @@ public sealed class IntervalSetTests
         Assert.False(set2.SetEquals(set1));
     }
 
+    [InlineData("(-oo; 0) U (0; +oo)", "", "(-oo; 0) U (0; +oo)")]
+    [InlineData("", "", "")]
+    [InlineData("[1; 1]", "[1; 1]", "[1; 1]")]
+    [InlineData("(2; 5)", "[5; 7)", "(2; 7)")]
+    [InlineData("[3; 6)", "[5; 8)", "[3; 8)")]
+    [InlineData("(-oo; 6)", "[-3; +oo)", "(-oo; +oo)")]
+    [InlineData("(-oo; 5]", "(5; +oo)", "(-oo; +oo)")]
+    [InlineData("(-oo; -4) U (-4; +oo)", "[-4; -4]", "(-oo; +oo)")]
+    [InlineData("[2; 5] U (6; 8) U (10; 12)", "(4; 7) U [8; 11]", "[2; 12)")]
+    [InlineData("[2; 2] U [3; 3]", "", "[2; 2] U [3; 3]")]
+    [InlineData("[2; 2] U [3; 3]", "[2; 3]", "[2; 3]")]
+    [InlineData("[2; 2]", "(2; 3)", "[2; 3)")]
+    [InlineData("[2; 5) U (5; 8)", "[5; 5]", "[2; 8)")]
+    [InlineData("[3; 7]", "[4; 4]", "[3; 7]")]
+    [Theory]
+    public void UnionWith(string originalText, string otherText, string resultText)
+    {
+        var original = ParseIntervalSet(originalText);
+        var other = ParseIntervalSet(otherText);
+        var result = ParseIntervalSet(resultText);
+
+        original.UnionWith(other);
+
+        AssertEquals(result, original);
+    }
+
+    [InlineData("(-oo; +oo)", "[3; 3]", "(-oo; 3) U (3; +oo)")]
+    [InlineData("[3; 7]", "(8; 9)", "[3; 7]")]
+    [InlineData("(2; 9)", "[4; 6]", "(2; 4) U (6; 9)")]
+    [InlineData("(3; 5] U [6; 9]", "[5; 6]", "(3; 5) U (6; 9]")]
+    [InlineData("(2; 4] U (6; 8) U [10; 12]", "(6; 8)", "(2; 4] U [10; 12]")]
+    [InlineData("(2; 4] U (6; 8) U [10; 12]", "[3; 10]", "(2; 3) U (10; 12]")]
+    [InlineData("(2; 4] U (6; 8) U [10; 12]", "[-4; 4)", "[4; 4] U (6; 8) U [10; 12]")]
+    [Theory]
+    public void ExceptWith(string originalText, string otherText, string resultText)
+    {
+        var original = ParseIntervalSet(originalText);
+        var other = ParseIntervalSet(otherText);
+        var result = ParseIntervalSet(resultText);
+
+        original.ExceptWith(other);
+
+        AssertEquals(result, original);
+    }
+
+    [InlineData("[2; 5]", "[3; 7]", "[2; 3) U (5; 7]")]
+    [InlineData("(3; 8)", "[4; 6]", "(3; 4) U (6; 8)")]
+    [InlineData("[3; 5] U (6; 8)", "(5; 6]", "[3; 8)")]
+    [InlineData("[3; 5] U (6; 8)", "[5; 7]", "[3; 5) U (5; 6] U (7; 8)")]
+    [InlineData("(-oo; +oo)", "", "(-oo; +oo)")]
+    [InlineData("[3; 4]", "[3; 4]", "")]
+    [InlineData("[4; 6]", "(8; 9)", "[4; 6] U (8; 9)")]
+    [InlineData("(3; 5) U (7; 9)", "(5; 7)", "(3; 5) U (5; 7) U (7; 9)")]
+    [Theory]
+    public void SymmetricExceptWith(string originalText, string otherText, string resultText)
+    {
+        var original = ParseIntervalSet(originalText);
+        var other = ParseIntervalSet(otherText);
+        var result = ParseIntervalSet(resultText);
+
+        original.SymmetricExceptWith(other);
+
+        AssertEquals(result, original);
+    }
+
     private static void AssertEquals<T>(IntervalSet<T> a, IntervalSet<T> b)
     {
         // Same intervals
