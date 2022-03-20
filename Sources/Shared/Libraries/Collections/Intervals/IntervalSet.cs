@@ -379,14 +379,10 @@ public sealed class IntervalSet<T> : IReadOnlyCollection<Interval<T>>, ICollecti
     /// <inheritdoc/>
     public void IntersectWith(IEnumerable<Interval<T>> other)
     {
-        // Make the result using the identity A /\ B = ~B \ A
-        var otherSet = new IntervalSet<T>(other, this.IntervalComparer);
-        otherSet.Complement();
-        otherSet.ExceptWith(this);
-
-        // Copy back
-        this.intervals.Clear();
-        this.intervals.AddRange(otherSet.Select(iv => new KeyValuePair<Interval<T>, byte>(iv, default)));
+        // Make the result using the identity A /\ B = A \ (A \ B)
+        var otherSet = new IntervalSet<T>(this, this.IntervalComparer);
+        otherSet.ExceptWith(other);
+        this.Except(otherSet);
     }
 
     private bool IsSupersetOf(IEnumerable<Interval<T>> other, out bool proper)
