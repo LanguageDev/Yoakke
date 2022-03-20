@@ -461,6 +461,26 @@ public sealed class IntervalSetTests
         AssertEquals(result, original);
     }
 
+    [InlineData("(3; 7)", "(5; 8)", "(5; 7)")]
+    [InlineData("[2; 4]", "[5; 7]", "")]
+    [InlineData("[2; 4]", "[4; 6]", "[4; 4]")]
+    [InlineData("(2; 8)", "(5; 7]", "(5; 7]")]
+    [InlineData("[3; 4)", "[4; 6)", "")]
+    [InlineData("[2; 3) U (4; 6] U (7; 8]", "(3; 5]", "(4; 5]")]
+    [InlineData("[2; 4] U (6; 8] U (10; 12]", "[3; 11)", "[3; 4] U (6; 8] U (10; 11)")]
+    [InlineData("[4; 6]", "[4; 6]", "[4; 6]")]
+    [Theory]
+    public void IntersectWith(string originalText, string otherText, string resultText)
+    {
+        var original = ParseIntervalSet(originalText);
+        var other = ParseIntervalSet(otherText);
+        var result = ParseIntervalSet(resultText);
+
+        original.IntersectWith(other);
+
+        AssertEquals(result, original);
+    }
+
     private static void AssertEquals<T>(IntervalSet<T> a, IntervalSet<T> b)
     {
         // Same intervals

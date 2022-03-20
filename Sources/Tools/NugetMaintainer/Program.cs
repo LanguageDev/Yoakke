@@ -19,7 +19,7 @@ namespace Yoakke.NugetMaintainer;
 
 internal static class Program
 {
-    private class Options
+    private sealed class Options
     {
         [Option("local-root", Required = true, HelpText = "The root for local packages produced.")]
         public string LocalRoot { get; set; } = string.Empty;

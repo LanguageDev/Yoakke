@@ -19,8 +19,12 @@ public readonly struct ByValueSet<T> : ISet<T>,
     /// <inheritdoc/>
     public bool IsReadOnly => true;
 
+    /// <summary>
+    /// The comparer used.
+    /// </summary>
+    public IEqualityComparer<T> Comparer { get; }
+
     private readonly ISet<T> underlying;
-    private readonly IEqualityComparer<T> comparer;
 
     /// <summary>
     /// Creates a new <see cref="ByValueSet{T}"/> by wrapping an existing set.
@@ -30,7 +34,7 @@ public readonly struct ByValueSet<T> : ISet<T>,
     public ByValueSet(ISet<T> underlying, IEqualityComparer<T>? comparer)
     {
         this.underlying = underlying;
-        this.comparer = comparer ?? EqualityComparer<T>.Default;
+        this.Comparer = comparer ?? EqualityComparer<T>.Default;
     }
 
     /// <summary>
@@ -56,7 +60,7 @@ public readonly struct ByValueSet<T> : ISet<T>,
     public bool Equals(ISet<T> other) => this.SetEquals(other);
 
     /// <inheritdoc/>
-    public override int GetHashCode() => HashUtils.CombineXor(this.underlying, this.comparer);
+    public override int GetHashCode() => HashUtils.CombineXor(this.underlying, this.Comparer);
 
     /// <inheritdoc/>
     public IEnumerator<T> GetEnumerator() => this.underlying.GetEnumerator();

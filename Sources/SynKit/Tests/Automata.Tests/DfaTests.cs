@@ -3,9 +3,9 @@ using Xunit;
 using Yoakke.Collections;
 using Yoakke.SynKit.Automata;
 
-namespace Automata.Tests;
+namespace Yoakke.SynKit.Automata.Tests;
 
-public class DfaTests
+public sealed class DfaTests
 {
     [InlineData("ab")]
     [InlineData("ba")]
