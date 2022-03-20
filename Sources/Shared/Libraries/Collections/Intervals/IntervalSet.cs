@@ -382,7 +382,7 @@ public sealed class IntervalSet<T> : IReadOnlyCollection<Interval<T>>, ICollecti
         // Make the result using the identity A /\ B = A \ (A \ B)
         var otherSet = new IntervalSet<T>(this, this.IntervalComparer);
         otherSet.ExceptWith(other);
-        this.Except(otherSet);
+        this.ExceptWith(otherSet);
     }
 
     private bool IsSupersetOf(IEnumerable<Interval<T>> other, out bool proper)
