@@ -93,7 +93,6 @@ public static class AutomatonExtensions
     /// Adds an epsilon-transition to the epsilon-transition collection.
     /// </summary>
     /// <typeparam name="TState">The state type.</typeparam>
-    /// <typeparam name="TSymbol">The symbol type.</typeparam>
     /// <param name="transitions">The collection of epsilon transitions to add to.</param>
     /// <param name="from">The source state.</param>
     /// <param name="to">The destination state.</param>

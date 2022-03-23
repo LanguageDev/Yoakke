@@ -16,89 +16,59 @@ namespace Yoakke.SynKit.Automata;
 public abstract record class RegExNode<TSymbol>
 {
     /// <summary>
-    /// Constructs this node inside the given NFA.
-    /// </summary>
-    /// <typeparam name="TState">The state type.</typeparam>
-    /// <param name="nfa">The NFA to construct into.</param>
-    /// <param name="stateCreator">A factory that can create unique states.</param>
-    /// <returns>The starting and ending states of the built construct.</returns>
-    public abstract (TState Start, TState End) ThompsonsConstruct<TState>(
-        Nfa<TState, TSymbol> nfa,
-        IStateCreator<TState> stateCreator);
-
-    /// <summary>
     /// Represents the alternation of two regex constructs.
     /// </summary>
     /// <param name="First">The first alternative.</param>
     /// <param name="Second">The second alternative.</param>
-    public sealed record class Alt(RegExNode<TSymbol> First, RegExNode<TSymbol> Second) : RegExNode<TSymbol>
-    {
-        /// <inheritdoc/>
-        public override (TState Start, TState End) ThompsonsConstruct<TState>(
-            Nfa<TState, TSymbol> nfa,
-            IStateCreator<TState> stateCreator)
-        {
-            var start = stateCreator.Create();
-            var end = stateCreator.Create();
-
-            var (firstStart, firstEnd) = this.First.ThompsonsConstruct(nfa, stateCreator);
-            var (secondStart, secondEnd) = this.Second.ThompsonsConstruct(nfa, stateCreator);
-
-            nfa.EpsilonTransitions.Add(start, firstStart);
-            nfa.EpsilonTransitions.Add(start, secondStart);
-
-            nfa.EpsilonTransitions.Add(firstEnd, end);
-            nfa.EpsilonTransitions.Add(secondEnd, end);
-
-            return (start, end);
-        }
-    }
+    public sealed record class Alt(RegExNode<TSymbol> First, RegExNode<TSymbol> Second) : RegExNode<TSymbol>;
 
     /// <summary>
     /// Represents the sequence of two regex constructs.
     /// </summary>
     /// <param name="First">The first in the sequence.</param>
     /// <param name="Second">The second in the sequence.</param>
-    public sealed record class Seq(RegExNode<TSymbol> First, RegExNode<TSymbol> Second) : RegExNode<TSymbol>
-    {
-        /// <inheritdoc/>
-        public override (TState Start, TState End) ThompsonsConstruct<TState>(
-            Nfa<TState, TSymbol> nfa,
-            IStateCreator<TState> stateCreator)
-        {
-            var (firstStart, firstEnd) = this.First.ThompsonsConstruct(nfa, stateCreator);
-            var (secondStart, secondEnd) = this.Second.ThompsonsConstruct(nfa, stateCreator);
-
-            nfa.EpsilonTransitions.Add(firstEnd, secondStart);
-
-            return (firstStart, secondEnd);
-        }
-    }
+    public sealed record class Seq(RegExNode<TSymbol> First, RegExNode<TSymbol> Second) : RegExNode<TSymbol>;
 
     /// <summary>
     /// Represents the 0-or-more repetition of a regex construct.
     /// </summary>
     /// <param name="Element">The repeated element.</param>
-    public sealed record class Rep(RegExNode<TSymbol> Element) : RegExNode<TSymbol>
-    {
-        /// <inheritdoc/>
-        public override (TState Start, TState End) ThompsonsConstruct<TState>(
-            Nfa<TState, TSymbol> nfa,
-            IStateCreator<TState> stateCreator)
-        {
-            var start = stateCreator.Create();
-            var end = stateCreator.Create();
+    public sealed record class Rep0(RegExNode<TSymbol> Element) : RegExNode<TSymbol>;
 
-            var (elementStart, elementEnd) = this.Element.ThompsonsConstruct(nfa, stateCreator);
+    /// <summary>
+    /// Represents the 1-or-more repetition of a regex construct.
+    /// </summary>
+    /// <param name="Element">The repeated element.</param>
+    public sealed record class Rep1(RegExNode<TSymbol> Element) : RegExNode<TSymbol>;
 
-            nfa.EpsilonTransitions.Add(start, end);
-            nfa.EpsilonTransitions.Add(start, elementStart);
-            nfa.EpsilonTransitions.Add(elementEnd, end);
-            nfa.EpsilonTransitions.Add(elementEnd, elementStart);
+    /// <summary>
+    /// Represents an exact amount of repetition for a regex construct.
+    /// </summary>
+    /// <param name="Element">The repeated element.</param>
+    /// <param name="Count">The amount to repeat.</param>
+    public sealed record class RepExact(RegExNode<TSymbol> Element, int Count) : RegExNode<TSymbol>;
 
-            return (start, end);
-        }
-    }
+    /// <summary>
+    /// Represents repetition for a regex construct for at least a given amount.
+    /// </summary>
+    /// <param name="Element">The repeated element.</param>
+    /// <param name="Count">The amount to repeat at least.</param>
+    public sealed record class RepAtLeast(RegExNode<TSymbol> Element, int Count) : RegExNode<TSymbol>;
+
+    /// <summary>
+    /// Represents repetition for a regex construct for at most a given amount.
+    /// </summary>
+    /// <param name="Element">The repeated element.</param>
+    /// <param name="Count">The amount to repeat at most.</param>
+    public sealed record class RepAtMost(RegExNode<TSymbol> Element, int Count) : RegExNode<TSymbol>;
+
+    /// <summary>
+    /// Represents repetition for a regex construct between 2 amounts.
+    /// </summary>
+    /// <param name="Element">The repeated element.</param>
+    /// <param name="Min">The amount to repeat at least (inclusive).</param>
+    /// <param name="Max">The amount to repeat at most (inclusive).</param>
+    public sealed record class RepBetween(RegExNode<TSymbol> Element, int Min, int Max) : RegExNode<TSymbol>;
 
     /// <summary>
     /// Represents the empty symbol.
@@ -109,64 +79,30 @@ public abstract record class RegExNode<TSymbol>
         /// A default instance to use.
         /// </summary>
         public static Eps Instance { get; } = new();
-
-        /// <inheritdoc/>
-        public override (TState Start, TState End) ThompsonsConstruct<TState>(
-            Nfa<TState, TSymbol> nfa,
-            IStateCreator<TState> stateCreator)
-        {
-            var start = stateCreator.Create();
-            nfa.States.Add(start);
-            return (start, start);
-        }
     }
 
     /// <summary>
     /// Represents a literal symbol.
     /// </summary>
     /// <param name="Symbol">The symbol.</param>
-    public sealed record class Lit(TSymbol Symbol) : RegExNode<TSymbol>
-    {
-        /// <inheritdoc/>
-        public override (TState Start, TState End) ThompsonsConstruct<TState>(
-            Nfa<TState, TSymbol> nfa,
-            IStateCreator<TState> stateCreator)
-        {
-            var start = stateCreator.Create();
-            var end = stateCreator.Create();
-
-            nfa.Transitions.Add(start, this.Symbol, end);
-
-            return (start, end);
-        }
-    }
+    public sealed record class Lit(TSymbol Symbol) : RegExNode<TSymbol>;
 
     /// <summary>
     /// Represents a literal symbol range.
     /// </summary>
     /// <param name="Invert">True, if the ranges should be inverted.</param>
     /// <param name="Intervals">The intervals covering the included symbols.</param>
-    public sealed record class Range(bool Invert, IEnumerable<Interval<TSymbol>> Intervals) : RegExNode<TSymbol>
+    public sealed record class Range(bool Invert, IEnumerable<Interval<TSymbol>> Intervals) : RegExNode<TSymbol>;
+
+    /// <summary>
+    /// Represents a character class.
+    /// </summary>
+    /// <param name="Identifier">The object that identifies the character class.</param>
+    public sealed record class Class(object Identifier)
     {
-        /// <inheritdoc/>
-        public override (TState Start, TState End) ThompsonsConstruct<TState>(
-            Nfa<TState, TSymbol> nfa,
-            IStateCreator<TState> stateCreator)
-        {
-            // Construct the set
-            var set = new IntervalSet<TSymbol>(nfa.SymbolIntervalComparer);
-            foreach (var iv in this.Intervals) set.Add(iv);
-
-            // Invert, if needed
-            if (this.Invert) set.Complement();
-
-            // Add transitions
-            var start = stateCreator.Create();
-            var end = stateCreator.Create();
-
-            foreach (var iv in set) nfa.Transitions.Add(start, iv, end);
-
-            return (start, end);
-        }
+        /// <summary>
+        /// The character class usually represented by a dot.
+        /// </summary>
+        public static Class Dot { get; } = new(".");
     }
 }
