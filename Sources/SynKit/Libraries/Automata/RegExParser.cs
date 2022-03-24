@@ -95,7 +95,63 @@ public sealed class RegExParser
 
     private RegExNode<char> ParseQuantifier(string text, RegExNode<char> atom, ref int offset)
     {
-        throw new NotImplementedException();
+        // Trivial quantifiers
+        if (Matches(text, '?', ref offset)) return RegEx.Option(atom);
+        if (Matches(text, '+', ref offset)) return RegEx.Repeat1(atom);
+        if (Matches(text, '*', ref offset)) return RegEx.Repeat0(atom);
+        // More complex quantifiers, we can't commit yet
+        var offset1 = offset;
+        if (!Matches(text, '{', ref offset1)) return atom;
+        // Open brace, we try to parse a quantifier
+        // - { number } => exactly
+        // - { number, } => at least
+        // - { , number } => at most
+        // - { number , number } => between
+        if (Matches(text, ',', ref offset1))
+        {
+            // Only { , number } is possible here
+            var n = ParseNumber(text, ref offset1);
+            if (n is null || !Matches(text, '}', ref offset1)) return atom;
+            // Success
+            offset = offset1;
+            return RegEx.AtMost(atom, n.Value);
+        }
+        // { number }, { number, }, { number , number } are possible
+        var atLeast = ParseNumber(text, ref offset1);
+        if (atLeast is null) return atom;
+        if (Matches(text, '}', ref offset1))
+        {
+            // Exact
+            offset = offset1;
+            return RegEx.Exactly(atom, atLeast.Value);
+        }
+        // Only { number, } and { number , number }
+        if (!Matches(text, ',', ref offset1)) return atom;
+        if (Matches(text, '}', ref offset1))
+        {
+            // At least
+            offset = offset1;
+            return RegEx.AtLeast(atom, atLeast.Value);
+        }
+        var atMost = ParseNumber(text, ref offset1);
+        if (atMost is null || !Matches(text, '}', ref offset1)) return atom;
+        // Between
+        offset = offset1;
+        return RegEx.Between(atom, atLeast.Value, atMost.Value);
+    }
+
+    private static int? ParseNumber(string text, ref int offset)
+    {
+        var intText = MatchWhile(text, char.IsDigit, ref offset);
+        if (intText.Length == 0) return null;
+        return int.Parse(intText);
+    }
+
+    private static string MatchWhile(string text, Predicate<char> predicate, ref int offset)
+    {
+        var sb = new StringBuilder();
+        for (; offset < text.Length && predicate(text[offset]); sb.Append(text[offset++])) ;
+        return sb.ToString();
     }
 
     private static bool Matches(string text, char ch, ref int offset)

@@ -50,6 +50,15 @@ public static class RegEx
         new RegExNode<TSymbol>.Rep(element);
 
     /// <summary>
+    /// Creates an optional from a given construct.
+    /// </summary>
+    /// <typeparam name="TSymbol">The symbol type.</typeparam>
+    /// <param name="element">The construct to make optional.</param>
+    /// <returns>A regex that makes <paramref name="element"/> optional.</returns>
+    public static RegExNode<TSymbol> Option<TSymbol>(RegExNode<TSymbol> element) =>
+        AtMost(element, 1);
+
+    /// <summary>
     /// Creates a repetition node from the given construct that repeats 1-or-more times.
     /// </summary>
     /// <typeparam name="TSymbol">The symbol type.</typeparam>
