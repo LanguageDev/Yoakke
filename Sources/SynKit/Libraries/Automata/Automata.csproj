@@ -1,6 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <PackageReference Include="IsExternalInit" Version="1.0.1" PrivateAssets="All" />
+    <PackageReference Include="Nullable" Version="1.3.0" PrivateAssets="All" />
     
     <ProjectReference Include="$(SolutionDir)/Shared/Libraries/Collections/Collections.csproj" />
   </ItemGroup>

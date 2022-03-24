@@ -21,7 +21,7 @@ public static class RegEx
     /// <param name="first">The first construct in the alternatives.</param>
     /// <param name="rest">The rest of the symbols in the alternatives.</param>
     /// <returns>A regex that has <paramref name="first"/> and <paramref name="rest"/> as alternatives.</returns>
-    public static RegExNode<TSymbol> Or<TSymbol>(RegExNode<TSymbol> first, params RegExNode<TSymbol>[] rest)
+    public static RegExNode<TSymbol> Alternation<TSymbol>(RegExNode<TSymbol> first, params RegExNode<TSymbol>[] rest)
     {
         foreach (var item in rest) first = new RegExNode<TSymbol>.Alt(first, item);
         return first;
@@ -108,7 +108,7 @@ public static class RegEx
         if (to < from) throw new ArgumentOutOfRangeException(nameof(to));
 
         var result = Exactly(element, from);
-        for (var i = from + 1; i <= to; ++i) result = Or(result, Exactly(element, i));
+        for (var i = from + 1; i <= to; ++i) result = Alternation(result, Exactly(element, i));
         return result;
     }
 
