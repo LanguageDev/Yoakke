@@ -90,6 +90,44 @@ public sealed class RegExParser
 
     private RegExNode<char> ParseAtom(string text, ref int offset)
     {
+        var offset1 = offset;
+        if (Matches(text, '\\', ref offset1))
+        {
+            // Anything that starts with a '\'
+            // Any single character is accepted, BUT there are special cases:
+            //  - \c<ASCII>
+            //  - \p{...}
+            //  - \P{...}
+            //  - \[0-3][0-7][0-7] or \[0-7][0-7]
+            //  - \x[0-9a-fA-F][0-9a-fA-F] or \x{...}
+            //  - \Q...\E (block-quoted)
+            var escaped = Take(text, ref offset1);
+            if (escaped is null) throw new RegExParseException(text, "expected escaped character after '\', but found end of text");
+            var e = escaped.Value;
+            switch (e)
+            {
+            case 'c':
+                if (Matches(text, IsAscii, ref offset1, out var asciiCh))
+                {
+                    throw new NotImplementedException("\\c<ASCII>");
+                }
+                break;
+
+            default:
+                break;
+            }
+        }
+        if (Matches(text, '(', ref offset1))
+        {
+            // TODO: Grouping
+            throw new NotImplementedException();
+        }
+        if (Matches(text, '[', ref offset1))
+        {
+            // TODO: Character classes
+            throw new NotImplementedException();
+        }
+        // TODO: Rest
         throw new NotImplementedException();
     }
 
@@ -147,17 +185,45 @@ public sealed class RegExParser
         return int.Parse(intText);
     }
 
+    private static bool Matches(string text, char ch, ref int offset) =>
+        Matches(text, c => c == ch, ref offset) is not null;
+
+    private static char? Take(string text, ref int offset) =>
+        Matches(text, _ => true, ref offset);
+
     private static string MatchWhile(string text, Predicate<char> predicate, ref int offset)
     {
         var sb = new StringBuilder();
-        for (; offset < text.Length && predicate(text[offset]); sb.Append(text[offset++])) ;
+        while (true)
+        {
+            var ch = Matches(text, predicate, ref offset);
+            if (ch is null) break;
+            sb.Append(ch.Value);
+        }
         return sb.ToString();
     }
 
-    private static bool Matches(string text, char ch, ref int offset)
+    private static bool Matches(string text, Predicate<char> predicate, ref int offset, out char result)
     {
-        if (offset >= text.Length || text[offset] != ch) return false;
-        ++offset;
-        return true;
+        var c = Matches(text, predicate, ref offset);
+        if (c is null)
+        {
+            result = default;
+            return false;
+        }
+        else
+        {
+            result = c.Value;
+            return true;
+        }
     }
+
+    private static char? Matches(string text, Predicate<char> predicate, ref int offset)
+    {
+        if (offset >= text.Length || !predicate(text[offset])) return null;
+        var ch = text[offset++];
+        return ch;
+    }
+
+    private static bool IsAscii(char ch) => ch >= '\x0' && ch <= '\x7f';
 }
