@@ -144,11 +144,7 @@ public sealed class RegExParser
             case 'P':
             {
                 // Character with or without property
-                static bool IsPropChar(char ch) =>
-                       ch == '_'
-                    || ch is >= 'a' and <= 'z'
-                    || ch is >= 'A' and <= 'Z'
-                    || ch is >= '0' and <= '9';
+                static bool IsPropChar(char ch) => IsAsciiAlnum(ch) || ch == '_';
 
                 var offset2 = offset1;
                 if (!this.Matches('{', ref offset2)) break;
@@ -231,12 +227,20 @@ public sealed class RegExParser
         }
         else if (this.Matches('[', ref offset1))
         {
-            // TODO: Character classes
-            throw new NotImplementedException();
+            // Character classes... a lot of cases
+            //  - [^]-cc_atom+]
+            //  - [^]cc_atom*]
+            //  - [^cc_atom+]
+            //  - []-cc_atom+]
+            //  - []cc_atom*]
+            //  - [cc_atom+]
+            //  - [[:[a-zA-Z0-9]+:]]
+            //  - [[:^[a-zA-Z0-9]+:]]
+            throw new NotImplementedException("TODO: Parse character classes");
         }
         // Consume as a single character
-        if (!this.Take(ref offset, out var ch)) this.Error(offset, "character expected");
-        return RegEx.Literal(ch);
+        if (!this.Take(ref offset, out var ch1)) this.Error(offset, "character expected");
+        return RegEx.Literal(ch1);
     }
 
     private RegExNode<char> ParseQuantifier(RegExNode<char> atom, ref int offset)
@@ -350,7 +354,11 @@ public sealed class RegExParser
     private T Error<T>(int offset, string message) =>
         throw new RegExParseException(this.text, $"{message} [at index {offset}]");
 
-    private static bool IsAscii(char ch) => ch >= '\x0' && ch <= '\x7f';
+    private static bool IsAscii(char ch) => ch is >= '\x0' and <= '\x7f';
+    private static bool IsAsciiAlnum(char ch) =>
+           ch is >= 'a' and <= 'z'
+        || ch is >= 'A' and <= 'Z'
+        || ch is >= '0' and <= '9';
     private static bool IsOctDigit(char ch) => ch is >= '0' and <= '7';
     private static bool IsHexDigit(char ch) =>
            ch is >= '0' and <= '9'
