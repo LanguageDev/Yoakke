@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Yoakke.Collections.Intervals;
 
@@ -18,27 +19,37 @@ public static class RegEx
     /// Creates alternatives from the given regex nodes.
     /// </summary>
     /// <typeparam name="TSymbol">The symbol type.</typeparam>
-    /// <param name="first">The first construct in the alternatives.</param>
-    /// <param name="rest">The rest of the symbols in the alternatives.</param>
-    /// <returns>A regex that has <paramref name="first"/> and <paramref name="rest"/> as alternatives.</returns>
-    public static RegExNode<TSymbol> Alternation<TSymbol>(RegExNode<TSymbol> first, params RegExNode<TSymbol>[] rest)
-    {
-        foreach (var item in rest) first = new RegExNode<TSymbol>.Alt(first, item);
-        return first;
-    }
+    /// <param name="alts">The elements to turn into alternatives.</param>
+    /// <returns>A regex that has <paramref name="alts"/> as alternatives.</returns>
+    public static RegExNode<TSymbol> Alternation<TSymbol>(params RegExNode<TSymbol>[] alts) =>
+        Alternation(alts.AsEnumerable());
+
+    /// <summary>
+    /// Creates alternatives from the given regex nodes.
+    /// </summary>
+    /// <typeparam name="TSymbol">The symbol type.</typeparam>
+    /// <param name="alts">The elements to turn into alternatives.</param>
+    /// <returns>A regex that has <paramref name="alts"/> as alternatives.</returns>
+    public static RegExNode<TSymbol> Alternation<TSymbol>(IEnumerable<RegExNode<TSymbol>> alts) =>
+        ConstructFolded(alts, (x, y) => new RegExNode<TSymbol>.Alt(x, y));
 
     /// <summary>
     /// Creates a sequence from the given regex nodes.
     /// </summary>
     /// <typeparam name="TSymbol">The symbol type.</typeparam>
-    /// <param name="first">The first construct in the sequence.</param>
-    /// <param name="rest">The rest of the symbols in the sequence.</param>
-    /// <returns>A regex that has <paramref name="first"/> and <paramref name="rest"/> in sequence.</returns>
-    public static RegExNode<TSymbol> Sequence<TSymbol>(RegExNode<TSymbol> first, params RegExNode<TSymbol>[] rest)
-    {
-        foreach (var item in rest) first = new RegExNode<TSymbol>.Seq(first, item);
-        return first;
-    }
+    /// <param name="elements">The constructs to put in the sequence.</param>
+    /// <returns>A regex that has <paramref name="elements"/> in sequence.</returns>
+    public static RegExNode<TSymbol> Sequence<TSymbol>(params RegExNode<TSymbol>[] elements) =>
+        Sequence(elements.AsEnumerable());
+
+    /// <summary>
+    /// Creates a sequence from the given regex nodes.
+    /// </summary>
+    /// <typeparam name="TSymbol">The symbol type.</typeparam>
+    /// <param name="elements">The constructs to put in the sequence.</param>
+    /// <returns>A regex that has <paramref name="elements"/> in sequence.</returns>
+    public static RegExNode<TSymbol> Sequence<TSymbol>(IEnumerable<RegExNode<TSymbol>> elements) =>
+        ConstructFolded(elements, (x, y) => new RegExNode<TSymbol>.Seq(x, y));
 
     /// <summary>
     /// Creates a repetition node from the given construct that repeats 0-or-more times.
@@ -64,7 +75,8 @@ public static class RegEx
     /// <typeparam name="TSymbol">The symbol type.</typeparam>
     /// <param name="element">The construct to repeat.</param>
     /// <returns>A regex that repeats <paramref name="element"/> 1 or more times.</returns>
-    public static RegExNode<TSymbol> Repeat1<TSymbol>(RegExNode<TSymbol> element) => Sequence(element, Repeat0(element));
+    public static RegExNode<TSymbol> Repeat1<TSymbol>(RegExNode<TSymbol> element) =>
+        Sequence(element, Repeat0(element));
 
     /// <summary>
     /// Creates a repetition node from the given construct that repeats exactly the given amount of times.
@@ -148,4 +160,15 @@ public static class RegEx
     public static RegExNode<TSymbol> Range<TSymbol>(
         bool invert,
         IEnumerable<Interval<TSymbol>> intervals) => new RegExNode<TSymbol>.Range(invert, intervals);
+
+    private static RegExNode<TSymbol> ConstructFolded<TSymbol>(
+        IEnumerable<RegExNode<TSymbol>> elements,
+        Func<RegExNode<TSymbol>, RegExNode<TSymbol>, RegExNode<TSymbol>> folder)
+    {
+        var enumerator = elements.GetEnumerator();
+        if (!enumerator.MoveNext()) return Empty<TSymbol>();
+        var first = enumerator.Current;
+        while (enumerator.MoveNext()) first = folder(first, enumerator.Current);
+        return first;
+    }
 }
