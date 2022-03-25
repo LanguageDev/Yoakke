@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Text;
 
 namespace Yoakke.SynKit.Automata;
@@ -99,7 +100,7 @@ public sealed class RegExParser
             //  - \p{...}
             //  - \P{...}
             //  - \[0-3][0-7][0-7] or \[0-7][0-7]
-            //  - \x[0-9a-fA-F][0-9a-fA-F] or \x{...}
+            //  - \x[0-9a-fA-F][0-9a-fA-F] or \x{[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]+}
             //  - \Q...\E (block-quoted)
             var escaped = Take(text, ref offset1);
             if (escaped is null) throw new RegExParseException(text, "expected escaped character after '\', but found end of text");
@@ -107,15 +108,88 @@ public sealed class RegExParser
             switch (e)
             {
             case 'c':
-                if (Matches(text, IsAscii, ref offset1, out var asciiCh))
+            {
+                // Control character
+                if (!Matches(text, IsAscii, ref offset1, out var asciiCh)) break;
+                offset = offset1;
+                return this.ConstructControlChar(asciiCh);
+            }
+
+            case 'p':
+            case 'P':
+            {
+                // Character with or without property
+                static bool IsPropChar(char ch) =>
+                       ch == '_'
+                    || ch is >= 'a' and <= 'z'
+                    || ch is >= 'A' and <= 'Z'
+                    || ch is >= '0' and <= '9';
+
+                var offset2 = offset1;
+                if (!Matches(text, '{', ref offset2)) break;
+                var prop = MatchWhile(text, IsPropChar, ref offset2);
+                if (prop.Length == 0 || !Matches(text, '}', ref offset2)) break;
+                offset = offset2;
+                return this.ConstructCharWithProp(e == 'P', prop);
+            }
+
+            case 'x':
+            {
+                // Hex code for character
+                var offset2 = offset1;
+                string hex;
+                if (Matches(text, '{', ref offset2))
                 {
-                    throw new NotImplementedException("\\c<ASCII>");
+                    // At least 3 hex chars
+                    hex = MatchWhile(text, IsHexDigit, ref offset2);
+                    if (hex.Length < 3 || !Matches(text, '}', ref offset2)) break;
+                    
+                }
+                else
+                {
+                    if (!Matches(text, IsHexDigit, ref offset2, out var h1)
+                     || !Matches(text, IsHexDigit, ref offset2, out var h2)) break;
+                    hex = $"{h1}{h2}";
+                }
+                offset = offset2;
+                return RegEx.Literal((char)int.Parse(hex, NumberStyles.HexNumber));
+            }
+
+            case >= '0' and <= '7':
+            {
+                // Octal code for character
+                var offset2 = offset1;
+                var allow3 = e <= '3';
+                string oct;
+                if (!Matches(text, IsOctDigit, ref offset2, out var o2)) break;
+                if (allow3 && Matches(text, IsOctDigit, ref offset2, out var o3)) oct = $"{e}{o2}{o3}";
+                else oct = $"{e}{o2}";
+                offset = offset2;
+                // NOTE: Ew, Convert API
+                return RegEx.Literal((char)Convert.ToInt32(oct, 8));
+            }
+
+            case 'Q':
+            {
+                // Quoted, terminates with '\E'
+                var offset2 = offset1;
+                var quotedText = new StringBuilder();
+                while (true)
+                {
+                    var ch = Take(text, ref offset2);
+                    if (ch is null) break; // NOTE: Break from switch
+                    // TODO
                 }
                 break;
+            }
 
             default:
                 break;
             }
+            // We assume it's a single-char escape
+            offset = offset1;
+            var result = this.ConstructSingleCharEscape(text, e, offset);
+            return result;
         }
         if (Matches(text, '(', ref offset1))
         {
@@ -178,6 +252,17 @@ public sealed class RegExParser
         return RegEx.Between(atom, atLeast.Value, atMost.Value);
     }
 
+    private RegExNode<char> ConstructSingleCharEscape(string text, char ch, int offset) => ch switch
+    {
+        _ => throw new RegExParseException(text, $"unknown escape sequence '\\{ch}' [at index {offset}]"),
+    };
+
+    private RegExNode<char> ConstructCharWithProp(bool negate, string prop) =>
+        throw new NotImplementedException("Character properties are not implemented yet");
+
+    private RegExNode<char> ConstructControlChar(char asciiCh) =>
+        throw new NotImplementedException("Control chars are not supported yet");
+
     private static int? ParseNumber(string text, ref int offset)
     {
         var intText = MatchWhile(text, char.IsDigit, ref offset);
@@ -226,4 +311,9 @@ public sealed class RegExParser
     }
 
     private static bool IsAscii(char ch) => ch >= '\x0' && ch <= '\x7f';
+    private static bool IsOctDigit(char ch) => ch is >= '0' and <= '7';
+    private static bool IsHexDigit(char ch) =>
+           ch is >= '0' and <= '9'
+        || ch is >= 'a' and <= 'f'
+        || ch is >= 'A' and <= 'F';
 }
