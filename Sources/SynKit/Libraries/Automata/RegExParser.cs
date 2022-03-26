@@ -193,7 +193,13 @@ public sealed class RegExParser
         ref int offset,
         [MaybeNullWhen(false)] out RegExNode<char> result)
     {
-        // TODO
+        // Can be
+        //  - [^]-cc_atom+]
+        //  - [^]cc_atom*]
+        //  - [^cc_atom+]
+        //  - []-cc_atom+]
+        //  - []cc_atom*]
+        //  - [cc_atom+]
         throw new NotImplementedException();
     }
 
