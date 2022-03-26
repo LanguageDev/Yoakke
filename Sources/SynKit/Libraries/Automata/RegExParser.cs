@@ -118,129 +118,29 @@ public sealed class RegExParser
 
     private RegExNode<char> ParseAtom(ref int offset)
     {
+        // Try grouping first
         var offset1 = offset;
-        if (this.Matches('\\', ref offset1))
+        if (this.Matches('(', ref offset1))
         {
-            // Anything that starts with a '\'
-            // Any single character is accepted, BUT there are special cases:
-            //  - \c<ASCII>
-            //  - \p{...}
-            //  - \P{...}
-            //  - \[0-3][0-7][0-7] or \[0-7][0-7]
-            //  - \x[0-9a-fA-F][0-9a-fA-F] or \x{[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]+}
-            //  - \Q...\E (block-quoted)
-            if (!this.Take(ref offset1, out var escaped)) this.Error(offset, "expected escaped character after '\', but found end of text");
-            switch (escaped)
+            var alt = this.ParseAlternation(ref offset1);
+            if (this.Matches(')', ref offset1))
             {
-            case 'c':
-            {
-                // Control character
-                if (!this.Matches(IsAscii, ref offset1, out var asciiCh)) break;
                 offset = offset1;
-                return this.ConstructControlChar(asciiCh);
-            }
-
-            case 'p':
-            case 'P':
-            {
-                // Character with or without property
-                static bool IsPropChar(char ch) => IsAsciiAlnum(ch) || ch == '_';
-
-                var offset2 = offset1;
-                if (!this.Matches('{', ref offset2)) break;
-                var prop = this.TakeWhile(IsPropChar, ref offset2);
-                if (prop.Length == 0) break;
-                if (!this.Matches('}', ref offset2)) break;
-                offset = offset2;
-                return this.ConstructCharWithProp(escaped == 'P', prop);
-            }
-
-            case 'x':
-            {
-                // Hex code for character
-                var offset2 = offset1;
-                string hex;
-                if (this.Matches('{', ref offset2))
-                {
-                    // At least 3 hex chars
-                    hex = this.TakeWhile(IsHexDigit, ref offset2);
-                    if (hex.Length < 3) break;
-                    if (!this.Matches('}', ref offset2)) break;
-                }
-                else
-                {
-                    if (!this.Matches(IsHexDigit, ref offset2, out var h1)) break;
-                    if (!this.Matches(IsHexDigit, ref offset2, out var h2)) break;
-                    hex = $"{h1}{h2}";
-                }
-                offset = offset2;
-                return RegEx.Literal((char)int.Parse(hex, NumberStyles.HexNumber));
-            }
-
-            case >= '0' and <= '7':
-            {
-                // Octal code for character
-                var offset2 = offset1;
-                var allow3 = escaped <= '3';
-                string oct;
-                if (!this.Matches(IsOctDigit, ref offset2, out var o2)) break;
-                if (allow3 && this.Matches(IsOctDigit, ref offset2, out var o3)) oct = $"{escaped}{o2}{o3}";
-                else oct = $"{escaped}{o2}";
-                offset = offset2;
-                // NOTE: Ew, Convert API
-                return RegEx.Literal((char)Convert.ToInt32(oct, 8));
-            }
-
-            case 'Q':
-            {
-                // Quoted, terminates with '\E'
-                var offset2 = offset1;
-                var quotedText = new StringBuilder();
-                while (true)
-                {
-                    if (!this.Take(ref offset2, out var ch)) goto after_switch;
-                    if (ch == '\\' && this.Matches('E', ref offset2)) break;
-                    quotedText.Append(ch);
-                }
-                offset = offset2;
-                return RegEx.Sequence(quotedText.ToString().Select(RegEx.Literal));
-            }
-
-            default:
-                break;
-            }
-        after_switch:
-            // We assume it's a single-char escape
-            offset = offset1;
-            var result = this.ConstructSingleCharEscape(escaped, offset);
-            return result;
-        }
-        else if (this.Matches('(', ref offset1))
-        {
-            var offset2 = offset1;
-            var sub = this.ParseAlternation(ref offset2);
-            if (this.Matches(')', ref offset2))
-            {
-                offset = offset2;
-                return sub;
+                return alt;
             }
         }
-        else if (this.Matches('[', ref offset1))
-        {
-            // Character classes... a lot of cases
-            //  - [^]-cc_atom+]
-            //  - [^]cc_atom*]
-            //  - [^cc_atom+]
-            //  - []-cc_atom+]
-            //  - []cc_atom*]
-            //  - [cc_atom+]
-            //  - [[:[a-zA-Z0-9]+:]]
-            //  - [[:^[a-zA-Z0-9]+:]]
-            throw new NotImplementedException("TODO: Parse character classes");
-        }
-        // Consume as a single character
-        if (!this.Take(ref offset, out var ch1)) this.Error(offset, "character expected");
-        return RegEx.Literal(ch1);
+        // Then the rest
+        if (this.Matches(']', ref offset)) return RegEx.Literal(']');
+        if (this.Matches('.', ref offset)) return this.ConstructDotMatcher();
+        RegExNode<char>? result;
+        // NOTE: Order matters here
+        if (this.ParseCharacterClass(ref offset, out result)) return result;
+        if (this.ParseSharedAtom(ref offset, out result)) return result;
+        if (this.ParseSharedLiteral(ref offset, out result)) return result;
+
+        // TODO: ^, if we even want to handle it
+        this.Error(offset, "unexpected input");
+        return null!;
     }
 
     private RegExNode<char> ParseQuantifier(RegExNode<char> atom, ref int offset)
@@ -289,16 +189,212 @@ public sealed class RegExParser
         return RegEx.Between(atom, atLeast, atMost);
     }
 
-    private RegExNode<char> ConstructSingleCharEscape(char ch, int offset) => ch switch
+    private bool ParseCharacterClass(
+        ref int offset,
+        [MaybeNullWhen(false)] out RegExNode<char> result)
     {
-        _ => this.Error<RegExNode<char>>(offset, $"unknown escape sequence '\\{ch}'"),
+        // TODO
+        throw new NotImplementedException();
+    }
+
+    private bool ParseSharedAtom(
+        ref int offset,
+        [MaybeNullWhen(false)] out RegExNode<char> result)
+    {
+        var offset1 = offset;
+        if (this.Matches('\\', ref offset1))
+        {
+            // Could be
+            //  - \c<ASCII>
+            //  - \p{property} or \P{property}
+            //  - \<ANYTHING>
+
+            if (!this.Take(ref offset1, out var escaped)) goto not_atom;
+
+            switch (escaped)
+            {
+            case 'c':
+            {
+                // Control character
+                if (!this.Matches(IsAscii, ref offset1, out var asciiCh)) break;
+                result = this.ConstructControlChar(offset, asciiCh);
+                offset = offset1;
+                return true;
+            }
+
+            case 'p' or 'P':
+            {
+                // Character with or without property
+                static bool IsPropChar(char ch) => IsAsciiAlnum(ch) || ch == '_';
+
+                var offset2 = offset1;
+                if (!this.Matches('{', ref offset2)) break;
+                var prop = this.TakeWhile(IsPropChar, ref offset2);
+                if (prop.Length == 0) break;
+                if (!this.Matches('}', ref offset2)) break;
+                result = this.ConstructCharWithProp(offset, escaped == 'P', prop);
+                offset = offset2;
+                return true;
+            }
+            }
+
+            // Single-character
+            // NOTE: This conversion can fail
+            result = this.ConstructEscapedAtom(offset, escaped);
+            if (result is null) return false;
+            offset = offset1;
+            return true;
+        }
+        else
+        {
+            // Could be
+            //  - [[:classname:]]
+            //  - [[:^classname:]]
+
+            if (!this.Matches("[[:", ref offset1)) goto not_atom;
+            var negate = this.Matches('^', ref offset1);
+            var setName = this.TakeWhile(IsAsciiAlnum, ref offset1);
+            if (setName.Length == 0) goto not_atom;
+            if (!this.Matches(":]]", ref offset1)) goto not_atom;
+            result = this.ConstructPosixNamedSet(offset, negate, setName);
+            offset = offset1;
+            return true;
+        }
+    not_atom:
+        result = null;
+        return false;
+    }
+
+    private bool ParseSharedLiteral(
+        ref int offset,
+        [MaybeNullWhen(false)] out RegExNode<char> result)
+    {
+        var offset1 = offset;
+        if (this.Matches('\\', ref offset1))
+        {
+            // Escaped, could be
+            //  - octal escaped char
+            //  - hex escaped char
+            //  - \~[a-zA-Z0-9]
+            //  - \Q.*?\E
+            //  - \a, \e, \f, \r, \n, \t
+
+            if (!this.Take(ref offset1, out var escaped)) goto not_escaped;
+
+            switch (escaped)
+            {
+            case 'x':
+            {
+                // Hex code for character
+                var offset2 = offset1;
+                string hex;
+                if (this.Matches('{', ref offset2))
+                {
+                    // At least 3 hex chars
+                    hex = this.TakeWhile(IsHexDigit, ref offset2);
+                    if (hex.Length < 3) goto not_escaped;
+                    if (!this.Matches('}', ref offset2)) goto not_escaped;
+                }
+                else
+                {
+                    if (!this.Matches(IsHexDigit, ref offset2, out var h1)) goto not_escaped;
+                    if (!this.Matches(IsHexDigit, ref offset2, out var h2)) goto not_escaped;
+                    hex = $"{h1}{h2}";
+                }
+                result = RegEx.Literal((char)int.Parse(hex, NumberStyles.HexNumber));
+                offset = offset2;
+                return true;
+            }
+
+            case 'Q':
+            {
+                // Quoted, terminates with '\E'
+                var offset2 = offset1;
+                var quotedText = new StringBuilder();
+                while (true)
+                {
+                    if (!this.Take(ref offset2, out var ch)) goto not_escaped;
+                    if (ch == '\\' && this.Matches('E', ref offset2)) break;
+                    quotedText.Append(ch);
+                }
+                result = RegEx.Sequence(quotedText.ToString().Select(RegEx.Literal));
+                offset = offset2;
+                return true;
+            }
+
+            case >= '0' and <= '7':
+            {
+                // Octal code for character
+                var offset2 = offset1;
+                var allow3 = escaped <= '3';
+                string oct;
+                if (!this.Matches(IsOctDigit, ref offset2, out var o2)) goto not_escaped;
+                if (allow3 && this.Matches(IsOctDigit, ref offset2, out var o3)) oct = $"{escaped}{o2}{o3}";
+                else oct = $"{escaped}{o2}";
+                // NOTE: Ew, Convert API
+                result = RegEx.Literal((char)Convert.ToInt32(oct, 8));
+                offset = offset2;
+                return true;
+            }
+
+            case 'a' or 'e' or 'f' or 'r' or 'n' or 't':
+            {
+                result = RegEx.Literal(escaped switch
+                {
+                    'a' => '\a',
+                    'e' => (char)0x1b,
+                    'f' => '\f',
+                    'r' => '\r',
+                    'n' => '\n',
+                    't' => '\t',
+                    _ => throw new InvalidOperationException(),
+                });
+                offset = offset1;
+                return true;
+            }
+
+            case char ch when !IsAsciiAlnum(ch):
+            {
+                // Quoted
+                result = RegEx.Literal(ch);
+                offset = offset1;
+                return true;
+            }
+
+            default:
+                goto not_escaped;
+            }
+        }
+    not_escaped:
+        // Otherwise we just consume a single character
+        if (!this.Take(ref offset, out var ch1))
+        {
+            result = null;
+            return false;
+        }
+        // There is a character, consume it literally
+        result = RegEx.Literal(ch1);
+        return true;
+    }
+
+    private RegExNode<char> ConstructDotMatcher() =>
+        throw new NotImplementedException("'.' is not supported yet");
+
+    private RegExNode<char>? ConstructEscapedAtom(int offset, char ch) => ch switch
+    {
+        _ => throw new NotImplementedException($"\\{ch} is not supported yet"),
     };
 
-    private RegExNode<char> ConstructCharWithProp(bool negate, string prop) =>
-        throw new NotImplementedException("Character properties are not implemented yet");
+    private RegExNode<char> ConstructControlChar(int offset, char ch) => ch switch
+    {
+        _ => throw new NotImplementedException($"Control character {ch} is not supported yet"),
+    };
 
-    private RegExNode<char> ConstructControlChar(char asciiCh) =>
-        throw new NotImplementedException("Control chars are not supported yet");
+    private RegExNode<char> ConstructCharWithProp(int offset, bool negate, string prop) =>
+        throw new NotImplementedException("Character properties are not supported yet");
+
+    private RegExNode<char> ConstructPosixNamedSet(int offset, bool negate, string setName) =>
+        throw new NotImplementedException("Posix named sets are not supported yet");
 
     private bool ParseNumber(ref int offset, out int number)
     {
@@ -315,11 +411,37 @@ public sealed class RegExParser
         }
     }
 
-    private bool Matches(char ch, ref int offset) =>
-        this.Matches(c => c == ch, ref offset, out _);
+    private bool Matches(string text, ref int offset)
+    {
+        if (offset + text.Length > this.text.Length) return false;
+        for (var i = 0; i < text.Length; ++i)
+        {
+            if (text[i] != this.text[offset + i]) return false;
+        }
+        offset += text.Length;
+        return true;
+    }
 
-    private bool Take(ref int offset, out char ch) =>
-        this.Matches(_ => true, ref offset, out ch);
+    private bool Matches(char ch, ref int offset)
+    {
+        if (offset >= this.text.Length || this.text[offset] != ch) return false;
+        ++offset;
+        return true;
+    }
+
+    private bool Take(ref int offset, out char ch)
+    {
+        if (offset >= this.text.Length)
+        {
+            ch = default;
+            return false;
+        }
+        else
+        {
+            ch = this.text[offset++];
+            return true;
+        }
+    }
 
     private string TakeWhile(Predicate<char> predicate, ref int offset)
     {
