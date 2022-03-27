@@ -6,7 +6,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Yoakke.Collections;
 using Yoakke.Collections.Intervals;
 

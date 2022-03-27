@@ -1,8 +1,8 @@
-using System;
+// Copyright (c) 2021-2022 Yoakke.
+// Licensed under the Apache License, Version 2.0.
+// Source repository: https://github.com/LanguageDev/Yoakke
+
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Yoakke.Collections.Tests;
