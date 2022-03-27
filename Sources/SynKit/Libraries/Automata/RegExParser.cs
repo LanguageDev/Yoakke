@@ -136,7 +136,11 @@ public sealed class RegExParser
         // NOTE: Order matters here
         if (this.ParseCharacterClass(ref offset, out result)) return result;
         if (this.ParseSharedAtom(ref offset, out result)) return result;
-        if (this.ParseSharedLiteral(ref offset, out result)) return result;
+        if (this.ParseSharedLiteral(ref offset, out var chars))
+        {
+            result = RegEx.Sequence(chars.Select(RegEx.Literal));
+            return result;
+        }
 
         // TODO: ^, if we even want to handle it
         this.Error(offset, "unexpected input");
@@ -200,6 +204,13 @@ public sealed class RegExParser
         //  - []-cc_atom+]
         //  - []cc_atom*]
         //  - [cc_atom+]
+        throw new NotImplementedException();
+    }
+
+    private bool ParseCharacterLiteral(
+        ref int offset,
+        [MaybeNullWhen(false)] out RegExNode<char> result)
+    {
         throw new NotImplementedException();
     }
 
@@ -273,7 +284,7 @@ public sealed class RegExParser
 
     private bool ParseSharedLiteral(
         ref int offset,
-        [MaybeNullWhen(false)] out RegExNode<char> result)
+        [MaybeNullWhen(false)] out IReadOnlyList<char> result)
     {
         var offset1 = offset;
         if (this.Matches('\\', ref offset1))
@@ -307,7 +318,7 @@ public sealed class RegExParser
                     if (!this.Matches(IsHexDigit, ref offset2, out var h2)) goto not_escaped;
                     hex = $"{h1}{h2}";
                 }
-                result = RegEx.Literal((char)int.Parse(hex, NumberStyles.HexNumber));
+                result = new[] { (char)int.Parse(hex, NumberStyles.HexNumber) };
                 offset = offset2;
                 return true;
             }
@@ -323,7 +334,7 @@ public sealed class RegExParser
                     if (ch == '\\' && this.Matches('E', ref offset2)) break;
                     quotedText.Append(ch);
                 }
-                result = RegEx.Sequence(quotedText.ToString().Select(RegEx.Literal));
+                result = quotedText.ToString().ToList();
                 offset = offset2;
                 return true;
             }
@@ -338,14 +349,14 @@ public sealed class RegExParser
                 if (allow3 && this.Matches(IsOctDigit, ref offset2, out var o3)) oct = $"{escaped}{o2}{o3}";
                 else oct = $"{escaped}{o2}";
                 // NOTE: Ew, Convert API
-                result = RegEx.Literal((char)Convert.ToInt32(oct, 8));
+                result = new[] { (char)Convert.ToInt32(oct, 8) };
                 offset = offset2;
                 return true;
             }
 
             case 'a' or 'e' or 'f' or 'r' or 'n' or 't':
             {
-                result = RegEx.Literal(escaped switch
+                result = new[] { escaped switch
                 {
                     'a' => '\a',
                     'e' => (char)0x1b,
@@ -354,7 +365,7 @@ public sealed class RegExParser
                     'n' => '\n',
                     't' => '\t',
                     _ => throw new InvalidOperationException(),
-                });
+                } };
                 offset = offset1;
                 return true;
             }
@@ -362,7 +373,7 @@ public sealed class RegExParser
             case char ch when !IsAsciiAlnum(ch):
             {
                 // Quoted
-                result = RegEx.Literal(ch);
+                result = new[] { ch };
                 offset = offset1;
                 return true;
             }
@@ -379,7 +390,7 @@ public sealed class RegExParser
             return false;
         }
         // There is a character, consume it literally
-        result = RegEx.Literal(ch1);
+        result = new[] { ch1 };
         return true;
     }
 
