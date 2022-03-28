@@ -28,12 +28,12 @@ public abstract record class RegExAst<TSymbol>
     /// <summary>
     /// Represents the empty symbol.
     /// </summary>
-    public sealed record class Eps : RegExAst<TSymbol>
+    public sealed record class Epsilon : RegExAst<TSymbol>
     {
         /// <summary>
         /// A default instance to use.
         /// </summary>
-        public static Eps Instance { get; } = new();
+        public static Epsilon Instance { get; } = new();
 
         /// <inheritdoc/>
         public override (TState Start, TState End) ThompsonsConstruct<TState>(
@@ -51,7 +51,7 @@ public abstract record class RegExAst<TSymbol>
     /// </summary>
     /// <param name="First">The first alternative.</param>
     /// <param name="Second">The second alternative.</param>
-    public sealed record class Alt(RegExAst<TSymbol> First, RegExAst<TSymbol> Second) : RegExAst<TSymbol>
+    public sealed record class Alternation(RegExAst<TSymbol> First, RegExAst<TSymbol> Second) : RegExAst<TSymbol>
     {
         /// <inheritdoc/>
         public override (TState Start, TState End) ThompsonsConstruct<TState>(
@@ -79,7 +79,7 @@ public abstract record class RegExAst<TSymbol>
     /// </summary>
     /// <param name="First">The first in the sequence.</param>
     /// <param name="Second">The second in the sequence.</param>
-    public sealed record class Seq(RegExAst<TSymbol> First, RegExAst<TSymbol> Second) : RegExAst<TSymbol>
+    public sealed record class Sequence(RegExAst<TSymbol> First, RegExAst<TSymbol> Second) : RegExAst<TSymbol>
     {
         /// <inheritdoc/>
         public override (TState Start, TState End) ThompsonsConstruct<TState>(
@@ -99,7 +99,7 @@ public abstract record class RegExAst<TSymbol>
     /// Represents the 0-or-more repetition of a regex construct.
     /// </summary>
     /// <param name="Element">The repeated element.</param>
-    public sealed record class Rep(RegExAst<TSymbol> Element) : RegExAst<TSymbol>
+    public sealed record class Repetition(RegExAst<TSymbol> Element) : RegExAst<TSymbol>
     {
         /// <inheritdoc/>
         public override (TState Start, TState End) ThompsonsConstruct<TState>(
@@ -124,7 +124,7 @@ public abstract record class RegExAst<TSymbol>
     /// Represents a literal symbol.
     /// </summary>
     /// <param name="Symbol">The symbol.</param>
-    public sealed record class Lit(TSymbol Symbol) : RegExAst<TSymbol>
+    public sealed record class Literal(TSymbol Symbol) : RegExAst<TSymbol>
     {
         /// <inheritdoc/>
         public override (TState Start, TState End) ThompsonsConstruct<TState>(
@@ -145,7 +145,7 @@ public abstract record class RegExAst<TSymbol>
     /// </summary>
     /// <param name="Invert">True, if the ranges should be inverted.</param>
     /// <param name="Intervals">The intervals covering the included symbols.</param>
-    public sealed record class Range(bool Invert, IEnumerable<Interval<TSymbol>> Intervals) : RegExAst<TSymbol>
+    public sealed record class LiteralRange(bool Invert, IEnumerable<Interval<TSymbol>> Intervals) : RegExAst<TSymbol>
     {
         /// <inheritdoc/>
         public override (TState Start, TState End) ThompsonsConstruct<TState>(
