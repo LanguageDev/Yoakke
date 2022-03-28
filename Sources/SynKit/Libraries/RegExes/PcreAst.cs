@@ -75,6 +75,16 @@ public abstract record class PcreAst
     public sealed record class Literal(char Char) : PcreAst
     {
         /// <inheritdoc/>
+        public override RegExAst<char> ToPlainRegex(RegExSettings settings) => RegExAst.Literal(this.Char);
+    }
+
+    /// <summary>
+    /// A quoted sequence of characters between \Q and \E
+    /// </summary>
+    /// <param name="Text">The quoted text.</param>
+    public sealed record class Quoted(string Text) : PcreAst
+    {
+        /// <inheritdoc/>
         public override RegExAst<char> ToPlainRegex(RegExSettings settings) => throw new NotImplementedException();
     }
 
