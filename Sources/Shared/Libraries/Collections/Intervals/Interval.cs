@@ -89,26 +89,41 @@ public static class Interval
     /// <summary>
     /// Constructs an interval from the given endpoints.
     /// </summary>
+    /// <typeparam name="T">The endpoint value type.</typeparam>
     /// <param name="lower">The lower endpoint.</param>
     /// <param name="upper">The upper endpoint.</param>
     /// <returns>The constructed interval.</returns>
     public static Interval<T> Of<T>(LowerEndpoint<T> lower, UpperEndpoint<T> upper) => new(lower, upper);
 
     /// <summary>
+    /// Constructs an interval that is inclusive on both sizes from the given endpoint values.
+    /// </summary>
+    /// <typeparam name="T">The endpoint value type.</typeparam>
+    /// <param name="lower">The lower endpoint value.</param>
+    /// <param name="upper">The upper endpoint value.</param>
+    /// <returns>An interval having <paramref name="lower"/> and <paramref name="upper"/> as endpoint values,
+    /// inclusive on both sides.</returns>
+    public static Interval<T> Inclusive<T>(T lower, T upper) =>
+        Of(LowerEndpoint.Inclusive(lower), UpperEndpoint.Inclusive(upper));
+
+    /// <summary>
     /// Constructs an empty interval.
     /// </summary>
+    /// <typeparam name="T">The endpoint value type.</typeparam>
     /// <returns>The constructed interval.</returns>
     public static Interval<T> Empty<T>() => Interval<T>.Empty();
 
     /// <summary>
     /// Constructs an interval containing every possible value.
     /// </summary>
+    /// <typeparam name="T">The endpoint value type.</typeparam>
     /// <returns>The constructed interval.</returns>
     public static Interval<T> Full<T>() => Interval<T>.Full();
 
     /// <summary>
     /// Constructs an interval containing the single specified value.
     /// </summary>
+    /// <typeparam name="T">The endpoint value type.</typeparam>
     /// <param name="value">The single value to be contained.</param>
     /// <returns>The constructed interval.</returns>
     public static Interval<T> Singleton<T>(T value) => Interval<T>.Singleton(value);

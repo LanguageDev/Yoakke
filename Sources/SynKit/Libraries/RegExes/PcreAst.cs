@@ -85,7 +85,8 @@ public abstract record class PcreAst
     public sealed record class Quoted(string Text) : PcreAst
     {
         /// <inheritdoc/>
-        public override RegExAst<char> ToPlainRegex(RegExSettings settings) => throw new NotImplementedException();
+        public override RegExAst<char> ToPlainRegex(RegExSettings settings) =>
+            RegExAst.Sequence(this.Text.Select(RegExAst.Literal));
     }
 
     /// <summary>
@@ -95,7 +96,8 @@ public abstract record class PcreAst
     public sealed record class MetaSequence(object Id) : PcreAst
     {
         /// <inheritdoc/>
-        public override RegExAst<char> ToPlainRegex(RegExSettings settings) => throw new NotImplementedException();
+        public override RegExAst<char> ToPlainRegex(RegExSettings settings) =>
+            settings.MetaSequences[this.Id];
     }
 
     /// <summary>
@@ -106,7 +108,8 @@ public abstract record class PcreAst
     public sealed record class NamedCharacterClass(bool Invert, string Name) : PcreAst
     {
         /// <inheritdoc/>
-        public override RegExAst<char> ToPlainRegex(RegExSettings settings) => throw new NotImplementedException();
+        public override RegExAst<char> ToPlainRegex(RegExSettings settings) =>
+            RegExAst.LiteralRange(this.Invert, settings.NamedCharacterClasses[this.Name]);
     }
 
     /// <summary>
