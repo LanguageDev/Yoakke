@@ -21,6 +21,19 @@ public sealed class RegExSettings
     public static RegExSettings Default { get; } = new();
 
     /// <summary>
+    /// The supported escapes.
+    /// </summary>
+    public IDictionary<char, char> Escapes { get; init; } = new Dictionary<char, char>
+    {
+        { 'a', '\a' },
+        { 'e', (char)0x1b },
+        { 'f', '\f' },
+        { 'r', '\r' },
+        { 'n', '\n' },
+        { 't', '\t' },
+    };
+
+    /// <summary>
     /// The meta-sequences meanings.
     /// </summary>
     public IDictionary<object, RegExAst<char>> MetaSequences { get; init; } = new Dictionary<object, RegExAst<char>>

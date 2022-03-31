@@ -23,6 +23,16 @@ public abstract record class PcreAst
     public abstract RegExAst<char> ToPlainRegex(RegExSettings settings);
 
     /// <summary>
+    /// A wrapper if a plain regex is embedded inside PCRE.
+    /// </summary>
+    /// <param name="Ast">The plain regex construct.</param>
+    public sealed record class Desugared(RegExAst<char> Ast) : PcreAst
+    {
+        /// <inheritdoc/>
+        public override RegExAst<char> ToPlainRegex(RegExSettings settings) => this.Ast;
+    }
+
+    /// <summary>
     /// Represents the alternation of subexpressions.
     /// </summary>
     /// <param name="Elements">The subexpression alternatives.</param>
@@ -171,5 +181,18 @@ public abstract record class PcreAst
         /// <inheritdoc/>
         public override RegExAst<char> ToPlainRegex(RegExSettings settings) =>
             throw new InvalidOperationException("this type can only be inside a character class");
+    }
+
+    /// <summary>
+    /// Matches a character with the given property. The \p{...} construct in PCRE.
+    /// </summary>
+    /// <param name="Invert">True, if the construct should be inverted.</param>
+    /// <param name="PropertyName">The name of the property to match.</param>
+    public sealed record class CharProperty(bool Invert, string PropertyName) : PcreAst
+    {
+        // TODO
+        /// <inheritdoc/>
+        public override RegExAst<char> ToPlainRegex(RegExSettings settings) =>
+            throw new NotImplementedException();
     }
 }
