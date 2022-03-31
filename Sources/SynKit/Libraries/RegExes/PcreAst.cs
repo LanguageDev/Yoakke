@@ -124,64 +124,49 @@ public abstract record class PcreAst
         public override RegExAst<char> ToPlainRegex(RegExSettings settings)
         {
             var set = new IntervalSet<char>(IntervalComparer<char>.Default);
-
-            void AddElement(PcreAst element)
+            foreach (var element in this.Elements)
             {
-                if (element is CharacterClassRange range
-                 && range.From is Literal from
-                 && range.To is Literal to)
+                switch (element)
                 {
-                    set.Add(Interval.Inclusive(from.Char, to.Char));
+                case Literal l:
+                {
+                    set.Add(Interval.Singleton(l.Char));
+                    break;
                 }
-                else
+                case Quoted q:
                 {
-                    switch (element)
-                    {
-                    case Literal l:
-                    {
-                        set.Add(Interval.Singleton(l.Char));
-                        break;
-                    }
-                    case Quoted q:
-                    {
-                        foreach (var ch in q.Text) set.Add(Interval.Singleton(ch));
-                        break;
-                    }
-                    case NamedCharacterClass c:
-                    {
-                        var subSet = new IntervalSet<char>(
-                            settings.NamedCharacterClasses[c.Name],
-                            IntervalComparer<char>.Default);
-                        if (c.Invert) subSet.Complement();
-                        foreach (var iv in subSet) set.Add(iv);
-                        break;
-                    }
-                    case CharacterClassRange r:
-                    {
-                        AddElement(r.From);
-                        set.Add(Interval.Singleton('-'));
-                        AddElement(r.To);
-                        break;
-                    }
-                    default:
-                        throw new InvalidOperationException();
-                    }
+                    foreach (var ch in q.Text) set.Add(Interval.Singleton(ch));
+                    break;
+                }
+                case NamedCharacterClass c:
+                {
+                    var subSet = new IntervalSet<char>(
+                        intervals: settings.NamedCharacterClasses[c.Name],
+                        comparer: IntervalComparer<char>.Default);
+                    if (c.Invert) subSet.Complement();
+                    foreach (var iv in subSet) set.Add(iv);
+                    break;
+                }
+                case CharacterClassRange r:
+                {
+                    set.Add(Interval.Inclusive(r.From, r.To));
+                    break;
+                }
+                default:
+                    throw new InvalidOperationException();
                 }
             }
-
-            foreach (var element in this.Elements) AddElement(element);
             return RegExAst.LiteralRange(this.Invert, set);
         }
     }
 
     /// <summary>
-    /// A range of elements in a character class. It can also be coincidental, syntactical match, then
-    /// it is simply From or '-' or To.
+    /// A range of elements in a character class.
     /// This type can only live inside a character class, it is invalid on its own.
     /// </summary>
     /// <param name="From">The lower end of the character range.</param>
     /// <param name="To">The upper end of the character range.</param>
-    public sealed record class CharacterClassRange(PcreAst From, PcreAst To) : PcreAst
+    public sealed record class CharacterClassRange(char From, char To) : PcreAst
     {
         /// <inheritdoc/>
         public override RegExAst<char> ToPlainRegex(RegExSettings settings) =>
