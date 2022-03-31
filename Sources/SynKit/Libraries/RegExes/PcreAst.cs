@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Yoakke.Collections.Intervals;
 
 namespace Yoakke.SynKit.RegExes;
 
@@ -117,28 +118,73 @@ public abstract record class PcreAst
     /// </summary>
     /// <param name="Invert">True, if the class should be inverted.</param>
     /// <param name="Elements">The elements of the character class.</param>
-    public sealed record class CharacterClass(bool Invert, IReadOnlyList<CharacterClassElement> Elements) : PcreAst
+    public sealed record class CharacterClass(bool Invert, IReadOnlyList<PcreAst> Elements) : PcreAst
     {
         /// <inheritdoc/>
-        public override RegExAst<char> ToPlainRegex(RegExSettings settings) => throw new NotImplementedException();
+        public override RegExAst<char> ToPlainRegex(RegExSettings settings)
+        {
+            var set = new IntervalSet<char>(IntervalComparer<char>.Default);
+
+            void AddElement(PcreAst element)
+            {
+                if (element is CharacterClassRange range
+                 && range.From is Literal from
+                 && range.To is Literal to)
+                {
+                    set.Add(Interval.Inclusive(from.Char, to.Char));
+                }
+                else
+                {
+                    switch (element)
+                    {
+                    case Literal l:
+                    {
+                        set.Add(Interval.Singleton(l.Char));
+                        break;
+                    }
+                    case Quoted q:
+                    {
+                        foreach (var ch in q.Text) set.Add(Interval.Singleton(ch));
+                        break;
+                    }
+                    case NamedCharacterClass c:
+                    {
+                        var subSet = new IntervalSet<char>(
+                            settings.NamedCharacterClasses[c.Name],
+                            IntervalComparer<char>.Default);
+                        if (c.Invert) subSet.Complement();
+                        foreach (var iv in subSet) set.Add(iv);
+                        break;
+                    }
+                    case CharacterClassRange r:
+                    {
+                        AddElement(r.From);
+                        set.Add(Interval.Singleton('-'));
+                        AddElement(r.To);
+                        break;
+                    }
+                    default:
+                        throw new InvalidOperationException();
+                    }
+                }
+            }
+
+            foreach (var element in this.Elements) AddElement(element);
+            return RegExAst.LiteralRange(this.Invert, set);
+        }
     }
-
-    /// <summary>
-    /// An element in a custom character class.
-    /// </summary>
-    public abstract record class CharacterClassElement;
-
-    /// <summary>
-    /// A single element in a character class.
-    /// </summary>
-    /// <param name="Ast">The PCRE expressing the single literal.</param>
-    public sealed record class CharacterClassLiteral(PcreAst Ast) : CharacterClassElement;
 
     /// <summary>
     /// A range of elements in a character class. It can also be coincidental, syntactical match, then
     /// it is simply From or '-' or To.
+    /// This type can only live inside a character class, it is invalid on its own.
     /// </summary>
     /// <param name="From">The lower end of the character range.</param>
     /// <param name="To">The upper end of the character range.</param>
-    public sealed record class CharacterClassRange(PcreAst From, PcreAst To) : CharacterClassElement;
+    public sealed record class CharacterClassRange(PcreAst From, PcreAst To) : PcreAst
+    {
+        /// <inheritdoc/>
+        public override RegExAst<char> ToPlainRegex(RegExSettings settings) =>
+            throw new InvalidOperationException("this type can only be inside a character class");
+    }
 }
