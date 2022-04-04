@@ -134,9 +134,8 @@ public sealed class PcreParser
         // Then the rest
         if (this.Matches(']', ref offset)) return new PcreAst.Literal(']');
         if (this.Matches('.', ref offset)) return new PcreAst.MetaSequence(".");
-        PcreAst? result;
         // NOTE: Order matters here
-        if (this.ParseCharacterClass(ref offset, out result)) return result;
+        if (this.ParseCharacterClass(ref offset, out var result)) return result;
         if (this.ParseSharedAtom(ref offset, out result)) return result;
         if (this.ParseSharedLiteral(ref offset, out result)) return result;
 
@@ -202,14 +201,73 @@ public sealed class PcreParser
         //  - []-cc_atom+]
         //  - []cc_atom*]
         //  - [cc_atom+]
-        throw new NotImplementedException();
+        result = null;
+        var offset1 = offset;
+        if (!this.Matches('[', ref offset1)) return false;
+        var invert = this.Matches('^', ref offset1);
+        var elements = new List<PcreAst>();
+        var hasMinus = false;
+        if (this.Matches(']', ref offset1))
+        {
+            // Can be
+            //  - [^]-cc_atom+]
+            //  - [^]cc_atom*]
+            //  - []-cc_atom+]
+            //  - []cc_atom*]
+            // and we are after ]
+            hasMinus = this.Matches('-', ref offset1);
+            while (offset1 < this.text.Length && !this.Matches(']', ref offset1))
+            {
+                if (!this.ParseCharacterClassAtom(ref offset1, out var atom)) return false;
+                elements.Add(atom);
+            }
+            if (hasMinus && elements.Count == 0) return false;
+        }
+        else
+        {
+            // Can be
+            //  - [^cc_atom+]
+            //  - [cc_atom+]
+            while (offset1 < this.text.Length && !this.Matches(']', ref offset1))
+            {
+                if (!this.ParseCharacterClassAtom(ref offset1, out var atom)) return false;
+                elements.Add(atom);
+            }
+            if (elements.Count == 0) return false;
+        }
+        // TODO: Properly handle hasMinus
+        // For now I just throw in '-' into the range, but that might not be correct
+        if (hasMinus) elements.Add(new PcreAst.Literal('-'));
+        offset = offset1;
+        result = new PcreAst.CharacterClass(invert, elements);
+        return true;
     }
 
-    private bool ParseCharacterLiteral(
+    private bool ParseCharacterClassAtom(
         ref int offset,
         [MaybeNullWhen(false)] out PcreAst result)
     {
-        throw new NotImplementedException();
+        if (!this.ParseCharacterClassLiteral(ref offset, out result)) return false;
+        var offset1 = offset;
+        // Singleton result, if there is no '-'
+        if (!this.Matches('-', ref offset1)) return true;
+        // If there is a character class literal, there's a chance it's a range
+        if (!this.ParseCharacterClassLiteral(ref offset, out var to)) return true;
+        // If they are not literals, not a range
+        if (result is not PcreAst.Literal lFrom || to is not PcreAst.Literal lTo) return true;
+        // They are a range
+        result = new PcreAst.CharacterClassRange(lFrom.Char, lTo.Char);
+        offset = offset1;
+        return true;
+    }
+
+    private bool ParseCharacterClassLiteral(
+        ref int offset,
+        [MaybeNullWhen(false)] out PcreAst result)
+    {
+        if (this.ParseSharedAtom(ref offset, out result)) return true;
+        if (this.ParseSharedLiteral(ref offset, out result)) return true;
+        return false;
     }
 
     private bool ParseSharedAtom(
