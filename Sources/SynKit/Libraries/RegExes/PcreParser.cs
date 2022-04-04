@@ -215,6 +215,8 @@ public sealed class PcreParser
             //  - []-cc_atom+]
             //  - []cc_atom*]
             // and we are after ]
+            // TODO: See the TODO at the bottom
+            elements.Add(new PcreAst.Literal(']'));
             hasMinus = this.Matches('-', ref offset1);
             while (offset1 < this.text.Length && !this.Matches(']', ref offset1))
             {
