@@ -21,6 +21,14 @@ public sealed class PcreParserTests
     [InlineData(@"(a|b)c", "Seq(Alt('a', 'b'), 'c')")]
     [InlineData(@"(a)", "'a'")]
     [InlineData(@"\(a\)", "Seq('(', 'a', ')')")]
+    [InlineData(@"a*", "Quant[*]('a')")]
+    [InlineData(@"a+", "Quant[+]('a')")]
+    [InlineData(@"a?", "Quant[?]('a')")]
+    [InlineData(@"a{3}", "Quant[3]('a')")]
+    [InlineData(@"a{123}", "Quant[123]('a')")]
+    [InlineData(@"a{123,}", "Quant[123,]('a')")]
+    [InlineData(@"a{,123}", "Quant[,123]('a')")]
+    [InlineData(@"a{34,123}", "Quant[34,123]('a')")]
     [Theory]
     public void Simple(string inputText, string astText)
     {
@@ -33,7 +41,20 @@ public sealed class PcreParserTests
     {
         PcreAst.Sequence seq => $"Seq({string.Join(", ", seq.Elements.Select(Stringify))})",
         PcreAst.Alternation alt => $"Alt({string.Join(", ", alt.Elements.Select(Stringify))})",
+        PcreAst.Quantified quant => $"Quant[{Stringify(quant.Quantifier)}]({Stringify(quant.Element)})",
         PcreAst.Literal l => $"'{l.Char}'",
+        _ => throw new InvalidOperationException(),
+    };
+
+    private static string Stringify(Quantifier quantifier) => quantifier switch
+    {
+        Quantifier.ZeroOrMore => "*",
+        Quantifier.OneOrMore => "+",
+        Quantifier.Optional => "?",
+        Quantifier.AtLeast l => $"{l.Amount},",
+        Quantifier.AtMost m => $",{m.Amount}",
+        Quantifier.Exactly e => $"{e.Amount}",
+        Quantifier.Between b => $"{b.Min},{b.Max}",
         _ => throw new InvalidOperationException(),
     };
 }
