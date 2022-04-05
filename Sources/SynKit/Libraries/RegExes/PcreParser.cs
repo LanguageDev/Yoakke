@@ -111,7 +111,7 @@ public sealed class PcreParser
 
     private PcreAst? ParseElement(ref int offset)
     {
-        if (offset >= this.text.Length || this.text[offset] == '|') return null;
+        if (offset >= this.text.Length || this.text[offset] is '|' or ')') return null;
         var result = this.ParseAtom(ref offset);
         var quantifier = this.ParseQuantifier(ref offset);
         if (quantifier is not null) result = new PcreAst.Quantified(result, quantifier);
@@ -276,6 +276,7 @@ public sealed class PcreParser
         ref int offset,
         [MaybeNullWhen(false)] out PcreAst result)
     {
+        result = null;
         var offset1 = offset;
         if (this.Matches('\\', ref offset1))
         {
@@ -349,6 +350,7 @@ public sealed class PcreParser
         ref int offset,
         [MaybeNullWhen(false)] out PcreAst result)
     {
+        result = null;
         var offset1 = offset;
         if (this.Matches('\\', ref offset1))
         {
@@ -438,13 +440,13 @@ public sealed class PcreParser
         }
     not_escaped:
         // Otherwise we just consume a single character
-        if (!this.Take(ref offset, out var ch1))
-        {
-            result = null;
-            return false;
-        }
+        offset1 = offset;
+        if (!this.Take(ref offset1, out var ch1)) return false;
+        // We don't allow '(' and ')' by themselves
+        if (ch1 is '(' or ')') return false;
         // There is a character, consume it literally
         result = new PcreAst.Literal(ch1);
+        offset = offset1;
         return true;
     }
 

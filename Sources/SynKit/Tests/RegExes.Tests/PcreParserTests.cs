@@ -9,13 +9,18 @@ namespace Yoakke.SynKit.RegExes.Tests;
 
 public sealed class PcreParserTests
 {
-    [InlineData("", "Seq()")]
-    [InlineData("a", "'a'")]
-    [InlineData("ab", "Seq('a', 'b')")]
-    [InlineData("abc", "Seq('a', 'b', 'c')")]
-    [InlineData("a|b", "Alt('a', 'b')")]
-    [InlineData("a|b|c", "Alt('a', 'b', 'c')")]
-    [InlineData("ab|bcd|cdd", "Alt(Seq('a', 'b'), Seq('b', 'c', 'd'), Seq('c', 'd', 'd'))")]
+    [InlineData(@"", "Seq()")]
+    [InlineData(@" ", "' '")]
+    [InlineData(@"a", "'a'")]
+    [InlineData(@"ab", "Seq('a', 'b')")]
+    [InlineData(@"a b", "Seq('a', ' ', 'b')")]
+    [InlineData(@"abc", "Seq('a', 'b', 'c')")]
+    [InlineData(@"a|b", "Alt('a', 'b')")]
+    [InlineData(@"a|b|c", "Alt('a', 'b', 'c')")]
+    [InlineData(@"ab|bcd|cdd", "Alt(Seq('a', 'b'), Seq('b', 'c', 'd'), Seq('c', 'd', 'd'))")]
+    [InlineData(@"(a|b)c", "Seq(Alt('a', 'b'), 'c')")]
+    [InlineData(@"(a)", "'a'")]
+    [InlineData(@"\(a\)", "Seq('(', 'a', ')')")]
     [Theory]
     public void Simple(string inputText, string astText)
     {
