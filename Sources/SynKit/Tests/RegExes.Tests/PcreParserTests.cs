@@ -19,6 +19,7 @@ public sealed class PcreParserTests
     [InlineData(@"a|b|c", "Alt('a', 'b', 'c')")]
     [InlineData(@"ab|bcd|cdd", "Alt(Seq('a', 'b'), Seq('b', 'c', 'd'), Seq('c', 'd', 'd'))")]
     [InlineData(@"(a|b)c", "Seq(Alt('a', 'b'), 'c')")]
+    [InlineData(@"w(a|b)c", "Seq('w', Alt('a', 'b'), 'c')")]
     [InlineData(@"(a)", "'a'")]
     [InlineData(@"\(a\)", "Seq('(', 'a', ')')")]
     [InlineData(@"a*", "Quant[*]('a')")]
@@ -29,6 +30,9 @@ public sealed class PcreParserTests
     [InlineData(@"a{123,}", "Quant[123,]('a')")]
     [InlineData(@"a{,123}", "Quant[,123]('a')")]
     [InlineData(@"a{34,123}", "Quant[34,123]('a')")]
+    [InlineData(@"ba{34,123}", "Seq('b', Quant[34,123]('a'))")]
+    [InlineData(@"ba{34,123}c", "Seq('b', Quant[34,123]('a'), 'c')")]
+    [InlineData(@"(ba){34,123}", "Quant[34,123](Seq('b', 'a'))")]
     [Theory]
     public void Simple(string inputText, string astText)
     {
