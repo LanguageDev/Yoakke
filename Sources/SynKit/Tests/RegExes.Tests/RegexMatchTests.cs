@@ -20,6 +20,12 @@ public sealed class RegexMatchTests
     [InlineData(@"a*", "a")]
     [InlineData(@"a*", "aa")]
     [InlineData(@"a*", "aaaaaa")]
+    [InlineData(@"a+", "a")]
+    [InlineData(@"a+", "aaaa")]
+    [InlineData(@"(ab)*", "")]
+    [InlineData(@"(ab)*", "ab")]
+    [InlineData(@"(ab)*", "abababab")]
+    [InlineData(@"[[:xdigit:]]*", "123ABCDEFabcdef0123456789")]
     [Theory]
     public void MatchesNfaDfaMindfa(string regex, string text)
     {
@@ -48,6 +54,12 @@ public sealed class RegexMatchTests
     [InlineData(@"a*", "ab")]
     [InlineData(@"a*", "aab")]
     [InlineData(@"a*", "aaaabaa")]
+    [InlineData(@"a+", "")]
+    [InlineData(@"a+", "b")]
+    [InlineData(@"(ab)*", "aaaa")]
+    [InlineData(@"(ab)*", "aba")]
+    [InlineData(@"(ab)*", "ababaabab")]
+    [InlineData(@"[[:xdigit:]]*", "abcdghx9y9")]
     [Theory]
     public void DoesNotMatchNfaDfaMindfa(string regex, string text)
     {
