@@ -67,6 +67,7 @@ public sealed class PcreParserTests
     [InlineData(@"\x{3C9}", "'ω'")]
     [InlineData(@"\.", "'.'")]
     [InlineData(@"\Q.(] {+?\E", "Q'.(] {+?'")]
+    [InlineData(@"[a-\Qqwe\E]", "Cc[+]('a' to 'q')")]
     [Theory]
     public void Simple(string inputText, string astText)
     {
