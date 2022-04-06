@@ -33,6 +33,27 @@ public sealed class PcreParserTests
     [InlineData(@"ba{34,123}", "Seq('b', Quant[34,123]('a'))")]
     [InlineData(@"ba{34,123}c", "Seq('b', Quant[34,123]('a'), 'c')")]
     [InlineData(@"(ba){34,123}", "Quant[34,123](Seq('b', 'a'))")]
+    [InlineData(@"(ba){34,123}c", "Seq(Quant[34,123](Seq('b', 'a')), 'c')")]
+    [InlineData(@"]", "']'")]
+    [InlineData(@"[a]", "Cc[+]('a')")]
+    [InlineData(@"[abc]", "Cc[+]('a', 'b', 'c')")]
+    [InlineData(@"[a-c]", "Cc[+]('a' to 'c')")]
+    [InlineData(@"[a-cA-Z]", "Cc[+]('a' to 'c', 'A' to 'Z')")]
+    [InlineData(@"[1a-c2A-Z3]", "Cc[+]('1', 'a' to 'c', '2', 'A' to 'Z', '3')")]
+    [InlineData(@"[^a]", "Cc[-]('a')")]
+    [InlineData(@"[^abc]", "Cc[-]('a', 'b', 'c')")]
+    [InlineData(@"[^a-c]", "Cc[-]('a' to 'c')")]
+    [InlineData(@"[^a-cA-Z]", "Cc[-]('a' to 'c', 'A' to 'Z')")]
+    [InlineData(@"[^1a-c2A-Z3]", "Cc[-]('1', 'a' to 'c', '2', 'A' to 'Z', '3')")]
+    [InlineData(@"[-ab]", "Cc[+]('-', 'a', 'b')")]
+    [InlineData(@"[-a-b]", "Cc[+]('-', 'a' to 'b')")]
+    [InlineData(@"[^-ab]", "Cc[-]('-', 'a', 'b')")]
+    [InlineData(@"[^-a-b]", "Cc[-]('-', 'a' to 'b')")]
+    [InlineData(@"[]]", "Cc[+](']')")]
+    [InlineData(@"[][]", "Cc[+](']', '[')")]
+    [InlineData(@"[]-a]", "Cc[+](']' to 'a')")]
+    [InlineData(@"[^]]", "Cc[-](']')")]
+    [InlineData(@"[^]-b]", "Cc[-](']' to 'b')")]
     [Theory]
     public void Simple(string inputText, string astText)
     {
@@ -46,6 +67,8 @@ public sealed class PcreParserTests
         PcreAst.Sequence seq => $"Seq({string.Join(", ", seq.Elements.Select(Stringify))})",
         PcreAst.Alternation alt => $"Alt({string.Join(", ", alt.Elements.Select(Stringify))})",
         PcreAst.Quantified quant => $"Quant[{Stringify(quant.Quantifier)}]({Stringify(quant.Element)})",
+        PcreAst.CharacterClass cc => $"Cc[{(cc.Invert ? '-' : '+')}]({string.Join(", ", cc.Elements.Select(Stringify))})",
+        PcreAst.CharacterClassRange r => $"'{r.From}' to '{r.To}'",
         PcreAst.Literal l => $"'{l.Char}'",
         _ => throw new InvalidOperationException(),
     };

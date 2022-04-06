@@ -206,7 +206,6 @@ public sealed class PcreParser
         if (!this.Matches('[', ref offset1)) return false;
         var invert = this.Matches('^', ref offset1);
         var elements = new List<PcreAst>();
-        var hasMinus = false;
         if (this.Matches(']', ref offset1))
         {
             // Can be
@@ -215,15 +214,21 @@ public sealed class PcreParser
             //  - []-cc_atom+]
             //  - []cc_atom*]
             // and we are after ]
-            // TODO: See the TODO at the bottom
-            elements.Add(new PcreAst.Literal(']'));
-            hasMinus = this.Matches('-', ref offset1);
+            if (this.Matches('-', ref offset1))
+            {
+                if (!this.ParseCharacterClassLiteral(ref offset1, out var to)) return false;
+                if (to is not PcreAst.Literal toLit) return false;
+                elements.Add(new PcreAst.CharacterClassRange(']', toLit.Char));
+            }
+            else
+            {
+                elements.Add(new PcreAst.Literal(']'));
+            }
             while (offset1 < this.text.Length && !this.Matches(']', ref offset1))
             {
                 if (!this.ParseCharacterClassAtom(ref offset1, out var atom)) return false;
                 elements.Add(atom);
             }
-            if (hasMinus && elements.Count == 0) return false;
         }
         else
         {
@@ -237,9 +242,6 @@ public sealed class PcreParser
             }
             if (elements.Count == 0) return false;
         }
-        // TODO: Properly handle hasMinus
-        // For now I just throw in '-' into the range, but that might not be correct
-        if (hasMinus) elements.Add(new PcreAst.Literal('-'));
         offset = offset1;
         result = new PcreAst.CharacterClass(invert, elements);
         return true;
@@ -254,7 +256,7 @@ public sealed class PcreParser
         // Singleton result, if there is no '-'
         if (!this.Matches('-', ref offset1)) return true;
         // If there is a character class literal, there's a chance it's a range
-        if (!this.ParseCharacterClassLiteral(ref offset, out var to)) return true;
+        if (!this.ParseCharacterClassLiteral(ref offset1, out var to)) return true;
         // If they are not literals, not a range
         if (result is not PcreAst.Literal lFrom || to is not PcreAst.Literal lTo) return true;
         // They are a range
