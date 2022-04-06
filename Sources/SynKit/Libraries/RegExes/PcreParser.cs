@@ -194,6 +194,18 @@ public sealed class PcreParser
         ref int offset,
         [MaybeNullWhen(false)] out PcreAst result)
     {
+        // First we check if this is a named CC
+        var offset2 = offset;
+        if (!this.Matches("[[:", ref offset2)) goto regular_cc;
+        var negate = this.Matches('^', ref offset2);
+        var setName = this.TakeWhile(IsAsciiAlnum, ref offset2);
+        if (setName.Length == 0) goto regular_cc;
+        if (!this.Matches(":]]", ref offset2)) goto regular_cc;
+        result = new PcreAst.NamedCharacterClass(negate, setName);
+        offset = offset2;
+        return true;
+
+    regular_cc:
         // Can be
         //  - [^]-cc_atom+]
         //  - [^]cc_atom*]

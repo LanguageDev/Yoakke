@@ -54,6 +54,19 @@ public sealed class PcreParserTests
     [InlineData(@"[]-a]", "Cc[+](']' to 'a')")]
     [InlineData(@"[^]]", "Cc[-](']')")]
     [InlineData(@"[^]-b]", "Cc[-](']' to 'b')")]
+    [InlineData(@"[[:ascii:]]", "NamedCc[+](ascii)")]
+    [InlineData(@"[[:alnum:]]", "NamedCc[+](alnum)")]
+    [InlineData(@"[[:^xdigit:]]", "NamedCc[-](xdigit)")]
+    [InlineData(@"[[:]]", "Seq(Cc[+]('[', ':'), ']')")]
+    [InlineData(@"\12", "'\n'")]
+    [InlineData(@"\41", "'!'")]
+    [InlineData(@"\165", "'u'")]
+    [InlineData(@"\x2f", "'/'")]
+    [InlineData(@"\x2F", "'/'")]
+    [InlineData(@"\x{3c9}", "'ω'")]
+    [InlineData(@"\x{3C9}", "'ω'")]
+    [InlineData(@"\.", "'.'")]
+    [InlineData(@"\Q.(] {+?\E", "Q'.(] {+?'")]
     [Theory]
     public void Simple(string inputText, string astText)
     {
@@ -69,7 +82,9 @@ public sealed class PcreParserTests
         PcreAst.Quantified quant => $"Quant[{Stringify(quant.Quantifier)}]({Stringify(quant.Element)})",
         PcreAst.CharacterClass cc => $"Cc[{(cc.Invert ? '-' : '+')}]({string.Join(", ", cc.Elements.Select(Stringify))})",
         PcreAst.CharacterClassRange r => $"'{r.From}' to '{r.To}'",
+        PcreAst.NamedCharacterClass ncc => $"NamedCc[{(ncc.Invert ? '-' : '+')}]({ncc.Name})",
         PcreAst.Literal l => $"'{l.Char}'",
+        PcreAst.Quoted q => $"Q'{q.Text}'",
         _ => throw new InvalidOperationException(),
     };
 
