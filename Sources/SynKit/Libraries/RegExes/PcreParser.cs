@@ -257,12 +257,30 @@ public sealed class PcreParser
         if (!this.Matches('-', ref offset1)) return true;
         // If there is a character class literal, there's a chance it's a range
         if (!this.ParseCharacterClassLiteral(ref offset1, out var to)) return true;
-        // If they are not literals, not a range
-        if (result is not PcreAst.Literal lFrom || to is not PcreAst.Literal lTo) return true;
+        // Try to extract range literals
+        if (!TryGetCharForCcLiteralRange(result, out var lFrom)
+         || !TryGetCharForCcLiteralRange(to, out var lTo)) return true;
         // They are a range
-        result = new PcreAst.CharacterClassRange(lFrom.Char, lTo.Char);
+        result = new PcreAst.CharacterClassRange(lFrom, lTo);
         offset = offset1;
         return true;
+    }
+
+    private static bool TryGetCharForCcLiteralRange(PcreAst ast, out char lit)
+    {
+        if (ast is PcreAst.Literal l)
+        {
+            lit = l.Char;
+            return true;
+        }
+        if (ast is PcreAst.Quoted q && q.Text.Length > 0)
+        {
+            lit = q.Text[0];
+            return true;
+        }
+
+        lit = default;
+        return false;
     }
 
     private bool ParseCharacterClassLiteral(
