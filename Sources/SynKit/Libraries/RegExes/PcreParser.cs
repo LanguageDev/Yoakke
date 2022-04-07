@@ -349,9 +349,10 @@ public sealed class PcreParser
 
             // Single-character
             // NOTE: This conversion can fail
-            if (this.settings.MetaSequences.TryGetValue($"\\{escaped}", out var seq))
+            var metaSeqKey = $"\\{escaped}";
+            if (this.settings.MetaSequences.ContainsKey(metaSeqKey))
             {
-                result = new PcreAst.Desugared(seq);
+                result = new PcreAst.MetaSequence(metaSeqKey);
                 offset = offset1;
                 return true;
             }

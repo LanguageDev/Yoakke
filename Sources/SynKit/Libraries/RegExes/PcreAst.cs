@@ -23,16 +23,6 @@ public abstract record class PcreAst
     public abstract RegExAst<char> ToPlainRegex(RegExSettings settings);
 
     /// <summary>
-    /// A wrapper if a plain regex is embedded inside PCRE.
-    /// </summary>
-    /// <param name="Ast">The plain regex construct.</param>
-    public sealed record class Desugared(RegExAst<char> Ast) : PcreAst
-    {
-        /// <inheritdoc/>
-        public override RegExAst<char> ToPlainRegex(RegExSettings settings) => this.Ast;
-    }
-
-    /// <summary>
     /// Represents the alternation of subexpressions.
     /// </summary>
     /// <param name="Elements">The subexpression alternatives.</param>
