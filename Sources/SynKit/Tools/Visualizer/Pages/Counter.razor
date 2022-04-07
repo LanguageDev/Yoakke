@@ -1,18 +1,24 @@
-﻿@page "/counter"
+@page "/counter"
 
 <PageTitle>Counter</PageTitle>
 
 <h1>Counter</h1>
 
-<p role="status">Current count: @currentCount</p>
-
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+<MudBlazor.MudTextField @bind-Value="@RegexText" Immediate="true" />
+<br />
+<p>Regex status: @regexStatus</p>
 
 @code {
-    private int currentCount = 0;
-
-    private void IncrementCount()
+    private string regexText = string.Empty;
+    public string RegexText
     {
-        currentCount++;
+        get => this.regexText;
+        set
+        {
+            this.regexText = value;
+            this.regexStatus = $"ok, {value}";
+        }
     }
+
+    private string regexStatus = string.Empty;
 }
