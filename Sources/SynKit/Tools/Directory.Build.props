@@ -1,0 +1,12 @@
+<Project>
+  <!-- The example project type will be fine for tools -->
+  <Import Project="..\..\Props\Example.Build.props" />
+
+  <PropertyGroup>
+    <AssemblyName>Yoakke.SynKit.$(MSBuildProjectName)</AssemblyName>
+    <PackageId>Yoakke.SynKit.$(MSBuildProjectName)</PackageId>
+
+    <!-- Root namespace -->
+    <RootNamespace>Yoakke.SynKit.$(MSBuildProjectName)</RootNamespace>
+  </PropertyGroup>
+</Project>

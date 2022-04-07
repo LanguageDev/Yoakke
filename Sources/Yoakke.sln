@@ -33,6 +33,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Packages", "Packages", "{37
 	ProjectSection(SolutionItems) = preProject
 		SynKit\Libraries\Directory.Build.props = SynKit\Libraries\Directory.Build.props
 		SynKit\SourceGenerators\Directory.Build.props = SynKit\SourceGenerators\Directory.Build.props
+		SynKit\Tools\Directory.Build.props = SynKit\Tools\Directory.Build.props
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{F51DEFFD-626F-4040-9227-A59BF67F4F53}"
@@ -75,7 +76,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Automata.Tests", "SynKit\Te
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RegExes", "SynKit\Libraries\RegExes\RegExes.csproj", "{78FE8160-A099-4D18-A00C-FA1E7A4B1EB1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RegExes.Tests", "SynKit\Tests\RegExes.Tests\RegExes.Tests.csproj", "{56F7C180-AB1A-4E6F-B47E-2FCE165D879E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RegExes.Tests", "SynKit\Tests\RegExes.Tests\RegExes.Tests.csproj", "{56F7C180-AB1A-4E6F-B47E-2FCE165D879E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Visualizer", "SynKit\Tools\Visualizer\Visualizer.csproj", "{827D0E97-801D-478C-99E3-1B3E24E1606D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -111,6 +114,10 @@ Global
 		{56F7C180-AB1A-4E6F-B47E-2FCE165D879E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{56F7C180-AB1A-4E6F-B47E-2FCE165D879E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{56F7C180-AB1A-4E6F-B47E-2FCE165D879E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{827D0E97-801D-478C-99E3-1B3E24E1606D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{827D0E97-801D-478C-99E3-1B3E24E1606D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{827D0E97-801D-478C-99E3-1B3E24E1606D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{827D0E97-801D-478C-99E3-1B3E24E1606D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -130,6 +137,7 @@ Global
 		{86668CBD-0DF3-41AC-8AB5-EDDDA76A033F} = {F51DEFFD-626F-4040-9227-A59BF67F4F53}
 		{78FE8160-A099-4D18-A00C-FA1E7A4B1EB1} = {3743B1A5-DF69-4C44-8BC0-C967D0BB4AD6}
 		{56F7C180-AB1A-4E6F-B47E-2FCE165D879E} = {F51DEFFD-626F-4040-9227-A59BF67F4F53}
+		{827D0E97-801D-478C-99E3-1B3E24E1606D} = {3743B1A5-DF69-4C44-8BC0-C967D0BB4AD6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1EDE8F07-AE3A-4556-AEF0-3AC518F18F92}
