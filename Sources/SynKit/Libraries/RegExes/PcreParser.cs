@@ -217,6 +217,7 @@ public sealed class PcreParser
         if (!this.Matches('[', ref offset1)) return false;
         var invert = this.Matches('^', ref offset1);
         var elements = new List<PcreAst>();
+        var properlyClosed = false;
         if (this.Matches(']', ref offset1))
         {
             // Can be
@@ -235,8 +236,13 @@ public sealed class PcreParser
             {
                 elements.Add(new PcreAst.Literal(']'));
             }
-            while (offset1 < this.text.Length && !this.Matches(']', ref offset1))
+            while (offset1 < this.text.Length)
             {
+                if (this.Matches(']', ref offset1))
+                {
+                    properlyClosed = true;
+                    break;
+                }
                 if (!this.ParseCharacterClassAtom(ref offset1, out var atom)) return false;
                 elements.Add(atom);
             }
@@ -246,13 +252,23 @@ public sealed class PcreParser
             // Can be
             //  - [^cc_atom+]
             //  - [cc_atom+]
-            while (offset1 < this.text.Length && !this.Matches(']', ref offset1))
+            while (offset1 < this.text.Length)
             {
+                if (this.Matches(']', ref offset1))
+                {
+                    properlyClosed = true;
+                    break;
+                }
                 if (!this.ParseCharacterClassAtom(ref offset1, out var atom)) return false;
                 elements.Add(atom);
             }
-            if (elements.Count == 0) return false;
+            if (elements.Count == 0)
+            {
+                if (!properlyClosed) this.Error(offset1, $"Unclosed character-class, starting at character {offset}");
+                return false;
+            }
         }
+        if (!properlyClosed) this.Error(offset1, $"Unclosed character-class, starting at character {offset}");
         offset = offset1;
         result = new PcreAst.CharacterClass(invert, elements);
         return true;
