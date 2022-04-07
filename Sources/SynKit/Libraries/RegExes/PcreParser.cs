@@ -125,11 +125,10 @@ public sealed class PcreParser
         if (this.Matches('(', ref offset1))
         {
             var alt = this.ParseAlternation(ref offset1);
-            if (this.Matches(')', ref offset1))
-            {
-                offset = offset1;
-                return alt;
-            }
+            if (!this.Matches(')', ref offset1)) this.Error(offset1, $"Unclosed parenthesis, starting at character {offset}");
+
+            offset = offset1;
+            return alt;
         }
         // Then the rest
         if (this.Matches(']', ref offset)) return new PcreAst.Literal(']');

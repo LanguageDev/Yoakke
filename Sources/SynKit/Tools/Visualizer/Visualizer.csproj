@@ -1,5 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <ItemGroup>
     <PackageReference Include="MudBlazor" Version="6.0.9" />
+
+    <ProjectReference Include="$(SolutionDir)/SynKit/Libraries/RegExes/RegExes.csproj" />
   </ItemGroup>
 </Project>
