@@ -53,6 +53,10 @@ digraph Automaton {
     {{ for tran in Transitions }}
         {{ tran.Source }} -> {{ tran.Destination }} [label=""{{ tran.Symbol }}""]
     {{ end }}
+
+    {{ for tran in EpsilonTransitions }}
+        {{ tran.Source }} -> {{ tran.Destination }} [label=""eps""]
+    {{ end }}
 }
 ",
             nfa);
