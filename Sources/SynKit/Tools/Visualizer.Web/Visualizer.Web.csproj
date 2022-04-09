@@ -1,8 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
   
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.3" PrivateAssets="all" />
+
+    <PackageReference Include="Scriban" Version="5.4.3" />
 
     <ProjectReference Include="$(SolutionDir)/SynKit/Libraries/RegExes/RegExes.csproj" />
   </ItemGroup>

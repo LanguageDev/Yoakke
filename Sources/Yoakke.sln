@@ -78,7 +78,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RegExes", "SynKit\Libraries
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RegExes.Tests", "SynKit\Tests\RegExes.Tests\RegExes.Tests.csproj", "{56F7C180-AB1A-4E6F-B47E-2FCE165D879E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Visualizer", "SynKit\Tools\Visualizer\Visualizer.csproj", "{7B42D17D-DD1C-4737-AE2E-BEB54D15E19A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Visualizer.Web", "SynKit\Tools\Visualizer.Web\Visualizer.Web.csproj", "{7B42D17D-DD1C-4737-AE2E-BEB54D15E19A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

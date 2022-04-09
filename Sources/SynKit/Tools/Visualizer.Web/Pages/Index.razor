@@ -1,0 +1,98 @@
+@page "/"
+@using Scriban
+@using System.Threading
+@using Scriban.Runtime
+@using Yoakke.SynKit.Automata
+@using Yoakke.SynKit.RegExes
+@inject IJSRuntime JS
+
+<PageTitle>Index</PageTitle>
+
+<h1>Regex visualizer</h1>
+
+Regex: <textarea rows="1" @bind=@RegexCode/>
+
+Result: <p>@RegexStatus</p>
+
+<div id="graph" style="text-align: center;"></div>
+<button onclick=@this.ButtonClicked()>Draw NFA</button>
+
+Welcome to your new app.
+
+<SurveyPrompt Title="How is Blazor working for you?" />
+
+@code {
+    private string regexCode = string.Empty;
+    private string RegexCode
+    {
+        get => this.regexCode;
+        set
+        {
+            this.regexCode = value;
+
+            try
+            {
+                PcreParser.Parse(value);
+                this.RegexStatus = "Ok!";
+            }
+            catch (RegExParseException error)
+            {
+                this.RegexStatus = $"Error - {error.Message}";
+            }
+        }
+    }
+
+    private string RegexStatus { get; set; } = "Ok!";
+
+    private async Task ButtonClicked()
+    {
+        var nfa = BuildNfa();
+        var graph = Render(
+            @"
+digraph Automaton {
+    {{ for tran in Transitions }}
+        {{ tran.Source }} -> {{ tran.Destination }} [label=""{{ tran.Symbol }}""]
+    {{ end }}
+}
+",
+            nfa);
+        await JS.InvokeAsync<string>("renderGraph", graph);
+    }
+
+    private Nfa<int, char> BuildNfa()
+    {
+        var pcreAst = PcreParser.Parse(this.RegexCode);
+        var regexAst = pcreAst.ToPlainRegex(RegExSettings.Default);
+        var nfa = new Nfa<int, char>();
+        var randomState = StateCreator.Random();
+        // TODO: Ease this with utilities maybe? Have a method that auto-adds start and end?
+        var (start, end) = regexAst.ThompsonsConstruct(nfa, randomState);
+        nfa.InitialStates.Add(start);
+        nfa.AcceptingStates.Add(end);
+        return nfa;
+    }
+
+    private static string Render(string text, object? model)
+    {
+        var template = Template.Parse(text);
+
+        if (template.HasErrors)
+        {
+            var errors = string.Join(" | ", template.Messages.Select(x => x.Message));
+            throw new InvalidOperationException($"Template parse error: {template.Messages}");
+        }
+
+        var context = new TemplateContext
+        {
+            CancellationToken = CancellationToken.None,
+            MemberRenamer = member => member.Name,
+        };
+
+        var scriptObj = new ScriptObject();
+        scriptObj.Import(model, renamer: member => member.Name);
+        context.PushGlobal(scriptObj);
+        var result = template.Render(context);
+
+        return result;
+    }
+}
