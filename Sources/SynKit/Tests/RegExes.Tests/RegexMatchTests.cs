@@ -38,6 +38,8 @@ public sealed class RegexMatchTests
     [InlineData(@"a[^bdw]c", "acc")]
     [InlineData(@"a[^bdw]c", "aac")]
     [InlineData(@"a[^bdw]c", "aec")]
+    [InlineData(@"abc|abd", "abc")]
+    [InlineData(@"abc|abd", "abd")]
     [Theory]
     public void MatchesNfaDfaMindfa(string regex, string text)
     {
@@ -80,6 +82,10 @@ public sealed class RegexMatchTests
     [InlineData(@"a[^bdw]c", "abc")]
     [InlineData(@"a[^bdw]c", "adc")]
     [InlineData(@"a[^bdw]c", "awc")]
+    [InlineData(@"abc|abd", "abe")]
+    [InlineData(@"abc|abd", "abb")]
+    [InlineData(@"abc|abd", "dbc")]
+    [InlineData(@"abc|abd", "dbd")]
     [Theory]
     public void DoesNotMatchNfaDfaMindfa(string regex, string text)
     {
