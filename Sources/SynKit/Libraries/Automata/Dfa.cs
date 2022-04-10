@@ -401,7 +401,8 @@ public sealed class Dfa<TState, TSymbol> : IFiniteStateAutomaton<TState, TSymbol
                     var s2 = states[j];
                     if (!AreDifferent(s1, s2)) equivalentSet.Add(s2);
                 }
-                stateMap.Add(s1, stateCombiner.Combine(equivalentSet));
+                var combinedState = stateCombiner.Combine(equivalentSet);
+                foreach (var s in equivalentSet) stateMap[s] = combinedState;
             }
             return stateMap;
         }
