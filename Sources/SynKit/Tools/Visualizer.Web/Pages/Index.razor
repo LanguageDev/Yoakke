@@ -109,12 +109,26 @@ end
 }}
 
 digraph Automaton {
+    init [label="""", shape=point]
+
+    {{ for s in States }}
+        {{ state_id(s) }} [shape=circle]
+    {{ end }}
+
+    {{ for s in InitialStates }}
+        init -> {{ state_id(s) }}
+    {{ end }}
+
     {{ for tran in Transitions }}
         {{ state_id(tran.Source) }} -> {{ state_id(tran.Destination) }} [label=""{{ tran.Symbol }}""]
     {{ end }}
 
     {{ for tran in EpsilonTransitions }}
         {{ state_id(tran.Source) }} -> {{ state_id(tran.Destination) }} [label=""ε""]
+    {{ end }}
+
+    {{ for s in AcceptingStates }}
+        {{ state_id(s) }} [shape=doublecircle]
     {{ end }}
 }
 ", fsa);
