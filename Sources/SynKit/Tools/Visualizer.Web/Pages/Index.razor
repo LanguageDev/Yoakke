@@ -15,7 +15,10 @@ Regex: <textarea rows="1" @bind=@RegexCode/>
 Result: <p>@RegexStatus</p>
 
 <div id="graph" style="text-align: center;"></div>
-<button onclick=@this.ButtonClicked()>Draw NFA</button>
+<button @onclick=NfaButtonClicked>Draw NFA</button>
+<button @onclick=EpsilonlessNfaButtonClicked>Draw Epsilonless NFA</button>
+<button @onclick=DfaButtonClicked>Draw DFA</button>
+<button @onclick=MinDfaButtonClicked>Draw Minimized DFA</button>
 
 Welcome to your new app.
 
@@ -44,22 +47,36 @@ Welcome to your new app.
 
     private string RegexStatus { get; set; } = "Ok!";
 
-    private async Task ButtonClicked()
+    private async Task NfaButtonClicked()
     {
         var nfa = BuildNfa();
-        var graph = Render(
-            @"
-digraph Automaton {
-    {{ for tran in Transitions }}
-        {{ tran.Source }} -> {{ tran.Destination }} [label=""{{ tran.Symbol }}""]
-    {{ end }}
+        var graph = RenderAutomaton(nfa);
+        await JS.InvokeAsync<string>("renderGraph", graph);
+    }
 
-    {{ for tran in EpsilonTransitions }}
-        {{ tran.Source }} -> {{ tran.Destination }} [label=""eps""]
-    {{ end }}
-}
-",
-            nfa);
+    private async Task EpsilonlessNfaButtonClicked()
+    {
+        var nfa = BuildNfa();
+        nfa.EliminateEpsilonTransitions();
+        var unreachable = nfa.States.Except(nfa.ReachableStates).ToList();
+        foreach (var s in unreachable) nfa.States.Remove(s);
+        var graph = RenderAutomaton(nfa);
+        await JS.InvokeAsync<string>("renderGraph", graph);
+    }
+
+    private async Task DfaButtonClicked()
+    {
+        var nfa = BuildNfa();
+        var dfa = nfa.Determinize();
+        var graph = RenderAutomaton(dfa);
+        await JS.InvokeAsync<string>("renderGraph", graph);
+    }
+
+    private async Task MinDfaButtonClicked()
+    {
+        var nfa = BuildNfa();
+        var dfa = nfa.Determinize().Minimize();
+        var graph = RenderAutomaton(dfa);
         await JS.InvokeAsync<string>("renderGraph", graph);
     }
 
@@ -74,6 +91,33 @@ digraph Automaton {
         nfa.InitialStates.Add(start);
         nfa.AcceptingStates.Add(end);
         return nfa;
+    }
+
+    private static string RenderAutomaton<TState>(IFiniteStateAutomaton<TState, char> fsa)
+    {
+        return Render(
+            @"
+{{
+state_cnt = 0
+state_map = {}
+func state_id(s)
+    if state_map[s] == null
+        state_map[s] = 'q' + state_cnt++
+    end
+    ret state_map[s]
+end
+}}
+
+digraph Automaton {
+    {{ for tran in Transitions }}
+        {{ state_id(tran.Source) }} -> {{ state_id(tran.Destination) }} [label=""{{ tran.Symbol }}""]
+    {{ end }}
+
+    {{ for tran in EpsilonTransitions }}
+        {{ state_id(tran.Source) }} -> {{ state_id(tran.Destination) }} [label=""ε""]
+    {{ end }}
+}
+", fsa);
     }
 
     private static string Render(string text, object? model)
@@ -95,8 +139,7 @@ digraph Automaton {
         var scriptObj = new ScriptObject();
         scriptObj.Import(model, renamer: member => member.Name);
         context.PushGlobal(scriptObj);
-        var result = template.Render(context);
 
-        return result;
+        return template.Render(context);
     }
 }
