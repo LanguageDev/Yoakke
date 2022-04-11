@@ -119,6 +119,10 @@ digraph Automaton {
         init -> {{ state_id(s) }}
     {{ end }}
 
+    {{ if InitialState != null }}
+        init -> {{ state_id(InitialState) }}
+    {{ end }}
+
     {{ for tran in Transitions }}
         {{ state_id(tran.Source) }} -> {{ state_id(tran.Destination) }} [label=""{{ tran.Symbol }}""]
     {{ end }}
