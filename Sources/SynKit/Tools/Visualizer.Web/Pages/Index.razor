@@ -3,6 +3,7 @@
 @using Scriban
 @using System.Threading
 @using Scriban.Runtime
+@using Yoakke.Collections
 @using Yoakke.SynKit.Automata
 @using Yoakke.SynKit.RegExes
 @inject IJSRuntime JS
@@ -20,16 +21,19 @@ Status: <p>@RegexStatus</p>
     <MudRadio Option="3">minimized DFA</MudRadio>
 </MudRadioGroup>
 
+<MudCheckBox T="bool" CheckedChanged="@DifferentiateCheckedChanged" Label="Differentiate final states"></MudCheckBox>
+
 <div id="graph" style="text-align: center;"></div>
 
 @code {
-    private string regexCode = string.Empty;
-    private string RegexCode
+    private string? regexCode = null;
+    private string? RegexCode
     {
         get => this.regexCode;
         set
         {
             this.regexCode = value;
+            if (value is null) return;
 
             try
             {
@@ -43,9 +47,18 @@ Status: <p>@RegexStatus</p>
         }
     }
 
+
     private string RegexStatus { get; set; } = "Ok!";
 
     private int AutomatonOption { get; set; } = 0;
+
+    private bool DifferentiateEndStates { get; set; } = false;
+
+    private async Task DifferentiateCheckedChanged(bool b)
+    {
+        this.DifferentiateEndStates = b;
+        await RegexChanged();
+    }
 
     private async Task OptionChanged(int o)
     {
@@ -56,6 +69,8 @@ Status: <p>@RegexStatus</p>
     private async Task RegexChanged()
     {
         var nfa = BuildNfa();
+        if (nfa is null) return;
+
         if (this.AutomatonOption == 1)
         {
             nfa.EliminateEpsilonTransitions();
@@ -66,19 +81,27 @@ Status: <p>@RegexStatus</p>
         var code = this.AutomatonOption switch
         {
             2 => RenderAutomaton(nfa.Determinize()),
-            3 => RenderAutomaton(nfa.Determinize().Minimize()),
+            3 => RenderAutomaton(DeterminizeAndMinimize(nfa)),
             _ => RenderAutomaton(nfa),
         };
 
         await UpdateGraph(code);
     }
 
+    private Dfa<ByValueSet<int>, char> DeterminizeAndMinimize(Nfa<int, char> nfa)
+    {
+        var dfa = nfa.Determinize();
+        if (!this.DifferentiateEndStates) return dfa.Minimize();
+        return dfa.Minimize(dfa.AcceptingStates.SelectMany(s1 => dfa.AcceptingStates.Select(s2 => (s1, s2))));
+    }
+
     private async Task UpdateGraph(string dotCode) =>
         await JS.InvokeAsync<string>("renderGraph", dotCode);
 
-    private Nfa<int, char> BuildNfa()
+    private Nfa<int, char>? BuildNfa()
     {
-        var pcreAst = PcreParser.Parse(this.RegexCode);
+        if (this.RegexCode is null) return null;
+        if (!PcreParser.TryParse(this.RegexCode, out var pcreAst)) return null;
         var regexAst = pcreAst.ToPlainRegex(RegExSettings.Default);
         var nfa = new Nfa<int, char>();
         var randomState = StateCreator.Random();

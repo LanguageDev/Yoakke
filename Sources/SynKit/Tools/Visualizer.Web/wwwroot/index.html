@@ -32,9 +32,10 @@
                 .select("#graph")
                 .graphviz()
                 .transition(function () {
-                    return d3.transition()
+                    return d3
+                        .transition()
                         .delay(50)
-                        .duration(1000);
+                        .duration(100);
                 })
                 .renderDot(dotCode);
         };
