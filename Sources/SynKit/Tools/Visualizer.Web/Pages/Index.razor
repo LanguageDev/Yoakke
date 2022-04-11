@@ -1,4 +1,5 @@
 @page "/"
+@using MudBlazor
 @using Scriban
 @using System.Threading
 @using Scriban.Runtime
@@ -8,21 +9,18 @@
 
 <PageTitle>Index</PageTitle>
 
-<h1>Regex visualizer</h1>
+<MudTextField @bind-Value="RegexCode" TextChanged="RegexChanged" Label="Regex" Immediate="true" />
 
-Regex: <textarea rows="1" @bind=@RegexCode/>
+Status: <p>@RegexStatus</p>
 
-Result: <p>@RegexStatus</p>
+<MudRadioGroup T="int" SelectedOptionChanged="@OptionChanged">
+    <MudRadio Option="0">ε-NFA</MudRadio>
+    <MudRadio Option="1">NFA</MudRadio>
+    <MudRadio Option="2">DFA</MudRadio>
+    <MudRadio Option="3">minimized DFA</MudRadio>
+</MudRadioGroup>
 
 <div id="graph" style="text-align: center;"></div>
-<button @onclick=NfaButtonClicked>Draw NFA</button>
-<button @onclick=EpsilonlessNfaButtonClicked>Draw Epsilonless NFA</button>
-<button @onclick=DfaButtonClicked>Draw DFA</button>
-<button @onclick=MinDfaButtonClicked>Draw Minimized DFA</button>
-
-Welcome to your new app.
-
-<SurveyPrompt Title="How is Blazor working for you?" />
 
 @code {
     private string regexCode = string.Empty;
@@ -47,38 +45,36 @@ Welcome to your new app.
 
     private string RegexStatus { get; set; } = "Ok!";
 
-    private async Task NfaButtonClicked()
+    private int AutomatonOption { get; set; } = 0;
+
+    private async Task OptionChanged(int o)
     {
-        var nfa = BuildNfa();
-        var graph = RenderAutomaton(nfa);
-        await JS.InvokeAsync<string>("renderGraph", graph);
+        this.AutomatonOption = o;
+        await RegexChanged();
     }
 
-    private async Task EpsilonlessNfaButtonClicked()
+    private async Task RegexChanged()
     {
         var nfa = BuildNfa();
-        nfa.EliminateEpsilonTransitions();
-        var unreachable = nfa.States.Except(nfa.ReachableStates).ToList();
-        foreach (var s in unreachable) nfa.States.Remove(s);
-        var graph = RenderAutomaton(nfa);
-        await JS.InvokeAsync<string>("renderGraph", graph);
+        if (this.AutomatonOption == 1)
+        {
+            nfa.EliminateEpsilonTransitions();
+            var unreachable = nfa.States.Except(nfa.ReachableStates).ToList();
+            foreach (var s in unreachable) nfa.States.Remove(s);
+        }
+
+        var code = this.AutomatonOption switch
+        {
+            2 => RenderAutomaton(nfa.Determinize()),
+            3 => RenderAutomaton(nfa.Determinize().Minimize()),
+            _ => RenderAutomaton(nfa),
+        };
+
+        await UpdateGraph(code);
     }
 
-    private async Task DfaButtonClicked()
-    {
-        var nfa = BuildNfa();
-        var dfa = nfa.Determinize();
-        var graph = RenderAutomaton(dfa);
-        await JS.InvokeAsync<string>("renderGraph", graph);
-    }
-
-    private async Task MinDfaButtonClicked()
-    {
-        var nfa = BuildNfa();
-        var dfa = nfa.Determinize().Minimize();
-        var graph = RenderAutomaton(dfa);
-        await JS.InvokeAsync<string>("renderGraph", graph);
-    }
+    private async Task UpdateGraph(string dotCode) =>
+        await JS.InvokeAsync<string>("renderGraph", dotCode);
 
     private Nfa<int, char> BuildNfa()
     {
