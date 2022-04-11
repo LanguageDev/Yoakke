@@ -19,15 +19,23 @@
         <a href="" class="reload">Reload</a>
         <a class="dismiss">🗙</a>
     </div>
+
     <script src="_framework/blazor.webassembly.js"></script>
 
-    <script src="//d3js.org/d3.v5.min.js"></script>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
     <script src="https://unpkg.com/@hpcc-js/wasm@0.3.11/dist/index.min.js"></script>
     <script src="https://unpkg.com/d3-graphviz@3.0.5/build/d3-graphviz.js"></script>
 
     <script>
         window.renderGraph = (dotCode) => {
-            d3.select("#graph").graphviz()
+            d3
+                .select("#graph")
+                .graphviz()
+                .transition(function () {
+                    return d3.transition()
+                        .delay(50)
+                        .duration(1000);
+                })
                 .renderDot(dotCode);
         };
     </script>
