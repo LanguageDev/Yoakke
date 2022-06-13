@@ -55,7 +55,7 @@
     <PackageReference Include="IsExternalInit" Version="1.0.1" PrivateAssets="all" GeneratePathProperty="true" />
     <None Include="$(PkgIsExternalInit)\lib\netstandard2.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
 
-    <PackageReference Include="Scriban" Version="5.0.0" PrivateAssets="all" GeneratePathProperty="true" />
+    <PackageReference Include="Scriban.Signed" Version="5.0.0" PrivateAssets="all" GeneratePathProperty="true" />
     <None Include="$(PkgScriban)\lib\netstandard2.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
   </ItemGroup>
 

@@ -11,5 +11,9 @@
 
     <!-- Root namespace -->
     <RootNamespace>Yoakke.$(MSBuildProjectName)</RootNamespace>
+    
+    <!-- Strong name -->
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 </Project>
