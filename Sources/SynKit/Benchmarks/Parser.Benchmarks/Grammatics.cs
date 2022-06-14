@@ -56,28 +56,11 @@ public partial class Parser
     [Left("*", "/", "%")]
     [Left("+", "-")]
     [Rule("expression")]
-    public static int BinOp(int a, IToken op, int b) => op.Text switch
-    {
-        "^" => (int)Math.Pow(a, b),
-        "*" => a * b,
-        "/" => a / b,
-        "%" => a % b,
-        "+" => a + b,
-        "-" => a - b,
-        _ => throw new NotImplementedException(),
-    };
+    public static int BinOp(int a, IToken op, int b) => 0;
 
     [Rule("expression : '(' expression ')'")]
     public static int Grouping(IToken _1, int n, IToken _2) => n;
 
     [Rule("expression : IntLit")]
-    public static int IntLit(IToken token) => int.Parse(token.Text);
-
-    public void Synchronize()
-    {
-        for (; this.TokenStream.TryPeek(out var t) && t.Text != ";"; this.TokenStream.Consume(1))
-        {
-        }
-        this.TokenStream.Consume(1);
-    }
+    public static int IntLit(IToken token) => 0;
 }
