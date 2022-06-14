@@ -25,7 +25,7 @@ public class EnumerableStream<T> : IStream<T>
     public EnumerableStream(IEnumerable<T> items)
     {
         this.enumerator = items.GetEnumerator();
-        this.IsEnd = this.enumerator.MoveNext();
+        this.IsEnd = !this.enumerator.MoveNext();
     }
 
     /// <inheritdoc/>
@@ -39,7 +39,7 @@ public class EnumerableStream<T> : IStream<T>
         else
         {
             item = this.enumerator.Current;
-            this.IsEnd = this.enumerator.MoveNext();
+            this.IsEnd = !this.enumerator.MoveNext();
             return true;
         }
     }
