@@ -6,10 +6,10 @@ using Yoakke.SynKit.Lexer;
 using Yoakke.SynKit.Parser;
 using Yoakke.SynKit.Parser.Benchmarks;
 
-// var a = new SimpleBench();
-// for (int i = 0; i < 10_000_000; i++)
-//      a.Parse();
-BenchmarkRunner.Run<SimpleBench>();
+var a = new SimpleBench();
+for (int i = 0; i < 10_000_000; i++)
+    a.Parse();
+// BenchmarkRunner.Run<SimpleBench>();
 
 /*
  // UNCOMMENT FOR DEBUG
