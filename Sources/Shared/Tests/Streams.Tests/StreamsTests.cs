@@ -55,4 +55,24 @@ public class StreamsTests
         Assert.Equal(5, ms.Consume());
         Assert.True(ms.IsEnd);
     }
+    
+    [Fact]
+    public void EnumerableStream1()
+    {
+        var es = new EnumerableStream<int>(new [] { 1, 2, 3 });
+        var s = es.ToBuffered();
+        
+        Assert.False(s.IsEnd);
+        Assert.True(s.TryPeek(out var t0));
+        Assert.Equal(1, t0);
+        s.Consume(1); Assert.False(s.IsEnd);
+        Assert.True(s.TryPeek(out var t1));
+        Assert.Equal(2, t1);
+        s.Consume(1); Assert.False(s.IsEnd);
+        Assert.True(s.TryPeek(out var t2));
+        Assert.Equal(3, t2);
+        
+        Assert.True(es.IsEnd);
+        Assert.False(s.IsEnd);
+    }
 }
