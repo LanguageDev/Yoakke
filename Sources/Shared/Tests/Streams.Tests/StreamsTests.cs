@@ -72,7 +72,8 @@ public class StreamsTests
         Assert.True(s.TryPeek(out var t2));
         Assert.Equal(3, t2);
         
+        s.Consume(1);
         Assert.True(es.IsEnd);
-        Assert.False(s.IsEnd);
+        Assert.True(s.IsEnd);
     }
 }
