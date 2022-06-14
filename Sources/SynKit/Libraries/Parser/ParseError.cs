@@ -56,6 +56,7 @@ public class ParseError
     /// <returns>The error that represents both of them properly.</returns>
     public static ParseError? operator |(ParseError? first, ParseError? second)
     {
+        return first;
         // Check nullities
         if (first is null && second is null) return null;
         if (first is null) return second!;
