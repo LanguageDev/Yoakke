@@ -75,7 +75,7 @@ public readonly struct ParseResult<T>
     /// <returns>The <see cref="ParseResult{T}"/> constructed from the alternatives.</returns>
     public static ParseResult<T> operator |(ParseResult<T> first, ParseResult<T> second)
     {
-        return first.IsOk ? first.Ok : first.Error;
+        return first.IsOk ? first.Ok : (second.IsOk ? second.Ok : second.Error);
         if (first.IsOk && second.IsOk) return first.Ok | second.Ok;
         if (first.IsOk) return first.Ok | second.Error;
         if (second.IsOk) return second.Ok | first.Error;

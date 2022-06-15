@@ -11,8 +11,9 @@ using Yoakke.SynKit.Parser.Benchmarks;
 //     a.Parse();
 BenchmarkRunner.Run<SimpleBench>();
 
-/*
+
  // UNCOMMENT FOR DEBUG
+ /*
 var result = new SimpleBench().Parse();
 if (result.IsOk)
 {
