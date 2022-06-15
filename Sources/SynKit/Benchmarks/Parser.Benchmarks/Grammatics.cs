@@ -68,12 +68,4 @@ public partial class Parser
 
     [Rule("expression : IntLit")]
     public static int IntLit(IToken token) => int.Parse(token.Text);
-
-    public void Synchronize()
-    {
-        for (; this.TokenStream.TryPeek(out var t) && t.Text != ";"; this.TokenStream.Consume(1))
-        {
-        }
-        this.TokenStream.Consume(1);
-    }
 }
