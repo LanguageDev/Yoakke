@@ -14,7 +14,7 @@ class Program
 #define FOO(x, y) x ## y
 FOO(L, ""asd"")
 ";
-        var lexer = new CLexer(sourceCode);
+        var lexer = new CLexer("sample.cs", sourceCode);
         var pp = new CPreProcessor(lexer);
 
         while (true)

@@ -30,7 +30,7 @@ public partial class Issue140Tests
     [InlineData(@"'hello \' bye'")]
     public void Tests(string input)
     {
-        var lexer = new Lexer(input);
+        var lexer = new Lexer("issue_140.cs", input);
         var t = lexer.Next();
         Assert.Equal(input, t.Text);
         Assert.Equal(TokenType.Test, t.Kind);

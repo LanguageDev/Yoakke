@@ -64,7 +64,7 @@ public class CLexer : ILexer<CToken>
     /// Initializes a new instance of the <see cref="CLexer"/> class.
     /// </summary>
     /// <param name="reader">The <see cref="TextReader"/> to read the source from.</param>
-    public CLexer(TextReader reader)
+    public CLexer(ISourceFile reader)
         : this(new TextReaderCharStream(reader))
     {
     }
@@ -73,8 +73,8 @@ public class CLexer : ILexer<CToken>
     /// Initializes a new instance of the <see cref="CLexer"/> class.
     /// </summary>
     /// <param name="source">The text to read.</param>
-    public CLexer(string source)
-        : this(new StringReader(source))
+    public CLexer(string path, string source)
+        : this(new SourceFile(path, source))
     {
     }
 

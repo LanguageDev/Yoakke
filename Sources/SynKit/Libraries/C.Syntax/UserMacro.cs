@@ -139,7 +139,7 @@ public class UserMacro : IMacro
             .Append(rightFirst.LogicalText)
             .ToString();
         // Try to lex a single token
-        var lexer = new CLexer(pastedTokenSource);
+        var lexer = new CLexer("usermacro.cs", pastedTokenSource);
         var token = lexer.Next();
         if (token.Kind == CTokenType.End)
         {

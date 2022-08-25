@@ -30,7 +30,7 @@ public partial class Issue17Tests
 
         public ExplicitCtorLexer(string text)
         {
-            this.source = new TextReaderCharStream(new StringReader(text));
+            this.source = new TextReaderCharStream(new Text.SourceFile("issue17.cs", text));
         }
     }
 
@@ -38,8 +38,8 @@ public partial class Issue17Tests
     public void ImplicitCtors()
     {
         Assert.Equal(3, typeof(ImplicitCtorLexer).GetConstructors().Length);
-        Assert.NotNull(typeof(ImplicitCtorLexer).GetConstructor(new[] { typeof(string) }));
-        Assert.NotNull(typeof(ImplicitCtorLexer).GetConstructor(new[] { typeof(TextReader) }));
+        Assert.NotNull(typeof(ImplicitCtorLexer).GetConstructor(new[] { typeof(string), typeof(string) }));
+        Assert.NotNull(typeof(ImplicitCtorLexer).GetConstructor(new[] { typeof(Text.SourceFile) }));
         Assert.NotNull(typeof(ImplicitCtorLexer).GetConstructor(new[] { typeof(ICharStream) }));
     }
 
@@ -48,6 +48,6 @@ public partial class Issue17Tests
     {
         Assert.Single(typeof(ExplicitCtorLexer).GetConstructors());
         Assert.NotNull(typeof(ExplicitCtorLexer).GetConstructor(new[] { typeof(string) }));
-        Assert.Null(typeof(ExplicitCtorLexer).GetConstructor(new[] { typeof(TextReader) }));
+        Assert.Null(typeof(ExplicitCtorLexer).GetConstructor(new[] { typeof(Text.SourceFile) }));
     }
 }

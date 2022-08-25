@@ -43,7 +43,7 @@ public partial class LeftRecursionTests
     }
 
     private static string Parse(string source) =>
-        new Parser(new Lexer(source)).ParseGrouping().Ok.Value;
+        new Parser(new Lexer("left_recursion.cs", source)).ParseGrouping().Ok.Value;
 
     [Theory]
     [InlineData("a", "a")]

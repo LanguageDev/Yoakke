@@ -202,7 +202,7 @@ public partial class RegexesTests
     [InlineData("a", typeof(Whitespace), false, typeof(WhitespaceLexer))]
     public void SingleTokenAcceptance(string input, Type enumType, bool shouldAccept, Type lexerType)
     {
-        dynamic lexer = Activator.CreateInstance(lexerType, input)!;
+        dynamic lexer = Activator.CreateInstance(lexerType, "test", input)!;
         dynamic token = lexer.Next();
 
         var enumValues = Enum.GetValues(enumType);

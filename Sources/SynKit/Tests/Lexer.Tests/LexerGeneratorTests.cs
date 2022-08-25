@@ -33,21 +33,23 @@ public partial class LexerGeneratorTests : TestBase<LexerGeneratorTests.TokenTyp
     [Fact]
     public void Empty()
     {
-        var lexer = new Lexer(string.Empty);
-        Assert.Equal(Token(string.Empty, TokenType.End, Range((0, 0), 0)), lexer.Next());
+        var lexer = new Lexer("test", string.Empty);
+        var expected = Token(string.Empty, TokenType.End, Range((0, 0), 0));
+        var actual = lexer.Next();
+        Assert.Equal(expected, actual);
     }
 
     [Fact]
     public void EmptySpaces()
     {
-        var lexer = new Lexer("   ");
+        var lexer = new Lexer("test", "   ");
         Assert.Equal(Token(string.Empty, TokenType.End, Range((0, 3), 0)), lexer.Next());
     }
 
     [Fact]
     public void SimpleSequence()
     {
-        var lexer = new Lexer("if    asd+b 123");
+        var lexer = new Lexer("test", "if    asd+b 123");
         Assert.Equal(Token("if", TokenType.KwIf, Range((0, 0), 2)), lexer.Next());
         Assert.Equal(Token("asd", TokenType.Identifier, Range((0, 6), 3)), lexer.Next());
         Assert.Equal(Token("+", TokenType.Plus, Range((0, 9), 1)), lexer.Next());
@@ -59,7 +61,7 @@ public partial class LexerGeneratorTests : TestBase<LexerGeneratorTests.TokenTyp
     [Fact]
     public void SimpleSequenceWithAlias()
     {
-        var lexer = new Lexer("if    asd+b 123 IF");
+        var lexer = new Lexer("test", "if    asd+b 123 IF");
         Assert.Equal(Token("if", TokenType.KwIf, Range((0, 0), 2)), lexer.Next());
         Assert.Equal(Token("asd", TokenType.Identifier, Range((0, 6), 3)), lexer.Next());
         Assert.Equal(Token("+", TokenType.Plus, Range((0, 9), 1)), lexer.Next());
@@ -72,7 +74,7 @@ public partial class LexerGeneratorTests : TestBase<LexerGeneratorTests.TokenTyp
     [Fact]
     public void SimpleMultilineSequence()
     {
-        var lexer = new Lexer(@"if
+        var lexer = new Lexer("test", @"if
 asd+b 123
 -2 b5");
         Assert.Equal(Token("if", TokenType.KwIf, Range((0, 0), 2)), lexer.Next());
@@ -89,7 +91,7 @@ asd+b 123
     [Fact]
     public void SimpleMultilineSequenceWithNewline()
     {
-        var lexer = new Lexer(@"if
+        var lexer = new Lexer("test", @"if
 asd+b 123
 -2 b5
 ");
@@ -107,7 +109,7 @@ asd+b 123
     [Fact]
     public void UnknownCharacter()
     {
-        var lexer = new Lexer(@"if $");
+        var lexer = new Lexer("test", @"if $");
         Assert.Equal(Token("if", TokenType.KwIf, Range((0, 0), 2)), lexer.Next());
         Assert.Equal(Token("$", TokenType.Error, Range((0, 3), 1)), lexer.Next());
         Assert.Equal(Token(string.Empty, TokenType.End, Range((0, 4), 0)), lexer.Next());

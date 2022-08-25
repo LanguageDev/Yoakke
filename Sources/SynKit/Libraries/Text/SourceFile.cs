@@ -19,7 +19,7 @@ public class SourceFile : TextReader, ISourceFile
     public string Path { get; }
 
     /// <inheritdoc/>
-    public TextReader Reader => this;
+    public TextReader Reader => this.underlying;
 
     /// <inheritdoc/>
     public int AvailableLines => this.lineStarts.Count;
@@ -56,10 +56,10 @@ public class SourceFile : TextReader, ISourceFile
     public SourceFile(string path, string source)
         : this(path, new StringReader(source))
     {
-        while (this.ReadNextLine())
-        {
-        }
-        this.index = 0;
+        //while (this.ReadNextLine())
+        //{
+        //}
+        //this.index = 0;
     }
 
     /// <inheritdoc/>

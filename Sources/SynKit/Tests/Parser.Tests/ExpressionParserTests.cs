@@ -61,7 +61,7 @@ public partial class ExpressionParserTests
         private static int Number(IToken tok) => int.Parse(tok.Text);
     }
 
-    private static int Eval(string s) => new Parser(new Lexer(s)).ParseTopExpression().Ok.Value;
+    private static int Eval(string s) => new Parser(new Lexer("expression_parser.cs", s)).ParseTopExpression().Ok.Value;
 
     [Theory]
     [InlineData(3, "1+2")]

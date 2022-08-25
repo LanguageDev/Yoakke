@@ -11,6 +11,8 @@ namespace Yoakke.SynKit.C.Syntax.Tests;
 
 public class CLexerTests
 {
+    private static ISourceFile fakeLocation = new Text.SourceFile("clexer_test.cs", "1");
+
     private static Range Rn(int line, int column, int length) => new(new(line, column), length);
 
     private static Range Rn(Position from, Position to) => new(from, to);
@@ -21,7 +23,7 @@ public class CLexerTests
 
     private static CToken Tok(Kind ty, Range r, string t) => Tok(ty, r, t, r, t);
 
-    private static CToken Tok(Kind ty, Range r, string t, Range logicalR, string logicalT) => new(r, t, logicalR, logicalT, ty);
+    private static CToken Tok(Kind ty, Range r, string t, Range logicalR, string logicalT) => new(new Location(fakeLocation, r), t, logicalR, logicalT, ty);
 
     [Theory]
 
@@ -183,11 +185,12 @@ public class CLexerTests
     public void LexSingleToken(Kind kind, string text)
     {
         var expected = Tok(kind, text);
-        var lexer = new CLexer(text);
+        var lexer = new CLexer("clexer_test.cs", text);
         var token = lexer.Next();
         var end = Tok(Kind.End, Rn(0, token.Text.Length, 0), string.Empty);
         Assert.Equal(expected, token);
-        Assert.Equal(end, lexer.Next());
+        token = lexer.Next();
+        Assert.Equal(end, token);
     }
 
     [Theory]
@@ -198,7 +201,7 @@ public class CLexerTests
     public void DisabledUnicodeCharacters(Kind kind, string text)
     {
         var expected = Tok(kind, text);
-        var lexer = new CLexer(text) { AllowUnicodeCharacters = false };
+        var lexer = new CLexer("clexer_test.cs", text) { AllowUnicodeCharacters = false };
         var token = lexer.Next();
         Assert.NotEqual(expected, token);
     }
@@ -207,7 +210,7 @@ public class CLexerTests
     public void SimpleSequence()
     {
         var sourceCode = "int x = 2;";
-        var lexer = new CLexer(sourceCode);
+        var lexer = new CLexer("clexer_test.cs", sourceCode);
         Assert.Equal(Tok(Kind.KeywordInt, Rn(0, 0, 3), "int"), lexer.Next());
         Assert.Equal(Tok(Kind.Identifier, Rn(0, 4, 1), "x"), lexer.Next());
         Assert.Equal(Tok(Kind.Assign, Rn(0, 6, 1), "="), lexer.Next());
@@ -221,7 +224,7 @@ public class CLexerTests
     {
         var sourceCode = @"char* x = ""ab\
 cd"";";
-        var lexer = new CLexer(sourceCode);
+        var lexer = new CLexer("clexer_test.cs", sourceCode);
         Assert.Equal(Tok(Kind.KeywordChar, Rn(0, 0, 4), "char", Rn(0, 0, 4), "char"), lexer.Next());
         Assert.Equal(Tok(Kind.Multiply, Rn(0, 4, 1), "*", Rn(0, 4, 1), "*"), lexer.Next());
         Assert.Equal(Tok(Kind.Identifier, Rn(0, 6, 1), "x", Rn(0, 6, 1), "x"), lexer.Next());
@@ -237,7 +240,7 @@ cd""", Rn(0, 10, 6), @"""abcd"""), lexer.Next());
     {
         var sourceCode = @"char* x = ""ab??/
 cd"";";
-        var lexer = new CLexer(sourceCode);
+        var lexer = new CLexer("clexer_test.cs", sourceCode);
         Assert.Equal(Tok(Kind.KeywordChar, Rn(0, 0, 4), "char", Rn(0, 0, 4), "char"), lexer.Next());
         Assert.Equal(Tok(Kind.Multiply, Rn(0, 4, 1), "*", Rn(0, 4, 1), "*"), lexer.Next());
         Assert.Equal(Tok(Kind.Identifier, Rn(0, 6, 1), "x", Rn(0, 6, 1), "x"), lexer.Next());
