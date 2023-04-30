@@ -23,6 +23,7 @@ public partial class LexerGeneratorTests : TestBase<LexerGeneratorTests.TokenTyp
         [Token("+")] Plus,
         [Token("-")] Minus,
         [Regex(Regexes.IntLiteral)] Number,
+        [Token("\\")] Slash,
     }
 
     [Lexer(typeof(TokenType))]
@@ -47,13 +48,14 @@ public partial class LexerGeneratorTests : TestBase<LexerGeneratorTests.TokenTyp
     [Fact]
     public void SimpleSequence()
     {
-        var lexer = new Lexer("if    asd+b 123");
+        var lexer = new Lexer("if    asd+b 123\\");
         Assert.Equal(Token("if", TokenType.KwIf, Range((0, 0), 2)), lexer.Next());
         Assert.Equal(Token("asd", TokenType.Identifier, Range((0, 6), 3)), lexer.Next());
         Assert.Equal(Token("+", TokenType.Plus, Range((0, 9), 1)), lexer.Next());
         Assert.Equal(Token("b", TokenType.Identifier, Range((0, 10), 1)), lexer.Next());
         Assert.Equal(Token("123", TokenType.Number, Range((0, 12), 3)), lexer.Next());
-        Assert.Equal(Token(string.Empty, TokenType.End, Range((0, 15), 0)), lexer.Next());
+        Assert.Equal(Token("\\", TokenType.Slash, Range((0, 15), 1)), lexer.Next());
+        Assert.Equal(Token(string.Empty, TokenType.End, Range((0, 16), 0)), lexer.Next());
     }
 
     [Fact]

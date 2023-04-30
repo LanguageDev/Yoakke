@@ -183,7 +183,7 @@ public class RegExParser
     /// </summary>
     /// <param name="ch">The character to check.</param>
     /// <returns>True, if the given character is special, false otherwise.</returns>
-    public static bool IsSpecial(char ch) => "()[]{}?*+|".Contains(ch);
+    public static bool IsSpecial(char ch) => "()[]{}?*+|\\".Contains(ch);
 
     /// <summary>
     /// Escapes the given string to be used as a literal in a regular expression.
