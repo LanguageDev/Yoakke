@@ -81,11 +81,12 @@ public static class SymbolExtensions
         var suffixBuilder = new StringBuilder();
 
         // Namespace open
-        if (symbol.ContainingNamespace is not null)
+        var hasNamespace = symbol.ContainingNamespace is not null && symbol.ContainingNamespace.ToDisplayString() != "<global namespace>";
+        if (hasNamespace)
         {
             prefixBuilder
                 .Append("namespace ")
-                .AppendLine(symbol.ContainingNamespace.ToDisplayString())
+                .AppendLine(symbol.ContainingNamespace!.ToDisplayString())
                 .AppendLine("{");
         }
 
@@ -111,7 +112,7 @@ public static class SymbolExtensions
         }
 
         // Namespace close
-        if (symbol.ContainingNamespace is not null) suffixBuilder.AppendLine("}");
+        if (hasNamespace) suffixBuilder.AppendLine("}");
 
         return new(prefixBuilder.ToString(), suffixBuilder.ToString());
     }
