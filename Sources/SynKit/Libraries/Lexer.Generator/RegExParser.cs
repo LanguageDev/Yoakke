@@ -116,6 +116,7 @@ public class RegExParser
         {
             var ch = this.Consume();
             var escaped = Escape(ch);
+            if (ch == '-') return ch;
             if (escaped == null) throw new FormatException($"invalid escape \\{ch} in grouping (position {this.index - 2})");
             return escaped.Value;
         }
@@ -183,7 +184,7 @@ public class RegExParser
     /// </summary>
     /// <param name="ch">The character to check.</param>
     /// <returns>True, if the given character is special, false otherwise.</returns>
-    public static bool IsSpecial(char ch) => "()[]{}?*+|".Contains(ch);
+    public static bool IsSpecial(char ch) => "()[]{}?*+|\\".Contains(ch);
 
     /// <summary>
     /// Escapes the given string to be used as a literal in a regular expression.
