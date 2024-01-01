@@ -34,9 +34,7 @@ public partial class LexerGeneratorTests : TestBase<LexerGeneratorTests.TokenTyp
     public void Empty()
     {
         var lexer = new Lexer(string.Empty);
-        var expected = Token(string.Empty, TokenType.End, Range((0, 0), 0));
-        var actual = lexer.Next();
-        Assert.Equal(expected, actual);
+        Assert.Equal(Token(string.Empty, TokenType.End, Range((0, 0), 0)), lexer.Next());
     }
 
     [Fact]

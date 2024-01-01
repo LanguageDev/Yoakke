@@ -45,9 +45,9 @@ public partial class PunctuatedTests
             elements.Values.Select(t => t.Text).ToList();
     }
 
-    private static List<string> Any0NoTrailing(string source) => new Parser(new Lexer("punctuated.cs", source)).ParseAny0NoTrailing().Ok.Value;
+    private static List<string> Any0NoTrailing(string source) => new Parser(new Lexer(source)).ParseAny0NoTrailing().Ok.Value;
 
-    private static List<string> Any1NoTrailing(string source) => new Parser(new Lexer("punctuated.cs", source)).ParseAny1NoTrailing().Ok.Value;
+    private static List<string> Any1NoTrailing(string source) => new Parser(new Lexer(source)).ParseAny1NoTrailing().Ok.Value;
 
     [Fact]
     public void Empty0NoTrailing() => Assert.True(Any0NoTrailing("()").SequenceEqual(Array.Empty<string>()));

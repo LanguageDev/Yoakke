@@ -40,7 +40,7 @@ public partial class IndirectLeftRecursionTests
     }
 
     private static string Parse(string source) =>
-        new Parser(new Lexer("indirect_left_recursion.cs", source)).ParseGrouping().Ok.Value;
+        new Parser(new Lexer(source)).ParseGrouping().Ok.Value;
 
     [Theory]
     [InlineData("a", "a")]

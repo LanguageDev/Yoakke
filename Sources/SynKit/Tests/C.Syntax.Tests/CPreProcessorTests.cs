@@ -84,8 +84,8 @@ __COUNTER__",
   "0 1 2")]
     public void TextEquals(string beforePP, string afterPP)
     {
-        var expectLexer = new CLexer("cpreprocessor_test.cs", afterPP);
-        var pp = new CPreProcessor(new CLexer("cpreprocessor_test.cs", beforePP))
+        var expectLexer = new CLexer(afterPP);
+        var pp = new CPreProcessor(new CLexer(beforePP))
             .DefineCounter();
         while (true)
         {

@@ -50,7 +50,7 @@ public partial class Issue59Tests
     }
 
     private static string Parse(string source) =>
-       new Parser(new Lexer("issue_59.cs", source)).ParseCall().Ok.Value;
+       new Parser(new Lexer(source)).ParseCall().Ok.Value;
 
     [Theory]
     [InlineData("x", "x")]

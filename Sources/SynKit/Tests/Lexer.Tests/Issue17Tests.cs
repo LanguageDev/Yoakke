@@ -30,7 +30,7 @@ public partial class Issue17Tests
 
         public ExplicitCtorLexer(string text)
         {
-            this.source = new TextReaderCharStream(new Text.SourceFile("issue17.cs", text));
+            this.source = new TextReaderCharStream(new StringReader(text));
         }
     }
 

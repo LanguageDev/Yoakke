@@ -135,7 +135,7 @@ public partial class Issue138Tests
     }
 
     private static FunctionDefinition Parse(string source) =>
-       new Parser(new Lexer("issue_138.cs", source)).ParseFunctionDefinition().Ok.Value;
+       new Parser(new Lexer(source)).ParseFunctionDefinition().Ok.Value;
 
     [InlineData("int main", "Specifiers=[int], Declarator=main")]
     [InlineData("unsigned int main", "Specifiers=[unsigned, int], Declarator=main")]
