@@ -90,8 +90,7 @@ public class CharStreamTests : TestBase<CharStreamTests.TokenType>
     public void Empty()
     {
         var lexer = new Lexer(string.Empty);
-        var actual = lexer.Next();
-        Assert.Equal(Token(string.Empty, TokenType.End, Range((0, 0), 0)), actual);
+        Assert.Equal(Token(string.Empty, TokenType.End, Range((0, 0), 0)), lexer.Next());
     }
 
     [Fact]

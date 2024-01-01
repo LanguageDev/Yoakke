@@ -189,8 +189,7 @@ public class CLexerTests
         var token = lexer.Next();
         var end = Tok(Kind.End, Rn(0, token.Text.Length, 0), string.Empty);
         Assert.Equal(expected, token);
-        token = lexer.Next();
-        Assert.Equal(end, token);
+        Assert.Equal(end, lexer.Next());
     }
 
     [Theory]
