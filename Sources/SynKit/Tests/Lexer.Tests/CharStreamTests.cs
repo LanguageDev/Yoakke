@@ -77,8 +77,8 @@ public class CharStreamTests : TestBase<CharStreamTests.TokenType>
                 var result = this.charStream.ConsumeToken(TokenType.Identifier, length);
                 return result.Text switch
                 {
-                    "if" => new Token<TokenType>(result.Range, result.Text, TokenType.KwIf),
-                    "else" => new Token<TokenType>(result.Range, result.Text, TokenType.KwElse),
+                    "if" => new Token<TokenType>(result.Range, result.Location, result.Text, TokenType.KwIf),
+                    "else" => new Token<TokenType>(result.Range, result.Location, result.Text, TokenType.KwElse),
                     _ => result,
                 };
             }

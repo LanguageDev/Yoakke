@@ -11,6 +11,8 @@ namespace Yoakke.SynKit.C.Syntax.Tests;
 
 public class CLexerTests
 {
+    private static ISourceFile fakeLocation = new Text.SourceFile("<no-location>", "1");
+
     private static Range Rn(int line, int column, int length) => new(new(line, column), length);
 
     private static Range Rn(Position from, Position to) => new(from, to);
@@ -21,7 +23,7 @@ public class CLexerTests
 
     private static CToken Tok(Kind ty, Range r, string t) => Tok(ty, r, t, r, t);
 
-    private static CToken Tok(Kind ty, Range r, string t, Range logicalR, string logicalT) => new(r, t, logicalR, logicalT, ty);
+    private static CToken Tok(Kind ty, Range r, string t, Range logicalR, string logicalT) => new(new Location(fakeLocation, r), t, logicalR, logicalT, ty);
 
     [Theory]
 

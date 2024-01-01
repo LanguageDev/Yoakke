@@ -41,8 +41,10 @@ partial {{ LexerType.Kind }} {{ LexerType.Name }}
     public ICharStream {{ SourceName }} { get; }
 
     public {{ LexerType.Name }}(ICharStream source) { this.{{ SourceName }} = source; }
-    public {{ LexerType.Name }}(TextReader reader) : this(new TextReaderCharStream(reader)) { }
-    public {{ LexerType.Name }}(string text) : this(new StringReader(text)) { }
+    public {{ LexerType.Name }}(TextReader reader) : this(new TextReaderCharStream(new SourceFile("<no-location>", reader))) { }
+    public {{ LexerType.Name }}(SourceFile reader) : this(new TextReaderCharStream(reader)) { }
+    public {{ LexerType.Name }}(string path, string text) : this(new SourceFile(path, text)) { }
+    public {{ LexerType.Name }}(string text) : this(new SourceFile("<no-location>", text)) { }
     {{ end }}
 
     {{ # Token parsing implementation }}

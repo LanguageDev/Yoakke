@@ -63,9 +63,27 @@ public class CLexer : ILexer<CToken>
     /// <summary>
     /// Initializes a new instance of the <see cref="CLexer"/> class.
     /// </summary>
+    /// <param name="sourceFile">The <see cref="ISourceFile"/> to read the source from.</param>
+    public CLexer(ISourceFile sourceFile)
+        : this(new TextReaderCharStream(sourceFile))
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CLexer"/> class.
+    /// </summary>
+    /// <param name="sourceFile">The <see cref="ISourceFile"/> to read the source from.</param>
+    public CLexer(SourceFile sourceFile)
+        : this(new TextReaderCharStream(sourceFile))
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CLexer"/> class.
+    /// </summary>
     /// <param name="reader">The <see cref="TextReader"/> to read the source from.</param>
     public CLexer(TextReader reader)
-        : this(new TextReaderCharStream(reader))
+        : this(new TextReaderCharStream(new SourceFile("<no-location>", reader)))
     {
     }
 
@@ -74,7 +92,17 @@ public class CLexer : ILexer<CToken>
     /// </summary>
     /// <param name="source">The text to read.</param>
     public CLexer(string source)
-        : this(new StringReader(source))
+        : this((ISourceFile)new SourceFile("<no-location>", source))
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CLexer"/> class.
+    /// </summary>
+    /// <param name="path">Path to source location.</param>
+    /// <param name="source">The text to read.</param>
+    public CLexer(string path, string source)
+        : this(new SourceFile(path, source))
     {
     }
 

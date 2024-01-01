@@ -110,12 +110,12 @@ public static class CharStreamExtensions
     /// <param name="makeToken">The factory function that receives the source <see cref="Text.Range"/> of the skipped characters
     /// and the skipped characters themselves concatenated as a string, and produces an <see cref="IToken"/> from them.</param>
     /// <returns>The constructed <see cref="IToken{TKind}"/> returned from <paramref name="makeToken"/>.</returns>
-    public static TToken ConsumeToken<TToken>(this ICharStream stream, int length, Func<Text.Range, string, TToken> makeToken)
+    public static TToken ConsumeToken<TToken>(this ICharStream stream, int length, Func<Text.Location, string, TToken> makeToken)
     {
         var start = stream.Position;
         var text = length == 0 ? string.Empty : stream.ConsumeText(length);
         var range = new Text.Range(start, stream.Position);
-        return makeToken(range, text);
+        return makeToken(new Text.Location(stream.SourceFile, range), text);
     }
 
     /// <summary>
@@ -128,5 +128,5 @@ public static class CharStreamExtensions
     /// <returns>The constructed <see cref="Token{TKind}"/>.</returns>
     public static Token<TKind> ConsumeToken<TKind>(this ICharStream stream, TKind kind, int length)
         where TKind : notnull =>
-        stream.ConsumeToken(length, (range, text) => new Token<TKind>(range, text, kind));
+        stream.ConsumeToken(length, (location, text) => new Token<TKind>(location.Range, location, text, kind));
 }

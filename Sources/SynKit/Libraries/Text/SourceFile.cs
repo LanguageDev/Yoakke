@@ -19,7 +19,7 @@ public class SourceFile : TextReader, ISourceFile
     public string Path { get; }
 
     /// <inheritdoc/>
-    public TextReader Reader => this;
+    public TextReader Reader => this.underlying;
 
     /// <inheritdoc/>
     public int AvailableLines => this.lineStarts.Count;
@@ -60,6 +60,10 @@ public class SourceFile : TextReader, ISourceFile
         {
         }
         this.index = 0;
+
+        // this is to reset state of the reader to the "initial".
+        // I resort to this hack, since constructor from string pre-scan lines, but did not reset.
+        this.underlying = new StringReader(source);
     }
 
     /// <inheritdoc/>

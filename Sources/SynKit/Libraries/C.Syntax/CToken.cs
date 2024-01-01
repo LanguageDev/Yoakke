@@ -13,7 +13,10 @@ namespace Yoakke.SynKit.C.Syntax;
 public sealed class CToken : IToken<CTokenType>, IEquatable<CToken>
 {
     /// <inheritdoc/>
-    public Text.Range Range { get; }
+    public Text.Range Range => this.Location.Range;
+
+    /// <inheritdoc/>
+    public Text.Location Location { get; }
 
     /// <inheritdoc/>
     public string Text { get; }
@@ -46,9 +49,9 @@ public sealed class CToken : IToken<CTokenType>, IEquatable<CToken>
     /// <param name="logicalText">The original text the <see cref="CToken"/> was parsed from.</param>
     /// <param name="kind">The <see cref="CTokenType"/> of the <see cref="CToken"/>.</param>
     /// <param name="expandedFrom">The <see cref="CToken"/> that this one was expanded from.</param>
-    public CToken(Text.Range range, string text, Text.Range logicalRange, string logicalText, CTokenType kind, CToken? expandedFrom)
+    public CToken(Text.Location range, string text, Text.Range logicalRange, string logicalText, CTokenType kind, CToken? expandedFrom)
     {
-        this.Range = range;
+        this.Location = range;
         this.Text = text;
         this.Kind = kind;
         this.LogicalRange = logicalRange;
@@ -64,7 +67,7 @@ public sealed class CToken : IToken<CTokenType>, IEquatable<CToken>
     /// <param name="logicalRange">The logical <see cref="Text.Range"/> of the <see cref="CToken"/> in the source.</param>
     /// <param name="logicalText">The original text the <see cref="CToken"/> was parsed from.</param>
     /// <param name="kind">The <see cref="CTokenType"/> of the <see cref="CToken"/>.</param>
-    public CToken(Text.Range range, string text, Text.Range logicalRange, string logicalText, CTokenType kind)
+    public CToken(Text.Location range, string text, Text.Range logicalRange, string logicalText, CTokenType kind)
         : this(range, text, logicalRange, logicalText, kind, null)
     {
     }
@@ -82,6 +85,7 @@ public sealed class CToken : IToken<CTokenType>, IEquatable<CToken>
     public bool Equals(CToken? other) =>
            other is not null
         && this.Range == other.Range
+        && this.Location.File.Path == other.Location.File.Path
         && this.Text == other.Text
         && this.Kind == other.Kind
         && this.LogicalRange == other.LogicalRange

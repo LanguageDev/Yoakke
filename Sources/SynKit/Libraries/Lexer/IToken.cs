@@ -4,6 +4,7 @@
 
 using System;
 using Range = Yoakke.SynKit.Text.Range;
+using Location = Yoakke.SynKit.Text.Location;
 
 namespace Yoakke.SynKit.Lexer;
 
@@ -17,6 +18,11 @@ public interface IToken : IEquatable<IToken>
     /// The <see cref="Text.Range"/> that the token can be found at in the source.
     /// </summary>
     public Range Range { get; }
+
+    /// <summary>
+    /// The <see cref="Text.Location"/> that the token can be found at in the source.
+    /// </summary>
+    public Location Location { get; }
 
     /// <summary>
     /// The text this token was parsed from.
