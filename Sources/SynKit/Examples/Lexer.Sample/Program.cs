@@ -38,7 +38,7 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        var lexer = new Lexer(new Text.SourceFile("console", Console.In));
+        var lexer = new Lexer(Console.In);
         while (true)
         {
             var t = lexer.Next();

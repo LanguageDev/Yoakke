@@ -33,7 +33,7 @@ public class CharStreamTests : TestBase<CharStreamTests.TokenType>
 
         public Lexer(string source)
         {
-            this.charStream = new TextReaderCharStream(new SourceFile("test", source));
+            this.charStream = new TextReaderCharStream(new StringReader(source));
         }
 
         /// <inheritdoc/>
@@ -90,7 +90,8 @@ public class CharStreamTests : TestBase<CharStreamTests.TokenType>
     public void Empty()
     {
         var lexer = new Lexer(string.Empty);
-        Assert.Equal(Token(string.Empty, TokenType.End, Range((0, 0), 0)), lexer.Next());
+        var actual = lexer.Next();
+        Assert.Equal(Token(string.Empty, TokenType.End, Range((0, 0), 0)), actual);
     }
 
     [Fact]

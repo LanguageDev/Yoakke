@@ -27,7 +27,7 @@ public class TextReaderCharStream : ICharStream
     public bool IsEnd => !this.TryPeek(out _);
 
     /// <inheritdoc/>
-    public ISourceFile SourceFile => underlying;
+    public ISourceFile SourceFile => this.underlying;
 
     private readonly RingBuffer<char> peek = new();
     private char prevChar;
@@ -36,10 +36,28 @@ public class TextReaderCharStream : ICharStream
     /// <summary>
     /// Initializes a new instance of the <see cref="TextReaderCharStream"/> class.
     /// </summary>
-    /// <param name="underlying">The unerlying <see cref="TextReader"/> to read from.</param>
+    /// <param name="underlying">The unerlying <see cref="ISourceFile"/> to read from.</param>
     public TextReaderCharStream(ISourceFile underlying)
     {
         this.underlying = underlying;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TextReaderCharStream"/> class.
+    /// </summary>
+    /// <param name="underlying">The unerlying <see cref="SourceFile"/> to read from.</param>
+    public TextReaderCharStream(SourceFile underlying)
+    {
+        this.underlying = underlying;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TextReaderCharStream"/> class.
+    /// </summary>
+    /// <param name="underlying">The unerlying <see cref="TextReader"/> to read from.</param>
+    public TextReaderCharStream(TextReader underlying)
+    {
+        this.underlying = new SourceFile("<no-location>", underlying);
     }
 
     /// <inheritdoc/>
