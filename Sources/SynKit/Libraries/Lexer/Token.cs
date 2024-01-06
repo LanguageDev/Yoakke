@@ -23,11 +23,11 @@ public sealed record Token<TKind>(Range Range, Location Location, string Text, T
     public bool Equals(Token<TKind>? other) =>
            other is not null
         && this.Range == other.Range
-        && this.Location.File.Path == other.Location.File.Path
+        && this.Location.File?.Path == other.Location.File?.Path
         && this.Text == other.Text
         && this.Kind.Equals(other.Kind);
 
     /// <inheritdoc/>
     public override int GetHashCode() =>
-        HashCode.Combine(this.Range, this.Text, this.Kind, this.Location.File.Path);
+        HashCode.Combine(this.Range, this.Text, this.Kind, this.Location.File?.Path);
 }

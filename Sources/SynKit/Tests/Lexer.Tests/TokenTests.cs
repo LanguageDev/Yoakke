@@ -52,4 +52,13 @@ public class TokenTests : TestBase<int>
         Assert.NotEqual(t1, t2);
         Assert.NotEqual(t1.GetHashCode(), t2.GetHashCode());
     }
+
+    [Fact]
+    public void NoLocation()
+    {
+        var t1 = Token("hello", new(), 3, Range((3, 4), 5));
+        var t2 = Token("hello", new(), 3, Range((3, 4), 5));
+        Assert.Equal(t1, t2);
+        Assert.Equal(t1.GetHashCode(), t2.GetHashCode());
+    }
 }
