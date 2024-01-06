@@ -9,4 +9,4 @@ namespace Yoakke.SynKit.Text;
 /// </summary>
 /// <param name="File">The source file.</param>
 /// <param name="Range">The range.</param>
-public readonly record struct Location(ISourceFile File, Range Range);
+public readonly record struct Location(ISourceFile? File, Range Range);
