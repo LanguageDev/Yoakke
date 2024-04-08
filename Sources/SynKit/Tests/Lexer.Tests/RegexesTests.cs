@@ -118,6 +118,30 @@ public partial class RegexesTests
     {
     }
 
+    public enum Issue140Token
+    {
+        [End] End,
+        [Error] Error,
+        [Regex(@"'((\\[^\n\r])|[^\r\n\\'])*'")] Whitespace,
+    }
+
+    [Lexer(typeof(Issue140Token))]
+    internal partial class Issue140Lexer
+    {
+    }
+
+    public enum EscapingInsideSingleLiteralRangeToken
+    {
+        [End] End,
+        [Error] Error,
+        [Regex(@"[\]]")] Whitespace,
+    }
+
+    [Lexer(typeof(EscapingInsideSingleLiteralRangeToken))]
+    internal partial class Issue145Lexer
+    {
+    }
+
     [Theory]
 
     [InlineData("foo", typeof(Identifier), true, typeof(IdentifierLexer))]
@@ -200,6 +224,11 @@ public partial class RegexesTests
     [InlineData("\r", typeof(Whitespace), true, typeof(WhitespaceLexer))]
     [InlineData("\n", typeof(Whitespace), true, typeof(WhitespaceLexer))]
     [InlineData("a", typeof(Whitespace), false, typeof(WhitespaceLexer))]
+
+    [InlineData(@"'hello'", typeof(Issue140Token), true, typeof(Issue140Lexer))]
+    [InlineData(@"'hello \' bye'", typeof(Issue140Token), true, typeof(Issue140Lexer))]
+
+    [InlineData(@"]", typeof(EscapingInsideSingleLiteralRangeToken), true, typeof(Issue145Lexer))]
     public void SingleTokenAcceptance(string input, Type enumType, bool shouldAccept, Type lexerType)
     {
         dynamic lexer = Activator.CreateInstance(lexerType, input)!;

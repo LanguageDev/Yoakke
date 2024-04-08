@@ -117,6 +117,7 @@ public class RegExParser
             var ch = this.Consume();
             var escaped = Escape(ch);
             if (ch == '-') return ch;
+            if (ch == ']') return ch;
             if (escaped == null) throw new FormatException($"invalid escape \\{ch} in grouping (position {this.index - 2})");
             return escaped.Value;
         }
