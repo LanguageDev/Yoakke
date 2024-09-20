@@ -25,7 +25,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: '6.0.101'
+        dotnet-version: '6.0.425'
     - name: Test
       run: |
         cd Sources
