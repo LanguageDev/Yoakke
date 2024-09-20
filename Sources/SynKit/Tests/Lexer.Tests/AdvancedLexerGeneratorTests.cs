@@ -18,6 +18,8 @@ public partial class AdvancedLexerGeneratorTests : TestBase<AdvancedLexerGenerat
         [End] End,
 
         [Regex("[\\-]")] MinusInRegexGroup,
+        [Regex("[\\[]")] LeftBracketInRegexGroup,
+        [Regex("[\\]]")] RightBracketInRegexGroup,
     }
 
     [Lexer(typeof(TokenType))]
@@ -30,6 +32,22 @@ public partial class AdvancedLexerGeneratorTests : TestBase<AdvancedLexerGenerat
     {
         var lexer = new AdvancedLexer("-");
         Assert.Equal(Token("-", TokenType.MinusInRegexGroup, Range((0, 0), 1)), lexer.Next());
+        Assert.Equal(Token(string.Empty, TokenType.End, Range((0, 1), 0)), lexer.Next());
+    }
+
+    [Fact]
+    public void LeftBracketInRegex()
+    {
+        var lexer = new AdvancedLexer("[");
+        Assert.Equal(Token("[", TokenType.LeftBracketInRegexGroup, Range((0, 0), 1)), lexer.Next());
+        Assert.Equal(Token(string.Empty, TokenType.End, Range((0, 1), 0)), lexer.Next());
+    }
+
+    [Fact]
+    public void RightBracketInRegex()
+    {
+        var lexer = new AdvancedLexer("]");
+        Assert.Equal(Token("]", TokenType.RightBracketInRegexGroup, Range((0, 0), 1)), lexer.Next());
         Assert.Equal(Token(string.Empty, TokenType.End, Range((0, 1), 0)), lexer.Next());
     }
 }
