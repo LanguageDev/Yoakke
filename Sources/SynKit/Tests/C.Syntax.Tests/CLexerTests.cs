@@ -91,6 +91,11 @@ public class CLexerTests
     [InlineData(Kind.IntLiteral, "0123u")]
     [InlineData(Kind.IntLiteral, "0123L")]
     [InlineData(Kind.IntLiteral, "0123U")]
+    [InlineData(Kind.IntLiteral, "0123U64")]
+    [InlineData(Kind.IntLiteral, "0123U32")]
+    [InlineData(Kind.IntLiteral, "0123U16")]
+    [InlineData(Kind.IntLiteral, "0123U8")]
+    [InlineData(Kind.IntLiteral, "18'446'744'073'709'550'592llu")]
 
     [InlineData(Kind.CharLiteral, "'a'")]
     [InlineData(Kind.CharLiteral, @"'\''")]
@@ -101,6 +106,9 @@ public class CLexerTests
     [InlineData(Kind.CharLiteral, @"_'\n'")]
     [InlineData(Kind.CharLiteral, "'abc'")]
     [InlineData(Kind.CharLiteral, "L'abc'")]
+    [InlineData(Kind.CharLiteral, "u8'a'")]
+    [InlineData(Kind.CharLiteral, "u'a'")]
+    [InlineData(Kind.CharLiteral, "U'a'")]
 
     [InlineData(Kind.FloatLiteral, "123e2")]
     [InlineData(Kind.FloatLiteral, "123e+2")]
