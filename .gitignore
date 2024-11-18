@@ -8,3 +8,4 @@ doc
 TestResults
 CoverageResults
 node_modules
+*.binlog

@@ -282,18 +282,22 @@ public class CLexer : ILexer<CToken>
                 var isFloat = peek == '.';
                 if (peek != '.')
                 {
-                    this.TakeWhile(text, char.IsDigit, ref offset);
+                    this.TakeWhile(text, IsIntDigitOrSeparator, ref offset);
                     if (this.MatchesEscaped('.', ref offset))
                     {
                         text.Append('.');
                         isFloat = true;
                     }
                 }
-                this.TakeWhile(text, char.IsDigit, ref offset);
+                this.TakeWhile(text, IsIntDigitOrSeparator, ref offset);
                 if (this.TryParseExponent(text, ref offset)) isFloat = true;
                 // Proper suffixes
                 if (isFloat) this.TakeWhile(text, IsFloatSuffix, ref offset);
-                else this.TakeWhile(text, IsIntSuffix, ref offset);
+                else
+                {
+                    this.TakeWhile(text, IsIntSuffix, ref offset);
+                    this.TakeWhile(text, char.IsDigit, ref offset);
+                }
                 // Done
                 return Make(isFloat ? CTokenType.FloatLiteral : CTokenType.IntLiteral, text.ToString());
             }
@@ -314,6 +318,16 @@ public class CLexer : ILexer<CToken>
                 isLiteral = true;
                 text.Append(sep);
                 separatorChar = sep;
+            }
+            else if (peek == 'u' && this.TryParseEscaped(out var potential8, offset, out var nextOffset) && potential8 == '8')
+            {
+                if (this.MatchesEscaped(IsLiteralSeparator, out var otherSeparator, nextOffset, out offset))
+                {
+                    text.Append(potential8);
+                    isLiteral = true;
+                    text.Append(otherSeparator);
+                    separatorChar = otherSeparator;
+                }
             }
 
             // It is a literal
@@ -670,6 +684,8 @@ public class CLexer : ILexer<CToken>
     private static bool IsFloatSuffix(char ch) => "fFlL".Contains(ch);
 
     private static bool IsIntSuffix(char ch) => "uUlL".Contains(ch);
+
+    private static bool IsIntDigitOrSeparator(char ch) => char.IsDigit(ch) || ch == '\'';
 
     private static bool IsLiteralSeparator(char ch) => "'\"".Contains(ch);
 }
