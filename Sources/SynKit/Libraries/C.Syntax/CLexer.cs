@@ -268,6 +268,7 @@ public class CLexer : ILexer<CToken>
                 if (this.TakeWhile(text, IsHex, ref offset) > 0)
                 {
                     this.TakeWhile(text, IsIntSuffix, ref offset);
+                    this.TakeWhile(text, char.IsDigit, ref offset);
                     return Make(CTokenType.IntLiteral, text.ToString());
                 }
                 else
