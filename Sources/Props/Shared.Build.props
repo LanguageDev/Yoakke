@@ -11,7 +11,8 @@
 
     <!-- Root namespace -->
     <RootNamespace>Yoakke.$(MSBuildProjectName)</RootNamespace>
-    <RootDir>$(MSBuildThisFileDirectory)..\</RootDir>
+    <RootDir Condition="$(SolutionDir) == ''">$(MSBuildThisFileDirectory)..\</RootDir>
+    <RootDir Condition="$(SolutionDir) != ''">$(SolutionDir)</RootDir>
     
     <!-- Strong name -->
     <SignAssembly>true</SignAssembly>

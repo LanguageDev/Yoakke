@@ -296,7 +296,12 @@ public class CLexer : ILexer<CToken>
                 if (isFloat) this.TakeWhile(text, IsFloatSuffix, ref offset);
                 else
                 {
-                    this.TakeWhile(text, IsIntSuffix, ref offset);
+                    var typedPrefix = this.TakeString(text, "ui", ref offset) != 0 || this.TakeString(text, "i", ref offset) != 0;
+                    if (!typedPrefix)
+                    {
+                        this.TakeWhile(text, IsIntSuffix, ref offset);
+                    }
+
                     this.TakeWhile(text, char.IsDigit, ref offset);
                 }
                 // Done
@@ -458,6 +463,20 @@ public class CLexer : ILexer<CToken>
         return length;
     }
 
+    private int TakeString(StringBuilder result, string targetText, ref int offset) =>
+        this.TakeString(result, targetText, offset, out offset);
+
+    private int TakeString(StringBuilder result, string targetText, int offset, out int nextOffset)
+    {
+        if (this.MatchesString(targetText, offset, out nextOffset))
+        {
+            result.Append(targetText);
+            return targetText.Length;
+        }
+
+        return 0;
+    }
+
     /// <summary>
     /// Wrapper to <see cref="MatchesEscaped(Predicate{char}, out char, int, out int)"/>.
     /// </summary>
@@ -486,6 +505,22 @@ public class CLexer : ILexer<CToken>
             result = default;
             return false;
         }
+    }
+
+    private bool MatchesString(string targetString, int offset, out int nextOffset)
+    {
+        var newOffset = offset;
+        nextOffset = offset;
+        for (var i = 0; i < targetString.Length;i++)
+        {
+            if (!this.TryParseEscaped(out var ch, ref newOffset) || ch != targetString[i])
+            {
+                return false;
+            }
+        }
+
+        nextOffset = newOffset;
+        return true;
     }
 
     /// <summary>
