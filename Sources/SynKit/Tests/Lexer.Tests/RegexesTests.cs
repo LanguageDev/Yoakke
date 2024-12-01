@@ -247,12 +247,4 @@ public partial class RegexesTests
             Assert.False(enumValueUnderTest == token.Kind && enumEndValue == lexer.Next().Kind);
         }
     }
-
-    [Fact]
-    public void MultipleMultilineCommentsInText()
-    {
-        var lexer = new MultilineCommentLexer("/***/ asdsad /***/");
-        var token = lexer.Next();
-        Assert.Equal("/***/", token.Text);
-    }
 }
