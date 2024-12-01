@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)\SynKit\Libraries\Reporting\Reporting.csproj" />
+    <ProjectReference Include="$(RootDir)\SynKit\Libraries\Reporting\Reporting.csproj" />
   </ItemGroup>
 </Project>
