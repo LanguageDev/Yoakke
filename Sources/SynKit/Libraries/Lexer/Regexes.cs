@@ -70,5 +70,5 @@ public static class Regexes
     /// <summary>
     /// C-style multiline comments.
     /// </summary>
-    public const string MultilineComment = @"/\*+([^*]|(\*+[^*/]))*\*+/";
+    public const string MultilineComment = @"/\*+([^*/]|(\*+[^*/]))*\*+/";
 }
