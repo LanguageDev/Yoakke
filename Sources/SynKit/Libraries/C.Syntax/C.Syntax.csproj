@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)\Shared\Libraries\Polyfill\Polyfill.csproj" />
-    <ProjectReference Include="$(SolutionDir)\SynKit\Libraries\Lexer\Lexer.csproj" />
+    <ProjectReference Include="$(RootDir)\Shared\Libraries\Polyfill\Polyfill.csproj" />
+    <ProjectReference Include="$(RootDir)\SynKit\Libraries\Lexer\Lexer.csproj" />
   </ItemGroup>
 </Project>

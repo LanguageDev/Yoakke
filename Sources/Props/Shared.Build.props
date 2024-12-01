@@ -11,6 +11,7 @@
 
     <!-- Root namespace -->
     <RootNamespace>Yoakke.$(MSBuildProjectName)</RootNamespace>
+    <RootDir>$(MSBuildThisFileDirectory)..\</RootDir>
     
     <!-- Strong name -->
     <SignAssembly>true</SignAssembly>
