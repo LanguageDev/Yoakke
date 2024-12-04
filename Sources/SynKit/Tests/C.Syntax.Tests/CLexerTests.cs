@@ -85,6 +85,8 @@ public class CLexerTests
     [InlineData(Kind.IntLiteral, "0x1fbL")]
     [InlineData(Kind.IntLiteral, "0XABCU")]
     [InlineData(Kind.IntLiteral, "0XABCU16")]
+    [InlineData(Kind.IntLiteral, "0X1Fui8")]
+    [InlineData(Kind.IntLiteral, "0X1F0bui16")]
 
     [InlineData(Kind.IntLiteral, "123")]
     [InlineData(Kind.IntLiteral, "0123")]
