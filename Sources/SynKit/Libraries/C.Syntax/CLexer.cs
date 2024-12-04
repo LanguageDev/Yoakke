@@ -267,7 +267,12 @@ public class CLexer : ILexer<CToken>
                 // At least one hex digit is required
                 if (this.TakeWhile(text, IsHex, ref offset) > 0)
                 {
-                    this.TakeWhile(text, IsIntSuffix, ref offset);
+                    var typedPrefix = this.TakeString(text, "ui", ref offset) != 0 || this.TakeString(text, "i", ref offset) != 0;
+                    if (!typedPrefix)
+                    {
+                        this.TakeWhile(text, IsIntSuffix, ref offset);
+                    }
+
                     this.TakeWhile(text, char.IsDigit, ref offset);
                     return Make(CTokenType.IntLiteral, text.ToString());
                 }
