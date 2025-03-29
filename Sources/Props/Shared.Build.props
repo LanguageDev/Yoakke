@@ -15,7 +15,7 @@
     <RootDir Condition="$(SolutionDir) != ''">$(SolutionDir)</RootDir>
     
     <!-- Strong name -->
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly Condition="$(SignAssembly) == ''">true</SignAssembly>
     <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 </Project>
