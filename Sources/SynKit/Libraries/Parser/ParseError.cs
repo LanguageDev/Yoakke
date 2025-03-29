@@ -65,16 +65,16 @@ public class ParseError
         if (cmp < 0) return second;
         if (cmp > 0) return first;
         // Both of them got stuck at the same place, merge entries
-        var elements = first.Elements.Values.ToDictionary(e => e.Context, e => e.Expected.ToHashSet());
+        var elements = first.Elements.Values.ToDictionary(e => e.Context, e => new ParseErrorElement(e.Expected.ToHashSet(), e.Context));
         foreach (var element in second.Elements.Values)
         {
             if (elements.TryGetValue(element.Context, out var part))
             {
-                foreach (var e in element.Expected) part.Add(e);
+                foreach (var e in element.Expected) part.Expected.Add(e);
             }
             else
             {
-                part = element.Expected.ToHashSet();
+                part = new (element.Expected.ToHashSet(), element.Context);
                 elements.Add(element.Context, part);
             }
         }
@@ -84,7 +84,7 @@ public class ParseError
         // Since position is here now, Got is kind of a utility we have here, we could just aswell have a
         // 'reason' for each element
         return new(
-            elements.ToDictionary(kv => kv.Key, kv => new ParseErrorElement(kv.Value, kv.Key)),
+            elements,
             first.Got ?? second.Got,
             first.Position);
     }
