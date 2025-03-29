@@ -358,7 +358,7 @@ public class LexerSourceGenerator : IIncrementalGenerator
                 Name = lexerModel.LexerType.Name,
                 GenericArgs = lexerModel.LexerType.TypeArguments.Select(t => t.Name).ToList(),
             },
-            TokenType = lexerModel.TokenType.ToDisplayString(),
+            TokenType = lexerModel.TokenType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
             ImplicitConstructor = lexerModel.LexerType.HasNoUserDefinedCtors() && lexerModel.SourceField is null,
             SourceName = lexerModel.SourceField?.Name ?? "CharStream",
             EndTokenName = lexerModel.EndVariant.Name,
