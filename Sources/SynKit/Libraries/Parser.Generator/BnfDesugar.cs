@@ -71,8 +71,9 @@ internal static class BnfDesugar
     public static IList<Rule> GeneratePrecedenceParser(Rule rule, IList<PrecedenceEntry> precedenceTable)
     {
         // The resulting precedence rules should look like
-        // RULE_N : (RULE_N OP RULE_(N+1)) {TR} | RULE_(N+1) for left-associative
-        // RULE_N : (RULE_(N+1) OP RULE_N) {TR} | RULE_(N+1) for right-associative
+        // RULE_N_OP : (OP1 | OP2 | ...) {TR}
+        // RULE_N : (RULE_N RULE_N_OP RULE_(N+1)) {TR} | RULE_(N+1) for left-associative
+        // RULE_N : (RULE_(N+1) RULE_N_OP RULE_N) {TR} | RULE_(N+1) for right-associative
         // And simply the passed-in rule as atomic
         var result = new List<Rule>();
         var atom = new Rule($"{rule.Name}_atomic", rule.Ast, false);
@@ -80,25 +81,19 @@ internal static class BnfDesugar
         for (var i = 0; i < precedenceTable.Count; ++i)
         {
             var prec = precedenceTable[i];
+            var operatorRule = new BnfAst.Alt(prec.Operators.Select(op => new BnfAst.Literal(op)));
+            var operatorCall = new BnfAst.Call(i == 0 ? $"{rule.Name}_operator" : $"{rule.Name}_level{i}_operator");
             var currentCall = new BnfAst.Call(i == 0 ? rule.Name : $"{rule.Name}_level{i}");
             var nextCall = new BnfAst.Call(i == precedenceTable.Count - 1 ? atom.Name : $"{rule.Name}_level{i + 1}");
 
-            BnfAst? toAdd = null;
-            foreach (var op in prec.Operators)
-            {
-                var opNode = new BnfAst.Literal(op);
-                var seq = prec.Left
-                    ? new BnfAst[] { currentCall, opNode, nextCall }
-                    : new BnfAst[] { nextCall, opNode, currentCall };
-                var alt = new BnfAst.Transform(new BnfAst.Seq(seq), prec.Method);
-                if (toAdd == null) toAdd = alt;
-                else toAdd = new BnfAst.Alt(toAdd, alt);
-            }
-            // Default is always stepping a level down
-            if (toAdd is null) toAdd = nextCall;
-            else toAdd = new BnfAst.Alt(toAdd, nextCall);
+            BnfAst[] seq = prec.Left
+                ? [currentCall, operatorCall, nextCall]
+                : [nextCall, operatorCall, currentCall];
+            BnfAst toAdd = new BnfAst.Transform(new BnfAst.Seq(seq), prec.Method);
+            toAdd = new BnfAst.Alt(toAdd, nextCall);
 
             result.Add(new Rule(currentCall.Name, toAdd, i == 0) { VisualName = rule.VisualName });
+            result.Add(new Rule(operatorCall.Name, operatorRule, i == 0) { VisualName = rule.VisualName });
         }
         return result;
     }
