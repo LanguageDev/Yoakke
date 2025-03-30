@@ -4,9 +4,6 @@
 
 using BenchmarkDotNet.Attributes;
 using Yoakke.SynKit.Lexer;
-using Yoakke.SynKit.Parser;
-using Yoakke.SynKit.Lexer.Attributes;
-using Yoakke.SynKit.Parser.Attributes;
 
 namespace Yoakke.SynKit.Parser.Benchmarks;
 
@@ -20,11 +17,17 @@ public partial class ExpressionBenchmarks
         return new ExpressionParser(new Lexer(source)).ParseProgram();
     }
 
-
     [Benchmark]
     public ParseResult<int> ManualExpressionParser()
     {
         return new ManualExpressionParser(new Lexer(source)).ParseProgram();
+    }
+
+    // This benchmark is very slow
+    //[Benchmark()]
+    public ParseResult<int> WorstManualExpressionParser()
+    {
+        return new WorstManualExpressionParser(new Lexer(source)).ParseProgram();
     }
 
     [Benchmark]
