@@ -4,8 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Generic.Polyfill;
-using System.Linq;
 
 namespace Yoakke.SynKit.Parser;
 
@@ -14,10 +12,12 @@ namespace Yoakke.SynKit.Parser;
 /// </summary>
 public class ParseError
 {
+    private ParseErrorElementDictionary elements;
+
     /// <summary>
     /// The error cases in different parse contexts.
     /// </summary>
-    public IReadOnlyDictionary<string, ParseErrorElement> Elements { get; }
+    public IReadOnlyDictionary<string, ParseErrorElement> Elements => this.elements;
 
     /// <summary>
     /// The item that was found, if any.
@@ -37,13 +37,13 @@ public class ParseError
     /// <param name="position">The position where the error occurred.</param>
     /// <param name="context">The context in which the error occurred.</param>
     public ParseError(object expected, object? got, IComparable position, string context)
-        : this(new Dictionary<string, ParseErrorElement> { { context, new ParseErrorElement(expected, context) } }, got, position)
+        : this(new ParseErrorElementDictionary(context, new ParseErrorElement(expected, context)), got, position)
     {
     }
 
-    private ParseError(IReadOnlyDictionary<string, ParseErrorElement> elements, object? got, IComparable position)
+    private ParseError(ParseErrorElementDictionary elements, object? got, IComparable position)
     {
-        this.Elements = elements;
+        this.elements = elements;
         this.Got = got;
         this.Position = position;
     }
@@ -65,19 +65,7 @@ public class ParseError
         if (cmp < 0) return second;
         if (cmp > 0) return first;
         // Both of them got stuck at the same place, merge entries
-        var elements = first.Elements.Values.ToDictionary(e => e.Context, e => new ParseErrorElement(e.Expected.ToHashSet(), e.Context));
-        foreach (var element in second.Elements.Values)
-        {
-            if (elements.TryGetValue(element.Context, out var part))
-            {
-                foreach (var e in element.Expected) part.Expected.Add(e);
-            }
-            else
-            {
-                part = new (element.Expected.ToHashSet(), element.Context);
-                elements.Add(element.Context, part);
-            }
-        }
+        var elements = first.elements.Merge(second.elements);
         // TODO: Think this through
         // NOTE: Could it ever happen that first.Got and second.Got are different but neither are null?
         // Would we want to unify these and move them to ParseErrorElement or something?
