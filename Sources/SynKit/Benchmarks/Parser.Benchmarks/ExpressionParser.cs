@@ -133,3 +133,40 @@ public partial class ManualExpressionParser
     [Rule("expression_atomic : IntLit")]
     public static int IntLit(IToken token) => int.Parse(token.Text);
 }
+
+[Parser(typeof(TokenType))]
+public partial class WorstManualExpressionParser
+{
+    [Rule("program: expression ';'")]
+    public static int Program(int n, IToken _) => n;
+
+    [Rule("expression_level1_operator: ('+' | '-')")]
+    [Rule("expression_level2_operator: ('*' | '/' | '%')")]
+    [Rule("expression_level3_operator: ('^')")]
+    public static IToken Level1Operator(IToken op) => op;
+
+    [Rule("expression: expression_level1")]
+    [Rule("expression_level1: expression_level2")]
+    [Rule("expression_level2: expression_atomic")]
+    public static int TrivialRules(int n) => n;
+
+    [Rule("expression: expression_level1 expression_level1_operator expression_level1")]
+    [Rule("expression_level1: expression_level1 expression_level2_operator expression_level2")]
+    [Rule("expression_level2: expression_atomic expression_level3_operator expression_level2")]
+    public static int BinOp(int a, IToken op, int b) => op.Text switch
+    {
+        "^" => (int)Math.Pow(a, b),
+        "*" => a * b,
+        "/" => a / b,
+        "%" => a % b,
+        "+" => a + b,
+        "-" => a - b,
+        _ => throw new NotImplementedException(),
+    };
+
+    [Rule("expression_atomic : '(' expression ')'")]
+    public static int Grouping(IToken _1, int n, IToken _2) => n;
+
+    [Rule("expression_atomic : IntLit")]
+    public static int IntLit(IToken token) => int.Parse(token.Text);
+}
