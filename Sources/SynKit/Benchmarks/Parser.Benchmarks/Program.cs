@@ -4,5 +4,11 @@
 
 using BenchmarkDotNet.Running;
 
-BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args);
-
+if (args.Length == 1 && args[0] == "parser")
+{
+    new Yoakke.SynKit.Parser.Benchmarks.ExpressionBenchmarks().ManualExpressionParser();
+}
+else
+{
+   BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args);
+}

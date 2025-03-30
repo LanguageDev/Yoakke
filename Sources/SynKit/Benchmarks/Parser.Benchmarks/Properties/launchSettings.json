@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "Parser.Benchmarks": {
+      "commandName": "Project"
+    },
+    "Parser": {
+      "commandName": "Project",
+      "commandLineArgs": "parser"
+    }
+  }
+}

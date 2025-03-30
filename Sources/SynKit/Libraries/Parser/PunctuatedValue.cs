@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021-2022 Yoakke.
+// Copyright (c) 2021-2022 Yoakke.
 // Licensed under the Apache License, Version 2.0.
 // Source repository: https://github.com/LanguageDev/Yoakke
 
@@ -30,5 +30,16 @@ public readonly struct PunctuatedValue<TValue, TPunct>
     {
         this.Value = element;
         this.Punctuation = punctuation;
+    }
+
+    /// <summary>
+    /// Deconstructs an object into its value and optional punctuation components.
+    /// </summary>
+    /// <param name="value">Represents the main value extracted from the object.</param>
+    /// <param name="punct">Represents an optional punctuation element associated with the value.</param>
+    public void Deconstruct(out TValue value, out TPunct? punct)
+    {
+        value = this.Value;
+        punct = this.Punctuation!;
     }
 }
