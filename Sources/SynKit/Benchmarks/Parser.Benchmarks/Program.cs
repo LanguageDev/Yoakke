@@ -16,6 +16,14 @@ else if (args.Length == 1 && args[0] == "worst_parser")
 {
     new Yoakke.SynKit.Parser.Benchmarks.ExpressionBenchmarks().WorstManualExpressionParser();
 }
+else if (args.Length == 1 && args[0] == "complex")
+{
+    new Yoakke.SynKit.Parser.Benchmarks.ExpressionBenchmarks().ComplexExpressionParser();
+}
+else if (args.Length == 1 && args[0] == "manual_complex")
+{
+    new Yoakke.SynKit.Parser.Benchmarks.ExpressionBenchmarks().ManualComplexExpressionParser();
+}
 else
 {
    BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args);
