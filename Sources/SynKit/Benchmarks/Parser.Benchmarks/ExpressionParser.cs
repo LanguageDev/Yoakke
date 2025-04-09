@@ -25,6 +25,11 @@ public enum TokenType
     [Token("%")] Mod,
     [Token("^")] Exp,
 
+    [Token("?")] Conditional,
+    [Token(":")] Colon,
+    [Token(",")] Comma,
+    [Token("=")] Assignment,
+
     [Token(";")] Semicol,
 
     [Regex(Regexes.IntLiteral)] IntLit,
@@ -170,3 +175,68 @@ public partial class WorstManualExpressionParser
     [Rule("expression_atomic : IntLit")]
     public static int IntLit(IToken token) => int.Parse(token.Text);
 }
+
+[Parser(typeof(TokenType))]
+public partial class ComplexExpressionParser
+{
+    [Rule("program: expression ';'")]
+    public static int Program(int n, IToken _) => n;
+
+    [Rule("conditional_expression: primary_expression")]
+    [Rule("assignment_expression: conditional_expression")]
+    [Rule("constant_expression: conditional_expression")]
+    [Rule("expression: assignment_expression")]
+    [Rule("expression: constant_expression")]
+    public static int TrivialRules(int n) => n;
+
+    [Rule("conditional_expression: primary_expression '?' expression ':' conditional_expression")]
+    public static int MakeConditionalExpression(int condition, IToken _1, int trueExpression, IToken _2, int falseExpression) => condition == 0 ? falseExpression : trueExpression;
+
+    [Rule("assignment_expression: primary_expression '=' assignment_expression")]
+    public static int MakeConditionalExpression(int condition, IToken _1, int trueExpression) => trueExpression;
+
+    [Rule("primary_expression : '(' expression ')'")]
+    public static int Grouping(IToken _1, int n, IToken _2) => n;
+
+    [Rule("primary_expression : IntLit")]
+    public static int IntLit(IToken token) => int.Parse(token.Text);
+}
+
+[Parser(typeof(TokenType))]
+public partial class ManualComplexExpressionParser
+{
+    [Rule("program: expression ';'")]
+    public static int Program(int n, IToken _) => n;
+
+    /**
+     * This is optimized parse tree.
+     * expression - assignment_expression
+     *   
+     * assignment_expression -- primary_expression
+     *                     \--- primary_expression '?' expression ':' conditional_expression
+     *                     \--- primary_expression '=' assignment_expression
+     *
+     * conditional_expression - primary_expression
+     *                     \--- primary_expression '?' expression ':' conditional_expression
+     *            
+     */
+    [Rule("conditional_expression: primary_expression")]
+    [Rule("assignment_expression: primary_expression")]
+    [Rule("constant_expression: conditional_expression")]
+    [Rule("expression: assignment_expression")]
+    public static int TrivialRules(int n) => n;
+
+    [Rule("conditional_expression: primary_expression '?' expression ':' conditional_expression")]
+    [Rule("assignment_expression: primary_expression '?' expression ':' conditional_expression")]
+    public static int MakeConditionalExpression(int condition, IToken _1, int trueExpression, IToken _2, int falseExpression) => condition == 0 ? falseExpression : trueExpression;
+
+    [Rule("assignment_expression: primary_expression '=' assignment_expression")]
+    public static int MakeConditionalExpression(int condition, IToken _1, int trueExpression) => trueExpression;
+
+    [Rule("primary_expression : '(' expression ')'")]
+    public static int Grouping(IToken _1, int n, IToken _2) => n;
+
+    [Rule("primary_expression : IntLit")]
+    public static int IntLit(IToken token) => int.Parse(token.Text);
+}
+

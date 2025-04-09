@@ -29,6 +29,15 @@ public partial class ExpressionBenchmarks
     {
         return new WorstManualExpressionParser(new Lexer(source)).ParseProgram();
     }
+    public ParseResult<int> ComplexExpressionParser()
+    {
+        return new ComplexExpressionParser(new Lexer("((((((((((2)))))))));")).ParseProgram();
+    }
+
+    public ParseResult<int> ManualComplexExpressionParser()
+    {
+        return new ManualComplexExpressionParser(new Lexer("((((((((((2)))))))));")).ParseProgram();
+    }
 
     [Benchmark]
     public List<Token<TokenType>> Lex()
