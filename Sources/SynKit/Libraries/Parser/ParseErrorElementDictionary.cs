@@ -35,7 +35,9 @@ internal class ParseErrorElementDictionary : IReadOnlyDictionary<string, ParseEr
         ? this.elements is null
             ? throw new KeyNotFoundException($"The key {key} was not found in the dictionary")
             : this.elements[key]
-        : this.firstItem!;
+        : this.firstKey == key
+            ? this.firstItem!
+            : throw new KeyNotFoundException($"The key {key} was not found in the dictionary");
 
     public IEnumerable<string> Keys => this.firstKey is null ? this.elements!.Keys : new[] { this.firstKey };
 
@@ -44,8 +46,27 @@ internal class ParseErrorElementDictionary : IReadOnlyDictionary<string, ParseEr
     public int Count => this.firstKey is null ? this.elements is null ? 0 : this.elements.Count : 1;
 
     public bool ContainsKey(string key) => this.firstKey is null ? this.elements is null ? false : this.elements.ContainsKey(key) : this.firstKey == key;
-    public IEnumerator<KeyValuePair<string, ParseErrorElement>> GetEnumerator() => throw new NotImplementedException();
-    public bool TryGetValue(string key, out ParseErrorElement value) => throw new NotImplementedException();
+    public IEnumerator<KeyValuePair<string, ParseErrorElement>> GetEnumerator() =>
+        this.elements is null
+            ? new Enumerator(this.firstKey!, this.firstItem!)
+            : this.elements.GetEnumerator();
+    public bool TryGetValue(string key, out ParseErrorElement value)
+    {
+        if (this.elements is null)
+        {
+            if (this.firstKey == key)
+            {
+                value = firstItem;
+                return true;
+            }
+
+            value = default;
+            return false;
+        }
+
+        return this.elements.TryGetValue(key, out value);
+    }
+
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
     public ParseErrorElementDictionary Merge(ParseErrorElementDictionary other)
@@ -90,5 +111,49 @@ internal class ParseErrorElementDictionary : IReadOnlyDictionary<string, ParseEr
         }
 
         return new (elements);
+    }
+
+    private struct Enumerator : IEnumerator<KeyValuePair<string, ParseErrorElement>>
+    {
+        private bool valid;
+        private KeyValuePair<string, ParseErrorElement> _current;
+        public Enumerator(string key, ParseErrorElement value)
+        {
+            this._current = new KeyValuePair<string, ParseErrorElement>(key, value);
+        }
+
+        public KeyValuePair<string, ParseErrorElement> Current
+        {
+            get
+            {
+                if (!valid)
+                {
+                    throw new InvalidOperationException("The enumerator is not valid.");
+                }
+
+                return _current;
+            }
+        }
+
+        object IEnumerator.Current => this.Current;
+
+        public void Dispose() {}
+        public bool MoveNext()
+        {
+            if (!this.valid)
+            {
+                this.valid = true;
+                return true;
+            }
+            else
+            {
+                this.valid = false;
+                return false;
+            }
+        }
+        public void Reset()
+        {
+            this.valid = false;
+        }
     }
 }
