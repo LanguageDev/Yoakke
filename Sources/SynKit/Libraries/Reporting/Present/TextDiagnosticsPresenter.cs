@@ -137,7 +137,7 @@ public class TextDiagnosticsPresenter : IDiagnosticsPresenter
 
         // Print the ┌─ <file name>
         this.buffer.ForegroundColor = this.Style.DefaultColor;
-        this.buffer.Write($"{lineNumberPadding} ┌─ {sourceFile.Path}");
+        this.buffer.Write($"{lineNumberPadding} ┌─ {sourceFile?.Path ?? "(unknown)"}");
         // If there is a primary info, write the line and column
         if (primaryInfo != null) this.buffer.Write($":{primaryInfo.Location.Range.Start.Line + 1}:{primaryInfo.Location.Range.Start.Column + 1}");
         this.buffer.WriteLine();
@@ -225,7 +225,7 @@ public class TextDiagnosticsPresenter : IDiagnosticsPresenter
     private void WriteAnnotationLine(AnnotationLine line, string prefix)
     {
         var sourceFile = line.Annotations!.First().Location.File;
-        var lineText = sourceFile.GetLine(line.AnnotatedLine).TrimEnd();
+        var lineText = sourceFile?.GetLine(line.AnnotatedLine).TrimEnd() ?? "(unknown)";
 
         // Order annotations by starting position
         var annotationsOrdered = line.Annotations!.OrderBy(si => si.Location.Range.Start).ToList();
@@ -316,7 +316,7 @@ public class TextDiagnosticsPresenter : IDiagnosticsPresenter
     {
         // We need to group the spanned informations per line
         var groupedInfos = infos.GroupBy(si => si.Location.Range.Start.Line).ToList();
-        var sourceFile = infos.First().Location.File;
+        var sourceFile = infos.First().Location.File!;
 
         // Now we collect each line primitive
         int? lastLineIndex = null;
