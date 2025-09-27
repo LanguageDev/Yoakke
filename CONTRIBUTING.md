@@ -12,6 +12,7 @@ This document describes how a contribution should generally happen. These are mo
  	 * [Feature requests](#feature-requests)
 	 * [Module requests](#module-requests)
 	 * [Code contribution](#code-contribution)
+	 * [Documentation contribution](#documentation-contribution)
 	 * [Other](#other)
  * [Styleguides](#style-guides)
 
@@ -42,6 +43,23 @@ If you finished a feature, open a Pull-Request referencing the issue it resolves
 For bugs, it is highly advised to write a test first, if it does not exist yet. This will help us not to reintroduce the bug later!
 
 Since testing ensures that the project will not suddenly collapse on our head, please test any new feature you develop! All tests are ran in the CI, so new tests will help other contributors too.
+
+### Documentation contribution
+If you would like to contribute with docs. Follow these instructions
+
+Install docfx tool
+```shell
+dotnet tool update -g docfx
+```
+
+Start local server with docs.
+
+```shell
+docfx Documentation/docfx_project/docfx.json --serve
+```
+
+Navigate to http://localhost:8080/
+
 
 ### Other
 There are many other ways to contribute, hopefully someone can find joy in some of these other tasks:
