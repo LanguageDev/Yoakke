@@ -103,7 +103,7 @@ public class ParseErrorTests
         var secondError = new ParseError("^", null, 12, "other_expression");
         var mergedError = firstError | secondError;
 
-        var result = mergedError.Elements.ToList();
+        var result = mergedError!.Elements.ToList();
 
         Assert.Equal("expression", result[0].Key);
         Assert.Equal("expression", result[0].Value.Context);
@@ -121,7 +121,7 @@ public class ParseErrorTests
         var thirdError = new ParseError("^", null, 12, "third_expression");
         var mergedError = firstError | secondError | thirdError;
 
-        var result = mergedError.Elements.ToList();
+        var result = mergedError!.Elements.ToList();
 
         Assert.Equal("expression", result[0].Key);
         Assert.Equal("expression", result[0].Value.Context);

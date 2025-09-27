@@ -4,6 +4,8 @@
     <!-- Language-level settings -->
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
 
     <!-- Analysis -->
     <AnalysisLevel>latest</AnalysisLevel>

@@ -11,11 +11,11 @@ namespace Yoakke.SynKit.Parser;
 
 internal class ParseErrorElementDictionary : IReadOnlyDictionary<string, ParseErrorElement>
 {
-    private string? firstKey;
-    private ParseErrorElement? firstItem;
-    private string? secondKey;
-    private ParseErrorElement? secondItem;
-    private Dictionary<string, ParseErrorElement>? elements;
+    private readonly string? firstKey;
+    private readonly ParseErrorElement? firstItem;
+    private readonly string? secondKey;
+    private readonly ParseErrorElement? secondItem;
+    private readonly Dictionary<string, ParseErrorElement>? elements;
 
     private ParseErrorElementDictionary()
     {
@@ -77,14 +77,14 @@ internal class ParseErrorElementDictionary : IReadOnlyDictionary<string, ParseEr
         }
         else
         {
-            return this.firstKey == key || (this.secondKey is null ? false : this.firstKey == key);
+            return this.firstKey == key || (this.secondKey is null ? false : this.secondKey == key);
         }
     }
 
     public IEnumerator<KeyValuePair<string, ParseErrorElement>> GetEnumerator() =>
         this.elements is null
-            ? (secondKey is null)
-                ? new Enumerator(this.firstKey!, this.firstItem!) : new TwoElementEnumerator(this.firstKey!, this.firstItem!, this.secondKey, this.secondItem)
+            ? (this.secondKey is null)
+                ? new Enumerator(this.firstKey!, this.firstItem!) : new TwoElementEnumerator(this.firstKey!, this.firstItem!, this.secondKey, this.secondItem!)
                 : this.elements.GetEnumerator();
     public bool TryGetValue(string key, out ParseErrorElement value)
     {
@@ -92,17 +92,17 @@ internal class ParseErrorElementDictionary : IReadOnlyDictionary<string, ParseEr
         {
             if (this.firstKey == key)
             {
-                value = firstItem;
+                value = this.firstItem!;
                 return true;
             }
 
             if (this.secondKey == key)
             {
-                value = secondItem;
+                value = this.secondItem!;
                 return true;
             }
 
-            value = default;
+            value = default!;
             return false;
         }
 
@@ -165,22 +165,22 @@ internal class ParseErrorElementDictionary : IReadOnlyDictionary<string, ParseEr
             this._current = new KeyValuePair<string, ParseErrorElement>(key, value);
         }
 
-        public KeyValuePair<string, ParseErrorElement> Current
+        public readonly KeyValuePair<string, ParseErrorElement> Current
         {
             get
             {
-                if (!valid)
+                if (!this.valid)
                 {
                     throw new InvalidOperationException("The enumerator is not valid.");
                 }
 
-                return _current;
+                return this._current;
             }
         }
 
-        object IEnumerator.Current => this.Current;
+        readonly object IEnumerator.Current => this.Current;
 
-        public void Dispose() {}
+        public readonly void Dispose() {}
         public bool MoveNext()
         {
             if (!this.valid)
@@ -211,22 +211,22 @@ internal class ParseErrorElementDictionary : IReadOnlyDictionary<string, ParseEr
             this._secondPair = new KeyValuePair<string, ParseErrorElement>(secondKey, secondValue);
         }
 
-        public KeyValuePair<string, ParseErrorElement> Current
+        public readonly KeyValuePair<string, ParseErrorElement> Current
         {
             get
             {
-                if (consumed > 2)
+                if (this.consumed > 2)
                 {
                     throw new InvalidOperationException("The enumerator is not valid.");
                 }
 
-                return consumed == 1 ? _firstPair : _secondPair;
+                return this.consumed == 1 ? this._firstPair : this._secondPair;
             }
         }
 
         object IEnumerator.Current => this.Current;
 
-        public void Dispose() { }
+        public readonly void Dispose() { }
         public bool MoveNext()
         {
             if (this.consumed >= 2)

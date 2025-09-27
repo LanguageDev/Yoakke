@@ -26,7 +26,7 @@ public static class ParseResult
     /// </summary>
     /// <param name="expected">The expected element.</param>
     /// <param name="got">The token encountered instead.</param>
-    /// <param name="position">The position where the error occured.</param>
+    /// <param name="position">The position where the error occurred.</param>
     /// <param name="context">The rule context the error occurred in.</param>
     /// <returns>The created <see cref="ParseError"/>.</returns>
     public static ParseError Error(object expected, object? got, IComparable position, string context) =>

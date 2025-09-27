@@ -12,6 +12,9 @@ namespace Yoakke.SynKit.Lexer;
 /// </summary>
 public interface ICharStream : IPeekableStream<char>
 {
+    /// <summary>
+    /// Gets the source file which provide content of this char stream
+    /// </summary>
     public ISourceFile SourceFile { get; }
 
     /// <summary>

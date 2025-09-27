@@ -125,12 +125,12 @@ internal class ParseErrorExpectationSet : ISet<object>
         {
             get
             {
-                if (!valid)
+                if (!this.valid)
                 {
                     throw new InvalidOperationException("The enumerator is not valid.");
                 }
 
-                return _current ?? throw new InvalidOperationException("The enumerator is not valid.");
+                return this._current ?? throw new InvalidOperationException("The enumerator is not valid.");
             }
         }
 

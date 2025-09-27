@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Yoakke.SynKit.Parser;
 
@@ -12,7 +13,7 @@ namespace Yoakke.SynKit.Parser;
 /// </summary>
 public class ParseError
 {
-    private ParseErrorElementDictionary elements;
+    private readonly ParseErrorElementDictionary elements;
 
     /// <summary>
     /// The error cases in different parse contexts.
@@ -69,7 +70,7 @@ public class ParseError
         // TODO: Think this through
         // NOTE: Could it ever happen that first.Got and second.Got are different but neither are null?
         // Would we want to unify these and move them to ParseErrorElement or something?
-        // Since position is here now, Got is kind of a utility we have here, we could just aswell have a
+        // Since position is here now, Got is kind of a utility we have here, we could just as well have a
         // 'reason' for each element
         return new(
             elements,

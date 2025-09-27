@@ -1,6 +1,6 @@
 <!-- Source Generator project settings -->
 <Project>
-  <Import Project="Shared.Build.props" />
+  <!--<Import Project="Shared.Build.props" />-->
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>

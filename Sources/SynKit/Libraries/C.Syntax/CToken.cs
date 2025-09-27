@@ -85,7 +85,7 @@ public sealed class CToken : IToken<CTokenType>, IEquatable<CToken>
     public bool Equals(CToken? other) =>
            other is not null
         && this.Range == other.Range
-        && this.Location.File.Path == other.Location.File.Path
+        && this.Location.File?.Path == other.Location.File?.Path
         && this.Text == other.Text
         && this.Kind == other.Kind
         && this.LogicalRange == other.LogicalRange
