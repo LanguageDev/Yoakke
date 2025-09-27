@@ -112,4 +112,25 @@ public class ParseErrorTests
         Assert.Equal("other_expression", result[1].Value.Context);
         Assert.True(result[1].Value.Expected.Contains("^"));
     }
+
+    [Fact]
+    public void EnumerateThreeElements()
+    {
+        var firstError = new ParseError("^", null, 12, "expression");
+        var secondError = new ParseError("^", null, 12, "other_expression");
+        var thirdError = new ParseError("^", null, 12, "third_expression");
+        var mergedError = firstError | secondError | thirdError;
+
+        var result = mergedError.Elements.ToList();
+
+        Assert.Equal("expression", result[0].Key);
+        Assert.Equal("expression", result[0].Value.Context);
+        Assert.True(result[0].Value.Expected.Contains("^"));
+        Assert.Equal("other_expression", result[1].Key);
+        Assert.Equal("other_expression", result[1].Value.Context);
+        Assert.True(result[1].Value.Expected.Contains("^"));
+        Assert.Equal("third_expression", result[2].Key);
+        Assert.Equal("third_expression", result[2].Value.Context);
+        Assert.True(result[2].Value.Expected.Contains("^"));
+    }
 }

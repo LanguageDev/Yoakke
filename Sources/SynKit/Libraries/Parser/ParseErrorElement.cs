@@ -3,6 +3,7 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System.Collections.Generic;
+using System.Collections.Generic.Polyfill;
 
 namespace Yoakke.SynKit.Parser;
 
@@ -11,10 +12,12 @@ namespace Yoakke.SynKit.Parser;
 /// </summary>
 public class ParseErrorElement
 {
+    private readonly ParseErrorExpectationSet expected;
+
     /// <summary>
     /// The expected possible inputs.
     /// </summary>
-    public ISet<object> Expected { get; }
+    public ISet<object> Expected => this.expected;
 
     /// <summary>
     /// The context in which the error occurred.
@@ -27,8 +30,9 @@ public class ParseErrorElement
     /// <param name="expected">The expected input.</param>
     /// <param name="context">The context in which the error occurred.</param>
     public ParseErrorElement(object expected, string context)
-        : this(new HashSet<object> { expected }, context)
     {
+        this.expected = new ParseErrorExpectationSet(expected);
+        this.Context = context;
     }
 
     /// <summary>
@@ -38,7 +42,13 @@ public class ParseErrorElement
     /// <param name="context">The context in which the error occurred.</param>
     public ParseErrorElement(ISet<object> expected, string context)
     {
-        this.Expected = expected;
+        this.expected = new ParseErrorExpectationSet(expected);
         this.Context = context;
+    }
+
+    internal ParseErrorElement CreateMergedElement(ParseErrorElement parseErrorElement)
+    {
+        var newExpected = parseErrorElement.expected.Merge(this.expected);
+        return new(newExpected, parseErrorElement.Context);
     }
 }
