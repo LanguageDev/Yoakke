@@ -32,5 +32,13 @@ internal static class Diagnostics
         defaultSeverity: DiagnosticSeverity.Error,
         isEnabledByDefault: true);
 
+    public static readonly DiagnosticDescriptor TokenTypeLessAccessible = new(
+        id: "YKPARSERGEN003",
+        title: "The token type is less accessible then parser",
+        messageFormat: "The token type {0} is less accessible then parser type {1}.",
+        category: "Parser generation",
+        defaultSeverity: DiagnosticSeverity.Error,
+        isEnabledByDefault: true);
+
 #pragma warning restore RS2008 // Enable analyzer release tracking
 }

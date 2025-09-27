@@ -6,6 +6,7 @@ namespace Yoakke.SynKit.Parser.Tests;
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -31,7 +32,7 @@ public abstract class CodeGenerationTestBase
         return Verifier.Verify(GetCSharpGeneratedOutput(source, nullableContextOptions)).UseDirectory("verified");
     }
 
-    protected static string GetCSharpGeneratedOutput(string source, NullableContextOptions nullableContextOptions)
+    protected static (Compilation OutputCompilation, ImmutableArray<Diagnostic> Diagnostics) GenerateCSharpOutput(string source, NullableContextOptions nullableContextOptions)
     {
         var syntaxTree = CSharpSyntaxTree.ParseText(source);
 
@@ -59,9 +60,15 @@ public abstract class CodeGenerationTestBase
 
         var driver = CSharpGeneratorDriver.Create(generator);
         driver.RunGeneratorsAndUpdateCompilation(compilation, out var outputCompilation, out var generateDiagnostics);
+        return (outputCompilation, generateDiagnostics);
+    }
+
+    protected static string GetCSharpGeneratedOutput(string source, NullableContextOptions nullableContextOptions)
+    {
+        var (outputCompilation, generateDiagnostics) = GenerateCSharpOutput(source, nullableContextOptions);
         Assert.False(generateDiagnostics.Any(d => d.Severity == DiagnosticSeverity.Error), "Failed: " + generateDiagnostics.FirstOrDefault()?.GetMessage());
 
-        string output = outputCompilation.SyntaxTrees.Last().ToString();
+        string output = outputCompilation!.SyntaxTrees.Last().ToString();
 
         Console.WriteLine(output);
 

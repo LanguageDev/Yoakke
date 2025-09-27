@@ -3,7 +3,6 @@
 // Source repository: https://github.com/LanguageDev/Yoakke
 
 using System;
-using System.Collections.Generic;
 using System.Collections.Generic.Polyfill;
 using System.Linq;
 using System.Text;
@@ -13,11 +12,7 @@ using Yoakke.SynKit.Parser.Generator.Ast;
 using Yoakke.SynKit.Parser.Generator.Syntax;
 using Yoakke.SourceGenerator.Common;
 using Yoakke.SourceGenerator.Common.RoslynExtensions;
-using System.IO;
 using System.Reflection;
-using Scriban;
-using Microsoft.CodeAnalysis.CSharp;
-using System.Diagnostics;
 using Yoakke.SynKit.Parser.Attributes;
 using System.Threading;
 using Yoakke.SynKit.Parser.Generator.Model;
@@ -104,6 +99,15 @@ public class ParserSourceGenerator : IIncrementalGenerator
 
         // Extract the token kinds
         if (!parserSymbol.TryGetAttribute(symbols.ParserAttribute, out ParserAttributeModel? parserAttr)) return null;
+
+        if (parserAttr?.TokenType is not null && parserAttr.TokenType.DeclaredAccessibility < parserSymbol.DeclaredAccessibility)
+        {
+            context.ReportDiagnostic(Diagnostic.Create(
+                descriptor: Diagnostics.TokenTypeLessAccessible,
+                location: parserSymbol.Locations.FirstOrDefault(),
+                messageArgs: new[] { parserSymbol.Name, parserAttr.TokenType.Name }));
+            return null;
+        }
 
         var source = parserSymbol.GetMembers()
             .Where(m => m.HasAttribute(symbols.TokenSourceAttribute))

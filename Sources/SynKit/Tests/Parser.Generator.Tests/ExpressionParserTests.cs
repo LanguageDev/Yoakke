@@ -62,4 +62,33 @@ namespace Foo
 }";
         await VerifyCSharp(source, NullableContextOptions.Disable);
     }
+
+    [Fact]
+    public void InconsistentVisibility()
+    {
+        string source = @"
+namespace Foo
+{
+    using Yoakke.SynKit.Parser.Attributes;
+
+    internal enum TokenType
+    {
+        End,
+        Error,
+        Whitespace,
+
+        Number,
+    }
+
+    [Parser(typeof(TokenType))]
+    public partial class C
+    {
+        [Rule(""expression : Number"")]
+        private static int Number(IToken tok) => int.Parse(tok.Text);
+    }
+}";
+        var (_, diagnostics) = GenerateCSharpOutput(source, NullableContextOptions.Disable);
+        Assert.NotEmpty(diagnostics);
+        Assert.All(diagnostics, d => Assert.Equal("YKPARSERGEN003", d.Id));
+    }
 }
