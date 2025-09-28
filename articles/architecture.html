@@ -1,0 +1,246 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>SynKit Architecture </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="SynKit Architecture ">
+    <meta name="generator" content="docfx 2.56.7.0">
+    
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="synkit-architecture">SynKit Architecture</h1>
+
+<p>This document provides an overview of the SynKit architecture and how its components work together.</p>
+<h2 id="core-design-principles">Core Design Principles</h2>
+<h3 id="1-source-generation-over-reflection">1. Source Generation Over Reflection</h3>
+<p>SynKit uses C# source generators to create lexers and parsers at compile time, providing:</p>
+<ul>
+<li><strong>Performance</strong>: No runtime overhead from reflection</li>
+<li><strong>Type Safety</strong>: Compile-time validation of grammar rules</li>
+<li><strong>Debugging</strong>: Generated code can be stepped through</li>
+</ul>
+<h3 id="2-attribute-driven-configuration">2. Attribute-Driven Configuration</h3>
+<p>Grammar rules and token definitions are specified using attributes:</p>
+<ul>
+<li><code>[Token]</code> - Define literal tokens</li>
+<li><code>[Regex]</code> - Define pattern-based tokens</li>
+<li><code>[Rule]</code> - Define parser production rules</li>
+<li><code>[Left]</code>, <code>[Right]</code> - Specify operator precedence and associativity</li>
+</ul>
+<h3 id="3-immutable-error-handling">3. Immutable Error Handling</h3>
+<p>Parse errors are immutable objects that can be combined and enriched:</p>
+<ul>
+<li><code>ParseError</code> objects can be merged using the <code>|</code> operator</li>
+<li>Errors contain position information and expected elements</li>
+<li>Error contexts provide semantic information about what was being parsed</li>
+</ul>
+<h2 id="component-architecture">Component Architecture</h2>
+<pre><code>┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│                 │    │                 │    │                 │
+│   Text Layer    │    │  Lexer Layer    │    │  Parser Layer   │
+│                 │    │                 │    │                 │
+├─────────────────┤    ├─────────────────┤    ├─────────────────┤
+│ • SourceFile    │───▶│ • ILexer&lt;T&gt;     │───▶│ • IParser       │
+│ • Position      │    │ • Token&lt;T&gt;      │    │ • ParseResult&lt;T&gt;│
+│ • Range         │    │ • TokenStream   │    │ • ParseError    │
+│ • Location      │    │ • [Lexer] attr  │    │ • [Parser] attr │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │                       │
+         │              ┌─────────────────┐              │
+         │              │                 │              │
+         └──────────────▶│ Reporting Layer │◀─────────────┘
+                        │                 │
+                        ├─────────────────┤
+                        │ • Diagnostics   │
+                        │ • Severity      │
+                        │ • Presenter     │
+                        │ • Highlighter   │
+                        └─────────────────┘
+</code></pre>
+<h2 id="data-flow">Data Flow</h2>
+<h3 id="1-lexical-analysis">1. Lexical Analysis</h3>
+<pre><code>Source Text ──▶ ILexer&lt;TToken&gt; ──▶ Token Stream
+     │               │                   │
+     │               ▼                   ▼
+     │         [Generated Lexer]    IToken&lt;TToken&gt;
+     │               │                   │
+     ▼               │                   │
+SourceFile ──────────┘                   │
+Position/Range                           │
+     │                                   │
+     └───────────────────────────────────┘
+                Error Reporting
+</code></pre>
+<h3 id="2-syntactic-analysis">2. Syntactic Analysis</h3>
+<pre><code>Token Stream ──▶ IParser ──▶ ParseResult&lt;T&gt;
+     │             │              │
+     │             ▼              ├─ Ok&lt;T&gt;
+     │      [Generated Parser]    │
+     │             │              └─ Error
+     │             ▼                  │
+     └────▶ Error Recovery ──────────┘
+              Synchronization
+</code></pre>
+<h2 id="key-interfaces">Key Interfaces</h2>
+<h3 id="ilexer">ILexer<ttoken></ttoken></h3>
+<ul>
+<li><code>TToken Next()</code> - Advance and return next token</li>
+<li><code>Position Position</code> - Current source position</li>
+<li><code>bool IsEnd</code> - Check if input is exhausted</li>
+</ul>
+<h3 id="itoken">IToken<ttoken></ttoken></h3>
+<ul>
+<li><code>TToken Kind</code> - Token type/category</li>
+<li><code>string Text</code> - Literal text content</li>
+<li><code>Range Range</code> - Source location</li>
+<li><code>object? Value</code> - Parsed semantic value</li>
+</ul>
+<h3 id="parseresult">ParseResult<t></t></h3>
+<ul>
+<li><code>bool IsOk/IsError</code> - Success/failure state</li>
+<li><code>Ok&lt;T&gt; Ok</code> - Success result with value</li>
+<li><code>ParseError Error</code> - Failure with detailed error info</li>
+</ul>
+<h3 id="parseerror">ParseError</h3>
+<ul>
+<li><code>IComparable Position</code> - Error location</li>
+<li><code>object? Got</code> - What was actually found</li>
+<li><code>IReadOnlyDictionary&lt;string, ParseErrorElement&gt; Elements</code> - Expected elements by context</li>
+</ul>
+<h2 id="generator-architecture">Generator Architecture</h2>
+<h3 id="lexer-generation">Lexer Generation</h3>
+<ol>
+<li><strong>Analysis</strong>: Scan <code>[Lexer]</code> attributed classes</li>
+<li><strong>Token Discovery</strong>: Find <code>[Token]</code> and <code>[Regex]</code> attributes on enum values</li>
+<li><strong>Automata Construction</strong>: Build finite automata for token recognition</li>
+<li><strong>Code Generation</strong>: Emit lexer implementation with optimized state machine</li>
+</ol>
+<h3 id="parser-generation">Parser Generation</h3>
+<ol>
+<li><strong>Grammar Analysis</strong>: Extract <code>[Rule]</code> attributed methods</li>
+<li><strong>Precedence Resolution</strong>: Process <code>[Left]</code>, <code>[Right]</code>, <code>[Precedence]</code> attributes</li>
+<li><strong>LR Table Construction</strong>: Build parsing tables using LR algorithm</li>
+<li><strong>Code Generation</strong>: Emit parser with table-driven parsing logic</li>
+</ol>
+<h2 id="error-recovery">Error Recovery</h2>
+<p>SynKit implements following error recovery:</p>
+<h3 id="lexer-errors">Lexer Errors</h3>
+<ul>
+<li>Invalid characters produce <code>Error</code> tokens</li>
+<li>Lexer continues from next valid position</li>
+<li>Position information preserved for diagnostics</li>
+</ul>
+<h3 id="parser-errors">Parser Errors</h3>
+<ul>
+<li>ParseError objects accumulate expected elements</li>
+<li>Multiple alternative errors can be merged</li>
+<li>Context information helps with meaningful error messages</li>
+<li>Synchronization points allow recovery and continuation</li>
+</ul>
+<h2 id="thread-safety">Thread Safety</h2>
+<ul>
+<li><strong>Lexers</strong>: Not thread-safe (maintain internal state)</li>
+<li><strong>Parsers</strong>: Not thread-safe (maintain parse stacks)</li>
+<li><strong>Tokens</strong>: Immutable and thread-safe</li>
+<li><strong>ParseResults</strong>: Immutable and thread-safe</li>
+<li><strong>SourceFiles</strong>: Thread-safe for reading</li>
+</ul>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/LanguageDev/Yoakke/blob/master/Documentation/docfx_project/articles/architecture.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In This Article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

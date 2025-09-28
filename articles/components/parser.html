@@ -1,0 +1,313 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Parser Component </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Parser Component ">
+    <meta name="generator" content="docfx 2.56.7.0">
+    
+    <link rel="shortcut icon" href="../../favicon.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="parser-component">Parser Component</h1>
+
+<p>The SynKit Parser component provides LR parser generation with attribute-based grammar specification.</p>
+<h2 id="overview">Overview</h2>
+<p>The parser component generates efficient LR parsers from grammar rules specified as C# method attributes. It supports:</p>
+<ul>
+<li><strong>LR(1) Parsing</strong>: Efficient bottom-up parsing with one token lookahead</li>
+<li><strong>Precedence &amp; Associativity</strong>: Left/right associative operators with precedence levels</li>
+<li><strong>Error Recovery</strong>: Rich error reporting with context information</li>
+<li><strong>Type Safety</strong>: Strongly-typed parse results</li>
+<li><strong>Custom Actions</strong>: User-defined semantic actions for each production rule</li>
+</ul>
+<h2 id="basic-usage">Basic Usage</h2>
+<h3 id="1-define-parser-class">1. Define Parser Class</h3>
+<pre><code class="lang-csharp">[Parser(typeof(TokenType))]
+public partial class ExpressionParser
+{
+    // Parser rules will be defined here
+}
+</code></pre>
+<h3 id="2-grammar-rules">2. Grammar Rules</h3>
+<p>Grammar rules are defined as static methods with the <code>[Rule]</code> attribute:</p>
+<pre><code class="lang-csharp">[Rule(&quot;expression: IntLiteral&quot;)]
+public static int IntLiteral(IToken token) =&gt; int.Parse(token.Text);
+
+[Rule(&quot;expression: '(' expression ')'&quot;)]  
+public static int Parentheses(IToken open, int expr, IToken close) =&gt; expr;
+</code></pre>
+<h3 id="3-binary-operators">3. Binary Operators</h3>
+<p>Use precedence attributes to define operator precedence and associativity:</p>
+<pre><code class="lang-csharp">[Left(&quot;+&quot;, &quot;-&quot;)]          // Lower precedence, left associative
+[Left(&quot;*&quot;, &quot;/&quot;)]          // Higher precedence, left associative  
+[Right(&quot;^&quot;)]              // Right associative exponentiation
+[Rule(&quot;expression&quot;)]      // Inferred rule for binary operators
+public static int BinaryOp(int left, IToken op, int right)
+{
+    return op.Text switch
+    {
+        &quot;+&quot; =&gt; left + right,
+        &quot;-&quot; =&gt; left - right,
+        &quot;*&quot; =&gt; left * right,
+        &quot;/&quot; =&gt; left / right,
+        &quot;^&quot; =&gt; (int)Math.Pow(left, right),
+        _ =&gt; throw new NotSupportedException($&quot;Operator {op.Text}&quot;)
+    };
+}
+</code></pre>
+<h2 id="rule-syntax">Rule Syntax</h2>
+<h3 id="rule-format">Rule Format</h3>
+<pre><code>[Rule(&quot;nonterminal: production&quot;)]
+</code></pre>
+<p>Where:</p>
+<ul>
+<li><code>nonterminal</code> is the left-hand side symbol</li>
+<li><code>production</code> is a sequence of terminals and nonterminals</li>
+</ul>
+<h3 id="terminal-references">Terminal References</h3>
+<ul>
+<li><code>'literal'</code> - Match literal token text</li>
+<li><code>TokenType</code> - Match token by enum value</li>
+<li><code>&quot;string&quot;</code> - Alternative literal syntax</li>
+</ul>
+<h3 id="examples">Examples</h3>
+<pre><code class="lang-csharp">[Rule(&quot;statement: 'if' '(' expression ')' statement&quot;)]
+[Rule(&quot;statement: 'if' '(' expression ')' statement 'else' statement&quot;)]
+[Rule(&quot;expression: Identifier&quot;)]
+[Rule(&quot;expression: IntLiteral&quot;)]
+</code></pre>
+<h2 id="precedence-and-associativity">Precedence and Associativity</h2>
+<h3 id="precedence-levels">Precedence Levels</h3>
+<p>Precedence is determined by the order of attributes and method declaration:</p>
+<pre><code class="lang-csharp">[Left(&quot;||&quot;)]                    // Lowest precedence
+[Left(&quot;&amp;&amp;&quot;)]  
+[Left(&quot;==&quot;, &quot;!=&quot;)]
+[Left(&quot;&lt;&quot;, &quot;&gt;&quot;, &quot;&lt;=&quot;, &quot;&gt;=&quot;)]
+[Left(&quot;+&quot;, &quot;-&quot;)]
+[Left(&quot;*&quot;, &quot;/&quot;, &quot;%&quot;)]
+[Right(&quot;^&quot;)]                    // Highest precedence
+[Rule(&quot;expression&quot;)]
+public static T BinaryOperator(T left, IToken op, T right) { ... }
+</code></pre>
+<h3 id="associativity">Associativity</h3>
+<ul>
+<li><code>[Left(...)]</code> - Left associative (a + b + c = (a + b) + c)</li>
+<li><code>[Right(...)]</code> - Right associative (a ^ b ^ c = a ^ (b ^ c))</li>
+<li><code>[Precedence(...)]</code> - Non-associative</li>
+</ul>
+<h2 id="error-handling">Error Handling</h2>
+<h3 id="parseresult">ParseResult<t></t></h3>
+<p>All parse methods return <code>ParseResult&lt;T&gt;</code>:</p>
+<pre><code class="lang-csharp">var result = parser.ParseExpression();
+if (result.IsOk)
+{
+    Console.WriteLine($&quot;Parsed value: {result.Ok.Value}&quot;);
+}
+else
+{
+    HandleParseError(result.Error);
+}
+</code></pre>
+<h3 id="parseerror-details">ParseError Details</h3>
+<p>ParseError provides rich error information:</p>
+<pre><code class="lang-csharp">void HandleParseError(ParseError error)
+{
+    Console.WriteLine($&quot;Parse failed at position {error.Position}&quot;);
+    Console.WriteLine($&quot;Got: {error.Got?.ToString() ?? &quot;end of input&quot;}&quot;);
+    
+    foreach (var (context, element) in error.Elements)
+    {
+        Console.WriteLine($&quot;In {context}, expected: {string.Join(&quot; or &quot;, element.Expected)}&quot;);
+    }
+}
+</code></pre>
+<h3 id="error-recovery">Error Recovery</h3>
+<p>Implement synchronization points for error recovery:</p>
+<pre><code class="lang-csharp">public void Synchronize()
+{
+    // Skip tokens until we find a synchronization point
+    while (this.TokenStream.TryPeek(out var token) &amp;&amp; 
+           token.Kind != TokenType.Semicolon &amp;&amp;
+           token.Kind != TokenType.End)
+    {
+        this.TokenStream.Consume(1);
+    }
+    
+    // Consume the synchronization token
+    if (this.TokenStream.TryPeek(out var sync) &amp;&amp; sync.Kind == TokenType.Semicolon)
+    {
+        this.TokenStream.Consume(1);
+    }
+}
+</code></pre>
+<h2 id="advanced-features">Advanced Features</h2>
+<h3 id="custom-start-rules">Custom Start Rules</h3>
+<p>Specify custom start rules for different parsing contexts:</p>
+<pre><code class="lang-csharp">[Rule(&quot;program: statement*&quot;)]
+public static List&lt;Statement&gt; Program(IReadOnlyList&lt;Statement&gt; statements) 
+    =&gt; statements.ToList();
+
+[Rule(&quot;statement: expression ';'&quot;)]
+public static Statement ExpressionStatement(Expression expr, IToken semi)
+    =&gt; new ExpressionStatement(expr);
+</code></pre>
+<h3 id="optional-and-repetition">Optional and Repetition</h3>
+<p>Use standard EBNF-style syntax:</p>
+<pre><code class="lang-csharp">[Rule(&quot;parameter_list: parameter (',' parameter)*&quot;)]
+public static List&lt;Parameter&gt; ParameterList(Parameter first, IReadOnlyList&lt;(IToken, Parameter)&gt; rest)
+{
+    var result = new List&lt;Parameter&gt; { first };
+    result.AddRange(rest.Select(x =&gt; x.Item2));
+    return result;
+}
+
+[Rule(&quot;modifier_list: modifier*&quot;)]
+public static List&lt;Modifier&gt; ModifierList(IReadOnlyList&lt;Modifier&gt; modifiers)
+    =&gt; modifiers.ToList();
+</code></pre>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<h3 id="parser-generation">Parser Generation</h3>
+<ul>
+<li>Parsers are generated at compile time with no runtime overhead</li>
+<li>Generated parsing tables are optimized for the specific grammar</li>
+<li>Type-safe method dispatch avoids boxing/unboxing</li>
+</ul>
+<h3 id="memory-usage">Memory Usage</h3>
+<ul>
+<li>ParseResult<t> uses discriminated union pattern</t></li>
+<li>Immutable parse trees prevent accidental modification</li>
+<li>Error objects can be reused and combined efficiently</li>
+</ul>
+<h3 id="error-performance">Error Performance</h3>
+<ul>
+<li>Error merging using <code>|</code> operator is efficient</li>
+<li>Position comparison short-circuits unnecessary work</li>
+<li>Context information is lazily formatted</li>
+</ul>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="grammar-design">Grammar Design</h3>
+<ol>
+<li><strong>Left Recursion</strong>: Prefer left-recursive rules for left-associative operators</li>
+<li><strong>Precedence</strong>: Use precedence attributes instead of encoding precedence in grammar</li>
+<li><strong>Error Recovery</strong>: Place synchronization points at statement boundaries</li>
+<li><strong>Semantic Actions</strong>: Keep actions simple and focused on tree construction</li>
+</ol>
+<h3 id="performance">Performance</h3>
+<ol>
+<li><strong>Minimize Allocations</strong>: Reuse collections where possible</li>
+<li><strong>Efficient Comparisons</strong>: Use token kinds instead of text comparison</li>
+<li><strong>Lazy Evaluation</strong>: Defer expensive computations until needed</li>
+</ol>
+<h3 id="debugging">Debugging</h3>
+<ol>
+<li><strong>Generated Code</strong>: Examine generated parser code for understanding</li>
+<li><strong>Parse Tables</strong>: Use debugging tools to inspect LR tables</li>
+<li><strong>Error Context</strong>: Provide meaningful context names in rules</li>
+</ol>
+<!--
+## Examples
+
+See the [Examples](../examples/README.md) section for complete working examples:
+- [Simple Expression Parser](../examples/expression-parser.md)
+- [Statement Parser](../examples/statement-parser.md)
+- [JSON Parser](../examples/json-parser.md)
+-->
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/LanguageDev/Yoakke/blob/master/Documentation/docfx_project/articles/components/parser.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In This Article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

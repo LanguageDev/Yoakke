@@ -1,0 +1,377 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Error Handling Best Practices </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Error Handling Best Practices ">
+    <meta name="generator" content="docfx 2.56.7.0">
+    
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="error-handling-best-practices">Error Handling Best Practices</h1>
+
+<p>This guide covers best practices for handling errors in SynKit parsers and lexers.</p>
+<h2 id="understanding-parseerror">Understanding ParseError</h2>
+<p>The <code>ParseError</code> class in SynKit is designed to provide rich, contextual error information:</p>
+<pre><code class="lang-csharp">public class ParseError
+{
+    public IReadOnlyDictionary&lt;string, ParseErrorElement&gt; Elements { get; }
+    public object? Got { get; }
+    public IComparable Position { get; }
+}
+</code></pre>
+<h3 id="key-features">Key Features</h3>
+<ol>
+<li><strong>Multiple Contexts</strong>: Errors can represent failures in multiple parsing contexts</li>
+<li><strong>Position Tracking</strong>: Precise location information for error reporting</li>
+<li><strong>Mergeable</strong>: Errors can be combined using the <code>|</code> operator</li>
+<li><strong>Rich Information</strong>: Expected vs. actual tokens with semantic context</li>
+</ol>
+<h2 id="error-merging-patterns">Error Merging Patterns</h2>
+<h3 id="same-position-merging">Same Position Merging</h3>
+<p>When errors occur at the same position, they are merged:</p>
+<pre><code class="lang-csharp">var error1 = new ParseError(&quot;^&quot;, null, 12, &quot;expression&quot;);
+var error2 = new ParseError(&quot;|&quot;, null, 12, &quot;expression&quot;);
+var merged = error1 | error2;
+
+// Result: Expected &quot;^&quot; or &quot;|&quot; in expression context
+</code></pre>
+<h3 id="different-context-merging">Different Context Merging</h3>
+<p>Errors from different parsing contexts are preserved:</p>
+<pre><code class="lang-csharp">var error1 = new ParseError(&quot;^&quot;, null, 12, &quot;expression&quot;);
+var error2 = new ParseError(&quot;if&quot;, null, 12, &quot;statement&quot;);
+var merged = error1 | error2;
+
+// Result: Two separate error contexts preserved
+</code></pre>
+<h3 id="position-priority">Position Priority</h3>
+<p>Errors at later positions take precedence:</p>
+<pre><code class="lang-csharp">var early = new ParseError(&quot;(&quot;, null, 10, &quot;expression&quot;);
+var later = new ParseError(&quot;)&quot;, null, 15, &quot;expression&quot;);  
+var result = early | later;
+
+// Result: Only the error at position 15 is kept
+</code></pre>
+<h2 id="error-recovery-strategies">Error Recovery Strategies</h2>
+<h3 id="1-synchronization-points">1. Synchronization Points</h3>
+<p>Implement synchronization methods to recover from errors:</p>
+<pre><code class="lang-csharp">[Parser(typeof(TokenType))]
+public partial class MyParser
+{
+    public void SynchronizeToStatement()
+    {
+        // Skip until we find a statement boundary
+        while (this.TokenStream.TryPeek(out var token) &amp;&amp; 
+               token.Kind != TokenType.Semicolon &amp;&amp;
+               token.Kind != TokenType.CloseBrace &amp;&amp;
+               token.Kind != TokenType.End)
+        {
+            this.TokenStream.Consume(1);
+        }
+        
+        // Consume the synchronization token
+        if (this.TokenStream.TryPeek(out var sync))
+        {
+            if (sync.Kind == TokenType.Semicolon)
+                this.TokenStream.Consume(1);
+        }
+    }
+}
+</code></pre>
+<h3 id="2-panic-mode-recovery">2. Panic Mode Recovery</h3>
+<p>Continue parsing after errors by skipping to safe points:</p>
+<pre><code class="lang-csharp">public List&lt;Statement&gt; ParseStatements()
+{
+    var statements = new List&lt;Statement&gt;();
+    
+    while (!this.TokenStream.IsEnd)
+    {
+        var result = this.ParseStatement();
+        if (result.IsOk)
+        {
+            statements.Add(result.Ok.Value);
+        }
+        else
+        {
+            // Report error
+            ReportError(result.Error);
+            
+            // Synchronize and continue
+            this.SynchronizeToStatement();
+        }
+    }
+    
+    return statements;
+}
+</code></pre>
+<h3 id="3-context-aware-recovery">3. Context-Aware Recovery</h3>
+<p>Use different recovery strategies based on parsing context:</p>
+<pre><code class="lang-csharp">public void Synchronize(string context)
+{
+    switch (context)
+    {
+        case &quot;expression&quot;:
+            SynchronizeToOperator();
+            break;
+        case &quot;statement&quot;:
+            SynchronizeToStatement();
+            break;
+        case &quot;declaration&quot;:
+            SynchronizeToDeclaration();
+            break;
+    }
+}
+</code></pre>
+<h2 id="error-reporting">Error Reporting</h2>
+<h3 id="1-user-friendly-messages">1. User-Friendly Messages</h3>
+<p>Convert technical parse errors to user-friendly messages:</p>
+<pre><code class="lang-csharp">public string FormatError(ParseError error)
+{
+    var messages = new List&lt;string&gt;();
+    
+    foreach (var (context, element) in error.Elements)
+    {
+        var expected = string.Join(&quot; or &quot;, element.Expected);
+        var got = error.Got?.ToString() ?? &quot;end of input&quot;;
+        
+        messages.Add($&quot;Expected {expected} in {context}, but got {got}&quot;);
+    }
+    
+    return string.Join(&quot;\n&quot;, messages);
+}
+</code></pre>
+<h3 id="2-position-information">2. Position Information</h3>
+<p>Include source location in error messages:</p>
+<pre><code class="lang-csharp">public void ReportError(ParseError error, SourceFile sourceFile)
+{
+    if (error.Position is Position pos)
+    {
+        Console.WriteLine($&quot;Error at line {pos.Line}, column {pos.Column}:&quot;);
+        Console.WriteLine(FormatError(error));
+        
+        // Show source context
+        ShowSourceContext(sourceFile, pos);
+    }
+}
+</code></pre>
+<h3 id="3-multiple-error-reporting">3. Multiple Error Reporting</h3>
+<p>Handle multiple errors in a single parse session:</p>
+<pre><code class="lang-csharp">public class ErrorCollector
+{
+    private readonly List&lt;ParseError&gt; errors = new();
+    
+    public void AddError(ParseError error)
+    {
+        errors.Add(error);
+    }
+    
+    public void ReportAll(SourceFile sourceFile)
+    {
+        foreach (var error in errors.OrderBy(e =&gt; e.Position))
+        {
+            ReportError(error, sourceFile);
+        }
+    }
+}
+</code></pre>
+<h2 id="testing-error-cases">Testing Error Cases</h2>
+<h3 id="1-unit-test-error-scenarios">1. Unit Test Error Scenarios</h3>
+<p>Test specific error conditions:</p>
+<pre><code class="lang-csharp">[Fact]
+public void TestMissingClosingParen()
+{
+    var lexer = new TestLexer(&quot;(1 + 2&quot;);
+    var parser = new TestParser(lexer);
+    
+    var result = parser.ParseExpression();
+    
+    Assert.True(result.IsError);
+    Assert.Contains(&quot;)&quot;, result.Error.Elements.Values
+        .SelectMany(e =&gt; e.Expected));
+}
+</code></pre>
+<h3 id="2-error-recovery-testing">2. Error Recovery Testing</h3>
+<p>Verify parser can continue after errors:</p>
+<pre><code class="lang-csharp">[Fact]
+public void TestErrorRecovery()
+{
+    var lexer = new TestLexer(&quot;x = ; y = 5;&quot;);
+    var parser = new TestParser(lexer);
+    
+    var statements = parser.ParseStatements();
+    
+    // Should recover and parse the second statement
+    Assert.Single(statements);
+    Assert.Equal(&quot;y = 5&quot;, statements[0].ToString());
+}
+</code></pre>
+<h3 id="3-error-merging-tests">3. Error Merging Tests</h3>
+<p>Test error combination behavior:</p>
+<pre><code class="lang-csharp">[Fact]
+public void TestErrorMerging()
+{
+    var error1 = new ParseError(&quot;(&quot;, null, 10, &quot;expression&quot;);
+    var error2 = new ParseError(&quot;[&quot;, null, 10, &quot;expression&quot;);
+    
+    var merged = error1 | error2;
+    
+    Assert.Single(merged.Elements);
+    Assert.Equal(2, merged.Elements[&quot;expression&quot;].Expected.Count);
+}
+</code></pre>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<h3 id="1-error-object-reuse">1. Error Object Reuse</h3>
+<p>Avoid creating unnecessary error objects:</p>
+<pre><code class="lang-csharp">// Good: Reuse common error patterns
+private static readonly ParseError MissingSemicolon = 
+    new ParseError(&quot;;&quot;, null, Position.Unknown, &quot;statement&quot;);
+
+// Avoid: Creating new errors for common cases
+// new ParseError(&quot;;&quot;, null, position, &quot;statement&quot;);
+</code></pre>
+<h3 id="2-lazy-error-formatting">2. Lazy Error Formatting</h3>
+<p>Defer expensive error message formatting:</p>
+<pre><code class="lang-csharp">public class LazyErrorMessage
+{
+    private readonly ParseError error;
+    private string? cachedMessage;
+    
+    public override string ToString()
+    {
+        return cachedMessage ??= FormatError(error);
+    }
+}
+</code></pre>
+<h3 id="3-error-context-optimization">3. Error Context Optimization</h3>
+<p>Use lightweight context identifiers:</p>
+<pre><code class="lang-csharp">// Good: Use constant strings
+private const string ExpressionContext = &quot;expression&quot;;
+private const string StatementContext = &quot;statement&quot;;
+
+// Avoid: Dynamic context generation
+// $&quot;parsing_{ruleNumber}&quot;
+</code></pre>
+<h2 id="common-anti-patterns">Common Anti-Patterns</h2>
+<h3 id="1-catching-and-ignoring-errors">1. Catching and Ignoring Errors</h3>
+<pre><code class="lang-csharp">// Bad: Losing error information
+try { parser.ParseExpression(); }
+catch { return defaultValue; }
+
+// Good: Handle errors explicitly
+var result = parser.ParseExpression();
+return result.IsOk ? result.Ok.Value : defaultValue;
+</code></pre>
+<h3 id="2-generic-error-messages">2. Generic Error Messages</h3>
+<pre><code class="lang-csharp">// Bad: Unhelpful messages
+&quot;Syntax error&quot;
+
+// Good: Specific expectations
+&quot;Expected ')' to close parentheses in expression&quot;
+</code></pre>
+<h3 id="3-no-error-recovery">3. No Error Recovery</h3>
+<pre><code class="lang-csharp">// Bad: Stop on first error
+if (result.IsError) throw new Exception();
+
+// Good: Collect errors and continue
+errors.Add(result.Error);
+parser.Synchronize();
+</code></pre>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/LanguageDev/Yoakke/blob/master/Documentation/docfx_project/articles/best-practices.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In This Article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>
