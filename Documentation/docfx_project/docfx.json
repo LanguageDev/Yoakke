@@ -11,6 +11,7 @@
             "**/Examples/**",
             "**/Benchmarks/**",
             "**/Tests/**",
+            "**/Shared/Libraries/SourceGenerator.Common/**",
             "**/*.Tests/**",
             "**/*.Tests.*/**",
             "**/*.Example/**",

@@ -1,10 +1,18 @@
 - name: Introduction
   href: intro.md
-- name: Fixing Visual Studio issues
-  href: fixing-vs-issues.md
+- name: Getting started
+  href: getting-started.md
+- name: Architecture
+  href: architecture.md
 - name: Lexing
   href: lexer.md
 - name: Parsing
   href: parser.md
 - name: Error reporting
   href: reporting.md
+# - name: Examples
+#   href: examples.md
+- name: Best practices
+  href: best-practices.md
+- name: Fixing Visual Studio issues
+  href: fixing-vs-issues.md
