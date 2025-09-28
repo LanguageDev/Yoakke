@@ -122,7 +122,20 @@ internal class ParseErrorElementDictionary : IReadOnlyDictionary<string, ParseEr
 
             if (this.firstKey == other.firstKey)
             {
-                return new(other.firstKey!, other.firstItem!.CreateMergedElement(this.firstItem!));
+                if (this.secondKey is null && other.secondKey is null)
+                {
+                    return new(other.firstKey!, other.firstItem!.CreateMergedElement(this.firstItem!));
+                }
+                else if (this.secondKey == other.secondKey)
+                {
+                    return new(other.firstKey!, other.firstItem!.CreateMergedElement(this.firstItem!), other.secondKey!, other.secondItem!.CreateMergedElement(this.secondItem!));
+                }
+                else
+                {
+                    var secondKey = this.secondKey ?? other.secondKey;
+                    var secondItem = this.secondItem ?? other.secondItem;
+                    return new(other.firstKey!, other.firstItem!.CreateMergedElement(this.firstItem!), secondKey!, secondItem!);
+                }
             }
             else
             {
@@ -130,6 +143,13 @@ internal class ParseErrorElementDictionary : IReadOnlyDictionary<string, ParseEr
                 {
                     return new(this.firstKey!, this.firstItem!, other.firstKey!, other.firstItem!);
                 }
+
+                if (this.secondKey == other.firstKey)
+                {
+                    return new(this.secondKey!, other.firstItem!.CreateMergedElement(this.secondItem!),
+                        this.firstKey!, this.firstItem!);
+                }
+
                 return new(new Dictionary<string, ParseErrorElement>
                 {
                     { this.firstKey!, this.firstItem! },

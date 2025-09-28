@@ -66,6 +66,76 @@ public class ParseErrorTests
     }
 
     [Fact]
+    public void MergeThreeErrors2()
+    {
+        var firstError = new ParseError("^", null, 12, "expression");
+        var secondError = new ParseError("|", null, 12, "other_expression");
+        var thirdError = new ParseError("|", null, 12, "other_expression");
+
+        var result = firstError | secondError | thirdError;
+
+        Assert.NotNull(result);
+        Assert.Null(result.Got);
+        Assert.Equal(12, result.Position);
+        Assert.Equal(2, result.Elements.Count);
+        Assert.True(result.Elements.ContainsKey("expression"));
+        Assert.True(result.Elements.ContainsKey("other_expression"));
+    }
+
+    [Fact]
+    public void MergeThreeErrors3()
+    {
+        var firstError = new ParseError("^", null, 12, "expression");
+        var secondError = new ParseError("|", null, 12, "other_expression");
+        var thirdError = new ParseError("|", null, 12, "expression");
+
+        var result = firstError | (secondError | thirdError);
+
+        Assert.NotNull(result);
+        Assert.Null(result.Got);
+        Assert.Equal(12, result.Position);
+        Assert.Equal(2, result.Elements.Count);
+        Assert.True(result.Elements.ContainsKey("expression"));
+        Assert.True(result.Elements.ContainsKey("other_expression"));
+    }
+
+    [Fact]
+    public void MergeFourErrors()
+    {
+        var firstError = new ParseError("^", null, 12, "expression");
+        var secondError = new ParseError("|", null, 12, "other_expression");
+        var thirdError = new ParseError("|", null, 12, "expression");
+        var fourthError = new ParseError("|", null, 12, "other_expression");
+
+        var result = (firstError | secondError) | (thirdError | fourthError);
+
+        Assert.NotNull(result);
+        Assert.Null(result.Got);
+        Assert.Equal(12, result.Position);
+        Assert.Equal(2, result.Elements.Count);
+        Assert.True(result.Elements.ContainsKey("expression"));
+        Assert.True(result.Elements.ContainsKey("other_expression"));
+    }
+
+    [Fact]
+    public void MergeFourErrors2()
+    {
+        var firstError = new ParseError("^", null, 12, "expression");
+        var secondError = new ParseError("|", null, 12, "other_expression");
+        var thirdError = new ParseError("|", null, 12, "other_expression");
+        var fourthError = new ParseError("|", null, 12, "expression");
+
+        var result = (firstError | secondError) | (thirdError | fourthError);
+
+        Assert.NotNull(result);
+        Assert.Null(result.Got);
+        Assert.Equal(12, result.Position);
+        Assert.Equal(2, result.Elements.Count);
+        Assert.True(result.Elements.ContainsKey("expression"));
+        Assert.True(result.Elements.ContainsKey("other_expression"));
+    }
+
+    [Fact]
     public void MergeTwoErrorsFromDifferentExpressions()
     {
         var firstError = new ParseError("^", null, 12, "expression");
