@@ -142,6 +142,18 @@ public partial class RegexesTests
     {
     }
 
+    public enum SpecialEscapeSequences
+    {
+        [End] End,
+        [Error] Error,
+        [Regex("[\\f\\v]")] Feed,    
+    }
+
+    [Lexer(typeof(SpecialEscapeSequences))]
+    internal partial class SpecialEscapeSequencesLexer
+    {
+    }
+
     [Theory]
 
     [InlineData("foo", typeof(Identifier), true, typeof(IdentifierLexer))]
@@ -229,6 +241,8 @@ public partial class RegexesTests
     [InlineData(@"'hello \' bye'", typeof(Issue140Token), true, typeof(Issue140Lexer))]
 
     [InlineData(@"]", typeof(EscapingInsideSingleLiteralRangeToken), true, typeof(Issue145Lexer))]
+    [InlineData("\v", typeof(SpecialEscapeSequences), true, typeof(SpecialEscapeSequencesLexer))]
+    [InlineData("\f", typeof(SpecialEscapeSequences), true, typeof(SpecialEscapeSequencesLexer))]
     public void SingleTokenAcceptance(string input, Type enumType, bool shouldAccept, Type lexerType)
     {
         dynamic lexer = Activator.CreateInstance(lexerType, input)!;
